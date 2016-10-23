@@ -1,0 +1,703 @@
+C   28/01/80 104011107  MEMBER NAME  CBTREL   (PATRECSR)    SHELTRAN
+      SUBROUTINE CBTREL(IPR1,IPR2)
+C
+      IMPLICIT INTEGER*2 (H)
+      LOGICAL TBIT
+C
+C     SUBROUTINE TO COMBINE TRACK ELEMENTS
+C     AUTHOR: P. STEFFEN(78/11/21)
+C
+C
+#include "cworkpr.for"
+#include "cworkeq.for"
+C
+N     POINTER TO ADJACENT CELLS
+      DIMENSION IPC(12), IAUX(8),RAUX(8),HAUX(2,8)
+      EQUIVALENCE (IAUX(1),HAUX(1,1))
+C
+N     I2-I4 CONVERSION:
+      INTEGER*2 HZW(2)
+      EQUIVALENCE (HZW(1),IZW,HZW1) , (HZW(2),HZW2)
+C
+N     LIMITS FOR CONNECTIONS OF TRELS
+      COMMON /CPTSLM/ BKTRLM(20)
+                      INTEGER LMBKTR(20)
+                      REAL CBTRLM(10)
+                      EQUIVALENCE (BKTRLM(11),LMBKTR(11),CBTRLM(1))
+C
+      IPTR0 = HPTE0
+      IPTR9 = HPTE9
+      LDTRK = HLDTE
+      NPR  = 0
+      NPR9 = MIN0(IPR2,100)
+      IF(IPR1.EQ.0) NPR9 = 0
+C
+N     LOOP OVER ALL TREL'S
+      FOR IPTR = IPTR0,IPTR9,LDTRK
+N       CELL #
+        ICELL = IWRK(IPTR   )
+        LBTREL= IWRK(IPTR+19)
+C
+N       GET POINTERS TO ADJACENT CELLS
+        PERFORM PNTADJ
+C
+N       SEARCH FOR CONNECTION OUTWARDS
+        RMSMIN = 1000.
+        ALGHT1 = 0.
+        ALGHT2 = 200.
+        PERFORM CNOUTW
+C
+N       CHECK IF GOOD COMB. FOR 1. RING
+        IF RMSMIN.GT.CBTRLM(4)
+        THEN
+N         NO GOOD COMB.: TRY R1-R3 COMB.
+          IPC( 5) = 0
+          IPC( 6) = 0
+          IPC( 7) = 0
+          IPC( 8) = 0
+          IPC( 9) = IPC( 1)
+          IPC(10) = IPC( 2)
+          IPC(11) = IPC( 3)
+          IPC(12) = IPC( 4)
+          ALGHT2 = 400.
+          PERFORM CNOUTW
+        CIF
+C
+      CFOR
+C
+N     ORDER MULT. CONNECTIONS
+N     CLOSEST CONNECT. FIRST
+      PERFORM ORDER
+C
+      RETURN
+C
+C
+N      *****  P N T A D J  *****
+C
+N      GET POINTERS TO ADJACENT CELLS
+       PROC PNTADJ
+C
+        IF ICELL.LE.24
+N       RING 1
+        THEN
+C
+          IF ICELL.EQ.1
+N         SPECIAL FOR CELL 1
+          THEN
+            IPC( 5) = IPTR0
+            IPC( 6) = IPTR0 + (HNTCEL( 3)-2)*LDTRK
+            IPC( 7) = IPTR0 + (HNTCEL(24)-1)*LDTRK
+            IPC( 8) = IPTR0 + (HNTCEL(25)-2)*LDTRK
+            IPC( 9) = IPTR0 + (HNTCEL(25)-1)*LDTRK
+            IPC(10) = IPTR0 + (HNTCEL(27)-2)*LDTRK
+            IPC(11) = IPTR0 + (HNTCEL(48)-1)*LDTRK
+            IPC(12) = IPTR0 + (HNTCEL(49)-2)*LDTRK
+            IPC( 1) = IPTR0 + (HNTCEL(49)-1)*LDTRK
+            IPC( 2) = IPTR0 + (HNTCEL(53)-2)*LDTRK
+            IPC( 3) = IPTR0 + (HNTCEL(95)-1)*LDTRK
+            IPC( 4) = IPTR0 + (HNTCEL(97)-2)*LDTRK
+          ELSE
+          IF ICELL.LT.24
+N         CELL 2 - 23
+          THEN
+            IPC( 5) = IPTR0 + (HNTCEL(ICELL- 1)-1)*LDTRK
+            IPC( 6) = IPTR0 + (HNTCEL(ICELL+ 2)-2)*LDTRK
+            IPC( 7) = 0
+            IPC( 8) = 0
+            IPC( 9) = IPTR0 + (HNTCEL(ICELL+23)-1)*LDTRK
+            IPC(10) = IPTR0 + (HNTCEL(ICELL+26)-2)*LDTRK
+            IPC(11) = 0
+            IPC(12) = 0
+            ICLL3 = ICELL*2 + 46
+            IPC( 1) = IPTR0 + (HNTCEL(ICLL3-1)-1)*LDTRK
+            IPC( 2) = IPTR0 + (HNTCEL(ICLL3+5)-2)*LDTRK
+            IPC( 3) = 0
+            IPC( 4) = 0
+N         SPECIAL FOR CELL 24
+          ELSE
+            IPC( 5) = IPTR0 + (HNTCEL(23)-1)*LDTRK
+            IPC( 6) = IPTR0 + (HNTCEL(25)-2)*LDTRK
+            IPC( 7) = IPTR0
+            IPC( 8) = IPTR0 + (HNTCEL( 2)-2)*LDTRK
+            IPC( 9) = IPTR0 + (HNTCEL(47)-1)*LDTRK
+            IPC(10) = IPTR0 + (HNTCEL(49)-2)*LDTRK
+            IPC(11) = IPTR0 + (HNTCEL(25)-1)*LDTRK
+            IPC(12) = IPTR0 + (HNTCEL(26)-2)*LDTRK
+            IPC( 1) = IPTR0 + (HNTCEL(93)-1)*LDTRK
+            IPC( 2) = IPTR0 + (HNTCEL(97)-2)*LDTRK
+            IPC( 3) = IPTR0 + (HNTCEL(49)-1)*LDTRK
+            IPC( 4) = IPTR0 + (HNTCEL(51)-2)*LDTRK
+          CIF
+          CIF
+C
+        ELSE
+        IF ICELL.LE.48
+N       RING2
+        THEN
+C
+          IF ICELL.EQ.25
+N         SPECIAL FOR CELL 25
+          THEN
+            IPC( 1) = IPTR0
+            IPC( 2) = IPTR0 + (HNTCEL( 3)-2)*LDTRK
+            IPC( 3) = IPTR0 + (HNTCEL(24)-1)*LDTRK
+            IPC( 4) = IPTR0 + (HNTCEL(25)-2)*LDTRK
+            IPC( 5) = IPTR0 + (HNTCEL(25)-1)*LDTRK
+            IPC( 6) = IPTR0 + (HNTCEL(27)-2)*LDTRK
+            IPC( 7) = IPTR0 + (HNTCEL(48)-1)*LDTRK
+            IPC( 8) = IPTR0 + (HNTCEL(49)-2)*LDTRK
+            IPC( 9) = IPTR0 + (HNTCEL(49)-1)*LDTRK
+            IPC(10) = IPTR0 + (HNTCEL(53)-2)*LDTRK
+            IPC(11) = IPTR0 + (HNTCEL(95)-1)*LDTRK
+            IPC(12) = IPTR0 + (HNTCEL(97)-2)*LDTRK
+          ELSE
+          IF ICELL.LT.48
+N         CELLS 25 - 47
+          THEN
+            IPC( 1) = IPTR0 + (HNTCEL(ICELL-25)-1)*LDTRK
+            IPC( 2) = IPTR0 + (HNTCEL(ICELL-22)-2)*LDTRK
+            IPC( 3) = 0
+            IPC( 4) = 0
+            IPC( 5) = IPTR0 + (HNTCEL(ICELL- 1)-1)*LDTRK
+            IPC( 6) = IPTR0 + (HNTCEL(ICELL+ 2)-2)*LDTRK
+            IPC( 7) = 0
+            IPC( 8) = 0
+            ICLL3 = (ICELL-24)*2 + 46
+            IPC( 9) = IPTR0 + (HNTCEL(ICLL3-1)-1)*LDTRK
+            IPC(10) = IPTR0 + (HNTCEL(ICLL3+5)-2)*LDTRK
+            IPC(11) = 0
+            IPC(12) = 0
+          ELSE
+N         SPECIAL FOR CELL 48
+            IPC( 1) = IPTR0 + (HNTCEL(23)-1)*LDTRK
+            IPC( 2) = IPTR0 + (HNTCEL(25)-2)*LDTRK
+            IPC( 3) = IPTR0
+            IPC( 4) = IPTR0 + (HNTCEL( 2)-2)*LDTRK
+            IPC( 5) = IPTR0 + (HNTCEL(47)-1)*LDTRK
+            IPC( 6) = IPTR0 + (HNTCEL(49)-2)*LDTRK
+            IPC( 7) = IPTR0 + (HNTCEL(25)-1)*LDTRK
+            IPC( 8) = IPTR0 + (HNTCEL(26)-2)*LDTRK
+            IPC( 9) = IPTR0 + (HNTCEL(93)-1)*LDTRK
+            IPC(10) = IPTR0 + (HNTCEL(97)-2)*LDTRK
+            IPC(11) = IPTR0 + (HNTCEL(49)-1)*LDTRK
+            IPC(12) = IPTR0 + (HNTCEL(51)-2)*LDTRK
+          CIF
+          CIF
+C
+N       RING 3
+        ELSE
+C
+          IPC( 9) = 0
+          IPC(10) = 0
+          IPC(11) = 0
+          IPC(12) = 0
+C
+          IF ICELL.EQ.49
+N         SPECIAL FOR CELL 49
+          THEN
+            IPC( 1) = IPTR0 + (HNTCEL(48)-1)*LDTRK
+            IPC( 2) = IPTR0 + (HNTCEL(49)-2)*LDTRK
+            IPC( 3) = IPTR0 + (HNTCEL(25)-1)*LDTRK
+            IPC( 4) = IPTR0 + (HNTCEL(26)-2)*LDTRK
+            IPC( 5) = IPTR0 + (HNTCEL(49)-1)*LDTRK
+            IPC( 6) = IPTR0 + (HNTCEL(51)-2)*LDTRK
+            IPC( 7) = IPTR0 + (HNTCEL(96)-1)*LDTRK
+            IPC( 8) = IPTR0 + (HNTCEL(97)-2)*LDTRK
+          ELSE
+          IF ICELL.LT.96
+N         CELLS 50 - 95
+          THEN
+            ICLL2 = (ICELL-50)/2 + 25
+            IPC( 1) = IPTR0 + (HNTCEL(ICLL2   )-1)*LDTRK
+            IPC( 2) = IPTR0 + (HNTCEL(ICLL2+ 2)-2)*LDTRK
+            IPC( 3) = 0
+            IPC( 4) = 0
+            IPC( 5) = IPTR0 + (HNTCEL(ICELL- 1)-1)*LDTRK
+            IPC( 6) = IPTR0 + (HNTCEL(ICELL+ 2)-2)*LDTRK
+            IPC( 7) = 0
+            IPC( 8) = 0
+          ELSE
+N         SPECIAL FOR CELL 96
+            IPC( 1) = IPTR0 + (HNTCEL(48)-1)*LDTRK
+            IPC( 2) = IPTR0 + (HNTCEL(49)-2)*LDTRK
+            IPC( 3) = IPTR0 + (HNTCEL(25)-1)*LDTRK
+            IPC( 4) = IPTR0 + (HNTCEL(26)-2)*LDTRK
+            IPC( 5) = IPTR0 + (HNTCEL(95)-1)*LDTRK
+            IPC( 6) = IPTR0 + (HNTCEL(97)-2)*LDTRK
+            IPC( 7) = IPTR0 + (HNTCEL(49)-1)*LDTRK
+            IPC( 8) = IPTR0 + (HNTCEL(50)-2)*LDTRK
+          CIF
+          CIF
+C
+        CIF
+        CIF
+C
+N       ZERO POINTERS IF NO TREL'S IN CELLS
+        IF(IPC( 1).GT.IPC( 2)) IPC( 1) = 0
+        IF(IPC( 3).GT.IPC( 4)) IPC( 3) = 0
+        IF(IPC( 5).EQ.IPC( 6)) IPC( 5) = 0
+        IF(IPC( 7).GT.IPC( 8)) IPC( 7) = 0
+        IF(IPC( 9).GT.IPC(10)) IPC( 9) = 0
+        IF(IPC(11).GT.IPC(12)) IPC(11) = 0
+C
+      CPROC
+C
+C
+N     *****  C N O U T W  *****
+C
+N     CONNECT TREL OUTWARDS
+      PROC CNOUTW
+C
+N       JPTRI = INNER TREL
+N       JPTRO = OUTER TREL
+        JPTRI = IPTR
+        LRFLGI = SHFTR(LBTREL,10)
+        LRFLGI = LAND(LRFLGI,3)
+        XXIM = AMIN1(ABS(WRK(JPTRI+11)),ABS(WRK(JPTRI+15)))
+        YYIM = AMIN1(ABS(WRK(JPTRI+12)),ABS(WRK(JPTRI+16)))
+N       LOOP OVER ALL ADJACENT CELLS
+        ICLOOP = 5
+        REPEAT
+          IF IPC(ICLOOP).GT.0
+          THEN
+            JPTRO = IPC(ICLOOP  )
+            JPTR9 = IPC(ICLOOP+1)
+            WHILE JPTRO.LE.JPTR9
+              IF JPTRO.NE.JPTRI
+              THEN
+C
+N               CHECK IF TRELS OVERLAP
+                NCAND = 255
+                IF ABS(XXIM).GT.ABS(YYIM)
+                THEN
+                  XXOM = AMAX1(ABS(WRK(JPTRO+ 3)),ABS(WRK(JPTRO+ 7)))
+                  IF(XXOM-XXIM .GT. CBTRLM(1)) NCAND=0
+                ELSE
+                  YYOM = AMAX1(ABS(WRK(JPTRO+ 4)),ABS(WRK(JPTRO+ 8)))
+                  IF(YYOM-YYIM .GT. CBTRLM(1)) NCAND=0
+                CIF
+                IF NCAND.EQ.0
+                THEN
+C
+N                 # OF COMBINATIONS OF 2 TRELS
+                  NCOMB = 0
+N                 SET LIMITS FOR STRAIGHT/CROSS CONNECT.
+                  JCLLI = IWRK(JPTRI)
+                  IF(JCLLI.GT.48) JCLLI = SHFTR(JCLLI-46,1)
+                  IF(JCLLI.GT.24) JCLLI = JCLLI - 24
+                  JCLLO = IWRK(JPTRO)
+                  IF(JCLLO.GT.48) JCLLO = SHFTR(JCLLO-46,1)
+                  IF(JCLLO.GT.24) JCLLO = JCLLO - 24
+                  IF IABS(JCLLO-JCLLI).EQ.0
+                  THEN
+                    DRLIM = CBTRLM(2)
+                    DANGL = CBTRLM(3)
+                  ELSE
+                    DRLIM = CBTRLM(6)
+                    DANGL = CBTRLM(7)
+                  CIF
+N                 SET AVER. LENGTH OF TRACK
+                  ALGHT0 = ALGHT1
+                  IF(ICLOOP.GE.9) ALGHT0 = ALGHT2
+N                 SELECT L/R-COMB. FROM /CMDOUT/
+                  LRFLGO = SHFTR(IWRK(JPTRO+19),10)
+                  LRFLGO = LAND(LRFLGO,3)
+                  LRFLIO = LRFLGI + LRFLGO*4
+                  LBLR = 0
+                  RMSMZW = 1000.
+                  SELECT LRFLIO
+N                 L - L
+                  CASE 5
+                    LRFLAG = 1
+                    PERFORM CKCIRC
+                    LBLR = 1
+N                 R - L
+                  CASE 6
+                    LRFLAG = 2
+                    PERFORM CKCIRC
+                    LBLR = 2
+N                 ? - L
+                  CASE 7
+                    LRFLAG = 1
+                    PERFORM CKCIRC
+                    LRFLAG = 2
+                    PERFORM CKCIRC
+                    LBLR = 3
+N                 L - R
+                  CASE 9
+                    LRFLAG = 3
+                    PERFORM CKCIRC
+                    LBLR = 4
+N                 R - R
+                  CASE 10
+                    LRFLAG = 4
+                    PERFORM CKCIRC
+                    LBLR = 8
+N                 ? - R
+                  CASE 11
+                    LRFLAG = 3
+                    PERFORM CKCIRC
+                    LRFLAG = 4
+                    PERFORM CKCIRC
+                    LBLR = 12
+N                 L - ?
+                  CASE 13
+                    LRFLAG = 1
+                    PERFORM CKCIRC
+                    LRFLAG = 3
+                    PERFORM CKCIRC
+                    LBLR = 5
+N                 R - ?
+                  CASE 14
+                    LRFLAG = 2
+                    PERFORM CKCIRC
+                    LRFLAG = 4
+                    PERFORM CKCIRC
+                    LBLR = 10
+                  OTHER
+                  CSELECT
+C
+N                 TRY ALL REMAINING COMB. IF NO GOOD ONE FOUND
+                  IF RMSMZW.GT.CBTRLM(4)
+                  THEN
+N                   KEEP NOT TOO BAD PREVIOUS COMB.
+                    IF(RMSMZW.LE.CBTRLM(5)) NCOMB = 0
+N                   TRY REMAINING COMB.
+                    IF LAND(LBLR,1).EQ.0
+                    THEN
+                      LRFLAG = 1
+                      PERFORM CKCIRC
+                    CIF
+                    IF LAND(LBLR,2).EQ.0
+                    THEN
+                      LRFLAG = 2
+                      PERFORM CKCIRC
+                    CIF
+                    IF LAND(LBLR,4).EQ.0
+                    THEN
+                      LRFLAG = 3
+                      PERFORM CKCIRC
+                    CIF
+                    IF LAND(LBLR,8).EQ.0
+                    THEN
+                      LRFLAG = 4
+                      PERFORM CKCIRC
+                    CIF
+                  CIF
+              IF(RMSMZW.LT.RMSMIN) RMSMIN = RMSMZW
+N                 KEEP SMALLEST CHISQ
+C
+                CIF
+C
+              CIF
+              JPTRO = JPTRO + LDTRK
+            CWHILE
+C
+          CIF
+          ICLOOP = ICLOOP + 2
+        UNTIL ICLOOP.GE.12
+C
+      CPROC
+C
+C
+N     *****  C K C I R C  *****
+C
+N     CONNECT TREL OUTWARDS
+      PROC CKCIRC
+C
+N       GET POINTERS FOR L/R-COMBINATION
+        SELECT LRFLAG
+N       L - L
+        CASE 1
+          JPTII = JPTRI+3
+          JPTIO = JPTRI+11
+          JPTOI = JPTRO+3
+          JPTOO = JPTRO+11
+
+N       R - L
+        CASE 2
+          JPTII = JPTRI+7
+          JPTIO = JPTRI+15
+          JPTOI = JPTRO+3
+          JPTOO = JPTRO+11
+N       L - R
+        CASE 3
+          JPTII = JPTRI+3
+          JPTIO = JPTRI+11
+          JPTOI = JPTRO+7
+          JPTOO = JPTRO+15
+N      R - R
+        CASE 4
+          JPTII = JPTRI+7
+          JPTIO = JPTRI+15
+          JPTOI = JPTRO+7
+          JPTOO = JPTRO+15
+        OTHER
+        CSELECT
+C
+N       SET END POINTS + SLOPES
+        XXII = WRK(JPTII   )
+        YYII = WRK(JPTII+ 1)
+        DXII = WRK(JPTII+ 2)
+        DYII = WRK(JPTII+ 3)
+        XXOI = WRK(JPTOI   )
+        YYOI = WRK(JPTOI+ 1)
+        DXOI = WRK(JPTOI+ 2)
+        DYOI = WRK(JPTOI+ 3)
+        XXIO = WRK(JPTIO   )
+        YYIO = WRK(JPTIO+ 1)
+        DXIO = WRK(JPTIO+ 2)
+        DYIO = WRK(JPTIO+ 3)
+        XXOO = WRK(JPTOO   )
+        YYOO = WRK(JPTOO+ 1)
+        DXOO = WRK(JPTOO+ 2)
+        DYOO = WRK(JPTOO+ 3)
+C
+N       CHECK CONNECTION
+C
+        REPEAT
+C
+N         CHECK IF OUTWARD CONNECTION
+          ZW1 = (XXII-XXOI)**2 + (YYII-YYOI)**2
+          ZW2 = (XXOO-XXIO)**2 + (YYOO-YYIO)**2
+          ZW0 = (XXII-XXOO)**2 + (YYII-YYOO)**2
+          IF(ZW1.GT.ZW0 .OR. ZW2.GT.ZW0) XREPEAT
+C
+N         CALCULATE CIRCLE FROM3 POINTS
+C
+C
+N         1. + LAST POINT + AVERAGE
+          XOA = ( XXII + XXOO ) *.5
+          YOA = ( YYII + YYOO ) *.5
+N         DIRECTIONS FOR TRANSFORMATION
+          COSTH = XXOO - XXII
+          SINTH = YYOO - YYII
+          ZWZ = SQRT(COSTH**2+SINTH**2)
+          COSTH = COSTH / ZWZ
+          SINTH = SINTH / ZWZ
+N         TRANSFORMATIONS OF POINTS
+C
+          XX = XXII - XOA
+          YY = YYII - YOA
+          YT1 = 0.
+          XT1 =-.5*ZWZ
+          XX = XXIO - XOA
+          YY = YYIO - YOA
+          YT2 = YY * COSTH - XX * SINTH
+          XT2 = XX * COSTH + YY * SINTH
+          XX = XXOI - XOA
+          YY = YYOI - YOA
+          YT3 = YY * COSTH - XX * SINTH
+          XT3 = XX * COSTH + YY * SINTH
+          XX = XXOO - XOA
+          YY = YYOO - YOA
+          YT4 = 0.
+          XT4 =-XT1
+C
+N       SELECT CENTRAL POINT
+          IF ABS(XT2).LT.ABS(XT3)
+          THEN
+            X1 = XT1
+            Y1 = YT1
+            X2 = XT2
+            XC = XT2
+            Y2 = YT2
+            YC = YT2
+            XL = XT3
+            YL = YT3
+          ELSE
+            X1 = XT3
+            XC = XT3
+            Y1 = YT3
+            YC = YT3
+            X2 = XT4
+            Y2 = YT4
+            XL = XT2
+            YL = YT2
+          CIF
+N         INTERSECT WITH Y-AXIS
+          X0 = 0.
+          Y0 = 1000000.
+          DY = Y2 - Y1
+          IF(ABS(DY).GT..01)
+     *       Y0 = ((X2-X1)*(X2+X1)/DY + Y2+Y1)*.5
+          T  = Y0 - YC
+          R0 = ABS(T)
+          CHARGE = SIGN(1.,T)
+          R0 = .5*(R0 + ((Y0-YC)**2+XC**2) / R0)
+          DR0 = (XL**2-XC**2 + (Y0-YL)**2-(Y0-YC)**2)*.5/R0
+          DSQ = .75*DR0**2
+          XCIRC = X0*COSTH - Y0*SINTH + XOA
+          YCIRC = Y0*COSTH + X0*SINTH + YOA
+N         LENGTH/R RATIO
+          ALGHT = ABS(XT1)*2.
+          ALRAT = AMAX1(ALGHT,ALGHT0) / R0
+N         WIDEN LIMIT FOR LOW ENERGY TRACKS
+          DRLIM1 = AMAX1(ALRAT,1.)*CBTRLM(4) + DRLIM
+C2002 FORMAT(' COMBA.:',3I6,F8.2,F8.5,5F8.3)
+C2005 FORMAT(' COMBR:',10F10.1,/,7X,10F10.1)
+      IF(JPTRI.GE.IPR1) NPR = NPR + 1
+C     IF(JPTRI.GE.IPR1 .AND. NPR.LE.NPR9)
+C    ,PRINT 2005, X1,Y1,X2,Y2,XC,YC,X0,Y0,T,R0,DR0,DSQ
+C    ,           ,XCIRC,YCIRC ,DRLIM,DRLIM1,ALGHT,ALRAT
+C
+N         CHECK IF GOOD CONNECTION
+          IF(ABS(DR0).GT.DRLIM1) XREPEAT
+          NCAND = 2
+C
+N         CALC. TANGENTIAL ANGLES
+          IF ABS(XXIO-XCIRC).LT.ABS(YYIO-YCIRC)
+          THEN
+            TG1  = DYII / DXII
+            TGC1 =-(XXII-XCIRC) / (YYII-YCIRC)
+            TG2  = DYIO / DXIO
+            TGC2 =-(XXIO-XCIRC) / (YYIO-YCIRC)
+            TG3  = DYOI / DXOI
+            TGC3 =-(XXOI-XCIRC) / (YYOI-YCIRC)
+            TG4  = DYOO / DXOO
+            TGC4 =-(XXOO-XCIRC) / (YYOO-YCIRC)
+          ELSE
+            TG1  = DXII / DYII
+            TGC1 =-(YYII-YCIRC) / (XXII-XCIRC)
+            TG2  = DXIO / DYIO
+            TGC2 =-(YYIO-YCIRC) / (XXIO-XCIRC)
+            TG3  = DXOI / DYOI
+            TGC3 =-(YYOI-YCIRC) / (XXOI-XCIRC)
+            TG4  = DXOO / DYOO
+            TGC4 =-(YYOO-YCIRC) / (XXOO-XCIRC)
+          CIF
+N         DIFF. OF ANGLES
+          DLTS1 = (TG1-TGC1) / (1.+TG1*TGC1)
+          DLTS2 = (TG2-TGC2) / (1.+TG2*TGC2)
+          DLTS3 = (TG3-TGC3) / (1.+TG3*TGC3)
+          DLTS4 = (TG4-TGC4) / (1.+TG4*TGC4)
+          DLTSQ1 = DLTS1**2
+          DLTSQ2 = DLTS2**2
+          DLTSQ3 = DLTS3**2
+          DLTSQ4 = DLTS4**2
+          DELTSQ = DLTSQ1 + DLTSQ2 + DLTSQ3 + DLTSQ4
+C     IF(JPTRI.GE.IPR1 .AND. NPR.LE.NPR9)
+C    ,PRINT 2002, JPTRI,JPTRO,LRFLAG,DSQ,DELTSQ,
+C    ,    DLTS1,DLTS2,DLTS3,DLTS4,DANGL
+          IF(AMAX1(DLTSQ1,DLTSQ2,DLTSQ3,DLTSQ4).GT.DANGL) XREPEAT
+          RMS = (DSQ/.06 + DELTSQ/.0020) * .2
+          IF(RMS.LT.RMSMZW) RMSMZW = RMS
+          NCAND = RMS
+          IF(NCAND.GE.256) NCAND = 255
+C
+N         CHECK IF SPACE FOR NEW COMB.
+          IF IWRK(JPTRO+20).LT.8 .AND.
+     ?       IWRK(JPTRI+21).LT.8 .AND. NCOMB.LT.2
+          THEN
+C     PRINT 2990, JPTRI,JPTRO,LRFLAG,NCAND,IWRK(JPTRI+21),IWRK(JPTRO+20)
+C2990 FORMAT(' COMB:',20I6)
+C
+N           KEEP ADDRESS OF GOOD CONNECTION
+N           COUNT COMBINATION
+            NCOMB = NCOMB + 1
+            HZW(1) = JPTRO
+            HZW(2) = LRFLAG - 1 + NCAND*16
+            NCNTRI = IWRK(JPTRI+21) + 1
+            IWRK(JPTRI+NCNTRI+29) = IZW
+            IWRK(JPTRI+21) = NCNTRI
+            HZW(1) = JPTRI
+            NCNTRO = IWRK(JPTRO+20) + 1
+            IWRK(JPTRO+NCNTRO+21) = IZW
+            IWRK(JPTRO+20) = NCNTRO
+          CIF
+        UNTIL .TRUE.
+      CPROC
+C
+N     ***************************
+N     *      O R D E R          *
+N     ***************************
+C
+N     ORDER MULT. CONNECTIONS
+N     CLOSEST CONNECT. FIRST
+C
+      PROC ORDER
+C
+N       LOOP OVER ALL CONNECTIONS
+        IPTR = HPTE0
+        REPEAT
+N         CHECK IF >1 DOWN-CONNECTION
+          NCNT= IWRK(IPTR+20)
+          IP0 = IPTR+22
+          IF NCNT.GT.1
+          THEN
+            ORFACT =-1.
+            PERFORM ORDCNT
+          CIF
+N         CHECK IF >1 UP-CONNECTION
+          NCNT= IWRK(IPTR+21)
+          IP0 = IPTR+30
+          IF NCNT.GT.1
+          THEN
+            ORFACT =+1.
+            PERFORM ORDCNT
+          CIF
+        IPTR = IPTR + HLDTE
+        UNTIL IPTR.GT.HPTE9
+      CPROC
+C
+N     ***************************
+N     *      O R D C N T        *
+N     ***************************
+C
+N     ORDER MULT. CONNECTIONS
+C
+      PROC ORDCNT
+C
+N     STORE CONNECT. IN IAUX-ARRAY
+      CALL MVC(IAUX(1),0,IWRK(IP0),0,32)
+N     LOOP OVER DOWN CONNECT.
+      LBORD = 0
+      FOR I=1,NCNT
+        IZW = IAUX(I)
+        IPCN = HZW1
+        IF LAND(IZW,2).EQ.0
+        THEN
+          RSQ = WRK(IPCN+11)**2 + WRK(IPCN+12)**2
+        ELSE
+          RSQ = WRK(IPCN+15)**2 + WRK(IPCN+16)**2
+        CIF
+        RAUX(I) = RSQ
+        IF(I.GT.1 .AND. (RSQ-RAUX(I-1))*ORFACT.LT.0) LBORD = 1
+      CFOR
+C
+N     CHECK IF CONNECT. TO BE REORDERED
+      IF LBORD.NE.0
+      THEN
+N       CHECK IF ONLY 2 CONNECT.
+        IF NCNT.EQ.2
+        THEN
+            IWRK(IP0  ) = IAUX(2)
+            IWRK(IP0+1) = IAUX(1)
+        ELSE
+N         COMPARE ALL COMB. WITH EACH OTHER
+          LBORD = 0
+          NCNT9 = NCNT - 1
+          FOR I1=1,NCNT9
+            NCNT1 = I1 + 1
+            FOR I2=NCNT1,NCNT
+N             CHECK LOWEST R FIRST
+              IF (RAUX(I2)-RAUX(I1))*ORFACT .LT. 0.
+              THEN
+N               INTERCHANGE COMB.
+                IZW = IAUX(I2)
+                IAUX(I2) = IAUX(I1)
+                IAUX(I1) = IZW
+                ZW  = RAUX(I2)
+                RAUX(I2) = RAUX(I1)
+                RAUX(I1) = ZW
+              CIF
+            CFOR
+          CFOR
+C
+N         FINAL INTERCHANGE
+          CALL MVC(IWRK(IP0),0,IAUX(1),0,32)
+        CIF
+      CIF
+      CPROC
+C
+      END

@@ -1,0 +1,120 @@
++EXE.
++USE,IBM.
++USE,TYPE.
++USE,CG.
++USE,*GEANT,*GEANG,*GEANH,*GEANF,*GEANM,*GXINT.
++EXE,P=GXINT,D=G321X,T=I,IF=-VAX.
++EXE,P=GXINT,D=G321M,T=I,IF=-VAX.
++USE,FLUKADAT,T=I.
++ASM,24,T=A,IF=VAX. GEANT321.C
++PAM,11,T=A,C,R=*GEANT. GEANT321
++USE,GCORR,T=EXE.
++KEEP,LASTMOD. << Fix for relativisc ions in GTHION
+      LASTMO = 960304
++KEEP,LASTMOD. << Fix for infinite loop in TWOCLU
+      LASTMO = 960112
++KEEP,LASTMOD. << Two fixes for precision problems in gtnext
+      LASTMO = 950321
++KEEP,LASTMOD. << ROPE408 released
+      LASTMO = 950205
++PATCH,GCORR.
++DECK,BLANKDEK.
++KEEP, GVERSC
+      GVERSC = 0.03
++DECK,GEANFC.
++SELF.*********************************************************************
++SELF.*                                                                   *
++SELF.*   Corrections for GEANF pam file. The corrections are in          *
++SELF.*   chronological order. To activate the corrections use the        *
++SELF.*   following PATCHY cradle:                                        *
++SELF.*                                                                   *
++SELF.*           +USE, GCORR, T=EXE.                                     *
++SELF.*                                                                   *
++SELF.*********************************************************************
++DECK,GEANGC.
++SELF.*********************************************************************
++SELF.*                                                                   *
++SELF.*   Corrections for GEANG pam file. The corrections are in          *
++SELF.*   chronological order. To activate the corrections use the        *
++SELF.*   following PATCHY cradle:                                        *
++SELF.*                                                                   *
++SELF.*           +USE, GCORR, T=EXE.                                     *
++SELF.*                                                                   *
++SELF.*********************************************************************
++DECK,GEANHC.
++SELF.*********************************************************************
++SELF.*                                                                   *
++SELF.*   Corrections for GEANH pam file. The corrections are in          *
++SELF.*   chronological order. To activate the corrections use the        *
++SELF.*   following PATCHY cradle:                                        *
++SELF.*                                                                   *
++SELF.*           +USE, GCORR, T=EXE.                                     *
++SELF.*                                                                   *
++SELF.*                                                                   *
++SELF.*********************************************************************
++REP,GHEISHA,TWOCLU,253.
+      IF(RMC-RMC0.LT.1.E-6 .AND. RMD-RMD0.LT.1.E-6) THEN
++DECK,GEANTC.
++SELF.*********************************************************************
++SELF.*                                                                   *
++SELF.*   Corrections for GEANT pam file. The corrections are in          *
++SELF.*   chronological order. To activate the corrections use the        *
++SELF.*   following PATCHY cradle:                                        *
++SELF.*                                                                   *
++SELF.*           +USE, GCORR, T=EXE.                                     *
++SELF.*                                                                   *
++SELF.*********************************************************************
++ADD,GTRAK,GTHION,0.
+*CMZ :          04/09/95  17.14.40  by  S.Ravndal
++REP,GTRAK,GTHION,71.
+         FACFLU = DME*Z*(DENS/A)
++REP,GTRAK,GTHION,91.
+*     protection for relativistic ions ...........
+      IF(W3.LT.25.) THEN
+        CHARG1=CHARGE*(1.-W1*EXP(-W3))
+      ELSE
+        CHARG1=CHARGE
+      ENDIF
++ADD,GTRAK,GTNEXT,455.
+      if(snxnew.le.-prec) snxnew = big1
+      snxnew = max(snxnew,0.)
++REP,GTRAK,GTNEXT,942.
+  900 IF (SNXT.EQ.BIG1) THEN
++REP,GBASE,GGCLOS,197.
+      if(iquest(11).lt.0) then
++REP,GBASE,GGCLOS,401.
+          if(iquest(11).lt.0) then
++DEL,GTRAK,GLTRAC,175.
++REP,GTRAK,GPCXYZ,76-80.
+ 1100 FORMAT('      X         Y         Z         R      NAME  NUMBER',
+     +'   SLENG      STEP      DESTEP     GEKIN    MECHANISMS')
+ 2000 FORMAT(1X,4F10.4,2X,A4,2X,I4,2X,2F10.4,F7.1,A4,F9.3,A4,2X,
+     +          6(A4,1X))
++SELF.
++DECK,GEANXC,IF=*GXINT.
++SELF.*********************************************************************
++SELF.*                                                                   *
++SELF.*   Corrections for GEANX file. The corrections are in              *
++SELF.*   chronological order. To activate the corrections use the        *
++SELF.*   following PATCHY cradle:                                        *
++SELF.*                                                                   *
++SELF.*           +USE, GCORR, T=EXE.                                     *
++SELF.*                                                                   *
++SELF.*********************************************************************
++DECK,GEANMC.
++SELF.*********************************************************************
++SELF.*                                                                   *
++SELF.*   Corrections for GEANM pam file. The corrections are in          *
++SELF.*   chronological order. To activate the corrections use the        *
++SELF.*   following PATCHY cradle:                                        *
++SELF.*                                                                   *
++SELF.*           +USE, GCORR, T=EXE.                                     *
++SELF.*                                                                   *
++SELF.*********************************************************************
++PAM,11,T=C,A. GEANT321
++PAM,11,T=C,A. GEANG321
++PAM,11,T=C,A. GEANH321
++PAM,11,T=C,A. GEANF321
++PAM,11,T=C,A. GEANM321
++PAM,11,T=C,A. GEANX321
++QUIT.

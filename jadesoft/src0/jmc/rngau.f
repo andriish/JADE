@@ -1,0 +1,11 @@
+C   16/10/75 311291228  MEMBER NAME  RNGAU    (S)           FORTRAN
+      FUNCTION RNGAU(AMEAN,SIG)
+C
+C     S = STANDARD DEVIATION, A = MEAN
+C
+      SUM = 0.
+      DO 1 I = 1,12
+    1 SUM = SUM + RN(DUM)
+      RNGAU = (SUM - 6.)*SIG + AMEAN
+      RETURN
+      END

@@ -1,0 +1,607 @@
+C   28/04/81            MEMBER NAME  ZVERTFPR (JADEGS)      SHELTRAN
+C   03/03/80 104271818  MEMBER NAME  ZVERTFPR (JADESR)      SHELTRAN
+      SUBROUTINE ZVERTF
+C
+C     CALCULATION OF Z-VERTEX: P.STEFFEN(78/11/15)
+C
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cdata.for"
+C
+#include "cgraph.for"
+#include "czvpar.for"
+#include "cjdrch.for"
+#include "cdsmax.for"
+#include "clbpgm.for"
+C
+#include "cworkzv.for"
+C
+C
+N     SET PROGRAM LABEL
+      LBPGM(2) = LBPGM(2) + 1
+C
+      DATA MKLAYR /15/
+C
+N     INITIALIZATION
+      DATA LBINIT /0/
+      IF LBINIT.EQ.0
+      THEN
+        LBINIT = 1
+        IQJETC = IBLN('JETC')
+N       COMMON FACTOR FOR Z(VERT.) CALC.
+        IZCON = ZAL*.5
+        IZMAX = ZMAX + 40.
+      CIF
+C
+N       HISTOGRAM PARAMETERS
+C
+N     SET UP CYCLIC POINTER ARRAY
+N     ADDRESS OF POINTERS TO CELLS (-1)
+      IPJCA  = IDATA(IQJETC)
+      IPJCA2 = IPJCA*2 + 2
+C
+N     COPY CELL POINTERS + CALC. LENGTH
+      IP0 = IPJCA2 + 98
+      ISEGO = IPJCA2
+      FOR ISEG=1,96
+        ISEGO = ISEGO + 1
+        HPTSEC(ISEG) = HDATA(ISEGO) + IP0
+      CFOR
+      HPTSEC(97) = HDATA(ISEGO+1) + IP0
+      HPTSEC(98) = 0
+      PRINT 2901, HPTSEC
+      I0 = IPJCA2 + 1
+      I9 = I0 + 97
+      PRINT 2901, (HDATA(I1),I1=I0,I9)
+ 2901 FORMAT(1H0,/,(1X,24I5))
+C
+      FZRSLT(1) = 0.
+      FZRSLT(2) = 1000000.
+      FZRSLT(3) = 1000000.
+      FZRSLT(4) = 0.
+      FZRSLT(5) = 0.
+      IZRSLT(6) =-2
+      INDLB = 3
+C
+N     DET. ZVTX FROM R1 + R2
+      PRINT 2008
+ 2008 FORMAT('0PERFORM ZVTX12')
+      DFIMX0 = DFIMAX
+      PERFORM ZVTX12
+C
+N     CHECK IF NO GOOD VERTEX FOUND
+      IF IZRSLT(6).LT.3
+      THEN
+N       NO GOOD VERTEX FOUND, SAVE RESULTS
+        IZRSLT( 7) = IZRSLT( 1)
+        IZRSLT( 8) = IZRSLT( 2)
+        IZRSLT( 9) = IZRSLT( 3)
+        IZRSLT(10) = IZRSLT( 4)
+        IZRSLT(11) = IZRSLT( 5)
+        IZRSLT(12) = IZRSLT( 6)
+N       TRY ZVTX FROM R2 + R3
+      PRINT 2009
+ 2009 FORMAT('0PERFORM ZVTX23')
+        DFIMX0 = 1000.
+        PERFORM ZVTX23
+N       CHECK IF WORSE VERTEX
+        IF IZRSLT(6).LE.IZRSLT(12)
+        THEN
+N         RESTORE OLD RESULTS
+          IZRSLT( 1) = IZRSLT( 7)
+          IZRSLT( 2) = IZRSLT( 8)
+          IZRSLT( 3) = IZRSLT( 9)
+          IZRSLT( 4) = IZRSLT(10)
+          IZRSLT( 5) = IZRSLT(11)
+          IZRSLT( 6) = IZRSLT(12)
+        CIF
+      CIF
+C
+N     SET BOS BANK OF RESULTS
+      NWRES = 6
+      CALL CCRE(IPHT,'ZVTX',0,NWRES,IERR)
+      IF(IERR.NE.0) RETURN
+      CALL BSAW(1,'ZVTX')
+         ADATA(IPHT+1) = FZRSLT(1)
+         ADATA(IPHT+2) = FZRSLT(2)
+         ADATA(IPHT+3) = FZRSLT(3)
+         ADATA(IPHT+4) = FZRSLT(4)
+         ADATA(IPHT+5) = FZRSLT(5)
+         ADATA(IPHT+6) = FZRSLT(6)
+C
+N     SET STOP LABEL
+C---  PSTPS(INDLB) = .TRUE.
+C
+      RETURN
+C
+N     *************************
+N     *      Z V T X 1 2      *
+N     *************************
+N     DETERMINE ZVTX FROM R1 + R2
+C
+      PROC ZVTX12
+C
+      BINZIV = 1. / BINZ
+      PAR1 = FSENSW(1) / (FSENSW(2) - FSENSW(1))
+      PAR2 =  RINCR(1) / (FSENSW(2) - FSENSW(1))
+      HUFLO = 0
+      HOFLO = 0
+      MAXZ = 0
+      NBACK = 0
+N     ZERO HISTOGRAM
+      CALL SETS(HIST(1),0,200,0)
+C
+N     CHECK IF AT LEAST 10 HITS IN 1. RING
+      IF HPTSEC(25)-HPTSEC(1) .LT. NWRDR1
+      THEN
+        IZRSLT(6) = -2
+        INDLB = 1
+      ELSE
+C
+N
+N     LOOP OVER ALLSECTOR(RING1): JSEC = SECTOR NUMBER + 1
+      JSEC=1
+      REPEAT
+N       # OF WORDS IN SECT
+        NWRD1 = HPTSEC(JSEC+1) - HPTSEC(JSEC)
+        NWRD2 = HPTSEC(JSEC+25) - HPTSEC(JSEC+24)
+N       CHECK IF MORE THAN 1 HIT
+        IF NWRD1.GE.LWRDC0
+        THEN
+N         # OF WORDS IN LEFT ADJ SECT
+          IF JSEC.EQ.1
+          THEN
+            NWRD1L= HPTSEC(25) - HPTSEC(24)
+            NWRD2L= HPTSEC(49) - HPTSEC(48)
+          ELSE
+            NWRD1L= HPTSEC(JSEC   ) - HPTSEC(JSEC- 1)
+            NWRD2L= HPTSEC(JSEC+24) - HPTSEC(JSEC+23)
+          CIF
+N         # OF WORDS IN RGHT ADJ SECT
+          IF JSEC.EQ.24
+          THEN
+            NWRD1R= HPTSEC( 2) - HPTSEC( 1)
+            NWRD2R= HPTSEC(26) - HPTSEC(25)
+          ELSE
+            NWRD1R= HPTSEC(JSEC+ 2) - HPTSEC(JSEC+ 1)
+            NWRD2R= HPTSEC(JSEC+26) - HPTSEC(JSEC+25)
+          CIF
+N         CHECK IF MORE THAN 12 HITS
+          IF NWRD1+NWRD1L.GE.LWRDC1 .OR. NWRD1+NWRD1R.GE.LWRDC1
+          THEN
+N           CHECK IF .GT. 10 HITS IN CORRSP SECT
+            IF NWRD2L+NWRD2.GE.LWRDC2 .OR. NWRD2R+NWRD2.GE.LWRDC2
+            THEN
+N             COLLECT ALL Z IN RING 1 + 2
+              PERFORM ZCOL12
+N             FILL HISTOGRAM
+              PERFORM HSTFLL
+            CIF
+          CIF
+        CIF
+      JSEC = JSEC + 1
+      UNTIL JSEC.GT.24
+C
+      CALL MVC(HTEMP(1),0,HIST(1),0,200)
+      PERFORM HEVAL
+C
+      CIF
+      CPROC
+C
+N     *************************
+N     *      Z C O L 1 2      *
+N     *************************
+C
+N     ****  COLLECT ALL Z IN RING 1 + 2  *****
+      PROC ZCOL12
+C
+N       ZERO HIT COUNTERS FOR EACH LAYER
+        FOR ILAYR=1,16
+          NZ1(ILAYR) = 0
+          NZ2(ILAYR) = 0
+        CFOR
+N       DRIFT SPACE BINS
+        DSBIN1 = TIMDEL(1,1)
+        DSBIN2 = TIMDEL(2,1)
+N       SET POINTERS OF SC1
+        IPT0 = HPTSEC(JSEC)
+        IPT9 = HPTSEC(JSEC+1) - 1
+N       LOOP OVER ALL HITS IN SC1
+        FOR IPT = IPT0,IPT9,4
+N         SET WIRE #
+          IWIRE = HDATA(IPT)
+          IWIRE = SHFTR(IWIRE,3)
+          ILAYR = LAND(IWIRE,MKLAYR) + 1
+N         STORE HIT
+          IAMPL = HDATA(IPT+1)
+          IAMPR = HDATA(IPT+2)
+          IF IAMPL.GT.0 .AND. IAMPR.GT.0
+          THEN
+            IZ1 = (IZCON * (IAMPR-IAMPL)) / (IAMPR+IAMPL)
+N           CHECK IF Z INSIDE ID
+            IF IABS(IZ1).LT.IZMAX
+            THEN
+              NZ1(ILAYR) = NZ1(ILAYR) + 1
+              IHIT = NZ1(ILAYR)
+              HZ1(IHIT,ILAYR) = IZ1
+N             FI ANGLE
+              IF(ILAYR.GT.8) DSBIN1 = DSBIN2
+              DRLAY = (ILAYR-1) * RINCR(1)
+              FI1(IHIT,ILAYR) = HDATA(IPT+3)*DSBIN1 / (FSENSW(1)+DRLAY)
+            CIF
+          CIF
+        CFOR
+N       LOOP OVER ADJACENT SECTORS
+        JSECA=1
+        REPEAT
+          JSEC2 = JSEC + JSECA + 22
+          IF(JSEC2.LT.25) JSEC2 = 48
+          IF(JSEC2.GT.48) JSEC2 = 25
+N         SET POINTERS OF SC2
+          IPT0 = HPTSEC(JSEC2)
+          IPT9 = HPTSEC(JSEC2+1) - 1
+          IF IPT9.GT.IPT0
+          THEN
+N           DRIFT SPACE BINS
+            DSBIN1 = TIMDEL(1,2)
+            DSBIN2 = TIMDEL(2,2)
+N           LOOP OVER ALL HITS IN SC1
+            FOR IPT = IPT0,IPT9,4
+N             SET WIRE #
+              IWIRE = HDATA(IPT)
+              IWIRE = SHFTR(IWIRE,3)
+              ILAYR = LAND(IWIRE,MKLAYR) + 1
+N             STORE HIT
+              IAMPL = HDATA(IPT+1)
+              IAMPR = HDATA(IPT+2)
+              IF IAMPL.GT.0 .AND. IAMPR.GT.0
+              THEN
+                IZ2 = (IZCON * (IAMPR-IAMPL)) / (IAMPR+IAMPL)
+N               CHECK IF Z INSIDE ID
+                IF IABS(IZ2).LT.IZMAX
+                THEN
+                  NZ2(ILAYR) = NZ2(ILAYR) + 1
+                  IHIT = NZ2(ILAYR)
+                  HZ2(IHIT,ILAYR) = IZ2
+N                 FI ANGLE
+                  IF(ILAYR.GT.8) DSBIN1 = DSBIN2
+                  DS = HDATA(IPT+3)*DSBIN1
+                  IF(JSECA.NE.2)
+     ?                     DS = DSMAX(ILAYR,2,1)+DSMAX(ILAYR,2,2) - DS
+                  DRLAY = (ILAYR-1) * RINCR(2)
+                  FI2(IHIT,ILAYR) = DS / (FSENSW(2)+DRLAY)
+                CIF
+              CIF
+            CFOR
+          CIF
+        JSECA = JSECA + 1
+        UNTIL JSECA.GT.3
+C
+      CPROC
+C
+N     *************************
+N     *      Z V T X 2 3      *
+N     *************************
+C
+N     DETERMINE ZVTX FROM R2 + R3
+      PROC ZVTX23
+C
+N     INITIALIZE HISTOGRAM
+      BINZIV = .5 / BINZ
+      PAR1 = FSENSW(2) / (FSENSW(3) - FSENSW(2))
+      PAR2 =  RINCR(2) / (FSENSW(3) - FSENSW(2))
+      HUFLO = 0
+      HOFLO = 0
+      MAXZ = 0
+      NBACK = 0
+N     ZERO HISTOGRAM
+      CALL SETS (HIST(1),0,200,0)
+      CALL SETSL(FI1(1,1),0,1024,0)
+C
+N     CHECK IF AT LEAST 10 HITS IN 3. RING
+      IF HPTSEC(97)-HPTSEC(49) .LT. NWRDR1
+      THEN
+        IZRSLT(6) = -2
+        INDLB = 1
+        PRINT 2911, HPTSEC(49),HPTSEC(97),NWRDR1
+ 2911   FORMAT(' REJECT -2',10I6)
+      ELSE
+C
+N
+N     LOOP OVER ALL SECTORS(RING1): ICLL = SECTOR NUMBER + 1
+      ICLL=49
+      REPEAT
+N       # OF WORDS IN SECT
+        NWRD1 = HPTSEC(ICLL+1) - HPTSEC(ICLL)
+N       CHECK IF MORE THAN 1 HIT
+        IF NWRD1.GE.LWRDC0
+        THEN
+N         # OF WORDS IN LEFT ADJ SECT
+          IF ICLL.EQ.49
+          THEN
+            NWRD1L= HPTSEC(97) - HPTSEC(96)
+          ELSE
+            NWRD1L= HPTSEC(ICLL   ) - HPTSEC(ICLL- 1)
+          CIF
+N         # OF WORDS IN RGHT ADJ SECT
+          IF ICLL.EQ.96
+          THEN
+            NWRD1R= HPTSEC(50) - HPTSEC(49)
+          ELSE
+            NWRD1R= HPTSEC(ICLL+ 2) - HPTSEC(ICLL+ 1)
+          CIF
+N         CHECK IF MORE THAN 12 HITS
+          IF NWRD1+NWRD1L.GE.LWRDC1 .OR. NWRD1+NWRD1R.GE.LWRDC1
+          THEN
+N           CHECK IF .GT. 10 HITS IN CORRSP SECT
+            IF ICLL.EQ.49 .OR. ICLL.EQ.96
+            THEN
+              NWRD2 = HPTSEC(25)-HPTSEC(24) + HPTSEC(49)-HPTSEC(48)
+            ELSE
+              ICLL2L = ICLL/2
+              NWRD2 = HPTSEC(ICLL2L+2) - HPTSEC(ICLL2L)
+            CIF
+            IF NWRD2.GE.LWRDC2
+            THEN
+N             COLLECT ALL Z IN RING 1 + 2
+      PRINT 2912, ICLL,ICLL2L,NWRD1,NWRD1R,NWRD1L,NWRD2
+ 2912 FORMAT(' PERFORM ZCOL23',10I6)
+              PERFORM ZCOL23
+N             FILL HISTOGRAM
+              PERFORM HSTFLL
+            CIF
+          CIF
+        CIF
+      ICLL = ICLL + 1
+      UNTIL ICLL.GT.96
+C
+      CALL MVC(HTEMP(1),0,HIST(1),0,200)
+      PERFORM HEVAL
+C
+      CIF
+      CPROC
+C
+N     *************************
+N     *      Z C O L 2 3      *
+N     *************************
+C
+C
+N     ****  COLLECT ALL Z IN RING 2 + 3  *****
+      PROC ZCOL23
+C
+N       ZERO HIT COUNTERS FOR EACH LAYER
+        FOR ILAYR=1,16
+          NZ1(ILAYR) = 0
+          NZ2(ILAYR) = 0
+        CFOR
+N       DRIFT SPACE BINS
+N       SET POINTERS OF SC1
+        IPT0 = HPTSEC(ICLL)
+        IPT9 = HPTSEC(ICLL+1) - 1
+N       LOOP OVER ALL HITS IN SC1
+        FOR IPT = IPT0,IPT9,4
+N         SET WIRE #
+          IWIRE = HDATA(IPT)
+          IWIRE = SHFTR(IWIRE,3)
+          ILAYR = LAND(IWIRE,MKLAYR) + 1
+N         STORE HIT
+          IAMPL = HDATA(IPT+1)
+          IAMPR = HDATA(IPT+2)
+          IF IAMPL.GT.0 .AND. IAMPR.GT.0
+          THEN
+            IZ1 = (IZCON * (IAMPR-IAMPL)) / (IAMPR+IAMPL)
+N           CHECK IF Z INSIDE ID
+            IF IABS(IZ1).LT.IZMAX
+            THEN
+              NZ2(ILAYR) = NZ2(ILAYR) + 1
+              IHIT = NZ2(ILAYR)
+              HZ2(IHIT,ILAYR) = IZ1
+            CIF
+          CIF
+        CFOR
+N       LOOP OVER ADJACENT SECTORS
+        ICLLA=0
+        REPEAT
+          ICLL2 = ICLL/2 + ICLLA
+          IF(ICLL2.LT.25) ICLL2 = 48
+          IF(ICLL2.GT.48) ICLL2 = 25
+N         SET POINTERS OF SC2
+          IPT0 = HPTSEC(ICLL2)
+          IPT9 = HPTSEC(ICLL2+1) - 1
+          IF IPT9.GT.IPT0
+          THEN
+N           LOOP OVER ALL HITS IN SC1
+            FOR IPT = IPT0,IPT9,4
+N             SET WIRE #
+              IWIRE = HDATA(IPT)
+              IWIRE = SHFTR(IWIRE,3)
+              ILAYR = LAND(IWIRE,MKLAYR) + 1
+N             STORE HIT
+              IAMPL = HDATA(IPT+1)
+              IAMPR = HDATA(IPT+2)
+              IF IAMPL.GT.0 .AND. IAMPR.GT.0
+              THEN
+                IZ1 = (IZCON * (IAMPR-IAMPL)) / (IAMPR+IAMPL)
+N               CHECK IF Z INSIDE ID
+                IF IABS(IZ1).LT.IZMAX
+                THEN
+                  NZ1(ILAYR) = NZ1(ILAYR) + 1
+                  IHIT = NZ1(ILAYR)
+                  HZ1(IHIT,ILAYR) = IZ1
+                CIF
+              CIF
+            CFOR
+          CIF
+        ICLLA = ICLLA + 1
+        UNTIL ICLLA.GT.1
+C
+      CPROC
+C
+N     *************************
+N     *      H S T F L L      *
+N     *************************
+C
+N     FILL HISTOGRAM
+      PROC HSTFLL
+N       LOOP OVER ALL LAYERS
+        FOR ILAYR=1,16
+          MZ1 = NZ1(ILAYR)
+          MZ2 = NZ2(ILAYR)
+N         CHECK IF HITS
+          IF MZ1.GT.0 .AND. MZ2.GT.0
+          THEN
+N           CALC. COMMON FACTOR
+            FACT = (ILAYR-1)*PAR2 + PAR1
+N           LOOP OVER HITS(SC1)
+            FOR IHIT1=1,MZ1
+              Z1 = HZ1(IHIT1,ILAYR)
+              FI01 = FI1(IHIT1,ILAYR)
+N             LOOP OVER HITS(SC2)
+              FOR IHIT2=1,MZ2
+N               MOMENTUM CUT (DFI .LT. DFIMAX)
+                DFI = ABS(FI01 - FI2(IHIT2,ILAYR))
+                IF DFI.LT.DFIMX0
+                THEN
+                  Z2 = HZ2(IHIT2,ILAYR)
+N                 Z(VERTEX)
+                  ZV = Z1 - (Z2-Z1)*FACT
+N                 CALC. HIST. INDEX + PLOT
+                  IZV = (ZV-ZLOW) * BINZIV + 1
+                  IF IZV.GT.0 .AND. IZV.LE.100
+                  THEN
+                    HIST(IZV) = HIST(IZV) + 1
+                  ELSE
+                    IF(IZV.LE.  0) HUFLO = HUFLO + 1
+                    IF(IZV.GT.NBINZ) HOFLO = HOFLO + 1
+                  CIF
+                CIF
+              CFOR
+            CFOR
+          CIF
+        CFOR
+      CPROC
+C
+N     *****  H I S T. E V A L U A T I O N  *****
+      PROC HEVAL
+      IZCNT=0
+      ICODE=0
+      ZPREV=-1000000.
+      PRINT 2904, LBZVDF,ZLOW,  BINZ,  NBINZ,
+     ,            NWRDR1,LWRDC0,LWRDC1,LWRDC2,
+     ,            IDZ1LM,IDZ2LM,NPKMIN,SBRAT,DFIMX0
+2904  FORMAT('0PARAMETERS:',I6,2F6.0,8I6,F6.2,F6.3)
+      WHILE IZCNT.LT.5
+      PRINT 2001, HTEMP
+ 2001 FORMAT('0HIST:',50I2,/,6X,50I2)
+N       FIND BIN WITH MAX.CONTENT
+        MAXHST = 0
+        NHIST1 = 0
+        FOR IHIST = 1,NBINZ
+          NHIST1 = NHIST1 + HTEMP(IHIST)
+          IF(HTEMP(IHIST).GT.MAXHST) MAXHST =HTEMP(IHIST)
+        CFOR
+        MAXZ = MAXHST
+N       FIND PEAK
+        NPEAK = 0
+        IH9 = NBINZ-11
+        FOR IH=7,IH9
+       IHSUM = HTEMP(IH)+HTEMP(IH+1)+HTEMP(IH+2)+HTEMP(IH+3)+HTEMP(IH+4)
+          IF IHSUM.GT.NPEAK
+          THEN
+N           MEMORIZE PEAK
+            NPEAK = IHSUM
+            HPEAK = IH
+          CIF
+        CFOR
+        IF NPEAK.EQ.0
+        THEN
+        XWHILE
+        CIF
+        PEAK = NPEAK
+          H1 = HPEAK - 7
+          H2 = HPEAK + 7
+       NBACK = HIST(H1  )+HIST(H1+1)+HIST(H1+2)+HIST(H1+3)+HIST(H1+4)
+     +       + HIST(H2  )+HIST(H2+1)+HIST(H2+2)+HIST(H2+3)+HIST(H2+4)
+          BACK = .5 * NBACK
+C
+N         CALC. ACCURATE PEAK POS.
+          ZV = HTEMP(HPEAK+1)   +HTEMP(HPEAK+2)*2
+     +        +HTEMP(HPEAK+3)*3 +HTEMP(HPEAK+4)*4
+          ZV = ZV / PEAK
+          ZVTX      = (HPEAK+ZV-.5)/BINZIV + ZLOW
+          DZ =HTEMP(HPEAK  )*(ZV   )**2 +HTEMP(HPEAK+1)*(ZV-1.)**2
+     +       +HTEMP(HPEAK+2)*(ZV-2.)**2 +HTEMP(HPEAK+3)*(ZV-3.)**2
+     +       +HTEMP(HPEAK+4)*(ZV-4.)**2
+          IF(NPEAK.GT.NPKMIN) ICODE=ICODE+1
+          SGN  = (PEAK - BACK)**2
+          DSGN = BACK*.5 + PEAK
+          IF(SGN/DSGN.GE.SBRAT .AND. NPEAK.GT.2) ICODE=ICODE+2
+      PRINT 2002, HPEAK,ZVTX,PEAK,BACK,SGN,DSGN,ICODE
+ 2002 FORMAT('0PEAK:',I6,5F8.2,I3)
+          IF ICODE.GE.IZRSLT(6)
+          THEN
+          IF ICODE.EQ.IZRSLT(6).AND.ABS(ZVTX).GT.ABS(ZPREV)
+          THEN
+          XWHILE
+          CIF
+          IZCNT=IZCNT+1
+          SCPEAK = BACK * .2
+          HTEMP(HPEAK  )=SCPEAK
+          HTEMP(HPEAK+1)=SCPEAK
+          HTEMP(HPEAK+2)=SCPEAK
+          HTEMP(HPEAK+3)=SCPEAK
+          HTEMP(HPEAK+4)=SCPEAK
+          FZRSLT(2) = DZ / (BINZIV**2 * PEAK)
+          FZRSLT(3) = FZRSLT(2) / PEAK
+          FZRSLT(2) = SQRT(FZRSLT(2))
+          FZRSLT(3) = SQRT(FZRSLT(3))
+          FZRSLT(4) = PEAK
+          FZRSLT(5) = BACK
+          FZRSLT(1) = ZVTX
+          IND = ABS(ZVTX)*.01 + 1.
+          IF(IND.GT.4) IND = 4
+          IF(IZRSLT(6).EQ.1) IND = IND + 4
+          INDLB = IND + 2
+      ZPREV=ZVTX
+      IZRSLT(6)=ICODE
+      ICODE=0
+      ELSE
+      XWHILE
+        CIF
+      CWHILE
+      CPROC
+C
+      END
+C
+      SUBROUTINE INITZV
+C
+C     INITIALIZATION OF ZVERT LIMITS
+#include "czvpar.for"
+C
+N     INITIALIZE DEFAULT PARAMETERS
+N       SET DEFAULT LABEL TO 1
+        LBZVDF = 1
+N       HISTOGR. PARAMETERS
+        ZLOW = -3500.
+        BINZ = 70.
+        NBINZ = 100
+N       MIN. (NUMBER OF HITS)*4  IN RING 1
+        NWRDR1 = 24
+N       MIN. (NUMBER OF HITS)*4  IN SELECTED CELLS
+        LWRDC0 = 8
+N       MIN. (NUMBER OF HITS)*4  IN ADJ. CELLS OF R1
+        LWRDC1 = 16
+N       MIN. (NUMBER OF HITS)*4  IN ADJ. CELLS OF R2
+        LWRDC2 = 16
+N       LIMITS FOR TOO CLOSE HITS IN RING 1 + 2
+        IDZ1LM = 80
+        IDZ2LM = 140
+N       MINIMUM PEAK HEIGHT
+        NPKMIN = 8
+N       MIN.: ((PEAK-BACK) / SIGMA)**2
+        SBRAT  = 6.25
+N       MAX. FI INCLINATION: P > 1GEV
+        DFIMAX = .1
+C
+      RETURN
+      END

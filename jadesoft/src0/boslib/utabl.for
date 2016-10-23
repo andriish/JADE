@@ -1,0 +1,29 @@
+C   07/06/96 606071917  MEMBER NAME  UTABL    (S4)          FORTG1
+      SUBROUTINE UTABL(KA,I,J)
+      COMMON/BCS/IW(1)
+      INTEGER NC/0/
+      INTEGER*2 NH(2),NCH(2)
+      EQUIVALENCE (NH(1),NW),(NC,NCH(1))
+      IF(KA.LE.0) GOTO 100
+      IF(I.LT.0.OR.I.GT.255) GOTO 100
+      IF(J.LT.0.OR.J.GT.15) GOTO 100
+C
+      II=I/16
+      IJ=I-II*16
+      JJ=J/2
+      JI=J-JJ*2+1
+      NC=KA*16+II
+   10 CALL BLOC(IND,'TAB*',NC,&200)
+C
+      IND=IND+IJ*8+JJ+1
+      NW=IW(IND)
+      NCH(2)=NH(JI)
+      NC=NC+1
+      IF(NCH(2).EQ.0) GOTO 100
+      NH(JI)=NCH(2)
+      IW(IND)=NW
+  100 RETURN
+  200 CALL BCRE(IND,'TAB*',NC,128,&100,IER)
+      IF(IER.NE.0) GOTO 100
+      GOTO 10
+      END

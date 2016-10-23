@@ -1,0 +1,837 @@
+      SUBROUTINE BACKTR
+      IMPLICIT INTEGER*2 (H)
+C-----------------------------------------------------------------------
+C                            MACRO CJDRCH .... JET CHAMBER CONSTANTS.
+C-----------------------------------------------------------------------
+C
+      COMMON / CJDRCH / RDEC(4),PSIIN(3),RINCR(3),FIRSTW(3),FSENSW(3),
+     +                  RDEPTH,SWDEPL,YSUSPN,TIMDEL(2,3),ZMAX,ZOFFS,
+     +                  ZRESOL,ZNORM,ZAL,ZSCAL,DRIDEV,DRICOS,DRISIN,
+     +                  PEDES,TZERO(3),DRIROT(96,2),SINDRI(96,2),
+     +                  COSDRI(96,2),DRIVEL(96,2),T0FIX(3),
+     +                  ABERR(8), DUMJDC(20)
+C
+C      BLOCK DATA SET TO MC VALUES, KALIBR WILL SET REAL DATA VALUES
+C--->  A CHANGE OF THIS COMMON MUST BE DONE SIMULTANEOUSLY WITH  <----
+C--->  A CHANGE OF THE BLOCK DATA                                <----
+C
+C--------------------------- END OF MACRO CJDRCH -----------------------
+C
+C   30/10/79 910301050  MEMBER NAME  CWORKMX  (PATRECSR)    FORTRAN
+C   16/09/79 C9092001   MEMBER NAME  CWORKMX  (UKSOR)       FORTRAN
+C ==========MACRO CWORKMG =============================
+      EQUIVALENCE (ADWRK(291),HUSE(1)),(ADWRK(391),K),
+     * (ADWRK(392),ICL),(ADWRK(393),LRING),(ADWRK(394),KRING),
+     * (ADWRK(395),LR),(ADWRK(396),IRIFLG),(ADWRK(397),IUDFLG),
+     * (ADWRK(398),ILIM),(ADWRK(399),LR1),(ADWRK(400),IRL),
+     * (ADWRK(401),ITK(1,1)),(ADWRK(441),DTEMP(1)),
+     * (ADWRK(451),IPST),(ADWRK(452),IJFLG),(ADWRK(453),ICX),
+     * (ADWRK(454),KT),(ADWRK(455),ISDL),(ADWRK(456),IBFIT),
+     * (ADWRK(457),ISP),(ADWRK(458),ISKP(1)),(ADWRK(468),HSP1(1)),
+     * (ADWRK(478),ITOL),(ADWRK(479),IW),(ADWRK(480),A),
+     * (ADWRK(481),DS),(ADWRK(482),IWT),(ADWRK(483),ICT),
+     * (ADWRK(484),IKX),(ADWRK(485),LRCORN)
+      DIMENSION HUSE(200),DTEMP(10),ITK(10,4),ISKP(10),HSP1(20)
+      EQUIVALENCE (ILOUT,IBKK(3)),(ILIN,IBKK(4)),
+     * (ILBOT,IBKK(8)),(DCELL,BKK(9))
+C ==========ENDMACRO CWORKMG==========================
+C----------------------------------------------------------------------
+C           MACRO CDSMAX .... PATTERN RECOGNITION CONSTANTS.
+C----------------------------------------------------------------------
+      COMMON/CDSMAX/DSMAX(16,3,2),DIRWR1(24,2),DIRWR3(48,2)
+     *             ,DHALF(16,3,2),DTWICE(16,3,2),HMCH(16,3,2)
+     *             ,IBCK(9),DBCK(30),TRMATS(96,2),TRMATC(96,2)
+C------------------------ END OF MACRO CDSMAX -------------------------
+C----------------------------------------------
+C  MACRO CWORKPR .... PATTERN RECOGNITION CWORK
+C----------------------------------------------
+      COMMON /CWORK/ HPLAST,HPFREE,HPWRK(30),ADWRK(600),
+     ,               HPRO,HNTR,HNTCEL(98),IPCL(200),NRHT(200),
+     ,               NWR1(200),DS1(200),SL1(200),
+     ,               NWR2(200),DS2(200),SL2(200),
+     ,               LBL(200),NTREL(200),ICRO(200),
+     ,               NTR,HNREL(100),HISTR(9,100),HRES(168),
+     ,               NTRLM,RLMTR(3,5),
+     ,               WRK(7000)
+                     DIMENSION TRKAR(200,11),ITRKAR(200,11),
+     ,                         LMRTR(3,5)
+                     EQUIVALENCE (IPCL(1),TRKAR(1,1),ITRKAR(1,1))
+                     EQUIVALENCE (LMRTR(1,1),RLMTR(1,1))
+         DIMENSION IWRK(7000),HWRK(14000),IDWRK(600),HDWRK(1200)
+                     EQUIVALENCE (IWRK(1),WRK(1),HWRK(1))
+                     EQUIVALENCE (IDWRK(1),ADWRK(1),HDWRK(1))
+C---------- END OF MACRO CWORKPR --------------
+C------------------------------------------
+C  MACRO CLBPGM ....
+C------------------------------------------
+      COMMON /CLBPGM/ LBPGM(30)
+C--------- END OF MACRO CLBPGM ------------
+C----------------------------------------------
+C  MACRO CPATLM .... PATTERN RECOGNITION LIMITS
+C----------------------------------------------
+      COMMON /CPATLM/ PATRLM(5),FLINLM(10),TRELLM(20),ZFITLM(10),BKK(20)
+     *               ,XYF(20),IGFP(20),XBKK(40),IADMIN(5),YBKK(20)
+      INTEGER IXYF(20),LMPATR(5),LMFLIN(10)
+      INTEGER LMTREL(20),LMZFIT(10),IBKK(20)
+      DIMENSION GFP(20),IXBKK(40),IYBKK(20)
+      EQUIVALENCE (PATRLM(1),LMPATR(1)),(IXBKK(1),XBKK(1)),(IYBKK(1),
+     *YBKK(1))   ,(FLINLM(1),LMFLIN(1)),(TRELLM(1),LMTREL(1))
+     *           ,(ZFITLM(1),LMZFIT(1)),(BKK(1),IBKK(1))
+     *           ,(XYF(1),IXYF(1)),(GFP(1),IGFP(1)),(IADMIN(1),IMCERT)
+     *           ,(IYBKK(20),IPPASS),(IADMIN(2),IPFAST)
+C----------- END OF MACRO CPATLM --------------
+      DIMENSION HORD(200),HTEMP(10)
+      DIMENSION LSTCL(3),LFTCL(3),NCELL(3),TANDEL(3)
+      EQUIVALENCE (IBCK(1),LSTCL(1)),(IBCK(4),LFTCL(1))
+      EQUIVALENCE (IBCK(7),NCELL(1)),(DBCK(1),TANDEL(1))
+      EQUIVALENCE (ADWRK(486),HTEMP(1)),(ADWRK(491),HORD(1))
+      DATA HPST/'PS'/
+      DATA MSKCR1,MSKCR2,MSKZEN /Z100,Z200,Z80/,MSKERA/ZFFFFBFFF/
+      DATA MSKLR0/Z1000/,MSKKIL/Z20000/,MSKLRA/ZFFFFEFFF/
+      DATA MSKDSP,MSKERR,MSKSKP/Z2000,Z4000,Z8000/
+      LBPGM(10)=1
+      IF(HNTR.LE.0.OR.HPRO.NE.HPST) RETURN
+      DO 13000 I=1,HNTR
+      HORD(I)=I
+13000 CONTINUE
+13001 CONTINUE
+      IF(
+     - HNTR.GT.1
+     -)THEN
+      INR=HNTR-1
+      DO 13002 IBK=1,INR
+      IBC=IBK+1
+      IF(
+     - IPCL(IBK).EQ.IPCL(IBC)
+     -)THEN
+      IF(
+     - NWR2(IBK).GT.NWR2(IBC).AND.NWR1(IBK).GT.NWR1(IBC)
+     -)THEN
+      TEMP=HORD(IBK)
+      HORD(IBK)=HORD(IBC)
+      HORD(IBC)=TEMP
+      ENDIF
+      ENDIF
+13002 CONTINUE
+13003 CONTINUE
+      ENDIF
+      IBFIT=0
+      ISP=0
+      ITOL1=2
+      IS=0
+      ZERO=0
+      CALL SETSL(HUSE(1),0,400,ZERO)
+      CALL SETSL(NTR,0,2004,ZERO)
+      DO 13004 I=1,HNTR
+      IF(LAND(LBL(I),MSKKIL).NE.0) HUSE(I)=1
+13004 CONTINUE
+13005 CONTINUE
+      DO 13006 ITRL=1,HNTR
+      K=HNTR-ITRL+1
+      K=HORD(K)
+      IF(
+     - HUSE(K).EQ.0
+     -)THEN
+      IF(
+     - NTR.LT.100
+     -)THEN
+      ICNT = 0
+      ICL=IPCL(K)
+      IJFLG=0
+      LRING=1
+      ITOL=1
+      IF(ICL.GT.NCELL(1)) LRING=2
+      IF(ICL.GT.NCELL(2)+NCELL(1)) LRING=3
+      IF(
+     - LRING.LE.ITOL1
+     -)THEN
+      IF(
+     - IS.GT.0
+     -)THEN
+      ITOL=2
+      INTR=NTR
+      IIK=K
+      ITOL1=ITOL1-1
+      ILRNG=LRING
+      IS1=IS
+      IS=0
+      DO 13008 IU=1,IS1
+      NTR=HSP1(IU)
+      K=HISTR(HNREL(NTR),NTR)
+      LR=1
+      IF(K.LT.0) LR=-1
+      K=IABS(K)
+      LBL(K)=LAND(LBL(K),MSKERA)
+      ICL=IPCL(K)
+      LRING=1
+      IF(ICL.GT.NCELL(1)) LRING=2
+      IF(ICL.GT.NCELL(2)+NCELL(1)) LRING=3
+      KRING=LRING
+      IPST=1
+      IJFLG=0
+      ITMP=HISTR(1,NTR)
+      ITMP=IABS(ITMP)
+      ITMP=IPCL(ITMP)
+      IF(ICL.NE.ITMP) IPST=0
+      IF(
+     - LAND(LBL(K),MSKLR0).NE.0
+     -)THEN
+      ITMP=HNREL(NTR)
+      DO 13010 IX=1,ITMP
+      IJ=HISTR(IX,NTR)
+      IJ=IABS(IJ)
+      LBL(IJ)=LAND(LBL(IJ),MSKLRA)
+13010 CONTINUE
+13011 CONTINUE
+      IF(
+     - ITMP.EQ.1
+     -)THEN
+      LR=0
+      ELSE
+      IJFLG=1
+      ENDIF
+      ENDIF
+      ASSIGN 17001 TO IZZZ01
+      GOTO 17000
+17001 CONTINUE
+13008 CONTINUE
+13009 CONTINUE
+      NTR=INTR
+      ICNT=0
+      IJFLG=0
+      ITOL=1
+      K=IIK
+      LRING=ILRNG
+      ENDIF
+      ENDIF
+      IF(
+     - HUSE(K).EQ.0
+     -)THEN
+      ICL=IPCL(K)
+      KRING=LRING
+      NTR = NTR + 1
+      IKX=K
+      CALL LFRT(LR2)
+      LR=LR2
+      IF(LR.EQ.0) LR=1
+      CALL BSTORE
+      LR=LR2
+      ASSIGN 17002 TO IZZZ01
+      GOTO 17000
+17002 CONTINUE
+      ENDIF
+      ENDIF
+      ENDIF
+13006 CONTINUE
+13007 CONTINUE
+      DO 13012 KTR=1,NTR
+      ITMP=HNREL(KTR)
+      ASSIGN 17004 TO IZZZ02
+      GOTO 17003
+17004 CONTINUE
+      IF(KMP1.EQ.KMP2) LBL(ITKEL)=LOR(LBL(ITKEL),MSKLR0)
+      IF(KMP1.EQ.KMP2) LBL(ITKEL1)=LOR(LBL(ITKEL1),MSKLR0)
+      DO 13014 MG=1,ITMP
+      JK=HISTR(MG,KTR)
+      IKX=IABS(JK)
+      CALL LFRT(LR2)
+      IF(
+     - JK*LR2.LT.0
+     -)THEN
+      IF(
+     - IBKK(20).NE.0.AND.NRHT(IKX).GE.IBKK(19)
+     -)THEN
+      ELSE
+      LBL(IKX)=LOR(LBL(IKX),MSKDSP)
+      ENDIF
+      ENDIF
+13014 CONTINUE
+13015 CONTINUE
+13012 CONTINUE
+13013 CONTINUE
+      IF(
+     - NTR.GT.1
+     -)THEN
+      DO 13016 KTR=1,NTR
+      ASSIGN 17005 TO IZZZ02
+      GOTO 17003
+17005 CONTINUE
+      IR1=1
+      IR2=1
+      IF(KMP1.GT.NCELL(1)) IR1=2
+      IF(KMP1.GT.NCELL(1)+NCELL(2)) IR1=3
+      IF(KMP2.GT.NCELL(1)) IR2=2
+      IF(KMP2.GT.NCELL(1)+NCELL(2)) IR2=3
+      IF(IR2.EQ.1.AND.IR1.EQ.3.AND.LAND(MSKSKP,LBL(ITKEL)).EQ.0)
+     *  HORD(KTR)=1
+      IF(IR2.EQ.1.AND.IR1.EQ.2) HORD(KTR)=6
+      IF(LAND(MSKSKP,LBL(ITKEL)).NE.0) HORD(KTR)=2
+      IF(IR2.EQ.2.AND.IR1.EQ.3) HORD(KTR)=3
+      IF(
+     - IR1.EQ.IR2
+     -)THEN
+      IF(IR1.EQ.3) HORD(KTR)=5
+      IF(IR1.EQ.2) HORD(KTR)=4
+      IF(IR1.EQ.1) HORD(KTR)=7
+      ENDIF
+13016 CONTINUE
+13017 CONTINUE
+      INR=NTR-1
+      DO 13018 IBK=1,INR
+      IUP=IBK+1
+      DO 13020 IBC=IUP,NTR
+      IF(
+     - HORD(IBC).LT.HORD(IBK)
+     -)THEN
+      CALL MVC2(HTEMP(1),0,HISTR(1,IBC),0,18) !PMF 28/06/99 MVC -> MVC2
+      CALL MVC2(HISTR(1,IBC),0,HISTR(1,IBK),0,18)!PMF 28/06/99 MVC -> MVC2
+      CALL MVC2(HISTR(1,IBK),0,HTEMP(1),0,18) !PMF 28/06/99 MVC -> MVC2
+      TEMP=HNREL(IBC)
+      HNREL(IBC)=HNREL(IBK)
+      HNREL(IBK)=TEMP
+      TEMP=HORD(IBC)
+      HORD(IBC)=HORD(IBK)
+      HORD(IBK)=TEMP
+      ENDIF
+13020 CONTINUE
+13021 CONTINUE
+13018 CONTINUE
+13019 CONTINUE
+      IF(
+     - IYBKK(11).NE.0
+     -)THEN
+      HPFRE0=HPFREE
+      IMOSS=99
+      CALL BAKPAK(IMOSS)
+      HPFREE=HPFRE0
+      ENDIF
+      IF(
+     - IYBKK(15).NE.0
+     -)THEN
+      HPFRE0=HPFREE
+      IMOSS=0
+      CALL BAKPAK(IMOSS)
+      HPFREE=HPFRE0
+      ENDIF
+      IP0=0
+      DO 13022 I=1,100
+      IF(
+     - HNREL(I).EQ.0
+     -)THEN
+      IP0=I
+      GOTO 13023
+      ENDIF
+13022 CONTINUE
+13023 CONTINUE
+      IF(
+     - IP0.NE.0
+     -)THEN
+      DO 13024 I=1,100
+      IF(
+     - IP0.LT.I
+     -)THEN
+      IF(
+     - HNREL(I).NE.0
+     -)THEN
+      HNREL(IP0)=HNREL(I)
+      HNREL(I)=0
+      DO 13026 J=1,9
+      HISTR(J,IP0)=HISTR(J,I)
+      HISTR(J,I)=0
+13026 CONTINUE
+13027 CONTINUE
+      IP0=IP0+1
+      ENDIF
+      ENDIF
+13024 CONTINUE
+13025 CONTINUE
+      ENDIF
+      ICOUNT=0
+      DO 13028 I=1,100
+      IF(HNREL(I).NE.0) ICOUNT=ICOUNT+1
+13028 CONTINUE
+13029 CONTINUE
+      NTR=ICOUNT
+      ENDIF
+      RETURN
+17000 CONTINUE
+      ASSIGN 17007 TO IZZZ03
+      GOTO 17006
+17007 CONTINUE
+      IF(
+     - KRING.GT.0.AND.IRIFLG.NE.0
+     -)THEN
+      ASSIGN 17008 TO IZZZ03
+      GOTO 17006
+17008 CONTINUE
+      IF(
+     - KRING.GT.0.AND.IRIFLG.NE.0
+     -)THEN
+      ASSIGN 17009 TO IZZZ03
+      GOTO 17006
+17009 CONTINUE
+      ENDIF
+      ENDIF
+      GOTO IZZZ01
+17006 CONTINUE
+      ICNT = ICNT + 1
+      IF(
+     - ICNT.EQ.1.AND.ITOL.EQ.1
+     -)THEN
+      IUDFLG=3
+      ILIM=ILOUT
+      KY=K
+      ICY=ICL
+      IDUM=0
+15000 CONTINUE
+      IF(
+     - IDUM.EQ.0
+     -)THEN
+      ISTREL=HNREL(NTR)+1
+      CALL BSIDE
+      IF(
+     - IRIFLG.NE.1
+     -)THEN
+      GOTO 15001
+      ENDIF
+      INTFLG=0
+      IF(
+     - HNTCEL(ICX+1)-HNTCEL(ICX).GT.1
+     -)THEN
+      NTRLX1=HNTCEL(ICX)
+      NTRLX2=HNTCEL(ICX+1)-1
+      IBFIT=-2
+      DO 13030 KK=NTRLX1,NTRLX2
+      IF(
+     - HUSE(KK).EQ.0
+     -)THEN
+      IW=NWR1(KK)
+      IF(
+     - IW.GE.ILBOT
+     -)THEN
+      CALL  INTJN1(KK,KT,INTFLG,DT)
+      IF(
+     - INTFLG.NE.0
+     -)THEN
+      IKX=KK
+      LR3=1
+      IF(INTFLG.EQ.-1.OR.(LAND(LBL(KT),MSKCR1).NE.0.AND.LAND(LBL(IKX),
+     * MSKCR1).EQ.0)) LR3=-1
+      LRR=LR
+      LR=-LR
+      ASSIGN 17011 TO IZZZ04
+      GOTO 17010
+17011 CONTINUE
+      LR=LR2
+      CALL BSTORE
+      K=IKX
+      ASSIGN 17013 TO IZZZ05
+      GOTO 17012
+17013 CONTINUE
+      ICL=ICX
+      LR=LRR
+      GOTO 13031
+      ENDIF
+      ENDIF
+      ENDIF
+13030 CONTINUE
+13031 CONTINUE
+      IBFIT=0
+      ENDIF
+      IF(
+     - INTFLG.EQ.0
+     -)THEN
+      ASSIGN 17014 TO IZZZ05
+      GOTO 17012
+17014 CONTINUE
+      GOTO 15001
+      ENDIF
+      GOTO 15000
+      ENDIF
+15001 CONTINUE
+      ICL=ICY
+      K=KY
+      ASSIGN 17016 TO IZZZ06
+      GOTO 17015
+17016 CONTINUE
+      ENDIF
+      IW = NWR1(K)
+      IUDFLG=6
+      IF(
+     - IW.GE.ILBOT
+     -)THEN
+      ASSIGN 17018 TO IZZZ07
+      GOTO 17017
+17018 CONTINUE
+      ENDIF
+      ILIM=-ILIN
+      IDUM=0
+15002 CONTINUE
+      IF(
+     - IDUM.EQ.0
+     -)THEN
+      CALL BSIDE
+      ICL=ICX
+      K=KT
+      IF(
+     - IRIFLG.EQ.0
+     -)THEN
+      GOTO 15003
+      ENDIF
+      ASSIGN 17019 TO IZZZ06
+      GOTO 17015
+17019 CONTINUE
+      IW = NWR1(K)
+      IF(
+     - IW.GE.ILBOT
+     -)THEN
+      ASSIGN 17020 TO IZZZ07
+      GOTO 17017
+17020 CONTINUE
+      IF(
+     - ISUFLG.EQ.0
+     -)THEN
+      GOTO 15003
+      ENDIF
+      ELSE
+      GOTO 15003
+      ENDIF
+      GOTO 15002
+      ENDIF
+15003 CONTINUE
+      IRIFLG = 0
+      IUDFLG=0
+      IF(
+     - KRING.GT.1
+     -)THEN
+      CALL RINCON
+      ASSIGN 17021 TO IZZZ06
+      GOTO 17015
+17021 CONTINUE
+      ENDIF
+      IF(
+     - IRIFLG.EQ.0
+     -)THEN
+      IF(
+     - LRING.NE.1.AND.KRING.NE.LRING
+     -)THEN
+      LBL(K)=LOR(LBL(K),MSKERR)
+      IF(
+     - IS.LT.20
+     -)THEN
+      IS=IS+1
+      HSP1(IS)=NTR
+      ENDIF
+      ENDIF
+      IF(
+     - IJFLG.EQ.1
+     -)THEN
+      ASSIGN 17023 TO IZZZ08
+      GOTO 17022
+17023 CONTINUE
+      ENDIF
+      IF(
+     - KRING.EQ.2.AND.ITOL.EQ.1
+     -)THEN
+      IF(
+     - ISP.LT.10
+     -)THEN
+      ISP=ISP+1
+      ISKP(ISP)=NTR
+      ENDIF
+      ENDIF
+      IF(
+     - LR.EQ.0
+     -)THEN
+      LBL(K)=LOR(LBL(K),MSKLR0)
+      ENDIF
+      ENDIF
+      IF(
+     - LRING.EQ.1.AND.IRIFLG.EQ.0
+     -)THEN
+      IF(
+     - LAND(LBL(K),MSKZEN).EQ.0.AND.ICNT.EQ.1.AND.ISP.GT.0
+     -)THEN
+      JTRK=HISTR(1,NTR)
+      JTRK=IABS(JTRK)
+      IC1=2*IPCL(JTRK)+47
+      INM=HNREL(NTR)
+      INTR=NTR
+      DO 13032 I=1,ISP
+      IJ=ISKP(I)
+      IK=HISTR(HNREL(IJ),IJ)
+      IC=IABS(IK)
+      IK=IPCL(IC)
+      IF(
+     - IK.EQ.IC1.OR.IK.EQ.IC1+1
+     -)THEN
+      IF(
+     - LAND(LBL(IC),MSKERR).NE.0
+     -)THEN
+      IF(
+     - ABS(ABS(SL1(IC))-ABS(SL2(JTRK))).LT.BKK(10).AND.ABS(SL1(IC))
+     * .LT.BKK(11).AND. ABS(SL2(JTRK)).LT.BKK(11)
+     -)THEN
+      IXYB=0
+      IF(
+     - IYBKK(1).NE.0
+     -)THEN
+      ASSIGN 17025 TO IZZZ09
+      GOTO 17024
+17025 CONTINUE
+      ENDIF
+      IF(
+     - IXYB.EQ.0
+     -)THEN
+      NTR=IJ
+      ASSIGN 17027 TO IZZZ10
+      GOTO 17026
+17027 CONTINUE
+      INM=HNREL(NTR)
+      DO 13034 JZ=1,INM
+      IK=HISTR(JZ,NTR)
+      IK=IABS(IK)
+      LBL(IK)=LOR(LBL(IK),MSKSKP)
+      LBL(IK)=LAND(LBL(IK),MSKLRA)
+13034 CONTINUE
+13035 CONTINUE
+      LBL(IC)=LAND(LBL(IC),MSKERA)
+      HNREL(INTR)=0
+      NTR=INTR-1
+      GOTO 13033
+      ENDIF
+      ENDIF
+      ENDIF
+      ENDIF
+13032 CONTINUE
+13033 CONTINUE
+      ENDIF
+      ENDIF
+      GOTO IZZZ03
+17017 CONTINUE
+      ISUFLG=0
+      IF(
+     - HNTCEL(ICL+1)-HNTCEL(ICL).GT.1
+     -)THEN
+      NTRLX1=HNTCEL(ICL)
+      NTRLX2=HNTCEL(ICL+1)-1
+15004 CONTINUE
+      IF(
+     - IW.GE.ILBOT
+     -)THEN
+      IRL=0
+      KK=K
+      CALL SETSL(ITK(1,1),0,160,ZERO)
+      DO 13036 KX=NTRLX1,NTRLX2
+      IF(
+     - HUSE(KX).EQ.0
+     -)THEN
+      CALL INTJN1(KK,KX,INTFLG,DTMP)
+      IF(
+     - INTFLG.NE.0
+     -)THEN
+      ASSIGN 17029 TO IZZZ11
+      GOTO 17028
+17029 CONTINUE
+      ENDIF
+      ENDIF
+13036 CONTINUE
+13037 CONTINUE
+      IF(
+     - IRL.GT.0
+     -)THEN
+      IBFIT=-3
+      IF(
+     - HNTCEL(ICL+1)-HNTCEL(ICL).GT.2
+     -)THEN
+      IRT=IRL
+      DO 13038 JK=1,IRT
+      KX=ITK(JK,1)
+      DO 13040 KK=NTRLX1,NTRLX2
+      IF(
+     - HUSE(KK).EQ.0
+     -)THEN
+      IW=NWR1(KK)
+      IF(
+     - IW.GE.ILBOT
+     -)THEN
+      CALL INTJN1(KK,KX,INTFLG,DTMP)
+      IF(
+     - INTFLG.NE.0
+     -)THEN
+      ASSIGN 17030 TO IZZZ11
+      GOTO 17028
+17030 CONTINUE
+      ENDIF
+      ENDIF
+      ENDIF
+13040 CONTINUE
+13041 CONTINUE
+13038 CONTINUE
+13039 CONTINUE
+      ENDIF
+      IBFIT=0
+      ENDIF
+      IF(
+     - IRL.GT.1
+     -)THEN
+      CALL CHOOSE
+      ENDIF
+      IW=-100
+      IF(
+     - ITK(1,4).EQ.K
+     -)THEN
+      IKX=ITK(1,1)
+      LR3=1
+      IF(ITK(1,3).EQ.-1.OR.(LAND(LBL(IKX),MSKCR1).NE.0
+     * .AND.LAND(LBL(K),MSKCR1).EQ.0)) LR3=-1
+      ASSIGN 17031 TO IZZZ04
+      GOTO 17010
+17031 CONTINUE
+      LR=LR2
+      IPST=1
+      KTR=NTR
+      ASSIGN 17032 TO IZZZ02
+      GOTO 17003
+17032 CONTINUE
+      IF(KMP1.NE.KMP2) IPST=0
+      CALL BSTORE
+      K=IKX
+      IW=NWR1(K)
+      ISUFLG=1
+      ENDIF
+      GOTO 15004
+      ENDIF
+15005 CONTINUE
+      ENDIF
+      GOTO IZZZ07
+17028 CONTINUE
+      IF(
+     - IRL.LT.10
+     -)THEN
+      IRL=IRL+1
+      ITK(IRL,1)=KX
+      ITK(IRL,3)=INTFLG
+      ITK(IRL,4)=KK
+      DTEMP(IRL)=DTMP
+      ELSE
+      ENDIF
+      GOTO IZZZ11
+17010 CONTINUE
+      CALL LFRT(LR2)
+      IF(
+     - LR2.EQ.0
+     -)THEN
+      IF(
+     - LR.NE.0
+     -)THEN
+      LR2=LR*LR3
+      ELSE
+      LR2=LR3
+      IJFLG=1
+      IPST=1
+      ENDIF
+      ELSE
+      IF(
+     - LR.EQ.0
+     -)THEN
+      IF(LR2*LR3.EQ.-1) HISTR(1,NTR)=-HISTR(1,NTR)
+      ELSE
+      IF(
+     - LR2.NE.LR*LR3
+     -)THEN
+      LR2=-LR2
+      ENDIF
+      ENDIF
+      ENDIF
+      GOTO IZZZ04
+17015 CONTINUE
+      IF(
+     - IRIFLG.EQ.1
+     -)THEN
+      IF(IUDFLG.EQ.6) LR=-LR
+      IF(
+     - LAND(LBL(K),MSKCR1).NE.0.AND.LAND(LBL(K),MSKCR2).EQ.0
+     -)THEN
+      LR=-LR
+      HISTR(HNREL(NTR),NTR)=-HISTR(HNREL(NTR),NTR)
+      ENDIF
+      ENDIF
+      GOTO IZZZ06
+17022 CONTINUE
+      ITMP=HNREL(NTR)
+      DO 13042 I=1,ITMP
+      JK=HISTR(I,NTR)
+      IKX=IABS(JK)
+      CALL LFRT(LR2)
+      IF(
+     - LR2.NE.0
+     -)THEN
+      IF(LR2*JK.LT.0) CALL COREC
+      GOTO 13043
+      ENDIF
+13042 CONTINUE
+13043 CONTINUE
+      DO 13044 I=1,ITMP
+      JK=HISTR(I,NTR)
+      IKX=IABS(JK)
+      LBL(IKX)=LOR(LBL(IKX),MSKLR0)
+13044 CONTINUE
+13045 CONTINUE
+      GOTO IZZZ08
+17012 CONTINUE
+      I9=HNREL(NTR)
+      DO 13046 IO=ISTREL,I9
+      ITEM=HISTR(IO,NTR)
+      J9=IO-2+1
+      DO 13048 JO=1,J9
+      HISTR(IO-JO+1,NTR)=HISTR(IO-JO,NTR)
+13048 CONTINUE
+13049 CONTINUE
+      HISTR(1,NTR)=ITEM
+13046 CONTINUE
+13047 CONTINUE
+      GOTO IZZZ05
+17003 CONTINUE
+      KMP1=HISTR(1,KTR)
+      KMP1=IABS(KMP1)
+      ITKEL1=KMP1
+      KMP1=IPCL(KMP1)
+      KMP2=HISTR(HNREL(KTR),KTR)
+      KMP2=IABS(KMP2)
+      ITKEL=KMP2
+      KMP2=IPCL(KMP2)
+      GOTO IZZZ02
+17024 CONTINUE
+      IXYB=0
+      NTR=IJ
+      IBCD=HNREL(NTR)
+      CALL MVC2(HTEMP(1),0,HISTR(1,NTR),0,18) !PMF 28/06/99 MVC -> MVC2
+      ASSIGN 17033 TO IZZZ10
+      GOTO 17026
+17033 CONTINUE
+      IAB=HNREL(NTR)
+      CALL BAKFIT(IXYB,4)
+      CALL MVC2(HISTR(1,NTR),0,HTEMP(1),0,18) !PMF 28/06/99 MVC -> MVC2
+      HNREL(NTR)=IBCD
+      NTR=INTR
+      GOTO IZZZ09
+17026 CONTINUE
+      IJLR=LR
+      DO 13050 JZ=1,INM
+      IKX=HISTR(JZ,INTR)
+      IF(
+     - IJLR.EQ.0.OR.IJFLG.NE.0
+     -)THEN
+      LR=1
+      IF(LAND(IK,1).EQ.1) LR=-1
+      ELSE
+      LR=ISIGN(1,IKX)
+      ENDIF
+      IKX=IABS(IKX)
+      CALL BSTORE
+13050 CONTINUE
+13051 CONTINUE
+      LR=IJLR
+      GOTO IZZZ10
+      END

@@ -1,0 +1,12 @@
++EXE                                                                            
++ASM,33.                                                                        
++USE,P=LUCMMN.                                                                  
++PAM,11,T=ATTACH,T=CARDS. jt74opal
++USE,DOUBLE,HPUX.                                                                
++USE,MOCKCERN.                                                                  
++USE,*COJETS.     pilot patch for COJETS                                        
++USE,EPSHAPE.     e+e- event shape routines                                     
++USE,RANF.        external random seed generator                                
+####+USE,COJETES.     OPAL example for writing 4-vectors                            
++PAM,12,T=ATTACH,T=CARDS. coj623d
+                                        

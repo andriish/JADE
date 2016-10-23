@@ -1,0 +1,27 @@
+*            C9101201   MEMBER NAME  JBIT     (JADEGS)      ASSEMBLER
+JBIT     START 0
+         ENTRY JBIT
+         BC    15,12(15)
+         DC    X'07'
+         DC    CL7'JBIT   '
+         STM   14,12,12(13)
+         LR    11,15
+         USING JBIT,11
+         ST    13,SA+4
+         LR    12,13
+         LA    13,SA
+         ST    13,8(12)
+         L     2,4(1)
+         L     2,0(2)
+         LA    3,32
+         SR    3,2
+         L     1,0(1)
+         L     1,0(1)
+         SR    0,0
+         SLL   1,0(3)
+         SLDL  0,1
+         L     13,SA+4
+         LM    1,12,24(13)
+         BCR   15,14
+SA       DS    18F
+         END

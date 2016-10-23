@@ -1,0 +1,180 @@
+Current directory is/home/pcl2483/pedro/jadesoft/src/patrecsr
+
+Dependencies:
+-------------
+inpatr.F ... cpatlm.for
+inpatr.F ... cgraph.for
+inpatr.F ... cpatlm.for
+inpatr.F ... cpatlm.for
+inpatr.F ... cgraph.for
+inpatr.F ... cpatlm.for
+inpatc.F ... cdata.for
+inpatc.F ... cdsmax.for
+inpatc.F ... cjdrch.for
+inpatc.F ... cdsmax.for
+inpatc.F ... cjdrch.for
+patrec.F ... cworkpr.for
+patrec.F ... cworkeq.for
+patrec.F ... cdata.for
+adpatr.F ... cpatlm.for
+patrc1.F ... cheadr.for
+patrc1.F ... cdata.for
+patrc1.F ... ccycp.for
+patrc1.F ... cworkpr.for
+patrc1.F ... cworkeq.for
+patrc1.F ... cpatlm.for
+srtrel.F ... cdata.for
+srtrel.F ... ccycp.for
+srtrel.F ... cworkpr.for
+srtrel.F ... cworkeq.for
+srtrel.F ... cpatlm.for
+backtr.F ... cjdrch.for
+backtr.F ... cworkmx.for
+backtr.F ... cdsmax.for
+backtr.F ... cworkpr.for
+backtr.F ... clbpgm.for
+backtr.F ... cpatlm.for
+prhtar.F ... cdata.for
+prhtar.F ... ccycp.for
+prhtar.F ... cworkpr.for
+prhtar.F ... cworkeq.for
+prhtar.F ... cjdrch.for
+flinel.F ... cworkpr.for
+flinel.F ... cworkeq.for
+flinel.F ... cpatlm.for
+bstore.F ... cworkpr.for
+bstore.F ... cworkmx.for
+bstore.F ... cpatlm.for
+bstore.F ... cjdrch.for
+bstore.F ... cworkmx.for
+bstore.F ... cpatlm.for
+bstore.F ... cworkpr.for
+bstore.F ... cpatlm.for
+bstore.F ... cworkpr.for
+bstore.F ... cworkmx.for
+bstore.F ... cjdrch.for
+bstore.F ... cworkmx.for
+bstore.F ... cpatlm.for
+bstore.F ... cworkpr.for
+bstore.F ... cworkpr.for
+bstore.F ... cworkmx.for
+bstore.F ... cpatlm.for
+bstore.F ... cdsmax.for
+bstore.F ... cjdrch.for
+bstore.F ... cworkmx.for
+bstore.F ... cworkpr.for
+bstore.F ... cpatlm.for
+bside.F ... cworkpr.for
+bside.F ... cjdrch.for
+bside.F ... cdsmax.for
+bside.F ... cpatlm.for
+bside.F ... cworkmx.for
+rincon.F ... cjdrch.for
+rincon.F ... cworkmx.for
+rincon.F ... cworkpr.for
+rincon.F ... cdsmax.for
+rincon.F ... cpatlm.for
+bakfit.F ... cpatlm.for
+bakfit.F ... cworkeq.for
+bakfit.F ... cworkpr.for
+fxyz.F ... calibr.for
+fxyz.F ... cdata.for
+fxyz.F ... ccycp.for
+fxyz.F ... cworkpr.for
+fxyz.F ... cworkeq.for
+fxyz.F ... cdsmax.for
+fxyz.F ... cpatlm.for
+xyfit.F ... cworkpr.for
+xyfit.F ... cworkeq.for
+xyfit.F ... cpatlm.for
+xyfit.F ... cxyfit.for
+xyfit.F ... cpatlm.for
+xyfit.F ... cworkpr.for
+xyfit.F ... cworkeq.for
+xyfit.F ... cxyfit.for
+xyfit.F ... cworkpr.for
+xyfit.F ... cworkeq.for
+xyfit.F ... cpatlm.for
+xyfit.F ... cxyfit.for
+xyfit.F ... cworkpr.for
+xyfit.F ... cworkeq.for
+xyfit.F ... cxyfit.for
+xyfit.F ... cpatlm.for
+xyfit.F ... cworkpr.for
+xyfit.F ... cworkeq.for
+xyfit.F ... cxyfit.for
+errorm.F ... cpatlm.for
+pcwork.F ... cworkpr.for
+pcwork.F ... cworkeq.for
+pcwork.F ... cdata.for
+kntrel.F ... cdata.for
+kntrel.F ... ccycp.for
+kntrel.F ... cworkpr.for
+kntrel.F ... cworkeq.for
+kntrel.F ... cpatlm.for
+ftrkel.F ... cworkpr.for
+ftrkel.F ... cworkeq.for
+ftrkel.F ... cpatlm.for
+ftrkel.F ... cjdrch.for
+ftrkel.F ... cdsmax.for
+bakpak.F ... cpatlm.for
+bakpak.F ... cdata.for
+bakpak.F ... cworkeq.for
+bakpak.F ... cworkpr.for
+patrol.F ... calibr.for
+patrol.F ... cworkpr.for
+patrol.F ... cworkeq.for
+patrol.F ... cdatamin.for
+patrol.F ... ccycp.for
+patrol.F ... cdsmax.for
+patrol.F ... cpatlm.for
+zrfit.F ... cheadr.for
+zrfit.F ... cjdrch.for
+zrfit.F ... cgraph.for
+zrfit.F ... cworkpr.for
+zrfit.F ... cworkeq.for
+zrfit.F ... cpatlm.for
+trlord.F ... cworkpr.for
+rstbtr.F ... cdata.for
+rstbtr.F ... ccycp.for
+rstbtr.F ... cjdrch.for
+rstbtr.F ... cworkpr.for
+rstbtr.F ... cworkeq.for
+crtrel.F ... cdata.for
+crtrel.F ... ccycp.for
+crtrel.F ... cworkpr.for
+crtrel.F ... cworkeq.for
+
+.F files sorted by include-files:
+-- ----- ------ -- --------------
+calibr.for: fxyz.F patrol.F
+ccycp.for: patrc1.F srtrel.F prhtar.F fxyz.F kntrel.F patrol.F rstbtr.F crtrel.F
+cdata.for: inpatc.F patrec.F patrc1.F srtrel.F prhtar.F fxyz.F pcwork.F kntrel.F bakpak.F rstbtr.F crtrel.F
+cdatamin.for: patrol.F
+cdsmax.for: inpatc.F backtr.F bstore.F bside.F rincon.F fxyz.F ftrkel.F patrol.F
+cgraph.for: inpatr.F zrfit.F
+cheadr.for: patrc1.F zrfit.F
+cjdrch.for: inpatc.F backtr.F prhtar.F bstore.F bside.F rincon.F ftrkel.F zrfit.F rstbtr.F
+clbpgm.for: backtr.F
+cpatlm.for: inpatr.F adpatr.F patrc1.F srtrel.F backtr.F flinel.F bstore.F bside.F rincon.F bakfit.F fxyz.F xyfit.F errorm.F kntrel.F ftrkel.F bakpak.F patrol.F zrfit.F
+cworkeq.for: patrec.F patrc1.F srtrel.F prhtar.F flinel.F bakfit.F fxyz.F xyfit.F pcwork.F kntrel.F ftrkel.F bakpak.F patrol.F zrfit.F rstbtr.F crtrel.F
+cworkmx.for: backtr.F bstore.F bside.F rincon.F
+cworkpr.for: patrec.F patrc1.F srtrel.F backtr.F prhtar.F flinel.F bstore.F bside.F rincon.F bakfit.F fxyz.F xyfit.F pcwork.F kntrel.F ftrkel.F bakpak.F patrol.F zrfit.F trlord.F rstbtr.F crtrel.F
+cxyfit.for: xyfit.F
+
+Library members sorted by include-files:
+------- ------- ------ -- -------------
+/home/pcl2483/pedro/jadesoft/lib/libpatrecsr.a( fxyz.o patrol.o ) :	 calibr.for
+/home/pcl2483/pedro/jadesoft/lib/libpatrecsr.a( patrc1.o srtrel.o prhtar.o fxyz.o kntrel.o patrol.o rstbtr.o crtrel.o ) :	 ccycp.for
+/home/pcl2483/pedro/jadesoft/lib/libpatrecsr.a( inpatc.o patrec.o patrc1.o srtrel.o prhtar.o fxyz.o pcwork.o kntrel.o bakpak.o rstbtr.o crtrel.o ) :	 cdata.for
+/home/pcl2483/pedro/jadesoft/lib/libpatrecsr.a( patrol.o ) :	 cdatamin.for
+/home/pcl2483/pedro/jadesoft/lib/libpatrecsr.a( inpatc.o backtr.o bstore.o bside.o rincon.o fxyz.o ftrkel.o patrol.o ) :	 cdsmax.for
+/home/pcl2483/pedro/jadesoft/lib/libpatrecsr.a( inpatr.o zrfit.o ) :	 cgraph.for
+/home/pcl2483/pedro/jadesoft/lib/libpatrecsr.a( patrc1.o zrfit.o ) :	 cheadr.for
+/home/pcl2483/pedro/jadesoft/lib/libpatrecsr.a( inpatc.o backtr.o prhtar.o bstore.o bside.o rincon.o ftrkel.o zrfit.o rstbtr.o ) :	 cjdrch.for
+/home/pcl2483/pedro/jadesoft/lib/libpatrecsr.a( backtr.o ) :	 clbpgm.for
+/home/pcl2483/pedro/jadesoft/lib/libpatrecsr.a( inpatr.o adpatr.o patrc1.o srtrel.o backtr.o flinel.o bstore.o bside.o rincon.o bakfit.o fxyz.o xyfit.o errorm.o kntrel.o ftrkel.o bakpak.o patrol.o zrfit.o ) :	 cpatlm.for
+/home/pcl2483/pedro/jadesoft/lib/libpatrecsr.a( patrec.o patrc1.o srtrel.o prhtar.o flinel.o bakfit.o fxyz.o xyfit.o pcwork.o kntrel.o ftrkel.o bakpak.o patrol.o zrfit.o rstbtr.o crtrel.o ) :	 cworkeq.for
+/home/pcl2483/pedro/jadesoft/lib/libpatrecsr.a( backtr.o bstore.o bside.o rincon.o ) :	 cworkmx.for
+/home/pcl2483/pedro/jadesoft/lib/libpatrecsr.a( patrec.o patrc1.o srtrel.o backtr.o prhtar.o flinel.o bstore.o bside.o rincon.o bakfit.o fxyz.o xyfit.o pcwork.o kntrel.o ftrkel.o bakpak.o patrol.o zrfit.o trlord.o rstbtr.o crtrel.o ) :	 cworkpr.for
+/home/pcl2483/pedro/jadesoft/lib/libpatrecsr.a( xyfit.o ) :	 cxyfit.for

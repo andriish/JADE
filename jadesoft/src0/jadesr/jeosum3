@@ -1,0 +1,4136 @@
+C   23/03/97 703231340  MEMBER NAME  JEOSUM3  (JADESR)      SHELTRAN
+ 00000    C   10/10/83 408221739  MEMBER NAME  SPITZ    (JADESR)      SHELTRAN
+ 00100   2      SUBROUTINE SPITZ(*)
+ 00200    C
+ 00300    C
+ 00400   3      IMPLICIT INTEGER*2 (H)
+ 00600   4      COMMON/BCS/ IDATA(35000)                                           * BOS COMMON
+ 00700   5      DIMENSION ADATA(35000),HDATA(70000)
+ 00800   6      EQUIVALENCE (IDATA(1),ADATA(1)), (IDATA(1),HDATA(1))
+ 00900    C
+ 01000   7      DATA ICALS/0/
+ 01100    C
+ 01300   8      DATA IPLHDR,IPLJTC/2*0/                                            * TO SAVE VALUES BETWEEN CALLS
+ 01400    C     ,IPLHTL,IPLPTR /2*0/
+ 01500    C
+ 01600   9      LOGICAL*1 PICTUR(120,16),STAR,SPACE,BORDER
+ 01700  10      DATA STAR/1H*/,SPACE/1H /,BORDER/1HI/,KPRNT1/0/,KPRNT2/0/
+ 01800         +,KPRMAX/20/
+ 01900  11      DIMENSION HHITS(4,128,2)
+ 02000    C
+ 02100    C-----------------------------------------------------------------------
+ 02300  12      IF ICALS.EQ.0                                                      * INITIALISE
+ 02400  13      THEN
+ 02600  16         IPLHDR=IBLN('HEAD')                                             * FIX LOCATION OF POINTERS
+ 02700  17         IPLJTC=IBLN('JETC')
+ 02900  18         ICALS=1
+ 03000  19      CIF
+ 03100    C-----------------------------------------------------------------------
+ 03200    C=======================================================================
+ 03300    C
+ 03400                                                                             * NORMAL PROCESSING IN LOOP
+ 03700  20      IPHDR2=IDATA(IPLHDR)*2                                             * POINTER OF I*2 'HEAD'
+ 03800  21      IPJETC=IDATA(IPLJTC)
+ 04000  22      IF IPHDR2.LE.0 .OR. IPJETC.LE.0                                    * BANK MISSING
+ 04100  23      THEN
+ 04300  26         RETURN1
+ 04400  27      CIF
+ 04500  28      IRUN=HDATA(IPHDR2+10)
+ 04600  29      IF IRUN.LT.16803.OR.IRUN.GT.17326
+ 04700  30      THEN
+ 04900  33         RETURN1
+ 05000  34      CIF
+ 05100  35      IEVENT=HDATA(IPHDR2+11)
+ 05200    C
+ 05400  36      WHILE IPJETC.GT.0                                                  * CORRECT ALL JETC BANKS
+ 05500                                                                             * PRINT ONLY FOR ROW BANK HAVING THE
+ 05700  38         IF IDATA(IPJETC-1).LE.0                                         *                     HIGHEST NUMBER
+ 05800  42         THEN
+ 05900  45            LPRFLG=1
+ 06000  46         ELSE
+ 06100  48            LPRFLG=0
+ 06200  49         CIF
+ 06400  50         IPJTC2=2*IPJETC                                                 * POINTER-1 FOR JETC DATA IN HDATA
+ 06500    C=======================================================================
+ 06700  51         IF IRUN.GE.16803.AND.IRUN.LE.17326                              * FIX CELL 1
+ 06800  52         THEN
+ 07000  55            IF KPRNT1.LT.KPRMAX.AND.LPRFLG.EQ.1                          * CLEAR PICTURE
+ 07100  56            THEN
+ 07200  59               FOR I=1,16
+ 07300  60                  FOR J=1,120
+ 07400  61                     PICTUR(J,I)=SPACE
+ 07500  62                  CFOR
+ 07600  64                  PICTUR(60,I)=BORDER
+ 07700  65               CFOR
+ 07800  67            CIF
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  2
+0CARD TARGET
+  NO  STM.NO
+ 
+ 07900  68            ICCLL=1
+ 08000  69            IND=ICCLL+IPJTC2+2
+ 08100  70            IHITPO=HDATA(IND)
+ 08200  71            IHITFT=(IHITPO-1)/4+1
+ 08300  72            IHITLT=(HDATA(IND+1)-1)/4
+ 08400  73            IHITPO=IHITPO+IPJTC2+100
+ 08500  74            IHITP1=IHITPO
+ 08600  75            IHIT=IHITFT
+ 08700  76            MH1=0
+ 08800  77            MH1L=0
+ 08900  78            WHILE IHIT.LE.IHITLT
+ 09000  80               MH1=MH1+1
+ 09200  84               FOR J=1,4                                                 * COPY HITS OUT OF BANK
+ 09300  85                  HHITS(J,MH1,1)=HDATA(IHITPO-1+J)
+ 09400  86               CFOR
+ 09600  88               IWIR=HDATA(IHITPO)                                        * GET WIRE NUMBER
+ 09700  89               IWIR=SHFTR(IWIR,3)
+ 09800  90               IF(IWIR.LT.8) MH1L=MH1
+ 09900  92               IF KPRNT1.LT.KPRMAX .AND. LPRFLG.EQ.1
+ 10000  93               THEN
+ 10200  96                  ITIM3=HDATA(IHITPO+3)                                  * FILL UNCORRECTED HALF OF PICTURE
+ 10300  97                  IP=ITIM3/3+1
+ 10400  98                  IF(IP.GT.60) IP=60
+ 10500 100                  PICTUR(IP,IWIR+1)=STAR
+ 10600 101               CIF
+ 10700 102               IHIT=IHIT+1
+ 10800 103               IHITPO=IHITPO+4
+ 10900 104            CWHILE
+ 11000 106            MH1U=MH1-MH1L
+ 11100 107            IHITPO=IHITP1
+ 11200 108            IF MH1U.GT.0
+ 11300 109            THEN
+ 11400                                                                             * COPY BACK UPPER DL8 FIRST WITH
+ 11600 112               FOR I=1,MH1U                                              * WIRE NUMBERS CORRECTED
+ 11700 113                  HHITS(1,I+MH1L,1)=HHITS(1,I+MH1L,1)-64
+ 11800 114                  FOR J=1,4
+ 11900 115                     HDATA(IHITPO-1+J)=HHITS(J,I+MH1L,1)
+ 12000 116                  CFOR
+ 12100 118                  IHITPO=IHITPO+4
+ 12200 119               CFOR
+ 12300 121            CIF
+ 12400 122            IF MH1L.GT.0
+ 12500 123            THEN
+ 12700 126               FOR I=1,MH1L                                              COPY BACK LOWER DL8
+ 12800 127                  HHITS(1,I,1)=HHITS(1,I,1)+64
+ 12900 128                  FOR J=1,4
+ 13000 129                     HDATA(IHITPO-1+J)=HHITS(J,I,1)
+ 13100 130                  CFOR
+ 13200 132                  IHITPO=IHITPO+4
+ 13300 133               CFOR
+ 13400 135            CIF
+ 13500 136            IF KPRNT1.LT.KPRMAX.AND.MH1.GT.11.AND.LPRFLG.EQ.1
+ 13600 137            THEN
+ 13800 140               IHITPO=HDATA(IND)                                         * FILL CORRECTED HALF OF PICTURE AND PRINT
+ 13900 141               IHITFT=(IHITPO-1)/4+1
+ 14000 142               IHITLT=(HDATA(IND+1)-1)/4
+ 14100 143               IHITPO=IHITPO+IPJTC2+100
+ 14200 144               IHIT=IHITFT
+ 14300 145               WHILE IHIT.LE.IHITLT
+ 14400 147                  IWIR=HDATA(IHITPO)
+ 14500 151                  IWIR=SHFTR(IWIR,3)
+ 14600 152                  ITIM3=HDATA(IHITPO+3)
+ 14700 153                  IP=ITIM3/3+1+60
+ 14800 154                  IF(IP.GT.120) IP=120
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  3
+0CARD TARGET
+  NO  STM.NO
+ 
+ 14900 156                  PICTUR(IP,IWIR+1)=STAR
+ 15000 157                  IHIT=IHIT+1
+ 15100 158                  IHITPO=IHITPO+4
+ 15200 159               CWHILE
+ 15300 161               PRINT 5681,IRUN,IEVENT
+ 15400 162 5681          FORMAT(' *** RUN',I8,'  EVENT',I8,'  CELL 1',/,
+ 15500         +         26X,'UNCORRECTED',50X,'CORRECTED')
+ 15600 163               PRINT 1672, ((PICTUR(M1,17-M2),M1=1,120),M2=1,16)
+ 15700 164 1672          FORMAT(1X,120A1)
+ 15800 165               KPRNT1=KPRNT1+1
+ 15900 166            CIF
+ 16000 167         CIF
+ 16100    C=======================================================================
+ 16300 168         IF IRUN.GE.16826.AND.IRUN.LE.17304                              * FIX CELLS 94 AND 95
+ 16400 169         THEN
+ 16600 172            IF KPRNT2.LT.KPRMAX .AND. LPRFLG.EQ.1                        * CLEAR PICTURE
+ 16700 173            THEN
+ 16800 176               FOR I=1,16
+ 16900 177                  FOR J=1,120
+ 17000 178                     PICTUR(J,I)=SPACE
+ 17100 179                  CFOR
+ 17200 181                  PICTUR(60,I)=BORDER
+ 17300 182               CFOR
+ 17400 184            CIF
+ 17600 185            FOR KC=1,2                                                   * COPY OUT CELL 94 THEN 95
+ 17700 186               ICCLL=93+KC
+ 17800 187               IND=ICCLL+IPJTC2+2
+ 17900 188               IHITPO=HDATA(IND)
+ 18000 189               IHITFT=(IHITPO-1)/4+1
+ 18100 190               IHITLT=(HDATA(IND+1)-1)/4
+ 18200 191               IHITPO=IHITPO+IPJTC2+100
+ 18300 192               IHIT=IHITFT
+ 18400 193               IF KC.EQ.1
+ 18500 194               THEN
+ 18600 197                  MH11=0
+ 18700 198                  MH11L=0
+ 18800 199                  IHITP1=IHITPO
+ 18900 200               ELSE
+ 19000 202                  MH21=0
+ 19100 203                  MH21L=0
+ 19200 204                  IND1=IND
+ 19400 205               CIF                                                       * SAVE LOCATION OF POINTER TO CELL 95
+ 19500 206               WHILE IHIT.LE.IHITLT
+ 19600 208                  IWIR=HDATA(IHITPO)
+ 19700 212                  IWIR=SHFTR(IWIR,3)
+ 19800 213                  IWIR=IWIR-(ICCLL-1)*16+1
+ 19900 214                  IF KC.EQ.1
+ 20000 215                  THEN
+ 20100 218                     MH11=MH11+1
+ 20200 219                     IF(IWIR.LT.9) MH11L=MH11
+ 20300 221                     MHX=MH11
+ 20400 222                  ELSE
+ 20500 224                     MH21=MH21+1
+ 20600 225                     IF(IWIR.LT.9) MH21L=MH21
+ 20700 227                     MHX=MH21
+ 20800 228                  CIF
+ 20900 229                  FOR J=1,4
+ 21000 230                     HHITS(J,MHX,KC)=HDATA(IHITPO-1+J)
+ 21100 231                  CFOR
+ 21200 233                  IF KPRNT2.LT.KPRMAX .AND. LPRFLG.EQ.1
+ 21300 234                  THEN
+ 21500 237                     ITIM3=HDATA(IHITPO+3)                               * FILL UNCORRECTED PICTURE
+ 21600 238                     IP=ITIM3/3+1
+ 21700 239                     IF(IP.GT.60) IP=60
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  4
+0CARD TARGET
+  NO  STM.NO
+ 
+ 21800 241                     IF(KC.EQ.2) IP=IP+60
+ 21900 243                     PICTUR(IP,IWIR)=STAR
+ 22000 244                  CIF
+ 22100 245                  IHIT=IHIT+1
+ 22200 246                  IHITPO=IHITPO+4
+ 22300 247               CWHILE
+ 22400 249            CFOR
+ 22500 251            IF KPRNT2.LT.KPRMAX.AND.(MH11.GT.6.OR.MH21.GT.6)
+ 22600         +         .AND. LPRFLG.EQ.1
+ 22700 252            THEN
+ 22900 255               PRINT 5682,IRUN,IEVENT                                    * PRINT UNCORRECTED PICTURE
+ 23000 256 5682          FORMAT(' *** RUN',I8,'  EVENT',I8,'  CELLS 94 AND 95',
+ 23100         +         /,52X,'UNCORRECTED CELLS')
+ 23200 257               PRINT 1672, ((PICTUR(M1,17-M2),M1=1,120),M2=1,16)
+ 23300 258            CIF
+ 23400 259            MH11U=MH11-MH11L
+ 23500 260            MH21U=MH21-MH21L
+ 23600 261            IHITPO=IHITP1+MH11L*4
+ 23700 262            IF MH21L.GT.0
+ 23800 263            THEN
+ 23900                                                                             * COPY BACK LOWER DL8 OF CELL 95
+ 24100 266               FOR I=1,MH21L                                             * AFTER LOWER DL8 OF CELL 94
+ 24200 267                  HHITS(1,I,2)=HHITS(1,I,2)-64
+ 24300 268                  FOR J=1,4
+ 24400 269                     HDATA(IHITPO-1+J)=HHITS(J,I,2)
+ 24500 270                  CFOR
+ 24600 272                  IHITPO=IHITPO+4
+ 24700 273               CFOR
+ 24800 275            CIF
+ 25000 276            HDATA(IND1)=IHITPO-IPJTC2-100                                * CORRECT POINTER TO CELL 95
+ 25100 277            IF MH11U.GT.0
+ 25200 278            THEN
+ 25300                                                                             * COPY BACK UPPER DL8 OF CELL 94
+ 25400                                                                             * TO BE THE LOWER DL8 OF CELL 95
+ 25600 281               FOR I=1,MH11U                                             * (94 LOWER AND 95 UPPER DL8 LEFT UNCHANGED)
+ 25700 282                  HHITS(1,I+MH11L,1)=HHITS(1,I+MH11L,1)+64
+ 25800 283                  FOR J=1,4
+ 25900 284                     HDATA(IHITPO-1+J)=HHITS(J,I+MH11L,1)
+ 26000 285                  CFOR
+ 26100 287                  IHITPO=IHITPO+4
+ 26200 288               CFOR
+ 26300 290            CIF
+ 26400 291            IF KPRNT2.LT.KPRMAX.AND.(MH11.GT.6.OR.MH21.GT.6)
+ 26500         +         .AND. LPRFLG.EQ.1
+ 26600 292            THEN
+ 26800 295               FOR I=1,16                                                FILL AND PRINT CORRECTED PICTURE
+ 26900 296                  FOR J=1,120
+ 27000 297                     PICTUR(J,I)=SPACE
+ 27100 298                  CFOR
+ 27200 300                  PICTUR(60,I)=BORDER
+ 27300 301               CFOR
+ 27400 303               FOR KC=1,2
+ 27500 304                  ICCLL=93+KC
+ 27600 305                  IND=ICCLL+IPJTC2+2
+ 27700 306                  IHITPO=HDATA(IND)
+ 27800 307                  IHITFT=(IHITPO-1)/4+1
+ 27900 308                  IHITLT=(HDATA(IND+1)-1)/4
+ 28000 309                  IHITPO=IHITPO+IPJTC2+100
+ 28100 310                  IHIT=IHITFT
+ 28200 311                  WHILE IHIT.LE.IHITLT
+ 28300 313                     IWIR=HDATA(IHITPO)
+ 28400 317                     IWIR=SHFTR(IWIR,3)
+ 28500 318                     IWIR=IWIR-(ICCLL-1)*16+1
+ 28600 319                     ITIM3=HDATA(IHITPO+3)
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  5
+0CARD TARGET
+  NO  STM.NO
+ 
+ 28700 320                     IP=ITIM3/3+1
+ 28800 321                     IF(IP.GT.60) IP=60
+ 28900 323                     IF(KC.EQ.2) IP=IP+60
+ 29000 325                     PICTUR(IP,IWIR)=STAR
+ 29100 326                     IHIT=IHIT+1
+ 29200 327                     IHITPO=IHITPO+4
+ 29300 328                  CWHILE
+ 29400 330               CFOR
+ 29500 332               PRINT 4678
+ 29600 3334678           FORMAT(53X,'CORRECTED CELLS')
+ 29700 334               PRINT 1672, ((PICTUR(M1,17-M2),M1=1,120),M2=1,16)
+ 29800 335               KPRNT2=KPRNT2+1
+ 29900 336            CIF
+ 30000 337         CIF
+ 30200 338         IPJETC=IDATA(IPJETC-1)                                          * NEXT JETC BANK
+ 30300 339      CWHILE
+ 30400 341      RETURN
+ 30500    C=======================================================================
+ 30600 342      END
+0END OF SEGMENT
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         341 TARGET STATEMENTS
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  1
+0CARD TARGET
+  NO  STM.NO
+ 
+0END OF PROGRAM
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         341 TARGET STATEMENTS
+ 00000    C   14/07/82 703231337  MEMBER NAME  TRCK82   (JADESR)      SHELTRAN
+ 00100   2      SUBROUTINE TRCK82(LBACC,LBTRG1,LBTRG2,IERRLG)
+ 00200    C
+ 00300    C     CHECK 1982 TRIGGER
+ 00400    C     P. STEFFEN 82/02/14
+ 00500    C     PST, LAST UPDATE 82/04/06 :
+ 00600    C     INSTALLATION OF OLSSON TRIGGER (COMMENTED OUT UNTIL MAY82-DATA)
+ 00700    C     CHANGES OF TAG-TRIGGERS
+ 00800    C     LAST UPDATE 14.7.1982   MODIFICATION OF TRIGGERS MUT1  J.OLSSON
+ 00900    C
+ 01000    C
+ 01100    C     LBACC= 0 : EVENT REJECTED
+ 01200    C            1 : EVENT ACCEPTED (BUT NO PATREC WILL BE CALLED)
+ 01300    C            2 : EVENT ACCEPETED, SLOW PATREC WILL BE CALLED
+ 01400    C            4 : EVENT ACCEPTED IF >0 TRACKS FROM BEAM VERTEX
+ 01500    C            8 : EVENT ACCEPTED IF Z-VERTEX + >0 TRACKS FROM BEAM VERTEX
+ 01600    C
+ 01700   3      IMPLICIT INTEGER*2 (H)
+ 01800   4      REAL LBACC
+ 00000    C   01/04/82 204012259  MEMBER NAME  CUTSR1   (JADESR)      MACRO
+ 00001    C-------------------------------
+ 00002    C  MACRO CUTSR1 .... REDUC1 CUTS
+ 00003    C-------------------------------
+ 00004   5      COMMON/CUTSR1/NVRSN,NRUNST,NEVTST,NOTTOT,NOTRUN(10),ELGLM( 8)
+ 00005    C--------- END OF MACRO CUTSR1 ------------
+ 02000   6      COMMON /CREDRS/ ACCB2,ACCB4,ACCB8,ACCT2M
+ 02100    C
+ 02200   7      COMMON /CWORK/ SUM12(12),SUMWRD(12)
+ 02300    C
+ 02400   8      COMMON /CRESR1/ ETOT,EBAR,EC1,EC2,E7MIN,
+ 02500         ,               JEMPTY,UNBAL,IACCLG
+ 02600    C
+          C----------------------------------------------------------------------
+          C             MACRO CDATA .... BOS COMMON.
+          C
+          C             THIS MACRO ONLY DEFINES THE IDATA/HDATA/ADATA NAMES.
+          C             THE ACTUAL SIZE OF /BCS/ IS FIXED ON MACRO CBCSMX
+          C             OR BY OTHER MEANS. A DEFAULT SIZE OF 40000 IS GIVEN HERE.
+          C
+          C----------------------------------------------------------------------
+          C
+         9      COMMON /BCS/ IDATA(40000)
+        10      DIMENSION HDATA(80000),ADATA(40000),IPNT(50)
+        11      EQUIVALENCE (HDATA(1),IDATA(1),ADATA(1)),(IPNT(1),IDATA(55))
+        12      EQUIVALENCE (NWORD,IPNT(50))
+          C
+          C------------------------ END OF MACRO CDATA --------------------------
+ 02800    C
+          C-------------------------------
+          C  MACRO CHEADR .... HEADER BANK
+          C-------------------------------
+        13      COMMON /CHEADR/ IHEADR(54)
+        14      INTEGER*2 HHEADR(108)
+        15      EQUIVALENCE (IHEADR(1),HHEADR(1))
+          C --
+          C --  HHEADR(17) = EXPERIMENT NUMBER
+          C --  HHEADR(18) = RUN NUMBER
+          C --  HHEADR(19) = EVENT NUMBER
+          C --  HHEADR(38) = MAGNETIC FIELD (GAUSS)
+          C --
+          C--------- END OF MACRO CHEADR ------------
+ 03000  16      EQUIVALENCE (HHEADR(18),HRUN) , (HHEADR(19),HEV)
+ 03100    C
+ 03200  17      COMMON /CWORK/ HCLWR(96)
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  2
+0CARD TARGET
+  NO  STM.NO
+ 
+ 03300    C
+ 03500  18      DATA MKLUMI /    1/, MKEHIG /   2/, MKTAGE /   4/, MKMUT1 /   8/   MASKS FOR T1-ACCEPT TRIGGERS
+ 03600  19      DATA MKEC12 / Z100/, MKBEC  /Z200/, MKTAGB /Z400/, MKEB   /Z800/
+ 03700  20      DATA MKET12 /Z1000/, MKOLS /Z2000/, MKRAN  /Z8000/
+ 03800  21      DATA MKTAG  / Z404/, MKENGY / Z1F06/
+ 03900  22      DATA MKUNT1 /Z40F0/
+ 04100  23      DATA MKMUT2 /  Z80/                                                MASKS FOR T1-POSTPONE TRIGGERS
+ 04300  24      DATA MKTR1  /    4/, MKTR2  /   1/, MKTR3  /   2/, MKTR2C /    8/  MASKS FOR T2-BITS
+ 04400  25      DATA MKAT1  / ZF00/, MKAT2  / Z3F/, MKAT3  / ZC0/, MKAT2C /ZF000/
+ 04600  26      INTEGER MKATOF(4) /0,    0, ZB037, ZB037/                          MASKS FOR ACCEPTED TRACKS
+ 04700  27      INTEGER MKATBG(4) /0, Z300, Z4308, Z4348/
+ 04800    C
+ 05000  28      INTEGER MKTRBT( 7) /1,2,4,8,16,32,64/                              MASKS FOR TRIGGER IN 'LATC' BANK
+ 05200    C     INTEGER MKCLBT(16) /1,2,4,8,16,32,64,128,256,512,1024,2048,        MASKS FOR HITS IN LAYERS OF JETC
+ 05300    C    ,                    Z1000,Z2000,Z4000,Z8000/
+ 05500  29      INTEGER NCTOF ( 7) /2,3,3,3,3,3,3/                                 # OF CELLS FOR TOF COUNTER 1...7
+ 05700  30      INTEGER ICTOF ( 7) /0,1,2,3,4,5,6/                                 1. CELL FOR TOF-COUNTER 1...7
+ 05800    C
+ 05900  31      DATA LBINIT /0/,  NLUMI /16/, ILUMI /0/
+ 06000    C
+ 06100    C
+ 06200    C
+ 06300  32 2001 FORMAT(' TRCK82: NO TRIG-1 BANK FOR EVENT',2I6)
+ 06400  33 2002 FORMAT(' TRCK82: EVENT',2I6,3(2X,Z4),6I6)
+ 06500  34 2009 FORMAT(' TRCK82: EVENT',2I6,10(2X,Z4))
+ 06600  35 2003   FORMAT('0EROW:',20I6,/,(6X,20I6))
+ 06700  36 2004 FORMAT(' TRCK82: NO BEAM ENERGY FOR EVENT',2I6,'EBEAM =',F8.0,
+ 06800         ,       ' USE EBEAM = 17 000 GEV INSTEAD  *********************')
+ 06900  37 2005 FORMAT(' JETC:',20I6)
+ 07000  38 2006 FORMAT('0HCLWR:',12I6,/,(7X,12I6))
+ 07100  39 2007 FORMAT(' TRCK82: UNKNOWN TRIGGER FOR EVENT',2I6,3(2X,Z4),
+ 07200         ,       2X,8('**'))
+ 07300  40 2008 FORMAT('0LGCT82:',2I6,2(/,1X,12F8.0),/,1X,5F8.0,I8,F8.3,I8)
+ 07400    C
+ 07500    C
+ 07700  41      LBACC  = 0                                                         INITIALIZE LABEL FOR TRIGGER CHECK
+ 07800  42      ACCB2  = 0
+ 07900  43      ACCB4  = 0
+ 08000  44      ACCB8  = 0
+ 08100  45      ACCT2M = 0
+ 08200    C
+ 08300    C
+ 08500  46      IF LBINIT.EQ.0                                                     INITIALIZE POINTER
+ 08600  47      THEN
+ 08700  50         LBINIT = 1
+ 08800  51         NPRUN  = 0
+ 08900  52         IQJETC = IBLN('JETC')
+ 09000  53         IQTRIG = IBLN('TRIG')
+ 09100  54         IQLATC = IBLN('LATC')
+ 09200  55         IQALGN = IBLN('ALGN')
+ 09400  56         EBEAM = HHEADR(37)                                              BEAM ENERGY
+ 09500  57         IF EBEAM.LE.6000.
+ 09600  58         THEN
+ 09700  61            PRINT 2004, HRUN,HEV,EBEAM
+ 09800  62            EBEAM = 1700.
+ 09900  63         CIF
+ 10000  64         EB35   = EBEAM * .35
+ 10100  65         EB50   = EBEAM * .50
+ 10200  66         EB65   = EBEAM * .65
+ 10300    C       CALL HBOOK1(201,'EB  (B>2.5)               $', 50,0., 25000.)
+ 10400    C       CALL HBOOK1(202,'E7MN(B>2.5)               $', 50,0.,  1000.)
+ 10500    C       CALL HBOOK1(203,'E7MN(E*(C1+C2))           $', 50,0.,  1000.)
+ 10600    C       CALL HBOOK1(204,'ETOT(E>6)                 $', 50,0., 25000.)
+ 10700    C       CALL HBOOK1(205,'ETOT(E>6)                 $', 50,0., 25000.)
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  3
+0CARD TARGET
+  NO  STM.NO
+ 
+ 10800    C       CALL HBOOK1(206,'E7MN(E>6)                 $', 50,0.,  1000.)
+ 10900    C       CALL HBOOK1(210,'E1  (C1*C2)               $', 50,0., 10000.)
+ 11000    C       CALL HBOOK1(211,'E1  (E*C1*C2)             $', 50,0., 20000.)
+ 11100    C       CALL HBOOK1(212,'ETOT(E*C1*C2)             $', 50,0., 25000.)
+ 11200    C       CALL HBOOK1(213,'E1  (E*C1*C2)             $', 50,0., 20000.)
+ 11300  67      CIF
+ 11400    C
+ 11500    C
+ 11700  68      IPTRIG = IDATA(IQTRIG)                                             CHECK IF TRIG-1 BANK EXISTING
+ 11800  69      IF IPTRIG.LE.0 .OR. IDATA(IPTRIG-2).NE.1
+ 11900  70      THEN
+ 12000    C       PRINT 2001, HRUN,HEV
+ 12100  73         LBTRG1 = 0
+ 12200  74         LBTRG2 = 0
+ 12300  75         RETURN
+ 12400  76      CIF
+ 12500    C
+ 12600    C
+ 12800  77      LBTRG1 = HDATA(IPTRIG*2+ 8)                                        TRIGGER BITS
+ 12900  78      LBTRP1 = HDATA(IPTRIG*2+ 9)
+ 13000  79      LBTRG2 = HDATA(IPTRIG*2+10)
+ 13100  80      I0 = IPTRIG*2 + 1
+ 13200  81      I9 = I0 + IDATA(IPTRIG)*2 - 1
+ 13300    C
+ 13400    C
+ 13600  82      IF AND(LBTRG1,MKUNT1).NE.0                                         CHECK IF UNKNOWN TRIGGER
+ 13700  83      THEN
+ 13800  86         NPRUN = NPRUN + 1
+ 13900  87         IF(NPRUN.LE.10) PRINT 2007, HRUN,HEV, LBTRG1,LBTRP1,LBTRG2
+ 14000  89      CIF
+ 14100    C
+ 14200    C
+ 14400    C     IF(AND(LBTRG1,MKOLS).NE.0) LBACC = OR(LBACC,1)                     CHECK IF OLSSON TRIGGER
+ 14500    C     IF(AND(LBTRG1,MKOLS).NE.0) ACCB2 = OR(ACCB2,MKOLS)
+ 14600    C
+ 14700    C
+ 14900  90      IF(AND(LBTRG1,MKRAN).NE.0) LBACC = OR(LBACC,1)                     CHECK IF RANDOM TRIGGER
+ 15000  92      IF(AND(LBTRG1,MKRAN).NE.0) ACCB2 = OR(ACCB2,MKRAN)
+ 15100    C
+ 15200    C
+ 15400  94      IF AND(LBTRG1,MKLUMI).NE.0                                         CHECK IF LUMI TRIGGER
+ 15500  95      THEN
+ 15600  98         ILUMI = ILUMI + 1
+ 15700  99         IF ILUMI.EQ.NLUMI
+ 15800 100         THEN
+ 15900 103            LBACC = OR(LBACC,1)
+ 16000 104            ILUMI = 0
+ 16100 105            ACCB2 = OR(ACCB2,MKLUMI)
+ 16200 106         CIF
+ 16300 107      CIF
+ 16400    C
+ 16500    C
+ 16700 108      IF(AND(LBTRG1,MKMUT1) .NE.0) ACCB4 = OR(ACCB4,MKMUT1)              MU-TRIGGER
+ 16800 110      IF(AND(LBTRG1,MKMUT1) .NE.0) LBACC = OR(LBACC,4)
+ 16900 112      IF AND(LBTRP1,MKMUT2).NE.0
+ 17000 113      THEN
+ 17100 116         CALL MEWT3(IMUACC)
+ 17200 117         IF IMUACC.NE.0
+ 17300 118         THEN
+ 17400 121            LBACC = OR(LBACC,4)
+ 17500 122            ACCB8 = OR(ACCB8,MKMUT2)
+ 17600    C         IF(AND(LBTRP1,MKMUT2) .NE.0) ACCB8 = OR(ACCB8,MKMUT2)
+ 17700 123         CIF
+ 17800 124      CIF
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  4
+0CARD TARGET
+  NO  STM.NO
+ 
+ 17900    C
+ 18000    C
+ 18200 125      IACCLG = 0                                                         LG-ENERGIES IF ENERGY TRIGGER
+ 18300 126      IPALGN = IDATA(IQALGN)
+ 18400 127      IF(AND(LBTRG1,MKENGY).NE.0 .AND. IERRLG.EQ.0 .AND. IPALGN.GT.0)
+ 18500         ?  CALL LGCT82(IPALGN)
+ 18600 129      IF IACCLG.EQ.0
+ 18700 130      THEN
+ 18800 133         EBAR = 0.
+ 18900 134         EC1  = 0.
+ 19000 135         EC2  = 0.
+ 19100 136         ETOT = 0.
+ 19200 137      ELSE
+ 19300    C       PRINT 2008, HRUN,HEV,(SUM12(I1),I1=1,32)
+ 19400 139      CIF
+ 19500    C
+ 19600 140      LBCSM = 0
+ 19700    C
+ 19800    C
+ 20000 141      IF AND(LBTRG1,MKTAG).NE.0                                          CHECK IF TAG-TRIGGER
+ 20100 142      THEN
+ 20200 145         CALL TAGF82(IFTG)
+ 20300 146         IF IFTG.GT.0
+ 20400 147         THEN
+ 20500 150            IF AND(LBTRG1,MKTAGB).NE.0
+ 20600 151            THEN
+ 20700 154               LBACC = OR(LBACC,2)
+ 20800 155               ACCB2 = OR(ACCB2,MKTAGB)
+ 20900 156            ELSE
+ 21000 158               ECENTR = 0.
+ 21100 159               IF(IFTG.EQ.11) ECENTR = ETOT - EC1
+ 21200 161               IF(IFTG.EQ.12) ECENTR = ETOT - EC2
+ 21300 163               IF(IFTG.GT.12) ECENTR = ETOT
+ 21400 165               IF ECENTR.GT.100. .AND. ETOT.GT.ELGLM(3)
+ 21500 166               THEN
+ 21600 169                  LBACC = OR(LBACC,2)
+ 21700 170                  ACCB2 = OR(ACCB2,MKTAGE)
+ 21800 171               CIF
+ 21900 172            CIF
+ 22000 173         CIF
+ 22100 174      CIF
+ 22200    C
+ 22300    C
+ 22500 175      IF AND(LBTRG1,MKEHIG).NE.0                                         E > 6 GEV TRIGGER
+ 22600 176      THEN
+ 22700    C       CALL HF1(204,ETOT,1.)
+ 22800 179         IF ETOT.GT.EB65
+ 22900 180         THEN
+ 23000 183            LBACC = OR(LBACC,2)
+ 23100 184            ACCB2 = OR(ACCB2,MKEHIG)
+ 23200 185         ELSE
+ 23300 187            IF ETOT.GT.ELGLM( 1)
+ 23400 188            THEN
+ 23500    C         IF(LBCSM.EQ.0) CALL LGBRCS(IRBAR)
+ 23600    C         LBCSM = 1
+ 23700    C         IF(IRBAR.EQ.1 .AND. JEMPTY.GT.1) IRBAR =  2
+ 23800 191               IF(JEMPTY.LE.1) LBACC = OR(LBACC,2)
+ 23900 193               IF(JEMPTY.LE.1) ACCB2 = OR(ACCB2,MKEHIG)
+ 24000    C         IF(JEMPTY.LE.1) CALL HF1(205,ETOT ,1.)
+ 24100    C         IF(JEMPTY.LE.1) CALL HF1(206,E7MIN,1.)
+ 24200 195            CIF
+ 24300 196         CIF
+ 24400 197      CIF
+ 24500    C
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  5
+0CARD TARGET
+  NO  STM.NO
+ 
+ 24600    C
+ 24800 198      IF AND(LBTRG1,MKEC12).NE.0                                         EC1 * EC2  TRIGGER
+ 24900 199      THEN
+ 25000 202         E1 = AMIN1(EC1,EC2)
+ 25100    C       CALL HF1(210,E1  ,1.)
+ 25200 203         IF E1.GT.EB35
+ 25300 204         THEN
+ 25400 207            LBACC = OR(LBACC,2)
+ 25500 208            ACCB2 = OR(ACCB2,MKEC12)
+ 25600 209         ELSE
+ 25700 211            IF(E1.GT.ELGLM(6)) LBACC = OR(LBACC,4)
+ 25800 213            IF(E1.GT.ELGLM(6)) ACCB4 = OR(ACCB4,MKEC12)
+ 25900 215         CIF
+ 26000 216      CIF
+ 26100    C
+ 26200    C
+ 26400 217      IF AND(LBTRG1,MKET12).NE.0                                         ETOT * EC1 * EC2  TRIGGER
+ 26500 218      THEN
+ 26600 221         E1       = AMIN1(EC1,EC2)
+ 26700    C       CALL HF1(211,E1  ,1.)
+ 26800 222         IF E1.GT.ELGLM(8) .AND. ETOT.GT.ELGLM(2)
+ 26900 223         THEN
+ 27000 226            LBACC = OR(LBACC,4)
+ 27100 227            ACCB4 = OR(ACCB4,MKET12)
+ 27200    C         CALL HF1(212,ETOT,1.)
+ 27300    C         CALL HF1(213,E1  ,1.)
+ 27400 228         CIF
+ 27500 229      CIF
+ 27600    C
+ 27800 230      IF AND(LBTRG1,MKBEC).NE.0                                          B * (EC1 + EC2)  TRIGGER
+ 27900 231      THEN
+ 28000 234         IF  EBAR.GT.ELGLM(4)
+ 28100 235         THEN
+ 28200 238            IF EC1.GT. ELGLM(7) .OR. EC2.GT. ELGLM(7)
+ 28300 239            THEN
+ 28400 242               IF ETOT.GT.EB65
+ 28500 243               THEN
+ 28600 246                  LBACC = OR(LBACC,2)
+ 28700 247                  ACCB2 = OR(ACCB2,MKBEC)
+ 28800 248               ELSE
+ 28900    C           IF(LBCSM.EQ.0) CALL LGBRCS(IRBAR)
+ 29000    C           LBCSM = 1
+ 29100    C           IF(IRBAR.EQ.1 .AND. JEMPTY.GT.1) IRBAR =  2
+ 29200 250                  IF(JEMPTY.LE.1) LBACC = OR(LBACC,2)
+ 29300 252                  IF(JEMPTY.LE.1) ACCB2 = OR(ACCB2,MKBEC)
+ 29400    C           IF(JEMPTY.LE.1) CALL HF1(203,E7MIN,1.)
+ 29500 254               CIF
+ 29600 255            CIF
+ 29700 256         CIF
+ 29800 257      CIF
+ 29900    C
+ 30000    C
+ 30200 258      IF AND(LBTRG1,MKEB).NE.0                                           BARREL TRIGGER
+ 30300 259      THEN
+ 30400 262         IF EBAR.GE.ELGLM(2)
+ 30500 263         THEN
+ 30600 266            IF(LBCSM.EQ.0) CALL LGBRCS(IRBAR)
+ 30700 268            LBCSM = 1
+ 30800 269            IF(IRBAR.EQ.1 .AND. JEMPTY.GT.1) IRBAR =  2
+ 30900 271            IF(IRBAR.LE.1) LBACC = OR(LBACC,2)
+ 31000 273            IF(IRBAR.LE.1) ACCB2 = OR(ACCB2,MKEB)
+ 31100    C         IF(IRBAR.LE.1) CALL HF1(201,EBAR,1.)
+ 31200    C         IF(IRBAR.LE.1) CALL HF1(202,E7MIN,1.)
+ 31300 275         CIF
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  6
+0CARD TARGET
+  NO  STM.NO
+ 
+ 31400 276      CIF
+ 31500    C
+ 31600    C     PRINT 2002, HRUN,HEV, LBTRG1,LBTRG2,LBACC,JEMPTY,UNBAL,IRBAR,LBCSM
+ 31700    C
+ 31900 277      IF(AND(LBACC,2).NE.0) RETURN                                       STOP IF EVENT ACCEPTED
+ 32000    C
+ 32100    C
+ 32300 279      IF(AND(LBTRG2,15).EQ.0) RETURN                                     STOP IF NO T2 ACCEPT
+ 32400    C
+ 32500    C
+ 32700 281      IPJETC = IDATA(IQJETC)                                             ACCUMULATE CELL BITS OF 3. RING
+ 32800 282      IF IPJETC.LE.0
+ 32900 283      THEN
+ 33000    C       PRINT 2002, HRUN,HEV, LBTRG1,LBRG2,LBACC
+ 33100 286         RETURN
+ 33200 287      CIF
+ 33300    C
+ 33400    C
+ 33600    C                                                                        SEARCH FOR TRACK CAND. IN RING 3
+ 33800 288      IF(IDATA(IPJETC).LE.50) RETURN                                     CHECK IF ANY JETC DATA
+ 33900 290      IPJC2 = IPJETC*2
+ 34000 291      NHTR3 = HDATA(IPJC2+99) - HDATA(IPJC2+51)
+ 34200 292      IF(NHTR3.LE.0) RETURN                                              CHECK IF ANY HITS IN R3
+ 34300    C
+ 34500 294      CALL SETS(HCLWR(1),0,192,0)                                        SET UP 1 LABEL/CELL WITH 1 BIT/LAYER
+ 34600 295      IP0 = IPJC2 + 100 + HDATA(IPJC2+51)
+ 34700 296      IP9 = IP0 + NHTR3 - 1
+ 34800 297      IWIR0 =-1
+ 34900 298      FOR IP=IP0,IP9,4
+ 35000 299         IWIR = HDATA(IP)
+ 35100 300         IWIR = SHFTR(IWIR,3)
+ 35200 301         IF HDATA(IP+1).GT.80 .AND. HDATA(IP+2).GT.80
+ 35300 302         THEN
+ 35400 305            HCLL = SHFTR(IWIR,3) - 95
+ 35500 306            IF(IWIR.NE.IWIR0) HCLWR(HCLL) = HCLWR(HCLL) + 1
+ 35600 308         CIF
+ 35700 309         IWIR0 = IWIR
+ 35800 310      CFOR
+ 35900    C     PRINT 2006, HCLWR
+ 36000    C
+ 36200 312      IPLATC = IDATA(IQLATC)                                             CHECK IF 'LATC' BANK
+ 36300 313      IF(IPLATC.LE.0) RETURN
+ 36500 315      IPLT2 = IPLATC*2                                                   LOOP OVER ALL TOF COUNTER
+ 36600 316      IP0 = IPLT2 + 6
+ 36700 317      IP9 = IP0 + 5
+ 36800 318      IPTBG = IPTRIG*2 + 5
+ 36900 319      ITBG  = 0
+ 37000 320      ITLST =-100
+ 37100 321      ITOF0 = 0
+ 37200 322      ICLL0 = 0
+ 37300 323      NTRCK = 0
+ 37400 324      NTRBG = 0
+ 37500 325      NTREL = 0
+ 37600 326      REPEAT
+ 37700 327         ITRBT = HDATA(IP0)
+ 37800 328         IF AND(ITBG,1).EQ.0.
+ 37900 329         THEN
+ 38000 332            ITRBG = HDATA(IPTBG)
+ 38100 333            IPTBG = IPTBG + 1
+ 38200 334            ITBG = ITBG + 1
+ 38300 335         ELSE
+ 38400 337            ITRBG = SHFTR(ITRBG,8)
+ 38500 338            ITBG = ITBG + 1
+ 38600 339         CIF
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  7
+0CARD TARGET
+  NO  STM.NO
+ 
+ 38700 340         FOR JTOF=1,7
+ 38800 341            IF AND(MKTRBT(JTOF),ITRBT) .NE. 0
+ 38900 342            THEN
+ 39100 345               ITOF = ITOF0 + JTOF                                       TOF COUNTER #
+ 39200    C
+ 39400    C                                                                        CHECK IF TRACK IN JETC
+ 39500    C
+ 39700 346               JCTOF = (ICTOF(JTOF) + ICLL0)*2 - 1                       LABEL FOR OVERLAPPING CELLS
+ 39900 347               LBTRK = 0                                                 INITIALIZE LABEL FOR TRACK CAND.
+ 40000    C
+ 40200 348               IF ITOF-ITLST.LE.2                                        CHECK IF 2 ADJACENT TOF
+ 40300 349               THEN
+ 40500 352                  HCLL9 = NCTOF(JTOF)*2 + JCTOF - 1                      CHECK IF 2 DIFFERENT TRACKS
+ 40600 353                  HCLL1 =-99
+ 40700 354                  MTRK = 0
+ 40800    C     PRINT 2005, ITOF,JTOF,JCTOF,ITLST,HCLL0,HCLL9
+ 40900 355                  FOR ICLL=HCLL0,HCLL9
+ 41000 356                     IF HCLWR(ICLL).GE.6
+ 41100 357                     THEN
+ 41200 360                        HDCLL = ICLL - HCLL1
+ 41300 361                        IF HDCLL.EQ.1
+ 41400 362                        THEN
+ 41500 365                           HCLL1 = -99
+ 41600 366                        ELSE
+ 41700 368                           IF HDCLL.NE.3 .OR. TBIT(ICLL,31)
+ 41800 369                           THEN
+ 41900 372                              MTRK = MTRK + 1
+ 42000 373                              HCLL1 = ICLL
+ 42100 374                           CIF
+ 42200 375                        CIF
+ 42300 376                     CIF
+ 42400 377                  CFOR
+ 42500 379                  IF(MTRK.GE.2) LBTRK = 1
+ 42600 381               ELSE
+ 42700 383                  NHIT5 = 0
+ 42800 384                  NHIT6 = 0
+ 42900 385                  IF JCTOF.LT.0
+ 43000 386                  THEN
+ 43100 389                     NHIT1 = HCLWR(95)
+ 43200 390                     NHIT2 = HCLWR(96)
+ 43300 391                     NHIT3 = HCLWR( 1)
+ 43400 392                     NHIT4 = HCLWR( 2)
+ 43500 393                     IF(NHIT2.GE.3 .AND. HCLWR(93).GE.6) NHIT2 = 8
+ 43600 395                     IF(NHIT4.GE.3 .AND. HCLWR( 3).GE.6) NHIT4 = 8
+ 43700 397                  ELSE
+ 43800 399                     NHIT1 = HCLWR(JCTOF  )
+ 43900 400                     NHIT2 = HCLWR(JCTOF+1)
+ 44000 401                     NHIT3 = HCLWR(JCTOF+2)
+ 44100 402                     NHIT4 = HCLWR(JCTOF+3)
+ 44200 403                     IF NCTOF(JTOF).EQ.3
+ 44300 404                     THEN
+ 44400 407                        NHIT5 = HCLWR(JCTOF+4)
+ 44500 408                        NHIT6 = HCLWR(JCTOF+5)
+ 44600 409                     ELSE
+ 44700 411                        IF(NHIT2.GE.3 .AND. HCLWR(JCTOF-2).GE.6) NHIT2 = 8
+ 44800 413                        IF(NHIT4.GE.3 .AND. HCLWR(JCTOF+4).GE.6) NHIT4 = 8
+ 44900 415                     CIF
+ 45000 416                  CIF
+ 45100    C     PRINT 2005,ITOF,JTOF,JCTOF,NHIT1,NHIT2,NHIT3,NHIT4,NHIT5,NHIT6
+ 45200    C
+ 45300                                                                             CHECK IF ENOUGH HITS FOR TRACK CAND.
+ 45400 417                  IF(MAX0(NHIT1,NHIT2,NHIT3,NHIT4,NHIT5,NHIT6).GE.6) LBTRK=1
+ 45500 419               CIF
+ 45600    C
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  8
+0CARD TARGET
+  NO  STM.NO
+ 
+ 45800 420               IF LBTRK.NE.0                                             CHECK IF TRACK + COUNT
+ 45900 421               THEN
+ 46000 424                  NTRCK = NTRCK + 1
+ 46100 425                  IF(AND(MKTRBT(JTOF),ITRBG) .NE. 0.) NTRBG = NTRBG + 1
+ 46200 427                  ITLST = ITOF
+ 46300 428                  HCLL0 = JCTOF
+ 46400    C     PRINT 2005, NHIT1,NHIT2,NTRCK
+ 46500    C
+ 46600 429               CIF
+ 46700 430            CIF
+ 46800 431         CFOR
+ 46900    C
+ 47000    C
+ 47100 433         ICLL0 = ICLL0 + 8
+ 47200 434         ITOF0 = ITOF0 + 7
+ 47300 435         IP0   = IP0   + 1
+ 47400 436      UNTIL IP0.GT.IP9
+ 47500    C
+ 47600    C
+ 47800 437      ACCT2M = 0.                                                        MASK T1-POSTP. WITH T2-ACC
+ 47900 441      IF(AND(LBTRG2,MKTR1 ).NE.0.) ACCT2M = OR(ACCT2M,MKAT1 )
+ 48000 443      IF(AND(LBTRG2,MKTR2 ).NE.0.) ACCT2M = OR(ACCT2M,MKAT2 )
+ 48100 445      IF(AND(LBTRG2,MKTR3 ).NE.0.) ACCT2M = OR(ACCT2M,MKAT3 )
+ 48200 447      IF(AND(LBTRG2,MKTR2C).NE.0.) ACCT2M = OR(ACCT2M,MKAT2C)
+ 48300 449      ACCT2M = AND(ACCT2M,LBTRP1)
+ 48400    C
+ 48500    C
+ 48700 450      IMK = MIN0(NTRCK,3)                                                MASK WITH TBG + TOF TRIGGERS
+ 48800 451      ACCTOF = AND(ACCT2M,MKATOF(IMK+1))
+ 48900 452      IMK = MIN0(NTRBG,3)
+ 49000 453      ACCTBG = AND(ACCT2M,MKATBG(IMK+1))
+ 49100 454      ACCB8  = OR(ACCB8,ACCTOF)
+ 49200 455      ACCB8  = OR(ACCB8,ACCTBG)
+ 49300    C
+ 49400 456      IF(ACCTOF.NE.0 .OR. ACCTBG.NE.0) LBACC = OR(LBACC,8)
+ 49500    C
+ 49600    C     PRINT 2009, HRUN,HEV,LBTRG1,LBTRG2,LBTRP1,ACCT2M,LBACC,NTRCK,NTRBG
+ 49700    C    ,          , ACCTOF,ACCTBG
+ 49800 458      RETURN
+ 49900 459      END
+0END OF SEGMENT
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         458 TARGET STATEMENTS
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  1
+0CARD TARGET
+  NO  STM.NO
+ 
+0END OF PROGRAM
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         458 TARGET STATEMENTS
+ 00000    C   14/07/82 703231337  MEMBER NAME  TRCK82X  (JADESR)      SHELTRAN
+ 00100   2      SUBROUTINE TRCK82(LBACC,LBTRG1,LBTRG2,IERRLG)
+ 00200    C
+ 00300    C     CHECK 1982 TRIGGER
+ 00400    C     P. STEFFEN 82/02/14
+ 00500    C     PST, LAST UPDATE 82/04/06 :
+ 00600    C     INSTALLATION OF OLSSON TRIGGER (COMMENTED OUT UNTIL MAY82-DATA)
+ 00700    C     CHANGES OF TAG-TRIGGERS
+ 00800    C     LAST UPDATE 14.7.1982   MODIFICATION OF TRIGGERS MUT1  J.OLSSON
+ 00900    C
+ 01000    C
+ 01100    C     LBACC= 0 : EVENT REJECTED
+ 01200    C            1 : EVENT ACCEPTED (BUT NO PATREC WILL BE CALLED)
+ 01300    C            2 : EVENT ACCEPETED, SLOW PATREC WILL BE CALLED
+ 01400    C            4 : EVENT ACCEPTED IF >0 TRACKS FROM BEAM VERTEX
+ 01500    C            8 : EVENT ACCEPTED IF Z-VERTEX + >0 TRACKS FROM BEAM VERTEX
+ 01600    C
+ 01700   3      IMPLICIT INTEGER*2 (H)
+ 01800   4      REAL LBACC
+ 00000    C   01/04/82 204012259  MEMBER NAME  CUTSR1   (JADESR)      MACRO
+ 00001    C-------------------------------
+ 00002    C  MACRO CUTSR1 .... REDUC1 CUTS
+ 00003    C-------------------------------
+ 00004   5      COMMON/CUTSR1/NVRSN,NRUNST,NEVTST,NOTTOT,NOTRUN(10),ELGLM( 8)
+ 00005    C--------- END OF MACRO CUTSR1 ------------
+ 02000   6      COMMON /CREDRS/ ACCB2,ACCB4,ACCB8,ACCT2M
+ 02100    C
+ 02200   7      COMMON /CWORK/ SUM12(12),SUMWRD(12)
+ 02300    C
+ 02400   8      COMMON /CRESR1/ ETOT,EBAR,EC1,EC2,E7MIN,
+ 02500         ,               JEMPTY,UNBAL,IACCLG
+ 02600    C
+          C----------------------------------------------------------------------
+          C             MACRO CDATA .... BOS COMMON.
+          C
+          C             THIS MACRO ONLY DEFINES THE IDATA/HDATA/ADATA NAMES.
+          C             THE ACTUAL SIZE OF /BCS/ IS FIXED ON MACRO CBCSMX
+          C             OR BY OTHER MEANS. A DEFAULT SIZE OF 40000 IS GIVEN HERE.
+          C
+          C----------------------------------------------------------------------
+          C
+         9      COMMON /BCS/ IDATA(40000)
+        10      DIMENSION HDATA(80000),ADATA(40000),IPNT(50)
+        11      EQUIVALENCE (HDATA(1),IDATA(1),ADATA(1)),(IPNT(1),IDATA(55))
+        12      EQUIVALENCE (NWORD,IPNT(50))
+          C
+          C------------------------ END OF MACRO CDATA --------------------------
+ 02800    C
+          C-------------------------------
+          C  MACRO CHEADR .... HEADER BANK
+          C-------------------------------
+        13      COMMON /CHEADR/ IHEADR(54)
+        14      INTEGER*2 HHEADR(108)
+        15      EQUIVALENCE (IHEADR(1),HHEADR(1))
+          C --
+          C --  HHEADR(17) = EXPERIMENT NUMBER
+          C --  HHEADR(18) = RUN NUMBER
+          C --  HHEADR(19) = EVENT NUMBER
+          C --  HHEADR(38) = MAGNETIC FIELD (GAUSS)
+          C --
+          C--------- END OF MACRO CHEADR ------------
+ 03000  16      EQUIVALENCE (HHEADR(18),HRUN) , (HHEADR(19),HEV)
+ 03100    C
+ 03200  17      COMMON /CWORK/ HCLWR(96)
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  2
+0CARD TARGET
+  NO  STM.NO
+ 
+ 03300    C
+ 03500  18      DATA MKLUMI /    1/, MKEHIG /   2/, MKTAGE /   4/, MKMUT1 /   8/   MASKS FOR T1-ACCEPT TRIGGERS
+ 03600  19      DATA MKEC12 / Z100/, MKBEC  /Z200/, MKTAGB /Z400/, MKEB   /Z800/
+ 03700  20      DATA MKET12 /Z1000/, MKOLS /Z2000/, MKRAN  /Z8000/
+ 03800  21      DATA MKTAG  / Z404/, MKENGY / Z1F06/
+ 03900  22      DATA MKUNT1 /Z40F0/
+ 04100  23      DATA MKMUT2 /  Z80/                                                MASKS FOR T1-POSTPONE TRIGGERS
+ 04300  24      DATA MKTR1  /    4/, MKTR2  /   1/, MKTR3  /   2/, MKTR2C /    8/  MASKS FOR T2-BITS
+ 04400  25      DATA MKAT1  / ZF00/, MKAT2  / Z3F/, MKAT3  / ZC0/, MKAT2C /ZF000/
+ 04600  26      INTEGER MKATOF(4) /0,    0, ZB037, ZB037/                          MASKS FOR ACCEPTED TRACKS
+ 04700  27      INTEGER MKATBG(4) /0, Z300, Z4308, Z4348/
+ 04800    C
+ 05000  28      INTEGER MKTRBT( 7) /1,2,4,8,16,32,64/                              MASKS FOR TRIGGER IN 'LATC' BANK
+ 05200    C     INTEGER MKCLBT(16) /1,2,4,8,16,32,64,128,256,512,1024,2048,        MASKS FOR HITS IN LAYERS OF JETC
+ 05300    C    ,                    Z1000,Z2000,Z4000,Z8000/
+ 05500  29      INTEGER NCTOF ( 7) /2,3,3,3,3,3,3/                                 # OF CELLS FOR TOF COUNTER 1...7
+ 05700  30      INTEGER ICTOF ( 7) /0,1,2,3,4,5,6/                                 1. CELL FOR TOF-COUNTER 1...7
+ 05800    C
+ 05900  31      DATA LBINIT /0/,  NLUMI /16/, ILUMI /0/
+ 06000    C
+ 06100    C
+ 06200    C
+ 06300  32 2001 FORMAT(' TRCK82: NO TRIG-1 BANK FOR EVENT',2I6)
+ 06400  33 2002 FORMAT(' TRCK82: EVENT',2I6,3(2X,Z4),6I6)
+ 06500  34 2009 FORMAT(' TRCK82: EVENT',2I6,10(2X,Z4))
+ 06600  35 2003   FORMAT('0EROW:',20I6,/,(6X,20I6))
+ 06700  36 2004 FORMAT(' TRCK82: NO BEAM ENERGY FOR EVENT',2I6,'EBEAM =',F8.0,
+ 06800         ,       ' USE EBEAM = 17 000 GEV INSTEAD  *********************')
+ 06900  37 2005 FORMAT(' JETC:',20I6)
+ 07000  38 2006 FORMAT('0HCLWR:',12I6,/,(7X,12I6))
+ 07100  39 2007 FORMAT(' TRCK82: UNKNOWN TRIGGER FOR EVENT',2I6,3(2X,Z4),
+ 07200         ,       2X,8('**'))
+ 07300  40 2008 FORMAT('0LGCT82:',2I6,2(/,1X,12F8.0),/,1X,5F8.0,I8,F8.3,I8)
+ 07400    C
+ 07500    C
+ 07700  41      LBACC  = 0                                                         INITIALIZE LABEL FOR TRIGGER CHECK
+ 07800  42      ACCB2  = 0
+ 07900  43      ACCB4  = 0
+ 08000  44      ACCB8  = 0
+ 08100  45      ACCT2M = 0
+ 08200    C
+ 08300    C
+ 08500  46      IF LBINIT.EQ.0                                                     INITIALIZE POINTER
+ 08600  47      THEN
+ 08700  50         LBINIT = 1
+ 08800  51         NPRUN  = 0
+ 08900  52         IQJETC = IBLN('JETC')
+ 09000  53         IQTRIG = IBLN('TRIG')
+ 09100  54         IQLATC = IBLN('LATC')
+ 09200  55         IQALGN = IBLN('ALGN')
+ 09400  56         EBEAM = HHEADR(37)                                              BEAM ENERGY
+ 09500  57         IF EBEAM.LE.6000.
+ 09600  58         THEN
+ 09700  61            PRINT 2004, HRUN,HEV,EBEAM
+ 09800  62            EBEAM = 1700.
+ 09900  63         CIF
+ 10000  64         EB35   = EBEAM * .35
+ 10100  65         EB50   = EBEAM * .50
+ 10200  66         EB65   = EBEAM * .65
+ 10300    C       CALL HBOOK1(201,'EB  (B>2.5)               $', 50,0., 25000.)
+ 10400    C       CALL HBOOK1(202,'E7MN(B>2.5)               $', 50,0.,  1000.)
+ 10500    C       CALL HBOOK1(203,'E7MN(E*(C1+C2))           $', 50,0.,  1000.)
+ 10600    C       CALL HBOOK1(204,'ETOT(E>6)                 $', 50,0., 25000.)
+ 10700    C       CALL HBOOK1(205,'ETOT(E>6)                 $', 50,0., 25000.)
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  3
+0CARD TARGET
+  NO  STM.NO
+ 
+ 10800    C       CALL HBOOK1(206,'E7MN(E>6)                 $', 50,0.,  1000.)
+ 10900    C       CALL HBOOK1(210,'E1  (C1*C2)               $', 50,0., 10000.)
+ 11000    C       CALL HBOOK1(211,'E1  (E*C1*C2)             $', 50,0., 20000.)
+ 11100    C       CALL HBOOK1(212,'ETOT(E*C1*C2)             $', 50,0., 25000.)
+ 11200    C       CALL HBOOK1(213,'E1  (E*C1*C2)             $', 50,0., 20000.)
+ 11300  67      CIF
+ 11400    C
+ 11500    C
+ 11700  68      IPTRIG = IDATA(IQTRIG)                                             CHECK IF TRIG-1 BANK EXISTING
+ 11800  69      IF IPTRIG.LE.0 .OR. IDATA(IPTRIG-2).NE.1
+ 11900  70      THEN
+ 12000  73         PRINT 2001, HRUN,HEV
+ 12100  74         LBTRG1 = 0
+ 12200  75         LBTRG2 = 0
+ 12300  76         RETURN
+ 12400  77      CIF
+ 12500    C
+ 12600    C
+ 12800  78      LBTRG1 = HDATA(IPTRIG*2+ 8)                                        TRIGGER BITS
+ 12900  79      LBTRP1 = HDATA(IPTRIG*2+ 9)
+ 13000  80      LBTRG2 = HDATA(IPTRIG*2+10)
+ 13010  81      PRINT 2007, HRUN,HEV, LBTRG1,LBTRP1,LBTRG2
+ 13100  82      I0 = IPTRIG*2 + 1
+ 13200  83      I9 = I0 + IDATA(IPTRIG)*2 - 1
+ 13300    C
+ 13400    C
+ 13600  84      IF AND(LBTRG1,MKUNT1).NE.0                                         CHECK IF UNKNOWN TRIGGER
+ 13700  85      THEN
+ 13800  88         NPRUN = NPRUN + 1
+ 13900  89         IF(NPRUN.LE.10) PRINT 2007, HRUN,HEV, LBTRG1,LBTRP1,LBTRG2
+ 14000  91      CIF
+ 14100    C
+ 14200    C
+ 14400    C     IF(AND(LBTRG1,MKOLS).NE.0) LBACC = OR(LBACC,1)                     CHECK IF OLSSON TRIGGER
+ 14500    C     IF(AND(LBTRG1,MKOLS).NE.0) ACCB2 = OR(ACCB2,MKOLS)
+ 14600    C
+ 14700    C
+ 14900  92      IF(AND(LBTRG1,MKRAN).NE.0) LBACC = OR(LBACC,1)                     CHECK IF RANDOM TRIGGER
+ 15000  94      IF(AND(LBTRG1,MKRAN).NE.0) ACCB2 = OR(ACCB2,MKRAN)
+ 15100    C
+ 15200    C
+ 15400  96      IF AND(LBTRG1,MKLUMI).NE.0                                         CHECK IF LUMI TRIGGER
+ 15500  97      THEN
+ 15600 100         ILUMI = ILUMI + 1
+ 15700 101         IF ILUMI.EQ.NLUMI
+ 15800 102         THEN
+ 15900 105            LBACC = OR(LBACC,1)
+ 16000 106            ILUMI = 0
+ 16100 107            ACCB2 = OR(ACCB2,MKLUMI)
+ 16200 108         CIF
+ 16300 109      CIF
+ 16400    C
+ 16500    C
+ 16700 110      IF(AND(LBTRG1,MKMUT1) .NE.0) ACCB4 = OR(ACCB4,MKMUT1)              MU-TRIGGER
+ 16800 112      IF(AND(LBTRG1,MKMUT1) .NE.0) LBACC = OR(LBACC,4)
+ 16900 114      IF AND(LBTRP1,MKMUT2).NE.0
+ 17000 115      THEN
+ 17100 118         CALL MEWT3(IMUACC)
+ 17200 119         IF IMUACC.NE.0
+ 17300 120         THEN
+ 17400 123            LBACC = OR(LBACC,4)
+ 17500 124            ACCB8 = OR(ACCB8,MKMUT2)
+ 17600    C         IF(AND(LBTRP1,MKMUT2) .NE.0) ACCB8 = OR(ACCB8,MKMUT2)
+ 17700 125         CIF
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  4
+0CARD TARGET
+  NO  STM.NO
+ 
+ 17800 126      CIF
+ 17900    C
+ 18000    C
+ 18200 127      IACCLG = 0                                                         LG-ENERGIES IF ENERGY TRIGGER
+ 18300 128      IPALGN = IDATA(IQALGN)
+ 18400 129      IF(AND(LBTRG1,MKENGY).NE.0 .AND. IERRLG.EQ.0 .AND. IPALGN.GT.0)
+ 18500         ?  CALL LGCT82(IPALGN)
+ 18600 131      IF IACCLG.EQ.0
+ 18700 132      THEN
+ 18800 135         EBAR = 0.
+ 18900 136         EC1  = 0.
+ 19000 137         EC2  = 0.
+ 19100 138         ETOT = 0.
+ 19200 139      ELSE
+ 19300 141         PRINT 2008, HRUN,HEV,(SUM12(I1),I1=1,24)
+ 19310         ,   , ETOT,EBAR,EC1,EC2,E7MIN, ELGLM
+ 19400 142      CIF
+ 19500    C
+ 19600 143      LBCSM = 0
+ 19700    C
+ 19800    C
+ 20000 144      IF AND(LBTRG1,MKTAG).NE.0                                          CHECK IF TAG-TRIGGER
+ 20100 145      THEN
+ 20200 148         CALL TAGF82(IFTG)
+ 20300 149         IF IFTG.GT.0
+ 20400 150         THEN
+ 20500 153            IF AND(LBTRG1,MKTAGB).NE.0
+ 20600 154            THEN
+ 20700 157               LBACC = OR(LBACC,2)
+ 20800 158               ACCB2 = OR(ACCB2,MKTAGB)
+ 20900 159            ELSE
+ 21000 161               ECENTR = 0.
+ 21100 162               IF(IFTG.EQ.11) ECENTR = ETOT - EC1
+ 21200 164               IF(IFTG.EQ.12) ECENTR = ETOT - EC2
+ 21300 166               IF(IFTG.GT.12) ECENTR = ETOT
+ 21400 168               IF ECENTR.GT.100. .AND. ETOT.GT.ELGLM(3)
+ 21500 169               THEN
+ 21600 172                  LBACC = OR(LBACC,2)
+ 21700 173                  ACCB2 = OR(ACCB2,MKTAGE)
+ 21800 174               CIF
+ 21900 175            CIF
+ 22000 176         CIF
+ 22100 177      CIF
+ 22200    C
+ 22300    C
+ 22500 178      IF AND(LBTRG1,MKEHIG).NE.0                                         E > 6 GEV TRIGGER
+ 22600 179      THEN
+ 22700    C       CALL HF1(204,ETOT,1.)
+ 22800 182         IF ETOT.GT.EB65
+ 22900 183         THEN
+ 23000 186            LBACC = OR(LBACC,2)
+ 23100 187            ACCB2 = OR(ACCB2,MKEHIG)
+ 23200 188         ELSE
+ 23300 190            IF ETOT.GT.ELGLM( 1)
+ 23400 191            THEN
+ 23500    C         IF(LBCSM.EQ.0) CALL LGBRCS(IRBAR)
+ 23600    C         LBCSM = 1
+ 23700    C         IF(IRBAR.EQ.1 .AND. JEMPTY.GT.1) IRBAR =  2
+ 23800 194               IF(JEMPTY.LE.1) LBACC = OR(LBACC,2)
+ 23900 196               IF(JEMPTY.LE.1) ACCB2 = OR(ACCB2,MKEHIG)
+ 24000    C         IF(JEMPTY.LE.1) CALL HF1(205,ETOT ,1.)
+ 24100    C         IF(JEMPTY.LE.1) CALL HF1(206,E7MIN,1.)
+ 24200 198            CIF
+ 24300 199         CIF
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  5
+0CARD TARGET
+  NO  STM.NO
+ 
+ 24400 200      CIF
+ 24500    C
+ 24600    C
+ 24800 201      IF AND(LBTRG1,MKEC12).NE.0                                         EC1 * EC2  TRIGGER
+ 24900 202      THEN
+ 25000 205         E1 = AMIN1(EC1,EC2)
+ 25100    C       CALL HF1(210,E1  ,1.)
+ 25200 206         IF E1.GT.EB35
+ 25300 207         THEN
+ 25400 210            LBACC = OR(LBACC,2)
+ 25500 211            ACCB2 = OR(ACCB2,MKEC12)
+ 25600 212         ELSE
+ 25700 214            IF(E1.GT.ELGLM(6)) LBACC = OR(LBACC,4)
+ 25800 216            IF(E1.GT.ELGLM(6)) ACCB4 = OR(ACCB4,MKEC12)
+ 25900 218         CIF
+ 26000 219      CIF
+ 26100    C
+ 26200    C
+ 26400 220      IF AND(LBTRG1,MKET12).NE.0                                         ETOT * EC1 * EC2  TRIGGER
+ 26500 221      THEN
+ 26600 224         E1       = AMIN1(EC1,EC2)
+ 26700    C       CALL HF1(211,E1  ,1.)
+ 26800 225         IF E1.GT.ELGLM(8) .AND. ETOT.GT.ELGLM(2)
+ 26900 226         THEN
+ 27000 229            LBACC = OR(LBACC,4)
+ 27100 230            ACCB4 = OR(ACCB4,MKET12)
+ 27200    C         CALL HF1(212,ETOT,1.)
+ 27300    C         CALL HF1(213,E1  ,1.)
+ 27400 231         CIF
+ 27500 232      CIF
+ 27600    C
+ 27800 233      IF AND(LBTRG1,MKBEC).NE.0                                          B * (EC1 + EC2)  TRIGGER
+ 27900 234      THEN
+ 28000 237         IF  EBAR.GT.ELGLM(4)
+ 28100 238         THEN
+ 28200 241            IF EC1.GT. ELGLM(7) .OR. EC2.GT. ELGLM(7)
+ 28300 242            THEN
+ 28400 245               IF ETOT.GT.EB65
+ 28500 246               THEN
+ 28600 249                  LBACC = OR(LBACC,2)
+ 28700 250                  ACCB2 = OR(ACCB2,MKBEC)
+ 28800 251               ELSE
+ 28900    C           IF(LBCSM.EQ.0) CALL LGBRCS(IRBAR)
+ 29000    C           LBCSM = 1
+ 29100    C           IF(IRBAR.EQ.1 .AND. JEMPTY.GT.1) IRBAR =  2
+ 29200 253                  IF(JEMPTY.LE.1) LBACC = OR(LBACC,2)
+ 29300 255                  IF(JEMPTY.LE.1) ACCB2 = OR(ACCB2,MKBEC)
+ 29400    C           IF(JEMPTY.LE.1) CALL HF1(203,E7MIN,1.)
+ 29500 257               CIF
+ 29600 258            CIF
+ 29700 259         CIF
+ 29800 260      CIF
+ 29900    C
+ 30000    C
+ 30200 261      IF AND(LBTRG1,MKEB).NE.0                                           BARREL TRIGGER
+ 30300 262      THEN
+ 30400 265         IF EBAR.GE.ELGLM(2)
+ 30500 266         THEN
+ 30600 269            IF(LBCSM.EQ.0) CALL LGBRCS(IRBAR)
+ 30700 271            LBCSM = 1
+ 30800 272            IF(IRBAR.EQ.1 .AND. JEMPTY.GT.1) IRBAR =  2
+ 30900 274            IF(IRBAR.LE.1) LBACC = OR(LBACC,2)
+ 31000 276            IF(IRBAR.LE.1) ACCB2 = OR(ACCB2,MKEB)
+ 31100    C         IF(IRBAR.LE.1) CALL HF1(201,EBAR,1.)
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  6
+0CARD TARGET
+  NO  STM.NO
+ 
+ 31200    C         IF(IRBAR.LE.1) CALL HF1(202,E7MIN,1.)
+ 31300 278         CIF
+ 31400 279      CIF
+ 31500    C
+ 31600 280      PRINT 2002, HRUN,HEV, LBTRG1,LBTRG2,LBACC,JEMPTY,UNBAL,IRBAR,LBCSM
+ 31700    C
+ 31900 281      IF(AND(LBACC,2).NE.0) RETURN                                       STOP IF EVENT ACCEPTED
+ 32000    C
+ 32100    C
+ 32300 283      IF(AND(LBTRG2,15).EQ.0) RETURN                                     STOP IF NO T2 ACCEPT
+ 32400    C
+ 32500    C
+ 32700 285      IPJETC = IDATA(IQJETC)                                             ACCUMULATE CELL BITS OF 3. RING
+ 32800 286      IF IPJETC.LE.0
+ 32900 287      THEN
+ 33000 290         PRINT 2002, HRUN,HEV, LBTRG1,LBRG2,LBACC
+ 33100 291         RETURN
+ 33200 292      CIF
+ 33300    C
+ 33400    C
+ 33600    C                                                                        SEARCH FOR TRACK CAND. IN RING 3
+ 33800 293      IF(IDATA(IPJETC).LE.50) RETURN                                     CHECK IF ANY JETC DATA
+ 33900 295      IPJC2 = IPJETC*2
+ 34000 296      NHTR3 = HDATA(IPJC2+99) - HDATA(IPJC2+51)
+ 34200 297      IF(NHTR3.LE.0) RETURN                                              CHECK IF ANY HITS IN R3
+ 34300    C
+ 34500 299      CALL SETS(HCLWR(1),0,192,0)                                        SET UP 1 LABEL/CELL WITH 1 BIT/LAYER
+ 34600 300      IP0 = IPJC2 + 100 + HDATA(IPJC2+51)
+ 34700 301      IP9 = IP0 + NHTR3 - 1
+ 34800 302      IWIR0 =-1
+ 34900 303      FOR IP=IP0,IP9,4
+ 35000 304         IWIR = HDATA(IP)
+ 35100 305         IWIR = SHFTR(IWIR,3)
+ 35200 306         IF HDATA(IP+1).GT.80 .AND. HDATA(IP+2).GT.80
+ 35300 307         THEN
+ 35400 310            HCLL = SHFTR(IWIR,3) - 95
+ 35500 311            IF(IWIR.NE.IWIR0) HCLWR(HCLL) = HCLWR(HCLL) + 1
+ 35600 313         CIF
+ 35700 314         IWIR0 = IWIR
+ 35800 315      CFOR
+ 35900    C     PRINT 2006, HCLWR
+ 36000    C
+ 36200 317      IPLATC = IDATA(IQLATC)                                             CHECK IF 'LATC' BANK
+ 36300 318      IF(IPLATC.LE.0) RETURN
+ 36500 320      IPLT2 = IPLATC*2                                                   LOOP OVER ALL TOF COUNTER
+ 36600 321      IP0 = IPLT2 + 6
+ 36700 322      IP9 = IP0 + 5
+ 36800 323      IPTBG = IPTRIG*2 + 5
+ 36900 324      ITBG  = 0
+ 37000 325      ITLST =-100
+ 37100 326      ITOF0 = 0
+ 37200 327      ICLL0 = 0
+ 37300 328      NTRCK = 0
+ 37400 329      NTRBG = 0
+ 37500 330      NTREL = 0
+ 37600 331      REPEAT
+ 37700 332         ITRBT = HDATA(IP0)
+ 37800 333         IF AND(ITBG,1).EQ.0.
+ 37900 334         THEN
+ 38000 337            ITRBG = HDATA(IPTBG)
+ 38100 338            IPTBG = IPTBG + 1
+ 38200 339            ITBG = ITBG + 1
+ 38300 340         ELSE
+ 38400 342            ITRBG = SHFTR(ITRBG,8)
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  7
+0CARD TARGET
+  NO  STM.NO
+ 
+ 38500 343            ITBG = ITBG + 1
+ 38600 344         CIF
+ 38700 345         FOR JTOF=1,7
+ 38800 346            IF AND(MKTRBT(JTOF),ITRBT) .NE. 0
+ 38900 347            THEN
+ 39100 350               ITOF = ITOF0 + JTOF                                       TOF COUNTER #
+ 39200    C
+ 39400    C                                                                        CHECK IF TRACK IN JETC
+ 39500    C
+ 39700 351               JCTOF = (ICTOF(JTOF) + ICLL0)*2 - 1                       LABEL FOR OVERLAPPING CELLS
+ 39900 352               LBTRK = 0                                                 INITIALIZE LABEL FOR TRACK CAND.
+ 40000    C
+ 40200 353               IF ITOF-ITLST.LE.2                                        CHECK IF 2 ADJACENT TOF
+ 40300 354               THEN
+ 40500 357                  HCLL9 = NCTOF(JTOF)*2 + JCTOF - 1                      CHECK IF 2 DIFFERENT TRACKS
+ 40600 358                  HCLL1 =-99
+ 40700 359                  MTRK = 0
+ 40800    C     PRINT 2005, ITOF,JTOF,JCTOF,ITLST,HCLL0,HCLL9
+ 40900 360                  FOR ICLL=HCLL0,HCLL9
+ 41000 361                     IF HCLWR(ICLL).GE.6
+ 41100 362                     THEN
+ 41200 365                        HDCLL = ICLL - HCLL1
+ 41300 366                        IF HDCLL.EQ.1
+ 41400 367                        THEN
+ 41500 370                           HCLL1 = -99
+ 41600 371                        ELSE
+ 41700 373                           IF HDCLL.NE.3 .OR. TBIT(ICLL,31)
+ 41800 374                           THEN
+ 41900 377                              MTRK = MTRK + 1
+ 42000 378                              HCLL1 = ICLL
+ 42100 379                           CIF
+ 42200 380                        CIF
+ 42300 381                     CIF
+ 42400 382                  CFOR
+ 42500 384                  IF(MTRK.GE.2) LBTRK = 1
+ 42600 386               ELSE
+ 42700 388                  NHIT5 = 0
+ 42800 389                  NHIT6 = 0
+ 42900 390                  IF JCTOF.LT.0
+ 43000 391                  THEN
+ 43100 394                     NHIT1 = HCLWR(95)
+ 43200 395                     NHIT2 = HCLWR(96)
+ 43300 396                     NHIT3 = HCLWR( 1)
+ 43400 397                     NHIT4 = HCLWR( 2)
+ 43500 398                     IF(NHIT2.GE.3 .AND. HCLWR(93).GE.6) NHIT2 = 8
+ 43600 400                     IF(NHIT4.GE.3 .AND. HCLWR( 3).GE.6) NHIT4 = 8
+ 43700 402                  ELSE
+ 43800 404                     NHIT1 = HCLWR(JCTOF  )
+ 43900 405                     NHIT2 = HCLWR(JCTOF+1)
+ 44000 406                     NHIT3 = HCLWR(JCTOF+2)
+ 44100 407                     NHIT4 = HCLWR(JCTOF+3)
+ 44200 408                     IF NCTOF(JTOF).EQ.3
+ 44300 409                     THEN
+ 44400 412                        NHIT5 = HCLWR(JCTOF+4)
+ 44500 413                        NHIT6 = HCLWR(JCTOF+5)
+ 44600 414                     ELSE
+ 44700 416                        IF(NHIT2.GE.3 .AND. HCLWR(JCTOF-2).GE.6) NHIT2 = 8
+ 44800 418                        IF(NHIT4.GE.3 .AND. HCLWR(JCTOF+4).GE.6) NHIT4 = 8
+ 44900 420                     CIF
+ 45000 421                  CIF
+ 45100    C     PRINT 2005,ITOF,JTOF,JCTOF,NHIT1,NHIT2,NHIT3,NHIT4,NHIT5,NHIT6
+ 45200    C
+ 45300                                                                             CHECK IF ENOUGH HITS FOR TRACK CAND.
+ 45400 422                  IF(MAX0(NHIT1,NHIT2,NHIT3,NHIT4,NHIT5,NHIT6).GE.6) LBTRK=1
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  8
+0CARD TARGET
+  NO  STM.NO
+ 
+ 45500 424               CIF
+ 45600    C
+ 45800 425               IF LBTRK.NE.0                                             CHECK IF TRACK + COUNT
+ 45900 426               THEN
+ 46000 429                  NTRCK = NTRCK + 1
+ 46100 430                  IF(AND(MKTRBT(JTOF),ITRBG) .NE. 0.) NTRBG = NTRBG + 1
+ 46200 432                  ITLST = ITOF
+ 46300 433                  HCLL0 = JCTOF
+ 46400    C     PRINT 2005, NHIT1,NHIT2,NTRCK
+ 46500    C
+ 46600 434               CIF
+ 46700 435            CIF
+ 46800 436         CFOR
+ 46900    C
+ 47000    C
+ 47100 438         ICLL0 = ICLL0 + 8
+ 47200 439         ITOF0 = ITOF0 + 7
+ 47300 440         IP0   = IP0   + 1
+ 47400 441      UNTIL IP0.GT.IP9
+ 47500    C
+ 47600    C
+ 47800 442      ACCT2M = 0.                                                        MASK T1-POSTP. WITH T2-ACC
+ 47900 446      IF(AND(LBTRG2,MKTR1 ).NE.0.) ACCT2M = OR(ACCT2M,MKAT1 )
+ 48000 448      IF(AND(LBTRG2,MKTR2 ).NE.0.) ACCT2M = OR(ACCT2M,MKAT2 )
+ 48100 450      IF(AND(LBTRG2,MKTR3 ).NE.0.) ACCT2M = OR(ACCT2M,MKAT3 )
+ 48200 452      IF(AND(LBTRG2,MKTR2C).NE.0.) ACCT2M = OR(ACCT2M,MKAT2C)
+ 48300 454      ACCT2M = AND(ACCT2M,LBTRP1)
+ 48400    C
+ 48500    C
+ 48700 455      IMK = MIN0(NTRCK,3)                                                MASK WITH TBG + TOF TRIGGERS
+ 48800 456      ACCTOF = AND(ACCT2M,MKATOF(IMK+1))
+ 48900 457      IMK = MIN0(NTRBG,3)
+ 49000 458      ACCTBG = AND(ACCT2M,MKATBG(IMK+1))
+ 49100 459      ACCB8  = OR(ACCB8,ACCTOF)
+ 49200 460      ACCB8  = OR(ACCB8,ACCTBG)
+ 49300    C
+ 49400 461      IF(ACCTOF.NE.0 .OR. ACCTBG.NE.0) LBACC = OR(LBACC,8)
+ 49500    C
+ 49600 463      PRINT 2009, HRUN,HEV,LBTRG1,LBTRG2,LBTRP1,ACCT2M,LBACC,NTRCK,NTRBG
+ 49700         ,          , ACCTOF,ACCTBG
+ 49800 464      RETURN
+ 49900 465      END
+0END OF SEGMENT
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         464 TARGET STATEMENTS
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  1
+0CARD TARGET
+  NO  STM.NO
+ 
+0END OF PROGRAM
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         464 TARGET STATEMENTS
+ 00000    C   22/07/80 110060808  MEMBER NAME  TRGCHK   (JADESR)      SHELTRAN
+ 00001   2      SUBROUTINE TRGCHK(LBTRCK,LBTRBT)
+ 00002    C
+ 00003    C     LAST CHANGES: ACCEPT UNKNOWN TRIGGER BITS
+ 00004    C                   REQUIRE 3 TRACKS FOR 3 TRACK TRIGGER
+ 00005    C                   P. STEFFEN 81/05/13  10.00
+ 00006    C
+ 00007   3      IMPLICIT INTEGER*2 (H)
+ 00008   4      LOGICAL TBIT
+ 00009    C
+          C----------------------------------------------------------------------
+          C             MACRO CDATA .... BOS COMMON.
+          C
+          C             THIS MACRO ONLY DEFINES THE IDATA/HDATA/ADATA NAMES.
+          C             THE ACTUAL SIZE OF /BCS/ IS FIXED ON MACRO CBCSMX
+          C             OR BY OTHER MEANS. A DEFAULT SIZE OF 40000 IS GIVEN HERE.
+          C
+          C----------------------------------------------------------------------
+          C
+         5      COMMON /BCS/ IDATA(40000)
+         6      DIMENSION HDATA(80000),ADATA(40000),IPNT(50)
+         7      EQUIVALENCE (HDATA(1),IDATA(1),ADATA(1)),(IPNT(1),IDATA(55))
+         8      EQUIVALENCE (NWORD,IPNT(50))
+          C
+          C------------------------ END OF MACRO CDATA --------------------------
+ 00011    C
+          C-------------------------------
+          C  MACRO CHEADR .... HEADER BANK
+          C-------------------------------
+         9      COMMON /CHEADR/ IHEADR(54)
+        10      INTEGER*2 HHEADR(108)
+        11      EQUIVALENCE (IHEADR(1),HHEADR(1))
+          C --
+          C --  HHEADR(17) = EXPERIMENT NUMBER
+          C --  HHEADR(18) = RUN NUMBER
+          C --  HHEADR(19) = EVENT NUMBER
+          C --  HHEADR(38) = MAGNETIC FIELD (GAUSS)
+          C --
+          C--------- END OF MACRO CHEADR ------------
+ 00013    C
+ 00014  12      COMMON /CWORK/ ILGE(84),HCLWR(96)
+ 00015    C
+ 00017  13      DATA MKTREV /Z673/, MKT2AC /Z73/, MKEHIG /Z600/,MKUNTR /ZF88C/     MASKS FOR EVENT TRIGGER  + HIGH ENERGY
+ 00019  14      INTEGER MKTRBT( 7) /1,2,4,8,16,32,64/                              MASKS FOR TRIGGER IN 'LATC' BANK
+ 00021    C     INTEGER MKCLBT(16) /1,2,4,8,16,32,64,128,256,512,1024,2048,        MASKS FOR HITS IN LAYERS OF JETC
+ 00022    C    ,                    Z1000,Z2000,Z4000,Z8000/
+ 00024  15      INTEGER NCTOF ( 7) /2,3,3,3,3,3,3/                                 # OF CELLS FOR TOF COUNTER 1...7
+ 00026  16      INTEGER ICTOF ( 7) /0,1,2,3,4,5,6/                                 1. CELL FOR TOF-COUNTER 1...7
+ 00027    C
+ 00029  17      LBTRCK = 0                                                         INITIALIZE LABEL FOR TRIGGER CHECK
+ 00030    C
+ 00032  18      IF LAND(LBTRBT,MKUNTR).NE.0                                        CHECK IF UNKNOWN TRIGGER
+ 00033  19      THEN
+ 00034  22         LBTRCK = 32
+ 00035  23         RETURN
+ 00036  24      CIF
+ 00037    C
+ 00039  25      IF(LAND(LBTRBT,MKTREV).EQ.0) RETURN                                REJECT LUMI-TRIGGER
+ 00040    C
+ 00042  27      IF(LAND(LBTRBT,MKEHIG).NE.0) LBTRCK = 16                           ACCEPT T1-ACCEPT TRIGGER
+ 00043    C     PRINT 2991, HHEADR(17),HHEADR(18),HHEADR(19),NREC,LBTRBT,LBTRCK
+ 00044    C2991 FORMAT(' **********************   EVENT:',4I6,1X,Z4,1X,Z4)
+ 00045    C
+ 00047  29      IF(LAND(LBTRBT,MKT2AC).EQ.0) RETURN                                CHECK IF T1-POSTPONE
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  2
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00048    C
+ 00050  31      CALL SETSL(ILGE(1),0,528,0)                                        INITIALIZE LG-ROWS + CELL BITS
+ 00051    C
+ 00053  32      REPEAT                                                             ACCUMULATE E(LG-ROWS)
+ 00054  33         IPALGN = IDATA(IBLN('ALGN'))
+ 00055  34         IF(IPALGN.LE.0) XREPEAT
+ 00057  36         IF(IDATA(IPALGN).LE. 3) XREPEAT                                 CHECK IF ANY LG-ENERGIES
+ 00058  38         IPLG2 = IPALGN*2
+ 00059  39         NBARR = HDATA(IPLG2+ 4) - HDATA(IPLG2+ 3)
+ 00061  40         IF(NBARR.LE.0) XREPEAT                                          CHECK IF ANY LG-ENERGY IN BARREL
+ 00063  42         IP0 = IPLG2 + 7                                                 SUM ENERGIES OF LG-ROWS
+ 00064  43         IP9 = IP0 + NBARR - 1
+ 00065  44         FOR IP=IP0,IP9,2
+ 00066  45            NBL  = HDATA(IP)
+ 00067  46            IROW = SHFTR(NBL,5)
+ 00068  47            ILGE(IROW+1) = ILGE(IROW+1) + HDATA(IP+1)
+ 00069  48         CFOR
+ 00070    C     PRINT 2003, ILGE
+ 00071    C2003   FORMAT('0EROW:',20I6,/,(6X,20I6))
+ 00072  50      UNTIL .TRUE.
+ 00073    C
+ 00075  51      IPJETC = IDATA(IBLN('JETC'))                                       ACCUMULATE CELL BITS OF 3. RING
+ 00076  55      IF(IPJETC.LE.0) RETURN
+ 00077    C     PRINTOUT
+ 00078    C     I0 = IPJETC*2 + 1
+ 00079    C     I9 = I0 + IDATA(IPJETC)*2 - 1
+ 00080    C     PRINT 2001, I0,I9,IDATA(IPJETC),(HDATA(I1),I1=I0,I9)
+ 00081    C2001 FORMAT('0JETC:',3I6,/,(6X,20I6))
+ 00082    C
+ 00084  57      IF(IDATA(IPJETC).LE.50) RETURN                                     CHECK IF ANY JETC DATA
+ 00085  59      IPJC2 = IPJETC*2
+ 00086  60      NHTR3 = HDATA(IPJC2+99) - HDATA(IPJC2+51)
+ 00088  61      IF(NHTR3.LE.0) RETURN                                              CHECK IF ANY HITS IN R3
+ 00090  63      IP0 = IPJC2 + 100 + HDATA(IPJC2+51)                                SET UP 1 LABEL/CELL WITH 1 BIT/LAYER
+ 00091  64      IP9 = IP0 + NHTR3 - 1
+ 00092  65      IWIR0 =-1
+ 00093  66      FOR IP=IP0,IP9,4
+ 00094  67         IWIR = HDATA(IP)
+ 00095  68         IWIR = SHFTR(IWIR,3)
+ 00096  69         HCLL = SHFTR(IWIR,3) - 95
+ 00097  70         IF(IWIR.NE.IWIR0) HCLWR(HCLL) = HCLWR(HCLL) + 1
+ 00098  72         IWIR0 = IWIR
+ 00099  73      CFOR
+ 00100    C     PRINT 2004, HCLWR
+ 00101    C2004 FORMAT('0HCLWR:',12I6,/,(7X,12I6))
+ 00102    C
+ 00104  75      IPLATC = IDATA(IBLN('LATC'))                                       CHECK IF 'LATC' BANK
+ 00105  76      IF(IPLATC.LE.0) RETURN
+ 00107  78      IPLT2 = IPLATC*2                                                   LOOP OVER ALL TOF COUNTER
+ 00108  79      IP0 = IPLT2 + 6
+ 00109  80      IP9 = IP0 + 5
+ 00110  81      ITLST =-100
+ 00111  82      ITOF0 = 0
+ 00112  83      ICLL0 = 0
+ 00113  84      NTRCK = 0
+ 00114  85      NTREL = 0
+ 00115  86      REPEAT
+ 00116  87         ITRBT = HDATA(IP0)
+ 00117  88         FOR JTOF=1,7
+ 00118  89            IF LAND(MKTRBT(JTOF),ITRBT) .NE. 0
+ 00119  90            THEN
+ 00121  93               ITOF = ITOF0 + JTOF                                       TOF COUNTER #
+ 00122    C
+ 00124    C                                                                        CHECK IF TRACK IN JETC
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  3
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00125    C
+ 00127  94               JCTOF = (ICTOF(JTOF) + ICLL0)*2 - 1                       LABEL FOR OVERLAPPING CELLS
+ 00129  95               LBTRK = 0                                                 INITIALIZE LABEL FOR TRACK CAND.
+ 00130    C
+ 00132  96               IF ITOF-ITLST.LE.2                                        CHECK IF 2 ADJACENT TOF
+ 00133  97               THEN
+ 00135 100                  HCLL9 = NCTOF(JTOF)*2 + JCTOF - 1                      CHECK IF 2 DIFFERENT TRACKS
+ 00136 101                  HCLL1 =-99
+ 00137 102                  MTRK = 0
+ 00138    C     PRINT 2005, ITOF,JTOF,JCTOF,ITLST,HCLL0,HCLL9
+ 00139 103                  FOR ICLL=HCLL0,HCLL9
+ 00140 104                     IF HCLWR(ICLL).GE.6
+ 00141 105                     THEN
+ 00142 108                        HDCLL = ICLL - HCLL1
+ 00143 109                        IF HDCLL.EQ.1
+ 00144 110                        THEN
+ 00145 113                           HCLL1 = -99
+ 00146 114                        ELSE
+ 00147 116                           IF HDCLL.NE.3 .OR. TBIT(ICLL,31)
+ 00148 117                           THEN
+ 00149 120                              MTRK = MTRK + 1
+ 00150 121                              HCLL1 = ICLL
+ 00151 122                           CIF
+ 00152 123                        CIF
+ 00153 124                     CIF
+ 00154 125                  CFOR
+ 00155 127                  IF(MTRK.GE.2) LBTRK = 1
+ 00156 129               ELSE
+ 00157 131                  NHIT5 = 0
+ 00158 132                  NHIT6 = 0
+ 00159 133                  IF JCTOF.LT.0
+ 00160 134                  THEN
+ 00161 137                     NHIT1 = HCLWR(95)
+ 00162 138                     NHIT2 = HCLWR(96)
+ 00163 139                     NHIT3 = HCLWR( 1)
+ 00164 140                     NHIT4 = HCLWR( 2)
+ 00165 141                     IF(NHIT2.GE.3 .AND. HCLWR(93).GE.6) NHIT2 = 8
+ 00166 143                     IF(NHIT4.GE.3 .AND. HCLWR( 3).GE.6) NHIT4 = 8
+ 00167 145                  ELSE
+ 00168 147                     NHIT1 = HCLWR(JCTOF  )
+ 00169 148                     NHIT2 = HCLWR(JCTOF+1)
+ 00170 149                     NHIT3 = HCLWR(JCTOF+2)
+ 00171 150                     NHIT4 = HCLWR(JCTOF+3)
+ 00172 151                     IF NCTOF(JTOF).EQ.3
+ 00173 152                     THEN
+ 00174 155                        NHIT5 = HCLWR(JCTOF+4)
+ 00175 156                        NHIT6 = HCLWR(JCTOF+5)
+ 00176 157                     ELSE
+ 00177 159                        IF(NHIT2.GE.3 .AND. HCLWR(JCTOF-2).GE.6) NHIT2 = 8
+ 00178 161                        IF(NHIT4.GE.3 .AND. HCLWR(JCTOF+4).GE.6) NHIT4 = 8
+ 00179 163                     CIF
+ 00180 164                  CIF
+ 00181    C     PRINT 2005,ITOF,JTOF,JCTOF,NHIT1,NHIT2,NHIT3,NHIT4,NHIT5,NHIT6
+ 00182    C2005   FORMAT(' JETC:',20I6)
+ 00183    C
+ 00184                                                                             CHECK IF ENOUGH HITS FOR TRACK CAND.
+ 00185 165                  IF(MAX0(NHIT1,NHIT2,NHIT3,NHIT4,NHIT5,NHIT6).GE.6) LBTRK=1
+ 00186 167               CIF
+ 00187    C
+ 00189 168               IF LBTRK.NE.0                                             CHECK IF TRACK + COUNT
+ 00190 169               THEN
+ 00191 172                  NTRCK = NTRCK + 1
+ 00192 173                  ITLST = ITOF
+ 00193 174                  HCLL0 = JCTOF
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  4
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00194    C     PRINT 2005, NHIT1,NHIT2,NTRCK
+ 00195    C
+ 00196                                                                             CHECK IF ELECTRON TRACK
+ 00198 175                  IR = ITOF*2 - 3                                        CORRESP. LG-ROW
+ 00199 176                  IF ITOF.EQ.1
+ 00200 177                  THEN
+ 00201 180                     ILGENG = ILGE(83)+ILGE(  84)+ILGE(   1)+ILGE(   2)
+ 00202 181                  ELSE
+ 00203 183                     IF ITOF.EQ.42
+ 00204 184                     THEN
+ 00205 187                        ILGENG = ILGE(82)+ILGE(  83)+ILGE(  84)+ILGE(   1)
+ 00206 188                     ELSE
+ 00207 190                        ILGENG = ILGE(IR)+ILGE(IR+1)+ILGE(IR+2)+ILGE(IR+3)
+ 00208 191                     CIF
+ 00209 192                     IF(ILGENG.GT.1000) NTREL = NTREL + 1
+ 00210    C     PRINT 2002,NTREL,ITOF,IR,ILGENG
+ 00211    C2002 FORMAT(6X,20I6)
+ 00212    C
+ 00213 194                  CIF
+ 00214 195               CIF
+ 00215 196            CIF
+ 00216 197         CFOR
+ 00217 199         ICLL0 = ICLL0 + 8
+ 00218 200         ITOF0 = ITOF0 + 7
+ 00219 201         IP0   = IP0   + 1
+ 00220 202      UNTIL IP0.GT.IP9
+ 00221    C
+ 00223 203      LB1TCL = 0                                                         CHECK IF ONLY 1 TRACK, NO E
+ 00224 207      IF NTRCK.EQ.1 .AND. NTREL.EQ.0
+ 00225 208      THEN
+ 00227 211         IPJC2 = IPJETC*2                                                CHECK CLEAN 1. RING
+ 00228 212         NHTR1 = HDATA(IPJC2+27) - HDATA(IPJC2+ 3)
+ 00230 213         IF NHTR1.GT.96 .AND. NHTR1.LT.196                               CHECK IF ANY HITS IN R3
+ 00231 214         THEN
+ 00233 217            CALL SETS(HCLWR(1),0,96,0)                                   COUNT HITS/HALF CELL
+ 00234 218            IP0 = IPJC2 + 100 + HDATA(IPJC2+ 3)
+ 00235 219            IP9 = IP0 + NHTR1 - 1
+ 00236 220            IWIR0 =-1
+ 00237 221            FOR IP=IP0,IP9,4
+ 00238 222               IWIR = HDATA(IP)
+ 00239 223               IWIR = SHFTR(IWIR,3)
+ 00240 224               HCLL = SHFTR(IWIR,3) + 1
+ 00241 225               IF(IWIR.NE.IWIR0) HCLWR(HCLL) = HCLWR(HCLL) + 1
+ 00242 227               IWIR0 = IWIR
+ 00243 228            CFOR
+ 00244    C     PRINT 2004, HCLWR
+ 00245 230            MTRK = 0
+ 00246 231            HCLL1 =-99
+ 00247 232            FOR ICLL=1,48
+ 00248 233               IF HCLWR(ICLL).GE.6
+ 00249 234               THEN
+ 00250 237                  HDCLL = ICLL - HCLL1
+ 00251 238                  IF HDCLL.EQ.1
+ 00252 239                  THEN
+ 00253 242                     HCLL1 = -99
+ 00254 243                  ELSE
+ 00255 245                     IF HDCLL.NE.3 .OR. TBIT(ICLL,31)
+ 00256 246                     THEN
+ 00257 249                        MTRK = MTRK + 1
+ 00258 250                        HCLL1 = ICLL
+ 00259 251                     CIF
+ 00260 252                  CIF
+ 00261 253               CIF
+ 00262 254            CFOR
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  5
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00263 256            IF(MTRK.EQ.2 .OR. MTRK.EQ.3) LB1TCL = 1
+ 00264 258         CIF
+ 00265 259      CIF
+ 00266    C
+ 00268 260      IF(NTRCK .EQ.2 .AND. LAND(LBTRBT,64).NE.0) NTRCK = NTRCK - 1       3 TRACKS IN 3 TRACK EVENT
+ 00269                                                                             SET LABEL FOR TRIGGER CHECK
+ 00271 262      IF(NTRCK .GE.2) LBTRCK = LBTRCK + 2                                2 TRACKS IN GENERAL
+ 00273 264      IF(NTRCK .EQ.1 .AND. LAND(LBTRBT,2).NE.0) LBTRCK = LBTRCK + 1      1 TRACK FOR TAGG-EVENTS ONLY
+ 00275 266      IF(NTREL .EQ.1) LBTRCK = LBTRCK + 4                                1 TRACK FOR ELECTRON EVENTS ONLY
+ 00277 268      IF(LB1TCL.EQ.1) LBTRCK = LBTRCK + 8                                1 TRACK +1 TRACK IN CLEAN RING 1
+ 00278    C     PRINT 2009, NTRCK,NTREL,LB1TCL,LBTRCK
+ 00279    C2009 FORMAT('0TRACKS:',4I6)
+ 00280 270      RETURN
+ 00281 271      END
+0END OF SEGMENT
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         270 TARGET STATEMENTS
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  1
+0CARD TARGET
+  NO  STM.NO
+ 
+0END OF PROGRAM
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         270 TARGET STATEMENTS
+ 00000    C   08/12/83 703231338  MEMBER NAME  USERX    (JADESR)      SHELTRAN
+ 00100   2      SUBROUTINE USER(INDEX)
+ 00200    C
+ 00300    C     TEST VERSION OF USRED82
+ 00400    C          KEEP ONLY REJECTS WITH INDREJ=5
+ 00500    C
+ 00600   3      IMPLICIT INTEGER*2 (H)
+ 00700   4      REAL LBACC
+ 00800   5      LOGICAL TBIT
+ 00900    C---
+ 01000    C---     DECREASING RUN NUMBERS IGNORED                 9/8/83  J.B.W.
+ 01100    C---
+ 01200    C---     NCALI=1/LUNITA(1)=22/LUNITA(2)=0 PUT BEFORE CALL TO R1MODE
+ 01300    C---     AND CALLS TO DBASE ADDED FOR DATA-BASE OPERATION AT RAL
+ 01400    C---                                                    3/12/82  J.B.W.
+ 01500    C---
+ 01600    C---     ALLOW FOR ONLY 1 KALIBRATION FILE (KALWRK0) ON UNIT 22
+ 01700    C---                                                   23.09.82 (PST)
+ 01800    C---
+ 01900    C---     USER ROUTINE FOR 1982 REDUC1 PROGRAM
+ 02000    C---                                                    5.03.82 (PST)
+ 02100    C---
+ 02200    C---
+          C----------------------------------------------------------------------
+          C             MACRO CDATA .... BOS COMMON.
+          C
+          C             THIS MACRO ONLY DEFINES THE IDATA/HDATA/ADATA NAMES.
+          C             THE ACTUAL SIZE OF /BCS/ IS FIXED ON MACRO CBCSMX
+          C             OR BY OTHER MEANS. A DEFAULT SIZE OF 40000 IS GIVEN HERE.
+          C
+          C----------------------------------------------------------------------
+          C
+         6      COMMON /BCS/ IDATA(40000)
+         7      DIMENSION HDATA(80000),ADATA(40000),IPNT(50)
+         8      EQUIVALENCE (HDATA(1),IDATA(1),ADATA(1)),(IPNT(1),IDATA(55))
+         9      EQUIVALENCE (NWORD,IPNT(50))
+          C
+          C------------------------ END OF MACRO CDATA --------------------------
+          C----------------------------------------------
+          C  MACRO CPATLM .... PATTERN RECOGNITION LIMITS
+          C----------------------------------------------
+        10      COMMON /CPATLM/ PATRLM(5),FLINLM(10),TRELLM(20),ZFITLM(10),BKK(20)
+               *               ,XYF(20),IGFP(20),XBKK(40),IADMIN(5),YBKK(20)
+        11      INTEGER IXYF(20),LMPATR(5),LMFLIN(10)
+        12      INTEGER LMTREL(20),LMZFIT(10),IBKK(20)
+        13      DIMENSION GFP(20),IXBKK(40),IYBKK(20)
+        14      EQUIVALENCE (PATRLM(1),LMPATR(1)),(IXBKK(1),XBKK(1)),(IYBKK(1),
+               *YBKK(1))   ,(FLINLM(1),LMFLIN(1)),(TRELLM(1),LMTREL(1))
+               *           ,(ZFITLM(1),LMZFIT(1)),(BKK(1),IBKK(1))
+               *           ,(XYF(1),IXYF(1)),(GFP(1),IGFP(1)),(IADMIN(1),IMCERT)
+               *           ,(IYBKK(20),IPPASS),(IADMIN(2),IPFAST)
+          C----------- END OF MACRO CPATLM --------------
+ 00100    C====MACRO CZVPAR===================================
+ 00200    C-------------------------------------------
+ 00300    C   RESULTS FROM ZVERTF
+ 00400    C   P. STEFFEN (79/01/26)
+ 00500    C---------------------------------------------
+ 00600  15      COMMON /CZVPAR/ LBZVDF,ZLOW,  BINZ,  NBINZ,
+ 00700         ,                NWRDR1,LWRDC0,LWRDC1,LWRDC2,
+ 00800         ,                IDZ1LM,IDZ2LM,NPKMIN,SBRAT,DFIMAX,
+ 00900         ,                DZVPAR(5)
+ 01000    C==ENDMACRO CZVPAR========================================
+ 00100    C====  MACRO CWORKZV  ==================================
+ 00200    C-------------------------------------------
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  2
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00300    C   RESULTS + INTERM. STORAGE OF ZVERTF
+ 00400    C   P. STEFFEN (79/01/21)
+ 00500    C---------------------------------------------
+ 00600  16      COMMON /CWORK/ FZRSLT(12)
+ 00700         ,             , HUFLO,HOFLO,MAXZ,HIST(100)
+ 00800         ,             , HPTSEC(98)
+ 00900         ,             , NZ1(16),NZ2(16), HLB1(8),HLB2(8)
+ 01000         ,        , HZ1(8,16),HZ2(16,16), FI1(8,16),FI2(8,16),HTMP(100)
+ 01100  17      INTEGER*4 HPTSEC
+ 01110  18      INTEGER IZRSLT(12)
+ 01200  19      EQUIVALENCE (IZRSLT(1),FZRSLT(1))
+ 01300    C
+ 01400    C==  ENDMACRO CWORKZV  ========================================
+ 00100    C-----------------------------------------------------------------------
+ 00200    C                            MACRO CJDRCH .... JET CHAMBER CONSTANTS.
+ 00300    C-----------------------------------------------------------------------
+ 00310    C
+ 00400  20      COMMON / CJDRCH / RDEC(4),PSIIN(3),RINCR(3),FIRSTW(3),FSENSW(3),
+ 00500         +                  RDEPTH,SWDEPL,YSUSPN,TIMDEL(2,3),ZMAX,ZOFFS,
+ 00510         +                  ZRESOL,ZNORM,ZAL,ZSCAL,DRIDEV,DRICOS,DRISIN,
+ 00600         +                  PEDES,TZERO(3),DRIROT(96,2),SINDRI(96,2),
+ 00701         +                  COSDRI(96,2),DRIVEL(96,2),T0FIX(3),
+ 00800         +                  ABERR(8), DUMJDC(20)
+ 00900    C
+ 01100    C      BLOCK DATA SET TO MC VALUES, KALIBR WILL SET REAL DATA VALUES
+ 01210    C--->  A CHANGE OF THIS COMMON MUST BE DONE SIMULTANEOUSLY WITH  <----
+ 01220    C--->  A CHANGE OF THE BLOCK DATA                                <----
+ 01230    C
+ 01300    C--------------------------- END OF MACRO CJDRCH -----------------------
+ 01400    C
+          C-------------------------------
+          C  MACRO CHEADR .... HEADER BANK
+          C-------------------------------
+        21      COMMON /CHEADR/ IHEADR(54)
+        22      INTEGER*2 HHEADR(108)
+        23      EQUIVALENCE (IHEADR(1),HHEADR(1))
+          C --
+          C --  HHEADR(17) = EXPERIMENT NUMBER
+          C --  HHEADR(18) = RUN NUMBER
+          C --  HHEADR(19) = EVENT NUMBER
+          C --  HHEADR(38) = MAGNETIC FIELD (GAUSS)
+          C --
+          C--------- END OF MACRO CHEADR ------------
+          C==MACRO CIOUNI=========================================
+        24      COMMON/CIOUNI/IUNIT,JUNIT,NCALI,KUNITA(10),LUNITA(10)
+          C==ENDMACRO CIOUNI========================================
+ 03000    C
+ 00000    C   01/04/82 204012259  MEMBER NAME  CUTSR1   (JADESR)      MACRO
+ 00001    C-------------------------------
+ 00002    C  MACRO CUTSR1 .... REDUC1 CUTS
+ 00003    C-------------------------------
+ 00004  25      COMMON/CUTSR1/NVRSN,NRUNST,NEVTST,NOTTOT,NOTRUN(10),ELGLM( 8)
+ 00005    C--------- END OF MACRO CUTSR1 ------------
+ 03200    C HBOOK COMMON
+ 03300    CCCCC COMMON // BLCOMM(6000)
+ 03400    C GBOOK COMMON - IE HBOOK LOOK-ALIKE USED AT RUTHERFORD
+ 03500  26      COMMON/CGBOOK/PLOT(116,13)
+ 03600    C
+ 03700  27      COMMON /CREDRS/ LBAB2,LBAB4,LBAB8,LBAT2M,ARES(40)
+ 03800  28      INTEGER IRES(40)
+ 03900  29      EQUIVALENCE (ARES(1),IRES(1))
+ 04000    C
+ 04100    C
+ 04200  30      COMMON /CTLIM/ ISECLF
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  3
+0CARD TARGET
+  NO  STM.NO
+ 
+ 04300  31      COMMON /CADMIN/ IEVTP,NRREAD,NRWRIT
+ 04400  32      COMMON/CALIBR/JPOINT(100),
+ 04500         +HMUCAL(8370),HLGMAI(5760),HTAGSY(384),HJPULS(9216),
+ 04600         +DELTA0(96,2),DELTA1(96,2),DELTA2(96,2),DELTA5(96,2),DELTA6(96,2)
+ 04700    C
+ 04800  33      COMMON /CIGG/ IPRN,IGG(80),JIGG(80)
+ 04900    C  IPRN = 0 --> NO PRINT  IPRN > 0 --> PRINT  IPRN> 1 --> PUNCH CARDS
+ 05000    C
+ 05100  34      LOGICAL*1 CHOP
+ 05200  35      DATA LBSTRT/0/, LIMHIT/12/,MKMUT1/8/,LIMHFW/8/
+ 05300    C
+ 05400  36 2000 FORMAT('1')
+ 05500  37 2004 FORMAT('  RUN AND EVENT HAS NO ZVTX BANK ',2I5)
+ 05600  38 2006 FORMAT(' RUN AND EVENT ',2I6,' HAS RETURN1 IN LGCALB')
+ 05700  39 2008 FORMAT(' USRED82: EVENT ',2I6,8(2X,Z4),4I6)
+ 05800    C2009 FORMAT(' USRED82 (RETURN) :',2I6,3(2X,Z4),6I6)
+ 05900  40 2010 FORMAT(' ***** ERROR IN USRED82 (INFORM PST), EVENT ',3I6)
+ 06000    C
+ 06100    C---
+ 06200    C   INDEX =    2   CALLED IMMEDIATELY AFTER EVENT IS READ INTO CDATA.
+ 06300    C              3   LEAD GLASS ENERGIES HAVE BEEN COMPUTED.
+ 06400    C              4   FAST Z VERTEX RECONSTRUCTION HAS BEEN DONE.
+ 06500    C              5   INNER DETECTOR PATTERN RECOGNITION HAS BEEN RUN.
+ 06600    C              6   ENERGIES CLUSTERS IN THE LEAD GLASS HAVE BEEN FOUND.
+ 06700    C              7   TRACKS AND CLUSTERS HAVE BEEN ASSOCIATED.
+ 06800    C              8   MUON CHAMBER TRACKING HAS BEEN DONE.
+ 06900    C              9   MUON AND INNER DETECTOR TRACKS HAVE BEEN ASSOCIATED.
+ 07000    C             10   UNUSED
+ 07100    C
+ 07200    C-----------------------------------------------------------------------
+ 07300    C     CASE 0 => INDEX = 0    =>    INITIALIZATION
+ 07400    C-----------------------------------------------------------------------
+ 07500    C
+ 07600  41      IF INDEX.EQ.0
+ 07700  42      THEN
+ 07800    C------------------------
+ 07900    C
+ 08000    C    DATA BASE SYSTEM INITIALISATION
+ 08100    C
+ 08200    C------------------------
+ 08300  45         CALL DBASE(0,IDBCHP)
+ 08400    C------------------------
+ 08500    C
+ 08600    C    PREPARE TO TRAP DECREASING RUN NUMBERS AND RUN NOS.LE.63
+ 08700    C                         J.B.W.  8/8/83
+ 08800    C
+ 08900    C------------------------
+ 09000  46         NRUN = 63
+ 09100    C       USE ONLY 1 CALIBRATION FILE (F11LHO.KALWRK0)
+ 09200  47         NCALI = 1
+ 09300  48         LUNITA(1) = 22
+ 09400  49         LUNITA(2) = 0
+ 09500    C       REDUC1 OPERATION MODE
+ 09600  50         CALL R1MODE
+ 09700    C       STOP JOB WHEN ISECLF SECONDS LEFT
+ 09800  51         ISECLF= 0
+ 09900  52         IPRN = 1
+ 10000    C       REQUEST FAST VERSION OF PATREC
+ 10100  53         IPFAST = 0
+ 10200    C
+ 10300    C       BOS BANK POINTERS
+ 10400  54         IQHEAD = IBLN('HEAD')
+ 10500  55         IQTRIG = IBLN('TRIG')
+ 10600  56         IQALGN = IBLN('ALGN')
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  4
+0CARD TARGET
+  NO  STM.NO
+ 
+ 10700  57         IQZVTX = IBLN('ZVTX')
+ 10800  58         IQJETC = IBLN('JETC')
+ 10900  59         IQPATR = IBLN('PATR')
+ 11000  60         IQJHTL = IBLN('JHTL')
+ 11100  61         IQMPRS = IBLN('MPRS')
+ 11200    C       INITIALISE COUNTERS
+ 11300  62         FOR I = 1,80
+ 11400  63            IGG(I) = 0
+ 11500  64            JIGG(I) = 0
+ 11600  65         CFOR
+ 11700    C
+ 11800    C       INITIALISE HISTOGRAMS
+ 11900    C       N.B. TO CONVERT GBOOK <-> HBOOK YOU MUST SWITCH THE COMMON
+ 12000    C       DECLARATIONS IN SUBROUTINE PLOTSZ (MEMBER R1MODE) AND EITHER
+ 12100    C       INSERT OR REMOVE INCLUDE(GBOOK) IN THE LKED STEP.
+ 12200    C
+ 12300  67         CALL HLIMIT(6000)
+ 12400  68         CALL HBOOK1(111,'TRIGGER BITS (INPUT)      $', 50,0.,   50.)
+ 12500  69         CALL HBOOK1(112,'TRIGGER BITS (TRCK-ACC)   $',100,0.,  100.)
+ 12600  70         CALL HBOOK1(113,'TRIGGER BITS ACCEPTED     $',100,0.,  100.)
+ 12700  71         CALL HBOOK1(1,'ZVERTEX (ALL)$',100,-2000.,2000.)
+ 12800  72         CALL HBOOK1(2,'NHITS IN RING1 (ZVERTEX < 300 MMS)$', 50,0.,200.)
+ 12900  73         CALL HBOOK1(3,'NUMBER OF TRACKS$',100,0.,50.)
+ 13000  74         CALL HBOOK1(4,'LG ENERGY SUM (ALL)  $',100,0.02,40000.)
+ 13100  75         CALL HBOOK1(5,'LG ENDCAP ENERGY (BAD BLOCKS) $',100,0.,40000.)
+ 13200  76         CALL HBOOK1(  6,'TRACK CURVATURE           $', 50,  0., .010)
+ 13300  77         CALL HBOOK1(7,'ZMIN (TRACKS)                 $', 50,  0.,1000.)
+ 13400  78         CALL HBOOK1(8,'RMIN                          $', 50,  0., 300.)
+ 13500  79         CALL HBOOK1(9,'     ACCEPTED TRACKS          $', 50,  0.,  25.)
+ 13600  80         CALL HBOOK1(10,'REJECT INDEX                 $', 50,  0.,  50.)
+ 13700  81         CALL HBLACK(0)
+ 13800  82         PRINT2000
+ 13900  83         INDEX=INDEX+1
+ 14000  84         IF(.TRUE.) RETURN
+ 14100  86      CIF
+ 14200    C
+ 14300    C-----------------------------------------------------------------------
+ 14400    C     CASE   => INDEX = 100  =>    END OF JOB
+ 14500    C-----------------------------------------------------------------------
+ 14600    C
+ 14700  87      IF INDEX.EQ.100
+ 14800  88      THEN
+ 14900    C---
+ 15000    C--- STATISTICS FROM LAST RUN
+ 15100    C---
+ 15200  91         FOR I = 2,80
+ 15300  92            JIGG(I) = JIGG(I) + IGG(I)
+ 15400  93         CFOR
+ 15500  95         CALL STAT82
+ 15600    C------------------------
+ 15700    C
+ 15800    C    DATA BASE SYSTEM TERMINATION
+ 15900    C
+ 16000    C------------------------
+ 16100  96         CALL DBASE(3,IDBCHP)
+ 16200    C---
+ 16300    C--- PRINT STATISTICS FOR SUM OF ALL RUNS PROCESSED
+ 16400    C---
+ 16500  97         FOR I = 1,80
+ 16600  98            IGG(I) = JIGG(I)
+ 16700  99         CFOR
+ 16800 101         CALL STAT82
+ 16900 102         CALL H1EVLI(    0)
+ 17000    C---
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  5
+0CARD TARGET
+  NO  STM.NO
+ 
+ 17100    C--- PRINT OUT HISTOGRAMS
+ 17200    C---
+ 17300 103         CALL HISTDO
+ 17400 104         IF(.TRUE.) RETURN
+ 17500 106      CIF
+ 17600    C
+ 17700    C     OTHER USER CALLS
+ 17800    C
+ 17900 107      IF(INDEX.GT.2 .AND. INDEX.LE.5) IGG(INDEX+2) = IGG(INDEX+2) + 1
+ 18000 109      REPEAT
+ 18100 110         INDREJ = 0
+ 18200 111         SELECT INDEX
+ 18300    C
+ 18400    C-----------------------------------------------------------------------
+ 18500    C     CASE 1 => INDEX = 1    =>    START OF RUN
+ 18600    C-----------------------------------------------------------------------
+ 18700    C
+ 18800 112         CASE 1
+ 18900    C---
+ 19000    C--- MODIFIED TO IGNORE EVENTS WITH RUN NUMBERS LE 63
+ 19100    C--- OR DECREASING RUN NUMBERS, BUT TO PROCESS ALL
+ 19200    C--- PARTS OF A RUN SPLIT UP BY SUCH EVENTS.
+ 19300    C---                                         J B WHITTAKER 17/8/83
+ 19400    C---
+ 19500 114            IF HHEADR(18).GT.NRUN
+ 19600 115            THEN
+ 19700 118               NRUN=HHEADR(18)
+ 19800 119               IF NRUN.NE.IGG(1)
+ 19900 120               THEN
+ 20000    C---               *
+ 20100    C---               *  DATA BASE SYSTEM - ADD RECORD FOR LAST RUN
+ 20200    C---               *  IF APPROPRIATE & OPEN RECORD FOR NEW ONE
+ 20300    C---               *
+ 20400 123                  CALL DBASE(2,IDBCHP)
+ 20500    C---               *
+ 20600    C---               *  RESET STATISTICS ARRAYS READY FOR NEW RUN
+ 20700    C---               *
+ 20800 124                  IGG(3) = IGG(3) + 1
+ 20900 125                  IF(IGG(4).NE.0) CALL STAT82
+ 21000 127                  IGG(1) = NRUN
+ 21100 128                  FOR I = 2,80
+ 21200 129                     JIGG(I) = JIGG(I) + IGG(I)
+ 21300 130                     IGG(I) = 0
+ 21400 131                  CFOR
+ 21500    C---               *
+ 21600    C---               *  PRINT RUN HEADER
+ 21700    C---               *
+ 21800 133                  PRINT 2007,IGG(1)
+ 21900 134 2007              FORMAT(1H0/
+ 22000         +            1X,10('='),20X,10('=')/
+ 22100         +            1X,10('='),' START OF RUN ',I5,1X,10('=')/
+ 22200         +            1X,10('='),20X,10('='))
+ 22300    C---               *
+ 22400    C---               *  CHANGE LIMITS OF ZRFIT
+ 22500    C---               *
+ 22600 135                  IF LBSTRT.EQ.0
+ 22700 136                  THEN
+ 22800 139                     LBSTRT = 1
+ 22900 140                     ZFITLM(1) = 70.
+ 23000 141                     ZFITLM(2) = 35.
+ 23100 142                  CIF
+ 23200    C---               *
+ 23300    C---               *  CHECK IF RUN IS TO BE AXED
+ 23400    C---               *
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  6
+0CARD TARGET
+  NO  STM.NO
+ 
+ 23500 143                  CHOP=.FALSE.
+ 23600 144                  IF(IGG(1).LT.NRUNST) CHOP=.TRUE.
+ 23700 146                  IF NOTTOT.NE.0
+ 23800 147                  THEN
+ 23900 150                     FOR I=1,NOTTOT
+ 24000 151                        IF(IGG(1).EQ.NOTRUN(I)) CHOP=.TRUE.
+ 24100 153                     CFOR
+ 24200 155                  CIF
+ 24300    C---               *
+ 24400    C---               *  ALLOW FOR RUN BEING CHOPPED
+ 24500    C---               *  BY DATA BASE SYSTEM
+ 24600    C---               *
+ 24700 156                  CHOP = CHOP.OR.IDBCHP.NE.0
+ 24800 157                  IF(CHOP) PRINT 2018,IGG(1)
+ 24900 159 2018              FORMAT(
+ 25000         +            1X,10('=')/
+ 25100         +            1X,10('='),' RUN',I6, ' AXED'/
+ 25200         +            1X,10('='))
+ 25300 160               CIF
+ 25400 161               INDEX=INDEX+1
+ 25500 162               IF(.TRUE.) RETURN
+ 25600 164            ELSE
+ 25700 166               IF HHEADR(18).LT.NRUN .OR. HHEADR(18).EQ.63
+ 25800 167               THEN
+ 25900 170                  CHOP = .TRUE.
+ 26000 171                  PRINT 2011, HHEADR(18)
+ 26100 172 2011              FORMAT(' USRED82 .. RUN',I15,' RECORD ENCOUNTERED')
+ 26200    C---               *
+ 26300    C---               *  MARK THE DATA BASE
+ 26400    C---               *
+ 26500 173                  CALL DBASE(10,IDBCHP)
+ 26600 174                  IF(.TRUE.) RETURN
+ 26700 176               ELSE
+ 26800 178                  CHOP = .FALSE.
+ 26900 179                  PRINT 2020, NRUN
+ 27000 180 2020              FORMAT(' USRED82 - CONTINUING WITH RUN',I15)
+ 27100 181                  INDEX = 2
+ 27200 182                  IF(.TRUE.) RETURN
+ 27300 184               CIF
+ 27400 185            CIF
+ 27500    C
+ 27600    C-----------------------------------------------------------------------
+ 27700    C     CASE 2 => INDEX = 2    =>    EVENT JUST READ IN
+ 27800    C-----------------------------------------------------------------------
+ 27900    C
+ 28000 186         CASE 2
+ 28100    C---
+ 28200    C--- REJECT UNWANTED RUNS
+ 28300    C---
+ 28400 188            INDEX = 1
+ 28500 189            IF(HHEADR(18).EQ.NRUNST .AND. HHEADR(19).LT.NEVTST) RETURN
+ 28600 191            IF(CHOP) RETURN
+ 28700    C------------------------
+ 28800    C
+ 28900    C    DATA BASE SYSTEM - SAVE HEADER INFORMATION FOR END OF RUN
+ 29000    C
+ 29100    C------------------------
+ 29200 193            CALL DBASE(1,IDBCHP)
+ 29300 194            IGG(4) = IGG(4) + 1
+ 29500    C                                                     ===== REJECT ===== PULSER EVENTS
+ 29600 195            INDREJ =  1
+ 29700 196            IF(HHEADR(20).GE.64) XREPEAT
+ 29900 198            IERRLG = 0                                                   CHECK TRIGGER
+ 30000 199            CALL LGCALB(&ERRLGC)
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  7
+0CARD TARGET
+  NO  STM.NO
+ 
+ 30100 201            CALL TRCK82(LBACC,LBTRB1,LBTRB2,IERRLG)
+ 30200 203            PRINT 2008,HHEADR(18),HHEADR(19),LBTRB1,LBTRB2,
+ 30300         ,      LBACC,IERRLG,LBAB2,LBAB4,LBAB8,LBAT2M
+ 30500 204            LBTRBT = LBTRB1                                              PLOT TRIGGER BITS
+ 30600 205            TRBIT = 0.
+ 30700 206            FOR I=1,32
+ 30800 207               TRBIT = TRBIT + 1.
+ 30900 208               IF TBIT(LBTRBT,31)
+ 31000 209               THEN
+ 31100 212                  CALL HF1(111,TRBIT,1.)
+ 31200 213               CIF
+ 31300 214               LBTRBT = SHFTR(LBTRBT,1)
+ 31400 215               IF(I.EQ.16) LBTRBT = LBAT2M
+ 31500 217            CFOR
+ 31600 219            LBTRBT = LBAB2
+ 31700 220            TRBIT = 0.
+ 31800 221            FOR I=1,48
+ 31900 222               TRBIT = TRBIT + 1.
+ 32000 223               IF TBIT(LBTRBT,31)
+ 32100 224               THEN
+ 32200 227                  CALL HF1(112,TRBIT,1.)
+ 32300 228               CIF
+ 32400 229               LBTRBT = SHFTR(LBTRBT,1)
+ 32500 230               IF(I.EQ.32) LBTRBT = LBAB4
+ 32600 232               IF(I.EQ.16) LBTRBT = LBAB8
+ 32700 234            CFOR
+ 32900    C                                                     .... CONTINUE .... LBACC=2
+ 33000 236            INDEX  =  4
+ 33100 237            IF(AND(LBACC,2).NE.0) RETURN
+ 33300    C                                                     .... CONTINUE .... LBACC=4
+ 33400 239            INDEX  =  4
+ 33500 240            IF(AND(LBACC,4).NE.0) RETURN
+ 33700    C                                                     .... CONTINUE .... LBACC=8
+ 33800 242            INDEX  =  4
+ 33900 243            IF(AND(LBACC,8).NE.0) RETURN
+ 34100    C                                                     ***** ACCEPT ***** LBACC=1
+ 34200 245            INDREJ =  4
+ 34300 246            INDEX  = 11
+ 34400 247            IF(AND(LBACC,1).NE.0) XREPEAT
+ 34500    C       LBACC = 0
+ 34600    C                                                     ===== REJECT =====
+ 34700 249            INDREJ =  5
+ 34800 250            INDEX  =  1
+ 34900 251            XREPEAT
+ 35000    C
+ 35100    C-----------------------------------------------------------------------
+ 35200    C     CASE 4 => INDEX = 4    =>    Z-VERTEX NOW CALCULATED
+ 35300    C-----------------------------------------------------------------------
+ 35400    C
+ 35500 252         CASE 4
+ 35700    C                                                     ***** ACCEPT ***** LBACC=2
+ 35800 253            INDEX  = 11
+ 35900 254            INDREJ = 11
+ 36000 255            IF(AND(LBACC,2).NE.0) XREPEAT
+ 36200    C                                                     .... CONTINUE .... LBACC=4
+ 36300 257            INDEX  = 5
+ 36400 258            IF(AND(LBACC,4).NE.0) RETURN
+ 36500    C
+ 36600 260            INDEX = 1
+ 36700 261            IPJCA  = IDATA(IQJETC)
+ 36800 262            IPJCA2 = IPJCA*2
+ 36900    C  # OF HITS IN 1. RING (FOR PLOT PURPOSE ONLY)
+ 37000 263            NHITR1 = (HDATA(IPJCA2+27) - HDATA(IPJCA2+3)) / 4
+ 37100 264            IPZV   = IDATA(IQZVTX)
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  8
+0CARD TARGET
+  NO  STM.NO
+ 
+ 37200    C  PRINT EVENTS WITHOUT 'ZVTX' BANK
+ 37300 265            IF(IPZV.LE.0) WRITE(6,2004) HHEADR(18),HHEADR(19)
+ 37500 267            IF IPZV.GT.0                                                 CHECK IF 'ZVTX' BANK
+ 37600 268            THEN
+ 37700 271               IFLAG  = IDATA(IPZV+6)
+ 37800 272               ZVTX   = ADATA(IPZV+1)
+ 37900 273               PEAK   = ADATA(IPZV+4)
+ 38000 274               IGG(IFLAG+27) = IGG(IFLAG+27) + 1
+ 38200 275               IF IFLAG.LT.3                                             EVENTS WITHOUT ZVTX
+ 38300 276               THEN
+ 38400 279                  INDREJ = 12
+ 38500 280                  XREPEAT
+ 38600    C
+ 38700 281               ELSE
+ 38800 282                  CALL HF1(1,ZVTX,1.)
+ 38900 283                  IF ABS(ZVTX).LE.300.
+ 39000 284                  THEN
+ 39100 287                     ANHTR1 = NHITR1
+ 39200 288                     CALL HF1(2,ANHTR1,1.)
+ 39300 289                  ELSE
+ 39500 291                     INDREJ = 13                                         ZV > 300.
+ 39600 292                     XREPEAT
+ 39700 293                  CIF
+ 39800 294               CIF
+ 39900 295            ELSE
+ 40100 297               INDREJ = 14                                               NO 'ZVTX'-BANK
+ 40200 298               XREPEAT
+ 40300 299            CIF
+ 40400    C                                                     .... CONTINUE ....
+ 40500 300            INDEX = 5
+ 40600 301            RETURN
+ 40700    C
+ 40800    C-----------------------------------------------------------------------
+ 40900    C     CASE 5 => INDEX = 5    =>    PATTERN RECOGNITION NOW COMPLETE
+ 41000    C-----------------------------------------------------------------------
+ 41100    C
+ 41200 302         CASE 5
+ 41400 303            INDEX = 1                                                    INITIALIZE REJECT INDEX
+ 41500 304            IPPATR = IDATA(IQPATR)
+ 41700 305            IF(IPPATR.LE.0) PRINT2005,HHEADR(18),HHEADR(19)              ACCEPT EVENTS WITHOUT A 'PATR' BANK
+ 41800 307 2005   FORMAT('  RUN AND EVENT HAS NO PATR BANK ',2I5)
+ 41900 308            INDREJ = 21
+ 42000 309            IPPATR = IDATA(IQPATR)
+ 42100 310            IF(IPPATR.LE.0) LBACC = OR(LBACC,32)
+ 42200 312            IF(IPPATR.LE.0) XREPEAT
+ 42400 314            INDEX = 1                                                    PICK UP 'PATR' PARAMETERS
+ 42500 315            NTR    = IDATA(IPPATR+2)
+ 42600 316            LDTR   = IDATA(IPPATR+3)
+ 42700 317            IPTR0  = IPPATR + IDATA(IPPATR+1)
+ 42800 318            IPTR9  = IPTR0 + (NTR-1)*LDTR
+ 42900 319            ANTR = NTR
+ 43000 320            CALL HF1(3,ANTR,1.)
+ 43200 321            IF NTR.LE.0                                                  0 TRACKS
+ 43300 322            THEN
+ 43400 325               INDREJ = 22
+ 43500 326               XREPEAT
+ 43600 327            CIF
+ 43700    C---
+ 43800    C--- SEARCH FOR TRACK WITH      > 12 HITS
+ 43900    C---                       PT   > 100 MEV
+ 44000    C---                       Z    > 300 MM
+ 44100    C---                       RMIN <  50 MM
+ 44200    C---
+ 44300    C---    THE FIRST OF THE TRACKLOOPS BELOW IS ONLY CONCERNED WITH EVENTS
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  9
+0CARD TARGET
+  NO  STM.NO
+ 
+ 44400    C---    FROM THE FORWARD MUON - ECAP QUADRANT TRIGGER. INTRODUCED ON
+ 44500    C---    19.7.82, J.OLSSON AND G.PEARCE
+ 44600    C---
+ 44700 328            IF AND(LBAB4,MKMUT1).NE.0
+ 44800 329            THEN
+ 44900    C         LOOP OVER ALL TRACKS
+ 45000 332               FACC = 0
+ 45100 333               TRAC = 0
+ 45200 334               LBSHRT = 0
+ 45300 335               IF(AND(LBACC,4).NE.0) LBSHRT = 1
+ 45400 337               XO = 0.
+ 45500 338               YO = 0.
+ 45600 339               ZMIN  = 100000.
+ 45700 340               RMIN0 = 100000.
+ 45800    C
+ 45900 341               FOR IPTR=IPTR0,IPTR9,LDTR
+ 46000 342                  IF IDATA(IPTR+24).GT.LIMHFW
+ 46100 343                  THEN
+ 46200 346                     FACC = OR(FACC,1)
+ 46300 347                     CRV = ABS(ADATA(IPTR+25))
+ 46400 348                     CALL HF1(6,CRV,1.)
+ 46500 349                     IF CRV .LE..00150
+ 46600 350                     THEN
+ 46700 353                        FACC = OR(FACC,2)
+ 46800 354                        AZV = ABS(ADATA(IPTR+31))
+ 46900 355                        ZMIN = AMIN1(AZV,ZMIN)
+ 47100 356                        IF AZV .LT. 300.  .OR.  LBSHRT .NE. 0            INTERCEPT WITH Z-AXIS IF LONG TRACK
+ 47200 357                        THEN
+ 47300 360                           FACC = OR(FACC,4)
+ 47500 361                           CALL DRTRCK(IPTR,XO,YO,RMIN)                  CALC. DISTANCE TRACK-(XO,YO)
+ 47600 362                           RMIN = ABS(RMIN)
+ 47700 363                           RMIN0 = AMIN1(RMIN0,RMIN)
+ 47800 364                           IF ABS(RMIN).LT.   50.
+ 47900 365                           THEN
+ 48000 368                              TRAC = TRAC + 1.
+ 48100 369                              FACC = OR(FACC,8)
+ 48200 370                           CIF
+ 48300 371                        CIF
+ 48400 372                     CIF
+ 48500 373                  CIF
+ 48600 374               CFOR
+ 48700 376            ELSE
+ 48800    C         LOOP OVER ALL TRACKS
+ 48900 378               FACC = 0
+ 49000 379               TRAC = 0
+ 49100 380               LBSHRT = 0
+ 49200 381               IF(AND(LBACC,4).NE.0) LBSHRT = 1
+ 49300 383               XO = 0.
+ 49400 384               YO = 0.
+ 49500 385               ZMIN  = 100000.
+ 49600 386               RMIN0 = 100000.
+ 49700    C
+ 49800 387               FOR IPTR=IPTR0,IPTR9,LDTR
+ 49900 388                  IF IDATA(IPTR+24).GT.LIMHIT
+ 50000 389                  THEN
+ 50100 392                     FACC = OR(FACC,1)
+ 50200 393                     CRV = ABS(ADATA(IPTR+25))
+ 50300 394                     CALL HF1(6,CRV,1.)
+ 50400 395                     IF CRV .LE..00150
+ 50500 396                     THEN
+ 50600 399                        FACC = OR(FACC,2)
+ 50700 400                        AZV = ABS(ADATA(IPTR+31))
+ 50800 401                        ZMIN = AMIN1(AZV,ZMIN)
+ 51000 402                        IF AZV .LT. 300.  .OR.  LBSHRT .NE. 0            INTERCEPT WITH Z-AXIS IF LONG TRACK
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE 10
+0CARD TARGET
+  NO  STM.NO
+ 
+ 51100 403                        THEN
+ 51200 406                           FACC = OR(FACC,4)
+ 51400 407                           CALL DRTRCK(IPTR,XO,YO,RMIN)                  CALC. DISTANCE TRACK-(XO,YO)
+ 51500 408                           RMIN = ABS(RMIN)
+ 51600 409                           RMIN0 = AMIN1(RMIN0,RMIN)
+ 51700 410                           IF ABS(RMIN).LT.   50.
+ 51800 411                           THEN
+ 51900 414                              IF(TRAC.GT.0.) FACC = OR(FACC,8)
+ 52000 416                              TRAC = TRAC + 1.
+ 52100 417                           CIF
+ 52200 418                        CIF
+ 52300 419                     CIF
+ 52400 420                  CIF
+ 52500 421               CFOR
+ 52600 423            CIF
+ 52700 424            CALL HF1(7,ZMIN ,1.)
+ 52800 425            CALL HF1(8,RMIN0,1.)
+ 52900 426            IF(TRAC.GT. 8.) TRAC =  8.
+ 53000 428            IF(AND(LBACC,4).NE.0) TRAC = TRAC + 10.
+ 53100 430            CALL HF1(9,TRAC,1.)
+ 53200    C
+ 53400 431            IF AND(FACC,8).EQ.0                                          CHECK FACC
+ 53500 432            THEN
+ 53600    C                                                     >>>>> REJECT <<<<<
+ 53800 435               INDREJ = 23                                               REJECT, DET. REJECT CODE
+ 53900 436               IF(AND(FACC,1).NE.0) INDREJ = 24
+ 54000 438               IF(AND(FACC,2).NE.0) INDREJ = 25
+ 54100 440               IF(AND(FACC,4).NE.0) INDREJ = 26
+ 54200 442               INDEX = 1
+ 54300 443               XREPEAT
+ 54400 444            CIF
+ 54600    C                                                     ***** ACCEPT ***** FACC = 8
+ 54700 445            INDREJ = 30
+ 54800 446            INDEX  = 11
+ 54900 447            XREPEAT
+ 55000    C
+ 55100 448         OTHER
+ 55200 452            PRINT 2010, HHEADR(18),HHEADR(19),INDEX
+ 55300 453            INDEX = 1
+ 55400 454            RETURN
+ 55500 455         CSELECT
+ 55600    C
+ 55700 456      UNTIL .TRUE.
+ 55800    C
+ 55900    C
+ 56000    C
+ 56100    C
+ 56300    C                                                                        CALL SLOW PATREC FOR ACCEPTED EVENTS
+ 56400    C
+ 56500    C
+ 56600    C
+ 56700 457      IF INDEX.EQ.11 .AND. AND(LBACC,14).NE.0
+ 56800 461      THEN
+ 57000 464         IF IDATA(IQJETC).GT.0                                           CHECK IF 'JETC'-BANK
+ 57100 465         THEN
+ 57200 468            IPFAST = 2
+ 57300 469            CALL INPATR
+ 57400 470            CALL PATREC(0)
+ 57500 471            IPPATR = IDATA(IQPATR)
+ 57600 472            IPJHTL = IDATA(IQJHTL)
+ 57700 473            IF IPPATR.NE.0 .AND. IDATA(IPPATR-2).EQ.10
+ 57800 474            THEN
+ 57900 477               IDATA(IPPATR-2) = 9
+ 58000 478               IF(IPJHTL.NE.0 .AND. IDATA(IPJHTL-2).EQ.10)IDATA(IPJHTL-2)=9
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE 11
+0CARD TARGET
+  NO  STM.NO
+ 
+ 58100 480            CIF
+ 58300 481            CALL BDLS('PATR',10)                                         DELETE PATREC BANKS '10'
+ 58400 482            CALL BDLS('JHTL',10)
+ 58600 483            IPFAST = 0                                                   REINSTALL FAST PATREC LIMITS
+ 58700 484            CALL INPATR
+ 58800 485            ZFITLM(1) = 70.
+ 58900 486            ZFITLM(2) = 35.
+ 59000 487         CIF
+ 59100 488      CIF
+ 59300 489      IWRT = 0                                                           SET IWRT + LABEL IN 'HEAD'-BANK
+ 59400 490      IF INDEX.EQ.11
+ 59500 491      THEN
+ 59600 494         IPHEAD = IDATA(IQHEAD)*2
+ 59700 495         IF(AND(LBACC, 2).NE.0) IWRT = 1
+ 59800 497         IF(AND(LBACC, 4).NE.0) IWRT = IWRT + 8
+ 59900 499         IF(AND(LBACC, 8).NE.0) IWRT = IWRT +16
+ 60000 501         IF(IPHEAD.GT.0) HDATA(IPHEAD+27) = IWRT
+ 60200 503         LBTRBT = LBAB2                                                  PLOT TRIGGER BITS
+ 60300 504         TRBIT = 0.
+ 60400 505         FOR I=1,48
+ 60500 506            TRBIT = TRBIT + 1.
+ 60600 507            IF(TBIT(LBTRBT,31)) CALL HF1(113,TRBIT,1.)
+ 60700 509            LBTRBT = SHFTR(LBTRBT,1)
+ 60800 510            IF(I.EQ.32) LBTRBT = LBAB4
+ 60900 512            IF(I.EQ.16) LBTRBT = LBAB8
+ 61000 514         CFOR
+ 61100 516      CIF
+ 61200 517      IF(INDEX.EQ.11) IGG( 10) = IGG( 10) + 1
+ 61300    C
+ 61400 519      ANDREJ = INDREJ
+ 61500 520      CALL HF1(10,ANDREJ,1.)
+ 61600 521      IF(INDREJ.GT.0) IGG(INDREJ+10) = IGG(INDREJ+10) + 1
+ 61700 523      IF(IWRT  .GT.0) IGG(IWRT+50) = IGG(IWRT+50) + 1
+ 61800 525      IMPRT=IDATA(IQMPRS)
+ 61900 526      IF IMPRT.GT.0.AND.INDEX.EQ.11
+ 62000 527      THEN
+ 62100 530         IRFLAG=HDATA(2*IMPRT+3)
+ 62200 531         IF(AND(IRFLAG,4).NE.0) IGG(49)=IGG(49)+1
+ 62300 533         IF(AND(IRFLAG,8).NE.0) IGG(50)=IGG(50)+1
+ 62400 535      CIF
+ 62500    C
+ 62600    C     IF(IGG(4).LE.50) PRINT2009,HHEADR(18),HHEADR(19),
+ 62700    C    +                           LBTRB1,LBTRB2,LBACC,INDREJ,INDEX,IWRT
+ 62800    C
+ 62900 536      IF INDREJ.EQ.5
+ 63000 537      THEN
+ 63100 540         INDEX=11
+ 63200 541      ELSE
+ 63300 543         INDEX=1
+ 63400 544      CIF
+ 63500 545      RETURN
+ 63600    C---
+ 63700    C--- ERROR EXIT FROM LGCALB, NO SPACE FOR 'ALGN'  OR ABNORMAL DATA
+ 63800    C---
+ 63900 546      PROC ERRLGC
+ 64000 547         IGG( 9) = IGG( 9) + 1
+ 64100 548         IF(IGG( 9).LT.20.AND.IPRN.GT.0) PRINT2006,HHEADR(18),HHEADR(19)
+ 64200 550         IERRLG = 1
+ 64300 551      CPROC
+ 64400 553      END
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE 12
+0CARD TARGET
+  NO  STM.NO
+ 
+0END OF SEGMENT
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         552 TARGET STATEMENTS
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  1
+0CARD TARGET
+  NO  STM.NO
+ 
+0END OF PROGRAM
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         552 TARGET STATEMENTS
+ 00000    C   16/07/81 703231339  MEMBER NAME  USREDUC1 (JADESR)      SHELTRAN
+ 00001   2      SUBROUTINE USER(INDEX)
+ 00002   3      IMPLICIT INTEGER*2 (H)
+ 00003    C---
+ 00004    C---
+ 00005    C---     USER ROUTINE FOR REDUC1 PROGRAM
+ 00006    C---     |ZVTX| < 300.                                  6.10.81 (PST)
+ 00007    C---                                       LAST CHANGE  1.10.81 (GFP)
+ 00008    C---
+ 00009    C---
+          C----------------------------------------------------------------------
+          C             MACRO CDATA .... BOS COMMON.
+          C
+          C             THIS MACRO ONLY DEFINES THE IDATA/HDATA/ADATA NAMES.
+          C             THE ACTUAL SIZE OF /BCS/ IS FIXED ON MACRO CBCSMX
+          C             OR BY OTHER MEANS. A DEFAULT SIZE OF 40000 IS GIVEN HERE.
+          C
+          C----------------------------------------------------------------------
+          C
+         4      COMMON /BCS/ IDATA(40000)
+         5      DIMENSION HDATA(80000),ADATA(40000),IPNT(50)
+         6      EQUIVALENCE (HDATA(1),IDATA(1),ADATA(1)),(IPNT(1),IDATA(55))
+         7      EQUIVALENCE (NWORD,IPNT(50))
+          C
+          C------------------------ END OF MACRO CDATA --------------------------
+          C----------------------------------------------
+          C  MACRO CPATLM .... PATTERN RECOGNITION LIMITS
+          C----------------------------------------------
+         8      COMMON /CPATLM/ PATRLM(5),FLINLM(10),TRELLM(20),ZFITLM(10),BKK(20)
+               *               ,XYF(20),IGFP(20),XBKK(40),IADMIN(5),YBKK(20)
+         9      INTEGER IXYF(20),LMPATR(5),LMFLIN(10)
+        10      INTEGER LMTREL(20),LMZFIT(10),IBKK(20)
+        11      DIMENSION GFP(20),IXBKK(40),IYBKK(20)
+        12      EQUIVALENCE (PATRLM(1),LMPATR(1)),(IXBKK(1),XBKK(1)),(IYBKK(1),
+               *YBKK(1))   ,(FLINLM(1),LMFLIN(1)),(TRELLM(1),LMTREL(1))
+               *           ,(ZFITLM(1),LMZFIT(1)),(BKK(1),IBKK(1))
+               *           ,(XYF(1),IXYF(1)),(GFP(1),IGFP(1)),(IADMIN(1),IMCERT)
+               *           ,(IYBKK(20),IPPASS),(IADMIN(2),IPFAST)
+          C----------- END OF MACRO CPATLM --------------
+ 00100    C====MACRO CZVPAR===================================
+ 00200    C-------------------------------------------
+ 00300    C   RESULTS FROM ZVERTF
+ 00400    C   P. STEFFEN (79/01/26)
+ 00500    C---------------------------------------------
+ 00600  13      COMMON /CZVPAR/ LBZVDF,ZLOW,  BINZ,  NBINZ,
+ 00700         ,                NWRDR1,LWRDC0,LWRDC1,LWRDC2,
+ 00800         ,                IDZ1LM,IDZ2LM,NPKMIN,SBRAT,DFIMAX,
+ 00900         ,                DZVPAR(5)
+ 01000    C==ENDMACRO CZVPAR========================================
+ 00100    C====  MACRO CWORKZV  ==================================
+ 00200    C-------------------------------------------
+ 00300    C   RESULTS + INTERM. STORAGE OF ZVERTF
+ 00400    C   P. STEFFEN (79/01/21)
+ 00500    C---------------------------------------------
+ 00600  14      COMMON /CWORK/ FZRSLT(12)
+ 00700         ,             , HUFLO,HOFLO,MAXZ,HIST(100)
+ 00800         ,             , HPTSEC(98)
+ 00900         ,             , NZ1(16),NZ2(16), HLB1(8),HLB2(8)
+ 01000         ,        , HZ1(8,16),HZ2(16,16), FI1(8,16),FI2(8,16),HTMP(100)
+ 01100  15      INTEGER*4 HPTSEC
+ 01110  16      INTEGER IZRSLT(12)
+ 01200  17      EQUIVALENCE (IZRSLT(1),FZRSLT(1))
+ 01300    C
+ 01400    C==  ENDMACRO CWORKZV  ========================================
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  2
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00100    C-----------------------------------------------------------------------
+ 00200    C                            MACRO CJDRCH .... JET CHAMBER CONSTANTS.
+ 00300    C-----------------------------------------------------------------------
+ 00310    C
+ 00400  18      COMMON / CJDRCH / RDEC(4),PSIIN(3),RINCR(3),FIRSTW(3),FSENSW(3),
+ 00500         +                  RDEPTH,SWDEPL,YSUSPN,TIMDEL(2,3),ZMAX,ZOFFS,
+ 00510         +                  ZRESOL,ZNORM,ZAL,ZSCAL,DRIDEV,DRICOS,DRISIN,
+ 00600         +                  PEDES,TZERO(3),DRIROT(96,2),SINDRI(96,2),
+ 00701         +                  COSDRI(96,2),DRIVEL(96,2),T0FIX(3),
+ 00800         +                  ABERR(8), DUMJDC(20)
+ 00900    C
+ 01100    C      BLOCK DATA SET TO MC VALUES, KALIBR WILL SET REAL DATA VALUES
+ 01210    C--->  A CHANGE OF THIS COMMON MUST BE DONE SIMULTANEOUSLY WITH  <----
+ 01220    C--->  A CHANGE OF THE BLOCK DATA                                <----
+ 01230    C
+ 01300    C--------------------------- END OF MACRO CJDRCH -----------------------
+ 01400    C
+ 00000    C   01/04/82 204012259  MEMBER NAME  CUTSR1   (JADESR)      MACRO
+ 00001    C-------------------------------
+ 00002    C  MACRO CUTSR1 .... REDUC1 CUTS
+ 00003    C-------------------------------
+ 00004  19      COMMON/CUTSR1/NVRSN,NRUNST,NEVTST,NOTTOT,NOTRUN(10),ELGLM( 8)
+ 00005    C--------- END OF MACRO CUTSR1 ------------
+ 00016    C
+ 00017  20      COMMON /CTLIM/ ISECLF
+ 00018  21      COMMON /CHEADR/ HEAD(108)
+ 00019  22      COMMON /CADMIN/ IEVTP,NRREAD,NRWRIT
+ 00020  23      COMMON/CALIBR/JPOINT(100),
+ 00021         +HMUCAL(8370),HLGMAI(5760),HTAGSY(384),HJPULS(9216),
+ 00022         +DELTA0(96,2),DELTA1(96,2),DELTA2(96,2),DELTA5(96,2),DELTA6(96,2)
+ 00023    C
+ 00024  24      COMMON /CIGG/ IPRN,IGG(80),JIGG(80)
+ 00025    C  IPRN = 0 --> NO PRINT  IPRN > 0 --> PRINT  IPRN> 1 --> PUNCH CARDS
+ 00026    C
+ 00027  25      LOGICAL*1 CHOP
+ 00028  26      DATA LBSTRT/0/,ETAGLM/300./,LIMHIT/12/,LIMHT1/20/,MKFWU1/Z800/
+ 00029  27      DATA MKTAGE/Z400/,MKLGLE/Z200/,MKLUMI/Z100/,MKFWMU/Z80/,MKT3/Z80/
+ 00030    C
+ 00031  28 2000 FORMAT('1')
+ 00032  29 2001 FORMAT('0TOTAL REDUCTION FACTOR ',F7.2,' % ')
+ 00033  30 2002 FORMAT(' COUNTERS ',10I8)
+ 00034  31 2003 FORMAT(' TOTAL COUNTS ',10I8)
+ 00035  32 2004 FORMAT('  RUN AND EVENT HAS NO ZVTX BANK ',2I5)
+ 00036  33 2005 FORMAT('  RUN AND EVENT HAS NO PATR BANK ',2I5)
+ 00037  34 2006 FORMAT(' RUN AND EVENT ',2I6,' HAS RETURN1 IN LGCALB')
+ 00038  35 2007 FORMAT(1H1/
+ 00039         +1X,10('='),20X,10('=')/
+ 00040         +1X,10('='),' START OF RUN ',I5,1X,10('=')/
+ 00041         +1X,10('='),20X,10('='))
+ 00042  36 2018 FORMAT(
+ 00043         +1X,10('=')/
+ 00044         +1X,10('='),' THIS RUN HAS BEEN CHOPPED'/
+ 00045         +1X,10('='))
+ 00046    C
+ 00047    C---
+ 00048    C   INDEX =    2   CALLED IMMEDIATELY AFTER EVENT IS READ INTO CDATA.
+ 00049    C              3   LEAD GLASS ENERGIES HAVE BEEN COMPUTED.
+ 00050    C              4   FAST Z VERTEX RECONSTRUCTION HAS BEEN DONE.
+ 00051    C              5   INNER DETECTOR PATTERN RECOGNITION HAS BEEN RUN.
+ 00052    C              6   ENERGIES CLUSTERS IN THE LEAD GLASS HAVE BEEN FOUND.
+ 00053    C              7   TRACKS AND CLUSTERS HAVE BEEN ASSOCIATED.
+ 00054    C              8   MUON CHAMBER TRACKING HAS BEEN DONE.
+ 00055    C              9   MUON AND INNER DETECTOR TRACKS HAVE BEEN ASSOCIATED.
+ 00056    C             10   UNUSED
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  3
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00057    C
+ 00058    C-----------------------------------------------------------------------
+ 00059    C                 INDEX = 0    =>    INITIALIZATION
+ 00060    C-----------------------------------------------------------------------
+ 00061    C
+ 00062  37      IF INDEX.EQ.0
+ 00063  38      THEN
+ 00064    C       REDUC1 OPERATION MODE
+ 00065  41         CALL R1MODE
+ 00066    C       STOP JOB WHEN ISECLF SECONDS LEFT
+ 00067  42         ISECLF=20
+ 00068  43         IPRN = 1
+ 00069    C       REQUEST FAST VERSION OF PATREC
+ 00070  44         IPFAST = 0
+ 00071    C       BOS BANK POINTERS
+ 00072  45         IQHEAD = IBLN('HEAD')
+ 00073  46         IQTRIG = IBLN('TRIG')
+ 00074  47         IQALGN = IBLN('ALGN')
+ 00075  48         IQZVTX = IBLN('ZVTX')
+ 00076  49         IQJETC = IBLN('JETC')
+ 00077  50         IQPATR = IBLN('PATR')
+ 00078  51         IQJHTL = IBLN('JHTL')
+ 00079  52         IQMPRS = IBLN('MPRS')
+ 00080    C       INITIALISE COUNTERS
+ 00081  53         FOR I = 1,80
+ 00082  54            IGG(I) = 0
+ 00083  55            JIGG(I) = 0
+ 00084  56         CFOR
+ 00085    C       INITIALISE HISTOGRAMS
+ 00086  58         CALL HBOOK1(1,'ZVERTEX (ALL)$',100,-2000.,2000.)
+ 00087  59         CALL HBOOK1(2,'NHITS IN RING1 (ZVERTEX < 300 MMS)$',100,0.,400.)
+ 00088  60         CALL HBOOK1(3,'NUMBER OF TRACKS$',100,0.,50.)
+ 00089  61         CALL HBOOK1(4,'LG ENERGY SUM (ALL)  $',100,0.02,40000.)
+ 00090  62         CALL HBOOK1(5,'LG ENDCAP ENERGY (BAD BLOCKS) $',100,0.,40000.)
+ 00091  63         CALL HBOOK1(6,'TRACK CURVATURE (LONG TRACKS) $',100,-.001,.001)
+ 00092  64         CALL HBOOK1(7,'ZMIN (TRACKS)  $',100,-1000.,1000.)
+ 00093  65         CALL HBOOK1(8,'RMIN $',100,0.,300.)
+ 00094  66         CALL HBOOK1(9,'REJECT INDEX$',100,0.,  100.)
+ 00095  67         INDEX=INDEX+1
+ 00096  68         RETURN
+ 00097  69      CIF
+ 00098    C
+ 00099    C-----------------------------------------------------------------------
+ 00100    C                 INDEX = 100  =>    END OF JOB PRINTOUT
+ 00101    C-----------------------------------------------------------------------
+ 00102    C
+ 00103  70      IF INDEX.EQ.100
+ 00104  71      THEN
+ 00105  74         FOR I = 2,80
+ 00106  75            JIGG(I) = JIGG(I) + IGG(I)
+ 00107  76         CFOR
+ 00108  78         PERCEN = (FLOAT(NRWRIT)/FLOAT(JIGG(4)))*100.
+ 00109  79         WRITE(6,2001) PERCEN
+ 00110  80         CALL STATUS
+ 00111  81         FOR I = 1,80
+ 00112  82            IGG(I) = JIGG(I)
+ 00113  83         CFOR
+ 00114  85         CALL STATUS
+ 00115  86         CALL HISTDO
+ 00116  87         RETURN
+ 00117  88      CIF
+ 00118    C
+ 00119    C     COUNT DIFFERENT USER CALLS
+ 00120    C
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  4
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00121  89      IF(INDEX.GT.2 .AND. INDEX.LE.8) IGG(INDEX+2) = IGG(INDEX+2) + 1
+ 00122    C
+ 00123  91      REPEAT
+ 00124    C
+ 00125  92         INDREJ = 0
+ 00126  93         SELECT INDEX
+ 00127    C
+ 00128    C
+ 00129    C-----------------------------------------------------------------------
+ 00130    C                 INDEX = 1    =>    START OF RUN
+ 00131    C-----------------------------------------------------------------------
+ 00132    C
+ 00133  94         CASE 1
+ 00134  96            IGG(3) = IGG(3) + 1
+ 00135  97            INDEX=INDEX+1
+ 00136  98            IF(IGG(4).NE.0) CALL STATUS
+ 00137 100            FOR I = 2,80
+ 00138 101               JIGG(I) = JIGG(I) + IGG(I)
+ 00139 102               IGG(I) = 0
+ 00140 103            CFOR
+ 00142 105            IGG(1) = HEAD(18)                                            RUN #
+ 00143 106            PRINT2007,HEAD(18)
+ 00144    C
+ 00146 107            IF LBSTRT.EQ.0                                               CHANGE LIMITS OF ZRFIT
+ 00147 108            THEN
+ 00148 111               LBSTRT = 1
+ 00149 112               ZFITLM(1) = 70.
+ 00150 113               ZFITLM(2) = 35.
+ 00151 114            CIF
+ 00152    C
+ 00153    CHOP RUNS IF REQUESTED
+ 00154    C
+ 00155 115            CHOP=.FALSE.
+ 00156 116            IF NOTTOT.NE.0
+ 00157 117            THEN
+ 00158 120               FOR I=1,NOTTOT
+ 00159 121                  IF(HEAD(18).EQ.NOTRUN(I)) CHOP=.TRUE.
+ 00160 123               CFOR
+ 00161 125            CIF
+ 00162 126            IF(HEAD(18).LT.NRUNST) CHOP=.TRUE.
+ 00163 128            IF(CHOP) PRINT2018
+ 00164    C
+ 00165 130            RETURN
+ 00166    C
+ 00167    C-----------------------------------------------------------------------
+ 00168    C                 INDEX = 2    =>    EVENT JUST READ IN
+ 00169    C-----------------------------------------------------------------------
+ 00170    C
+ 00171 131         CASE 2
+ 00172    C
+ 00173    C       INITIALIZE INDEX FOR REJECT + WRITE FLAG
+ 00174    C
+ 00175 132            INDEX = 1
+ 00176    C
+ 00177    CHOP RUNS IF REQUESTED
+ 00178    C
+ 00179 133            IF(CHOP) RETURN
+ 00180 135            IF(HEAD(18).EQ.NRUNST .AND. HEAD(19).LT.NEVTST) RETURN
+ 00181    C
+ 00182    C       COUNT USER(2)-CALLS AFTER SKIP
+ 00183    C
+ 00184 137            IGG(4) = IGG(4) + 1
+ 00185    C
+ 00186 138            IWRT = 0
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  5
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00187 139            ILUMI = 0
+ 00189    C                                                     >>>>> REJECT <<<<< PULSER EVENTS
+ 00190 140            INDREJ =  1
+ 00191 141            IF(HEAD(19).LT.13) XREPEAT
+ 00192    C
+ 00194 143            IFLW= 0                                                      SET OVERFLOW MARKER
+ 00195 144            IF HEAD(23).NE.0
+ 00196 145            THEN
+ 00197 148               IFLW = 1
+ 00198 149               IGG(77) = IGG(77) + 1
+ 00199 150            CIF
+ 00200 151            IF(HEAD(23).NE.0) IFLW = 1
+ 00201    C
+ 00203 153            IERRLG = 0                                                   CHECK IF HITS IN ID OR LG-ENERGY
+ 00204 154            CALL LGCALB(&ERRLGC)
+ 00205    C
+ 00207 156            LBTRBT = 0                                                   CHECK TRIGGER WITH T2-ACCEPT
+ 00209 158            IPTRIG = IDATA(IQTRIG)                                       SET TRIGGER BITS IF 'TRIG' BANK # 1 EXISTS
+ 00210 159            IF(IPTRIG.GT.0 .AND. IDATA(IPTRIG-2).EQ.1)
+ 00211         +      LBTRBT = HDATA(IPTRIG*2+10)
+ 00213 161            IF(LAND(LBTRBT,MKLUMI).NE.0) ILUMI = 1                       SET LUMI-FLAG
+ 00214    C
+ 00216 163            IMUACC=0                                                     CHECK FOR MUON HITS IF FWD MU TRIG
+ 00217 164            IMU=0
+ 00218 165            IPHEAD = IDATA(IQHEAD)
+ 00219 166            IF(IPHEAD.GT.0) IMU=HDATA(IPHEAD*2+22)
+ 00220 168            IF((LAND(LBTRBT,MKFWMU).NE.0.AND.LAND(IMU,MKT3).NE.0).OR.
+ 00221         +      LAND(LBTRBT,MKFWU1).NE.0) CALL MEWT3(IMUACC)
+ 00222 170            IF IMUACC.LE.0
+ 00223 171            THEN
+ 00224 174               CALL TRGCHK(LBTRCK,LBTRBT)
+ 00226    C                                                     >>>>> REJECT <<<<< TRIGGER CHECK -VE
+ 00227 175               INDREJ =  2
+ 00228 176               IF(LBTRCK.EQ.0) XREPEAT
+ 00229    C
+ 00231 178               IACC = 0                                                  LG-ENERGY IN CYLINDER AND E-CAPS; SET FLAG IACC
+ 00232 179               IF(IERRLG.EQ.0) CALL LGCUT(IACC,ECYL,ECAMI,ECAPL,ETOT)
+ 00234 181               IF(LAND(LBTRBT,MKLGLE).EQ.0) IACC = 0                     RESET IACC IF NO HIGH ENERGY TRIGGER
+ 00235    C
+ 00236    C  SET   FLAG FOR ENERGY IN FORWARD TAGGING BLOCKS
+ 00237    C              IFTG = 0      NO ENERGY
+ 00238    C              IFTG = 11     ENERGY ABOVE LIMIT IN NEG. FW ARM
+ 00239    C              IFTG = 12     ENERGY ABOVE LIMIT IN POS. FW ARM
+ 00240    C              IFTG = 113/13 ENERGY ABOVE LIMIT IN BOTH FW ARMS(LUMI)
+ 00241 183               IFTG = 0
+ 00242 184               IF(LAND(LBTRBT,2).NE.0) CALL TAGFLG(IFTG)
+ 00243 186               ETAG = 0.
+ 00244 187               IF(IFTG.NE.0. .AND. LAND(LBTRBT,MKTAGE).NE.0) ETAG = ETOT
+ 00245 189               AFTG = IFTG
+ 00246    C
+ 00248 190               IF(IACC.NE.     0) IWRT = 1                               SET WRITE FLAG FOR HIGH ENERGY, OVERFLOW, TAGGING,
+ 00249 192               IF(IFLW.NE.     0) IWRT = IWRT + 2
+ 00250 194               IF ETAG.GT.ETAGLM .AND. IWRT.EQ.0
+ 00251 195               THEN
+ 00252 198                  ECENTR = 0.
+ 00253 199                  IF(IFTG.EQ.11) ECENTR = ETOT - ECAMI
+ 00254 201                  IF(IFTG.EQ.12) ECENTR = ETOT - ECAPL
+ 00255 203                  IF(IFTG.GT.12) ECENTR = ETOT
+ 00256 205                  IF ECENTR.GT.100.
+ 00257 206                  THEN
+ 00258 209                     IWRT = IWRT + 4
+ 00259 210                  ELSE
+ 00260 212                  CIF
+ 00261 213               CIF
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  6
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00262    C
+ 00263    C       IWRT = 0 .AND. GOOD TRIGGER CHECK -VE
+ 00264    C                                                     >>>>> REJECT <<<<<
+ 00265 214               INDREJ =  3
+ 00266 215               IF(IWRT.EQ.0 .AND. LBTRCK.EQ.16) XREPEAT
+ 00267    C
+ 00269 217            ELSE                                                         ACCEPT FWD MUON TRIG WITH MUON HITS
+ 00270 219               IWRT=1
+ 00271 220               IGG(2)=IGG(2)+1
+ 00272 221            CIF
+ 00273    C       CHECK IF HITS IN ID
+ 00274 222            IPJCA  = IDATA(IQJETC)
+ 00275 223            IF IPJCA.LE.0
+ 00276 224            THEN
+ 00277 227               INDEX = 1
+ 00279    C                                                     >>>>> REJECT <<<<< NO HITS IN 'JETC'
+ 00280 228               INDREJ =  4
+ 00281 229               IF(IWRT.EQ.0) XREPEAT
+ 00282                                                                             WRITE  IF IWRT = 1
+ 00284    C                                                     ***** ACCEPT ***** IWRT=1, NO HITS IN 'JETC'
+ 00285 231               INDREJ =  5
+ 00286 232               INDEX = 11
+ 00287 233               XREPEAT
+ 00288 234            CIF
+ 00289    C
+ 00290    C                                                     .... CONTINUE ....
+ 00291 235            INDREJ =  6
+ 00292 236            INDEX = 4
+ 00293 237            RETURN
+ 00294    C
+ 00295    C-----------------------------------------------------------------------
+ 00296    C                          Z-VERTEX CALCULATED
+ 00297    C-----------------------------------------------------------------------
+ 00298    C
+ 00299 238         CASE 4
+ 00300    C
+ 00302 239            INDEX = 1                                                    INITIALIZE REJECT INDEX
+ 00303    C
+ 00305 240            INDREJ = 11                                                  STOP ANALYSIS FOR IWRT=1,4
+ 00306 241            IF(LAND(IWRT,5).NE.0) XREPEAT
+ 00307    C
+ 00308 243            IPJCA  = IDATA(IQJETC)
+ 00309 244            IPJCA2 = IPJCA*2
+ 00311 245            NHITR1 = (HDATA(IPJCA2+27) - HDATA(IPJCA2+3)) / 4            # OF HITS IN 1. RING (FOR PLOT PURPOSE ONLY)
+ 00312 246            IPZV   = IDATA(IQZVTX)
+ 00314 247            IF(IPZV.LE.0) WRITE(6,2004) HEAD(18),HEAD(19)                PRINT EVENTS WITHOUT 'ZVTX' BANK
+ 00315    C
+ 00317 249            IF IPZV.GT.0                                                 CHECK IF 'ZVTX' BANK
+ 00318 250            THEN
+ 00319 253               IFLAG  = IDATA(IPZV+6)
+ 00320 254               ZVTX   = ADATA(IPZV+1)
+ 00321 255               PEAK   = ADATA(IPZV+4)
+ 00322    C
+ 00324 256               IF(IFLAG.LT.3 .AND. LBTRCK.EQ.8) IFLAG = 0                ONLY CLEAN VTX FOR 1T + 1T(R1) * CLEAN R1
+ 00325 258               IGG(IFLAG+26) = IGG(IFLAG+26) + 1
+ 00326 259               IF IFLAG.LE.0
+ 00327 260               THEN
+ 00329    C                                                     >>>>> REJECT <<<<< EVENTS WITHOUT ZVTX
+ 00330 263                  INDREJ = 12
+ 00331 264                  XREPEAT
+ 00332 265               ELSE
+ 00333    C
+ 00334 266                  CALL HF1(1,ZVTX,1.)
+ 00335 267                  IF ABS(ZVTX).LE.300.
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  7
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00336 268                  THEN
+ 00337 271                     ANHTR1 = NHITR1
+ 00338 272                     CALL HF1(2,ANHTR1,1.)
+ 00339 273                  ELSE
+ 00341    C                                                     >>>>> REJECT <<<<< ZV > 300.
+ 00342 275                     INDREJ = 13
+ 00343 276                     XREPEAT
+ 00344 277                  CIF
+ 00345 278               CIF
+ 00346 279            ELSE
+ 00348    C                                                     >>>>> REJECT <<<<< NO 'ZVTX'-BANK
+ 00349 281               INDREJ = 14
+ 00350 282               XREPEAT
+ 00351 283            CIF
+ 00352    C
+ 00353    C                                                     .... CONTINUE ....
+ 00354 284            INDEX = 5
+ 00355 285            RETURN
+ 00356    C
+ 00357    C-----------------------------------------------------------------------
+ 00358    C                          PATREC DONE
+ 00359    C-----------------------------------------------------------------------
+ 00360    C
+ 00361 286         CASE 5
+ 00363 287            INDEX = 1                                                    INITIALIZE REJECT INDEX
+ 00364 288            IPPATR = IDATA(IQPATR)
+ 00366 289            IF(IPPATR.LE.0) WRITE(6,2005) HEAD(18),HEAD(19)              PRINT EVENTS WITHOUT 'PATR' BANK
+ 00368    C                                                     ***** ACCEPT ***** EVENTS WITHOUT 'PATR' BANK
+ 00369 291            INDREJ = 21
+ 00370 292            IPPATR = IDATA(IQPATR)
+ 00372 293            IF(IPPATR.LE.0) IWRT=1                                       ACCEPT EVENTS WITH NO PATR BANKS
+ 00373 295            IF(IPPATR.LE.0) XREPEAT
+ 00374    C
+ 00376 297            INDEX = 1                                                    SET REJECT INDEX
+ 00377 298            NTR    = IDATA(IPPATR+2)
+ 00378 299            LDTR   = IDATA(IPPATR+3)
+ 00379 300            IPTR0  = IPPATR + IDATA(IPPATR+1)
+ 00380 301            IPTR9  = IPTR0 + (NTR-1)*LDTR
+ 00381 302            ANTR = NTR
+ 00382 303            CALL HF1(3,ANTR,1.)
+ 00383 304            IF NTR.LE.0
+ 00384 305            THEN
+ 00386    C                                                     >>>>> REJECT <<<<< 0 TRACKS
+ 00387 308               INDREJ = 22
+ 00388 309               XREPEAT
+ 00389 310            CIF
+ 00390    C
+ 00391 311            IF IFTG.NE.0
+ 00392 312            THEN
+ 00393    C
+ 00395 315               ACRV=1000.                                                ***** TAGGING EVENTS WITH IWRT=0
+ 00396 316               ZMIN = 1000.
+ 00397 317               IFTAGC = 0
+ 00399 318               FOR IPTR=IPTR0,IPTR9,LDTR                                 FIND MIN(Z) OF LONG TRACKS, >100MEV
+ 00400 319                  IF IDATA(IPTR+24).GT.LIMHIT
+ 00401 320                  THEN
+ 00402 323                     CRV = ADATA(IPTR+25)
+ 00403 324                     IF(ABS(CRV).LT.ACRV) ACRV=ABS(CRV)
+ 00405 326                     IF ABS(CRV)      .LE..00150                         CURVATURE CUT CORRESPONDING TO 100 MEV
+ 00406 327                     THEN
+ 00407 330                        AZV = ADATA(IPTR+31)
+ 00409 331                        IF(ABS(AZV).LT.ABS(ZMIN)) ZMIN = AZV             ZR FIT INTERCEPT WITH Z-AXIS
+ 00410 333                     CIF
+ 00411 334                  CIF
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  8
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00412 335               CFOR
+ 00413 337               IF ABS(ZMIN).GT.300.
+ 00414 338               THEN
+ 00416    C                                                     >>>>> REJECT <<<<< MIN(Z) > 300.
+ 00417 341                  INDREJ = 23
+ 00418 342                  XREPEAT
+ 00419 343               CIF
+ 00420 344               INDEX = 11
+ 00421 345               IWRT = IWRT + 16
+ 00423    C                                                     ***** ACCEPT ***** MIN(Z) < 300.
+ 00424 346               INDREJ = 24
+ 00425 347               XREPEAT
+ 00426 348            CIF
+ 00427    C
+ 00429    C                                                                        ***** OTHER EVENTS WITH IWRT=0
+ 00431 349            LBLONG = 0                                                   LABEL FOR LONG TRACKS
+ 00433 350            NE100  = 0                                                   # OF TRACKS WITH >100 MEV
+ 00435 351            ZSUM   = 0                                                   SUM FOR Z-AVER.
+ 00437 352            LBEHIG = 0                                                   LABEL FOR LONG TRACKS, >100MEV
+ 00438 353            ACRV=1000.
+ 00439 354            ZAV=0.
+ 00440 355            ZMIN = 1000.
+ 00441 356            IKNT=0
+ 00443 357            FOR IPTR=IPTR0,IPTR9,LDTR                                    DET. MIN(Z) FOR LONG TRACKS, >100MEV
+ 00445 358               IF IDATA(IPTR+33).GT.LIMHIT                               CHECK IF LIMHIT HITS USED IN ZR-FIT
+ 00446 359               THEN
+ 00447 362                  LBLONG = 1
+ 00448 363                  CRV = ADATA(IPTR+25)
+ 00449 364                  AZV = ADATA(IPTR+31)
+ 00450 365                  IF(ABS(CRV).LT.ACRV) ACRV=ABS(CRV)
+ 00451 367                  CALL HF1(6,CRV,1.)
+ 00453 368                  IF ABS(CRV)      .LE..00025                            CURVATURE CUT CORRESPONDING TO C:A 100 MEV
+ 00454 369                  THEN
+ 00455 372                     LBEHIG = 1
+ 00456 373                     ZAV=ZAV+AZV
+ 00457 374                     IKNT=IKNT+1
+ 00458 375                     IF(ABS(AZV).LT.ABS(ZMIN)) ZMIN = AZV
+ 00459 377                  ELSE
+ 00461 379                     IF ABS(CRV).LT..00150 .AND.                         CHECK P<100MEV,  |Z|<300
+ 00462         +                  ABS(AZV).LE.300.
+ 00463 380                     THEN
+ 00464    C
+ 00466 383                        RSQ = ADATA(IPTR+5)**2 + ADATA(IPTR+6)**2        CHECK DISTANCE OF 1. HIT
+ 00467 384                        IF RSQ.LT.250000.
+ 00468 385                        THEN
+ 00469 388                           NE100 = NE100 + 1
+ 00470 389                           ZSUM = AZV + ZSUM
+ 00471 390                        CIF
+ 00472 391                     CIF
+ 00473 392                  CIF
+ 00474 393               CIF
+ 00475 394            CFOR
+ 00476 396            ISTAR = LBEHIG*2 + LBLONG
+ 00477 397            IF(NE100.GE.2) ISTAR = ISTAR + 4
+ 00478 399            ASTAR = ISTAR
+ 00479 400            IF(IKNT.GT.0) ZAV=ZAV/FLOAT(IKNT)
+ 00480 402            IF(NE100.GE.2 .AND. LBEHIG.EQ.0) ZMIN = ZSUM/FLOAT(NE100)
+ 00481    C
+ 00483 404            IF LBLONG.EQ.0                                               ***** EVENTS WITH SHORT TRACKS ONLY
+ 00484 405            THEN
+ 00485 408               ETOTX = ECAMI + ECAPL
+ 00487 409               ACRV=1000.                                                CHECK IF LONG TRACK IN R-FI
+ 00488 410               IKNT=0
+ 00489 411               FOR IPTR=IPTR0,IPTR9,LDTR
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  9
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00491 412                  IF IDATA(IPTR+24).GT.LIMHT1                            CHECK IF LIMHT1 HITS USED IN RFI-FIT
+ 00492 413                  THEN
+ 00493 416                     LBLONG = 1
+ 00494 417                     CRV = ADATA(IPTR+25)
+ 00495 418                     IF(ABS(CRV).LT.ACRV) ACRV=ABS(CRV)
+ 00496 420                     IKNT=IKNT+1
+ 00497 421                  CIF
+ 00498 422               CFOR
+ 00499 424               IF LBLONG.EQ.0
+ 00500 425               THEN
+ 00502    C                                                     >>>>> REJECT <<<<< ONLY SHORT TRACKS
+ 00503 428                  INDREJ = 25
+ 00504 429                  XREPEAT
+ 00505 430               CIF
+ 00506    C
+ 00508 431               AKNT = IKNT                                               LONG TRACKS IN R-FI
+ 00510    C                                                     ***** ACCEPT ***** LONG TRACKS IN R-FI, SHORT TRACKS IN R-Z
+ 00511 432               INDREJ = 26
+ 00512 433               INDEX = 11
+ 00513 434               IWRT = IWRT + 32
+ 00514 435               XREPEAT
+ 00515 436            CIF
+ 00516    C
+ 00518 437            IF LBEHIG.EQ.0 .AND. NE100.LT.2                              ***** LONG TRACKS
+ 00519 438            THEN
+ 00520    C
+ 00522 441               ETOTX = ECAMI + ECAPL                                     *****  LONG TRACKS WITH <100MEV
+ 00524    C                                                   >>>>> REJECT <<<<  < <2 LONG TRACKS WITH >100MEV
+ 00525 442               INDREJ = 27
+ 00526 443               XREPEAT
+ 00527 444            CIF
+ 00528    C
+ 00530 445            CALL HF1(7,ZMIN,1.)                                          ***** LONG TRACKS, >100MEV
+ 00531 446            IF ABS(ZMIN).GT.300.
+ 00532 447            THEN
+ 00534    C                                                     >>>>> REJECT <<<<< MIN(Z) >300.
+ 00535 450               INDREJ = 28
+ 00536 451               XREPEAT
+ 00537 452            CIF
+ 00538    C
+ 00540    C                                                                        ***** LONG TRACKS, >100MEV, MIN(Z)<300.
+ 00541    C       CHECK RMIN
+ 00542 453            RMIN=10000.
+ 00543 454            FOR IPTR=IPTR0,IPTR9,LDTR
+ 00544 455               IF IDATA(IPTR+33).GT.LIMHIT
+ 00545 456               THEN
+ 00546 459                  CRV = ADATA(IPTR+25)
+ 00547 460                  AZV = ADATA(IPTR+31)
+ 00548 461                  IF ABS(CRV)      .LE..00150 .AND. ABS(AZV).LE.300.
+ 00549 462                  THEN
+ 00551 465                     CALL PRTOCI(IPTR,DUM1,RM,DUM2,DUM3)
+ 00552 466                     IF(RM.LT.RMIN) RMIN=RM
+ 00553 468                  CIF
+ 00554 469               CIF
+ 00555 470            CFOR
+ 00556 472            CALL HF1(8,RMIN,1.)
+ 00558    C                                                     >>>>> REJECT <<<<< RMIN > 60.
+ 00559 473            INDREJ = 29
+ 00560 474            IF(RMIN.GT.60.) XREPEAT
+ 00562    C                                                     ***** ACCEPT ***** LONG TRACKS, >100MEV, MIN(Z)<300.,
+ 00564 476            INDREJ = 30                                                  RMIN<60.
+ 00565 477            INDEX=11
+ 00566 478            IWRT = IWRT + 64
+ 00567 479            XREPEAT
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE 10
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00568    C
+ 00569 480         OTHER
+ 00570 484            INDEX = INDEX + 1
+ 00571 485         CSELECT
+ 00572 486         INDREJ = 31
+ 00573    C
+ 00574 487      UNTIL .TRUE.
+ 00575    C
+ 00577 488      IF INDEX.EQ.11 .OR. LAND(IWRT,5).NE.0 .AND. INDEX.NE.4             CALL SLOW PATREC FOR ACCEPTED EVENTS
+ 00578 492      THEN
+ 00579    C
+ 00581 495         IF IDATA(IQJETC).GT.0                                           CHECK IF 'JETC'-BANK
+ 00582 496         THEN
+ 00583 499            IPFAST = 2
+ 00584 500            CALL INPATR
+ 00585 501            CALL PATREC(0)
+ 00586 502            IPPATR = IDATA(IQPATR)
+ 00587 503            IPJHTL = IDATA(IQJHTL)
+ 00588 504            IF IPPATR.NE.0 .AND. IDATA(IPPATR-2).EQ.10
+ 00589 505            THEN
+ 00590 508               IDATA(IPPATR-2) = 9
+ 00591 509               IF(IPJHTL.NE.0 .AND. IDATA(IPJHTL-2).EQ.10)IDATA(IPJHTL-2)=9
+ 00592 511            CIF
+ 00594 512            CALL BDLS('PATR',10)                                         DELETE PATREC BANKS '10'
+ 00595 513            CALL BDLS('JHTL',10)
+ 00597 514            IPFAST = 0                                                   REINSTALL FAST PATREC LIMITS
+ 00598 515            CALL INPATR
+ 00599 516            ZFITLM(1) = 70.
+ 00600 517            ZFITLM(2) = 35.
+ 00601 518         CIF
+ 00602 519         INDEX = 11
+ 00603 520      CIF
+ 00604    C
+ 00606 521      IF(INDEX.EQ.1 .AND. IWRT.NE.0) INDEX = 11                          WRITE IWRT-EVENTS
+ 00607    C
+ 00609 523      IF INDEX.EQ.11                                                     SET LABEL IN 'HEAD'-BANK
+ 00610 524      THEN
+ 00611 527         IPHEAD = IDATA(IQHEAD)*2
+ 00612 528         IF(IPHEAD.GT.0) HDATA(IPHEAD+27) = IWRT
+ 00613 530      CIF
+ 00614    C
+ 00616 531      IF INDEX.EQ.1 .AND. ILUMI.NE.0                                     WRITE LUMI EVENTS (SCALED DOWN BY FACTOR 4)
+ 00617 532      THEN
+ 00618 535         DATA NEVLUM /4/
+ 00619 536         NEVLUM = NEVLUM - 1
+ 00620 537         IF NEVLUM.LE.0
+ 00621 538         THEN
+ 00622 541            INDEX = 11
+ 00623 542            NEVLUM = 4
+ 00624 543            IPHEAD = IDATA(IQHEAD)*2
+ 00625 544            IF(IPHEAD.GT.0) HDATA(IPHEAD+27) = 0
+ 00626 546            IGG(80) = IGG(80) + 1
+ 00627 547         CIF
+ 00628 548      CIF
+ 00629    C
+ 00631 549      IF INDEX.EQ.11                                                     COUNT DIFFERENT CLASSES OF EVENTS
+ 00632 550      THEN
+ 00633 553         IGG(     79) = IGG(     79) + 1
+ 00634 554         AWRT  = IWRT
+ 00635 555         ATRCK = LBTRCK
+ 00636 556      CIF
+ 00637 557      ANDREJ = INDREJ
+ 00638 558      CALL HF1(9,ANDREJ,1.)
+ 00639 559      IF(INDREJ.GT.0) IGG(INDREJ+10) = IGG(INDREJ+10) + 1
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE 11
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00640 561      IF(IWRT  .GE.16 .AND. IWRT.LT.32) IWRT = 16
+ 00641 563      IF(IWRT  .GE.64) IWRT = 18
+ 00642 565      IF(IWRT  .GE.32) IWRT = 17
+ 00643 567      IF(IWRT  .GT.0) IGG(IWRT+50) = IGG(IWRT+50) + 1
+ 00644 569      IMPRT=IDATA(IQMPRS)
+ 00645 570      IF IMPRT.GT.0.AND.INDEX.EQ.11
+ 00646 571      THEN
+ 00647 574         IRFLAG=HDATA(2*IMPRT+3)
+ 00648 575         IF(LAND(IRFLAG,4).NE.0) IGG(19)=IGG(19)+1
+ 00649 577         IF(LAND(IRFLAG,8).NE.0) IGG(20)=IGG(20)+1
+ 00650 579      CIF
+ 00651    C
+ 00652 580      RETURN
+ 00653    C
+ 00655 581      PROC ERRLGC                                                        ERROR IN LGCALB
+ 00656    C
+ 00657    C       ERROR EXIT FROM LGCALB, NO SPACE FOR 'ALGN'  OR ABNORMAL DATA
+ 00658 582         IGG(78) = IGG(78) + 1
+ 00659 583         IF(IGG(78).LT.20.AND.IPRN.GT.0) WRITE(6,2006) HEAD(18),HEAD(19)
+ 00660 585         IERRLG = 1
+ 00661 586      CPROC
+ 00662    C
+ 00663 588      END
+0END OF SEGMENT
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         587 TARGET STATEMENTS
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  1
+0CARD TARGET
+  NO  STM.NO
+ 
+0END OF PROGRAM
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         587 TARGET STATEMENTS
+ 00000    C   18/08/83 703231340  MEMBER NAME  USRED82  (JADESR)      SHELTRAN
+ 00100    C   18/08/83            MEMBER NAME  USRED82  (JADESR)      FORTRAN
+ 00200    C   09/08/83            MEMBER NAME  USRED82                SHELTRAN
+ 00300    C   09/08/83            MEMBER NAME  USRED82  (JADESR)      FORTRAN
+ 00400    C   03/12/82            MEMBER NAME  USRED82                SHELTRAN
+ 00500   2      SUBROUTINE USER(INDEX)
+ 00600   3      IMPLICIT INTEGER*2 (H)
+ 00700   4      REAL LBACC
+ 00800   5      LOGICAL TBIT
+ 00900    C---
+ 01000    C---     DECREASING RUN NUMBERS IGNORED                 9/8/83  J.B.W.
+ 01100    C---
+ 01200    C---     NCALI=1/LUNITA(1)=22/LUNITA(2)=0 PUT BEFORE CALL TO R1MODE
+ 01300    C---     AND CALLS TO DBASE ADDED FOR DATA-BASE OPERATION AT RAL
+ 01400    C---                                                    3/12/82  J.B.W.
+ 01500    C---
+ 01600    C---     ALLOW FOR ONLY 1 KALIBRATION FILE (KALWRK0) ON UNIT 22
+ 01700    C---                                                   23.09.82 (PST)
+ 01800    C---
+ 01900    C---     USER ROUTINE FOR 1982 REDUC1 PROGRAM
+ 02000    C---                                                    5.03.82 (PST)
+ 02100    C---
+ 02200    C--- SKIP EVENT 27989:5555   (CORRUPT JETC, KILLS JETCAL)  J.O. 11.9.86
+ 02300    C--- SKIP EVENT 27987:5301   (CORRUPT JETC, KILLS JETCAL)  J.O. 9.10.86
+ 02400    C--- SKIP EVENT 27989:4893   (CORRUPT JETC, KILLS JETCAL)  J.O. 9.10.86
+ 02500    C--- SKIP EVENT 27989:5965   (CORRUPT JETC, KILLS JETCAL)  J.O. 9.10.86
+ 02600    C---
+          C----------------------------------------------------------------------
+          C             MACRO CDATA .... BOS COMMON.
+          C
+          C             THIS MACRO ONLY DEFINES THE IDATA/HDATA/ADATA NAMES.
+          C             THE ACTUAL SIZE OF /BCS/ IS FIXED ON MACRO CBCSMX
+          C             OR BY OTHER MEANS. A DEFAULT SIZE OF 40000 IS GIVEN HERE.
+          C
+          C----------------------------------------------------------------------
+          C
+         6      COMMON /BCS/ IDATA(40000)
+         7      DIMENSION HDATA(80000),ADATA(40000),IPNT(50)
+         8      EQUIVALENCE (HDATA(1),IDATA(1),ADATA(1)),(IPNT(1),IDATA(55))
+         9      EQUIVALENCE (NWORD,IPNT(50))
+          C
+          C------------------------ END OF MACRO CDATA --------------------------
+          C----------------------------------------------
+          C  MACRO CPATLM .... PATTERN RECOGNITION LIMITS
+          C----------------------------------------------
+        10      COMMON /CPATLM/ PATRLM(5),FLINLM(10),TRELLM(20),ZFITLM(10),BKK(20)
+               *               ,XYF(20),IGFP(20),XBKK(40),IADMIN(5),YBKK(20)
+        11      INTEGER IXYF(20),LMPATR(5),LMFLIN(10)
+        12      INTEGER LMTREL(20),LMZFIT(10),IBKK(20)
+        13      DIMENSION GFP(20),IXBKK(40),IYBKK(20)
+        14      EQUIVALENCE (PATRLM(1),LMPATR(1)),(IXBKK(1),XBKK(1)),(IYBKK(1),
+               *YBKK(1))   ,(FLINLM(1),LMFLIN(1)),(TRELLM(1),LMTREL(1))
+               *           ,(ZFITLM(1),LMZFIT(1)),(BKK(1),IBKK(1))
+               *           ,(XYF(1),IXYF(1)),(GFP(1),IGFP(1)),(IADMIN(1),IMCERT)
+               *           ,(IYBKK(20),IPPASS),(IADMIN(2),IPFAST)
+          C----------- END OF MACRO CPATLM --------------
+ 00100    C====MACRO CZVPAR===================================
+ 00200    C-------------------------------------------
+ 00300    C   RESULTS FROM ZVERTF
+ 00400    C   P. STEFFEN (79/01/26)
+ 00500    C---------------------------------------------
+ 00600  15      COMMON /CZVPAR/ LBZVDF,ZLOW,  BINZ,  NBINZ,
+ 00700         ,                NWRDR1,LWRDC0,LWRDC1,LWRDC2,
+ 00800         ,                IDZ1LM,IDZ2LM,NPKMIN,SBRAT,DFIMAX,
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  2
+0CARD TARGET
+  NO  STM.NO
+ 
+ 00900         ,                DZVPAR(5)
+ 01000    C==ENDMACRO CZVPAR========================================
+ 00100    C====  MACRO CWORKZV  ==================================
+ 00200    C-------------------------------------------
+ 00300    C   RESULTS + INTERM. STORAGE OF ZVERTF
+ 00400    C   P. STEFFEN (79/01/21)
+ 00500    C---------------------------------------------
+ 00600  16      COMMON /CWORK/ FZRSLT(12)
+ 00700         ,             , HUFLO,HOFLO,MAXZ,HIST(100)
+ 00800         ,             , HPTSEC(98)
+ 00900         ,             , NZ1(16),NZ2(16), HLB1(8),HLB2(8)
+ 01000         ,        , HZ1(8,16),HZ2(16,16), FI1(8,16),FI2(8,16),HTMP(100)
+ 01100  17      INTEGER*4 HPTSEC
+ 01110  18      INTEGER IZRSLT(12)
+ 01200  19      EQUIVALENCE (IZRSLT(1),FZRSLT(1))
+ 01300    C
+ 01400    C==  ENDMACRO CWORKZV  ========================================
+ 00100    C-----------------------------------------------------------------------
+ 00200    C                            MACRO CJDRCH .... JET CHAMBER CONSTANTS.
+ 00300    C-----------------------------------------------------------------------
+ 00310    C
+ 00400  20      COMMON / CJDRCH / RDEC(4),PSIIN(3),RINCR(3),FIRSTW(3),FSENSW(3),
+ 00500         +                  RDEPTH,SWDEPL,YSUSPN,TIMDEL(2,3),ZMAX,ZOFFS,
+ 00510         +                  ZRESOL,ZNORM,ZAL,ZSCAL,DRIDEV,DRICOS,DRISIN,
+ 00600         +                  PEDES,TZERO(3),DRIROT(96,2),SINDRI(96,2),
+ 00701         +                  COSDRI(96,2),DRIVEL(96,2),T0FIX(3),
+ 00800         +                  ABERR(8), DUMJDC(20)
+ 00900    C
+ 01100    C      BLOCK DATA SET TO MC VALUES, KALIBR WILL SET REAL DATA VALUES
+ 01210    C--->  A CHANGE OF THIS COMMON MUST BE DONE SIMULTANEOUSLY WITH  <----
+ 01220    C--->  A CHANGE OF THE BLOCK DATA                                <----
+ 01230    C
+ 01300    C--------------------------- END OF MACRO CJDRCH -----------------------
+ 01400    C
+          C-------------------------------
+          C  MACRO CHEADR .... HEADER BANK
+          C-------------------------------
+        21      COMMON /CHEADR/ IHEADR(54)
+        22      INTEGER*2 HHEADR(108)
+        23      EQUIVALENCE (IHEADR(1),HHEADR(1))
+          C --
+          C --  HHEADR(17) = EXPERIMENT NUMBER
+          C --  HHEADR(18) = RUN NUMBER
+          C --  HHEADR(19) = EVENT NUMBER
+          C --  HHEADR(38) = MAGNETIC FIELD (GAUSS)
+          C --
+          C--------- END OF MACRO CHEADR ------------
+          C==MACRO CIOUNI=========================================
+        24      COMMON/CIOUNI/IUNIT,JUNIT,NCALI,KUNITA(10),LUNITA(10)
+          C==ENDMACRO CIOUNI========================================
+ 03400    C
+ 00000    C   01/04/82 204012259  MEMBER NAME  CUTSR1   (JADESR)      MACRO
+ 00001    C-------------------------------
+ 00002    C  MACRO CUTSR1 .... REDUC1 CUTS
+ 00003    C-------------------------------
+ 00004  25      COMMON/CUTSR1/NVRSN,NRUNST,NEVTST,NOTTOT,NOTRUN(10),ELGLM( 8)
+ 00005    C--------- END OF MACRO CUTSR1 ------------
+ 03600    C HBOOK COMMON
+ 03700    CCCCC COMMON // BLCOMM(6000)
+ 03800    C GBOOK COMMON - IE HBOOK LOOK-ALIKE USED AT RUTHERFORD
+ 03900  26      COMMON/CGBOOK/PLOT(116,13)
+ 04000    C
+ 04100  27      COMMON /CREDRS/ LBAB2,LBAB4,LBAB8,LBAT2M,ARES(40)
+ 04200  28      INTEGER IRES(40)
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  3
+0CARD TARGET
+  NO  STM.NO
+ 
+ 04300  29      EQUIVALENCE (ARES(1),IRES(1))
+ 04400    C
+ 04500    C
+ 04600  30      COMMON /CTLIM/ ISECLF
+ 04700  31      COMMON /CADMIN/ IEVTP,NRREAD,NRWRIT
+ 04800  32      COMMON/CALIBR/JPOINT(100),
+ 04900         +HMUCAL(8370),HLGMAI(5760),HTAGSY(384),HJPULS(9216),
+ 05000         +DELTA0(96,2),DELTA1(96,2),DELTA2(96,2),DELTA5(96,2),DELTA6(96,2)
+ 05100    C
+ 05200  33      COMMON /CIGG/ IPRN,IGG(80),JIGG(80)
+ 05300    C  IPRN = 0 --> NO PRINT  IPRN > 0 --> PRINT  IPRN> 1 --> PUNCH CARDS
+ 05400    C
+ 05500  34      LOGICAL*1 CHOP
+ 05600  35      DATA LBSTRT/0/, LIMHIT/12/,MKMUT1/8/,LIMHFW/8/
+ 05700    C
+ 05800  36 2000 FORMAT('1')
+ 05900  37 2004 FORMAT('  RUN AND EVENT HAS NO ZVTX BANK ',2I5)
+ 06000  38 2006 FORMAT(' RUN AND EVENT ',2I6,' HAS RETURN1 IN LGCALB')
+ 06100    C2008 FORMAT(' USRED82: EVENT ',2I6,8(2X,Z4),4I6)
+ 06200    C2009 FORMAT(' USRED82 (RETURN) :',2I6,3(2X,Z4),6I6)
+ 06300  39 2010 FORMAT(' ***** ERROR IN USRED82 (INFORM PST), EVENT ',3I6)
+ 06400    C
+ 06500    C---
+ 06600    C   INDEX =    2   CALLED IMMEDIATELY AFTER EVENT IS READ INTO CDATA.
+ 06700    C              3   LEAD GLASS ENERGIES HAVE BEEN COMPUTED.
+ 06800    C              4   FAST Z VERTEX RECONSTRUCTION HAS BEEN DONE.
+ 06900    C              5   INNER DETECTOR PATTERN RECOGNITION HAS BEEN RUN.
+ 07000    C              6   ENERGIES CLUSTERS IN THE LEAD GLASS HAVE BEEN FOUND.
+ 07100    C              7   TRACKS AND CLUSTERS HAVE BEEN ASSOCIATED.
+ 07200    C              8   MUON CHAMBER TRACKING HAS BEEN DONE.
+ 07300    C              9   MUON AND INNER DETECTOR TRACKS HAVE BEEN ASSOCIATED.
+ 07400    C             10   UNUSED
+ 07500    C
+ 07600    C-----------------------------------------------------------------------
+ 07700    C     CASE 0 => INDEX = 0    =>    INITIALIZATION
+ 07800    C-----------------------------------------------------------------------
+ 07900    C
+ 08000  40      IF INDEX.EQ.0
+ 08100  41      THEN
+ 08200    C------------------------
+ 08300    C
+ 08400    C    DATA BASE SYSTEM INITIALISATION
+ 08500    C
+ 08600    C------------------------
+ 08700  44         CALL DBASE(0,IDBCHP)
+ 08800    C------------------------
+ 08900    C
+ 09000    C    PREPARE TO TRAP DECREASING RUN NUMBERS AND RUN NOS.LE.63
+ 09100    C                         J.B.W.  8/8/83
+ 09200    C
+ 09300    C------------------------
+ 09400  45         NRUN = 63
+ 09500    C       USE ONLY 1 CALIBRATION FILE (F11LHO.KALWRK0)
+ 09600  46         NCALI = 1
+ 09700  47         LUNITA(1) = 22
+ 09800  48         LUNITA(2) = 0
+ 09900    C       REDUC1 OPERATION MODE
+ 10000  49         CALL R1MODE
+ 10100    C       STOP JOB WHEN ISECLF SECONDS LEFT
+ 10200  50         ISECLF= 25
+ 10300  51         IPRN = 1
+ 10400    C       REQUEST FAST VERSION OF PATREC
+ 10500  52         IPFAST = 0
+ 10600    C
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  4
+0CARD TARGET
+  NO  STM.NO
+ 
+ 10700    C       BOS BANK POINTERS
+ 10800  53         IQHEAD = IBLN('HEAD')
+ 10900  54         IQTRIG = IBLN('TRIG')
+ 11000  55         IQALGN = IBLN('ALGN')
+ 11100  56         IQZVTX = IBLN('ZVTX')
+ 11200  57         IQJETC = IBLN('JETC')
+ 11300  58         IQPATR = IBLN('PATR')
+ 11400  59         IQJHTL = IBLN('JHTL')
+ 11500  60         IQMPRS = IBLN('MPRS')
+ 11600    C       INITIALISE COUNTERS
+ 11700  61         FOR I = 1,80
+ 11800  62            IGG(I) = 0
+ 11900  63            JIGG(I) = 0
+ 12000  64         CFOR
+ 12100    C
+ 12200    C       INITIALISE HISTOGRAMS
+ 12300    C       N.B. TO CONVERT GBOOK <-> HBOOK YOU MUST SWITCH THE COMMON
+ 12400    C       DECLARATIONS IN SUBROUTINE PLOTSZ (MEMBER R1MODE) AND EITHER
+ 12500    C       INSERT OR REMOVE INCLUDE(GBOOK) IN THE LKED STEP.
+ 12600    C
+ 12700  66         CALL HLIMIT(6000)
+ 12800  67         CALL HBOOK1(111,'TRIGGER BITS (INPUT)      $', 50,0.,   50.)
+ 12900  68         CALL HBOOK1(112,'TRIGGER BITS (TRCK-ACC)   $',100,0.,  100.)
+ 13000  69         CALL HBOOK1(113,'TRIGGER BITS ACCEPTED     $',100,0.,  100.)
+ 13100  70         CALL HBOOK1(1,'ZVERTEX (ALL)$',100,-2000.,2000.)
+ 13200  71         CALL HBOOK1(2,'NHITS IN RING1 (ZVERTEX < 300 MMS)$', 50,0.,200.)
+ 13300  72         CALL HBOOK1(3,'NUMBER OF TRACKS$',100,0.,50.)
+ 13400  73         CALL HBOOK1(4,'LG ENERGY SUM (ALL)  $',100,0.02,40000.)
+ 13500  74         CALL HBOOK1(5,'LG ENDCAP ENERGY (BAD BLOCKS) $',100,0.,40000.)
+ 13600  75         CALL HBOOK1(  6,'TRACK CURVATURE           $', 50,  0., .010)
+ 13700  76         CALL HBOOK1(7,'ZMIN (TRACKS)                 $', 50,  0.,1000.)
+ 13800  77         CALL HBOOK1(8,'RMIN                          $', 50,  0., 300.)
+ 13900  78         CALL HBOOK1(9,'     ACCEPTED TRACKS          $', 50,  0.,  25.)
+ 14000  79         CALL HBOOK1(10,'REJECT INDEX                 $', 50,  0.,  50.)
+ 14100  80         CALL HBLACK(0)
+ 14200  81         PRINT2000
+ 14300  82         INDEX=INDEX+1
+ 14400  83         IF(.TRUE.) RETURN
+ 14500  85      CIF
+ 14600    C
+ 14700    C-----------------------------------------------------------------------
+ 14800    C     CASE   => INDEX = 100  =>    END OF JOB
+ 14900    C-----------------------------------------------------------------------
+ 15000    C
+ 15100  86      IF INDEX.EQ.100
+ 15200  87      THEN
+ 15300    C---
+ 15400    C--- STATISTICS FROM LAST RUN
+ 15500    C---
+ 15600  90         FOR I = 2,80
+ 15700  91            JIGG(I) = JIGG(I) + IGG(I)
+ 15800  92         CFOR
+ 15900  94         CALL STAT82
+ 16000    C------------------------
+ 16100    C
+ 16200    C    DATA BASE SYSTEM TERMINATION
+ 16300    C
+ 16400    C------------------------
+ 16500  95         CALL DBASE(3,IDBCHP)
+ 16600    C---
+ 16700    C--- PRINT STATISTICS FOR SUM OF ALL RUNS PROCESSED
+ 16800    C---
+ 16900  96         FOR I = 1,80
+ 17000  97            IGG(I) = JIGG(I)
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  5
+0CARD TARGET
+  NO  STM.NO
+ 
+ 17100  98         CFOR
+ 17200 100         CALL STAT82
+ 17300 101         CALL H1EVLI(    0)
+ 17400    C---
+ 17500    C--- PRINT OUT HISTOGRAMS
+ 17600    C---
+ 17700 102         CALL HISTDO
+ 17800 103         IF(.TRUE.) RETURN
+ 17900 105      CIF
+ 18000    C
+ 18100    C     OTHER USER CALLS
+ 18200    C
+ 18300 106      IF(INDEX.GT.2 .AND. INDEX.LE.5) IGG(INDEX+2) = IGG(INDEX+2) + 1
+ 18400 108      REPEAT
+ 18500 109         INDREJ = 0
+ 18600 110         SELECT INDEX
+ 18700    C
+ 18800    C-----------------------------------------------------------------------
+ 18900    C     CASE 1 => INDEX = 1    =>    START OF RUN
+ 19000    C-----------------------------------------------------------------------
+ 19100    C
+ 19200 111         CASE 1
+ 19300    C---
+ 19400    C--- MODIFIED TO IGNORE EVENTS WITH RUN NUMBERS LE 63
+ 19500    C--- OR DECREASING RUN NUMBERS, BUT TO PROCESS ALL
+ 19600    C--- PARTS OF A RUN SPLIT UP BY SUCH EVENTS.
+ 19700    C---                                         J B WHITTAKER 17/8/83
+ 19800    C---
+ 19900 113            IF HHEADR(18).GT.NRUN
+ 20000 114            THEN
+ 20100 117               NRUN=HHEADR(18)
+ 20200 118               IF NRUN.NE.IGG(1)
+ 20300 119               THEN
+ 20400    C---               *
+ 20500    C---               *  DATA BASE SYSTEM - ADD RECORD FOR LAST RUN
+ 20600    C---               *  IF APPROPRIATE & OPEN RECORD FOR NEW ONE
+ 20700    C---               *
+ 20800 122                  CALL DBASE(2,IDBCHP)
+ 20900    C---               *
+ 21000    C---               *  RESET STATISTICS ARRAYS READY FOR NEW RUN
+ 21100    C---               *
+ 21200 123                  IGG(3) = IGG(3) + 1
+ 21300 124                  IF(IGG(4).NE.0) CALL STAT82
+ 21400 126                  IGG(1) = NRUN
+ 21500 127                  FOR I = 2,80
+ 21600 128                     JIGG(I) = JIGG(I) + IGG(I)
+ 21700 129                     IGG(I) = 0
+ 21800 130                  CFOR
+ 21900    C---               *
+ 22000    C---               *  PRINT RUN HEADER
+ 22100    C---               *
+ 22200 132                  PRINT 2007,IGG(1)
+ 22300 133 2007              FORMAT(1H0/
+ 22400         +            1X,10('='),20X,10('=')/
+ 22500         +            1X,10('='),' START OF RUN ',I5,1X,10('=')/
+ 22600         +            1X,10('='),20X,10('='))
+ 22700    C---               *
+ 22800    C---               *  CHANGE LIMITS OF ZRFIT
+ 22900    C---               *
+ 23000 134                  IF LBSTRT.EQ.0
+ 23100 135                  THEN
+ 23200 138                     LBSTRT = 1
+ 23300 139                     ZFITLM(1) = 70.
+ 23400 140                     ZFITLM(2) = 35.
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  6
+0CARD TARGET
+  NO  STM.NO
+ 
+ 23500 141                  CIF
+ 23600    C---               *
+ 23700    C---               *  CHECK IF RUN IS TO BE AXED
+ 23800    C---               *
+ 23900 142                  CHOP=.FALSE.
+ 24000 143                  IF(IGG(1).LT.NRUNST) CHOP=.TRUE.
+ 24100 145                  IF NOTTOT.NE.0
+ 24200 146                  THEN
+ 24300 149                     FOR I=1,NOTTOT
+ 24400 150                        IF(IGG(1).EQ.NOTRUN(I)) CHOP=.TRUE.
+ 24500 152                     CFOR
+ 24600 154                  CIF
+ 24700    C---               *
+ 24800    C---               *  ALLOW FOR RUN BEING CHOPPED
+ 24900    C---               *  BY DATA BASE SYSTEM
+ 25000    C---               *
+ 25100 155                  CHOP = CHOP.OR.IDBCHP.NE.0
+ 25200 156                  IF(CHOP) PRINT 2018,IGG(1)
+ 25300 158 2018              FORMAT(
+ 25400         +            1X,10('=')/
+ 25500         +            1X,10('='),' RUN',I6, ' AXED'/
+ 25600         +            1X,10('='))
+ 25700 159               CIF
+ 25800 160               INDEX=INDEX+1
+ 25900 161               IF(.TRUE.) RETURN
+ 26000 163            ELSE
+ 26100 165               IF HHEADR(18).LT.NRUN .OR. HHEADR(18).EQ.63
+ 26200 166               THEN
+ 26300 169                  CHOP = .TRUE.
+ 26400 170                  PRINT 2011, HHEADR(18)
+ 26500 171 2011              FORMAT(' USRED82 .. RUN',I15,' RECORD ENCOUNTERED')
+ 26600    C---               *
+ 26700    C---               *  MARK THE DATA BASE
+ 26800    C---               *
+ 26900 172                  CALL DBASE(10,IDBCHP)
+ 27000 173                  IF(.TRUE.) RETURN
+ 27100 175               ELSE
+ 27200 177                  CHOP = .FALSE.
+ 27300 178                  PRINT 2020, NRUN
+ 27400 179 2020              FORMAT(' USRED82 - CONTINUING WITH RUN',I15)
+ 27500 180                  INDEX = 2
+ 27600 181                  IF(.TRUE.) RETURN
+ 27700 183               CIF
+ 27800 184            CIF
+ 27900    C
+ 28000    C-----------------------------------------------------------------------
+ 28100    C     CASE 2 => INDEX = 2    =>    EVENT JUST READ IN
+ 28200    C-----------------------------------------------------------------------
+ 28300    C
+ 28400 185         CASE 2
+ 28500    C---
+ 28600    C--- REJECT UNWANTED RUNS
+ 28700    C---
+ 28800 187            INDEX = 1
+ 28900 188            IF(HHEADR(18).EQ.NRUNST .AND. HHEADR(19).LT.NEVTST) RETURN
+ 29000 190            IF(HHEADR(18).EQ.27987 .AND. HHEADR(19).EQ.5301) RETURN
+ 29100 192            IF(HHEADR(18).EQ.27989 .AND. HHEADR(19).EQ.4893) RETURN
+ 29200 194            IF(HHEADR(18).EQ.27989 .AND. HHEADR(19).EQ.5555) RETURN
+ 29300 196            IF(HHEADR(18).EQ.27989 .AND. HHEADR(19).EQ.5965) RETURN
+ 29310 198            IF(HHEADR(18).EQ.27990 .AND. HHEADR(19).EQ.  91) RETURN
+ 29400 200            IF(CHOP) RETURN
+ 29500    C------------------------
+ 29600    C
+ 29700    C    DATA BASE SYSTEM - SAVE HEADER INFORMATION FOR END OF RUN
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  7
+0CARD TARGET
+  NO  STM.NO
+ 
+ 29800    C
+ 29900    C------------------------
+ 30000 202            CALL DBASE(1,IDBCHP)
+ 30100 203            IGG(4) = IGG(4) + 1
+ 30300    C                                                     ===== REJECT ===== PULSER EVENTS
+ 30400 204            INDREJ =  1
+ 30500 205            IF(HHEADR(20).GE.64) XREPEAT
+ 30700 207            IERRLG = 0                                                   CHECK TRIGGER
+ 30800 208            CALL LGCALB(&ERRLGC)
+ 30900 210            CALL TRCK82(LBACC,LBTRB1,LBTRB2,IERRLG)
+ 31000    C       IF(IGG(4).LE.20) PRINT 2008,HHEADR(18),HHEADR(19),LBTRB1,LBTRB2,
+ 31100    C    ,                             LBACC,IERRLG,LBAB2,LBAB4,LBAB8,LBAT2M
+ 31300 212            LBTRBT = LBTRB1                                              PLOT TRIGGER BITS
+ 31400 213            TRBIT = 0.
+ 31500 214            FOR I=1,32
+ 31600 215               TRBIT = TRBIT + 1.
+ 31700 216               IF TBIT(LBTRBT,31)
+ 31800 217               THEN
+ 31900 220                  CALL HF1(111,TRBIT,1.)
+ 32000 221               CIF
+ 32100 222               LBTRBT = SHFTR(LBTRBT,1)
+ 32200 223               IF(I.EQ.16) LBTRBT = LBAT2M
+ 32300 225            CFOR
+ 32400 227            LBTRBT = LBAB2
+ 32500 228            TRBIT = 0.
+ 32600 229            FOR I=1,48
+ 32700 230               TRBIT = TRBIT + 1.
+ 32800 231               IF TBIT(LBTRBT,31)
+ 32900 232               THEN
+ 33000 235                  CALL HF1(112,TRBIT,1.)
+ 33100 236               CIF
+ 33200 237               LBTRBT = SHFTR(LBTRBT,1)
+ 33300 238               IF(I.EQ.32) LBTRBT = LBAB4
+ 33400 240               IF(I.EQ.16) LBTRBT = LBAB8
+ 33500 242            CFOR
+ 33700    C                                                     .... CONTINUE .... LBACC=2
+ 33800 244            INDEX  =  4
+ 33900 245            IF(AND(LBACC,2).NE.0) RETURN
+ 34100    C                                                     .... CONTINUE .... LBACC=4
+ 34200 247            INDEX  =  4
+ 34300 248            IF(AND(LBACC,4).NE.0) RETURN
+ 34500    C                                                     .... CONTINUE .... LBACC=8
+ 34600 250            INDEX  =  4
+ 34700 251            IF(AND(LBACC,8).NE.0) RETURN
+ 34900    C                                                     ***** ACCEPT ***** LBACC=1
+ 35000 253            INDREJ =  4
+ 35100 254            INDEX  = 11
+ 35200 255            IF(AND(LBACC,1).NE.0) XREPEAT
+ 35300    C       LBACC = 0
+ 35400    C                                                     ===== REJECT =====
+ 35500 257            INDREJ =  5
+ 35600 258            INDEX  =  1
+ 35700 259            XREPEAT
+ 35800    C
+ 35900    C-----------------------------------------------------------------------
+ 36000    C     CASE 4 => INDEX = 4    =>    Z-VERTEX NOW CALCULATED
+ 36100    C-----------------------------------------------------------------------
+ 36200    C
+ 36300 260         CASE 4
+ 36500    C                                                     ***** ACCEPT ***** LBACC=2
+ 36600 261            INDEX  = 11
+ 36700 262            INDREJ = 11
+ 36800 263            IF(AND(LBACC,2).NE.0) XREPEAT
+ 37000    C                                                     .... CONTINUE .... LBACC=4
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  8
+0CARD TARGET
+  NO  STM.NO
+ 
+ 37100 265            INDEX  = 5
+ 37200 266            IF(AND(LBACC,4).NE.0) RETURN
+ 37300    C
+ 37400 268            INDEX = 1
+ 37500 269            IPJCA  = IDATA(IQJETC)
+ 37600 270            IPJCA2 = IPJCA*2
+ 37700    C  # OF HITS IN 1. RING (FOR PLOT PURPOSE ONLY)
+ 37800 271            NHITR1 = (HDATA(IPJCA2+27) - HDATA(IPJCA2+3)) / 4
+ 37900 272            IPZV   = IDATA(IQZVTX)
+ 38000    C  PRINT EVENTS WITHOUT 'ZVTX' BANK
+ 38100 273            IF(IPZV.LE.0) WRITE(6,2004) HHEADR(18),HHEADR(19)
+ 38300 275            IF IPZV.GT.0                                                 CHECK IF 'ZVTX' BANK
+ 38400 276            THEN
+ 38500 279               IFLAG  = IDATA(IPZV+6)
+ 38600 280               ZVTX   = ADATA(IPZV+1)
+ 38700 281               PEAK   = ADATA(IPZV+4)
+ 38800 282               IGG(IFLAG+27) = IGG(IFLAG+27) + 1
+ 39000 283               IF IFLAG.LT.3                                             EVENTS WITHOUT ZVTX
+ 39100 284               THEN
+ 39200 287                  INDREJ = 12
+ 39300 288                  XREPEAT
+ 39400    C
+ 39500 289               ELSE
+ 39600 290                  CALL HF1(1,ZVTX,1.)
+ 39700 291                  IF ABS(ZVTX).LE.300.
+ 39800 292                  THEN
+ 39900 295                     ANHTR1 = NHITR1
+ 40000 296                     CALL HF1(2,ANHTR1,1.)
+ 40100 297                  ELSE
+ 40300 299                     INDREJ = 13                                         ZV > 300.
+ 40400 300                     XREPEAT
+ 40500 301                  CIF
+ 40600 302               CIF
+ 40700 303            ELSE
+ 40900 305               INDREJ = 14                                               NO 'ZVTX'-BANK
+ 41000 306               XREPEAT
+ 41100 307            CIF
+ 41200    C                                                     .... CONTINUE ....
+ 41300 308            INDEX = 5
+ 41400 309            RETURN
+ 41500    C
+ 41600    C-----------------------------------------------------------------------
+ 41700    C     CASE 5 => INDEX = 5    =>    PATTERN RECOGNITION NOW COMPLETE
+ 41800    C-----------------------------------------------------------------------
+ 41900    C
+ 42000 310         CASE 5
+ 42200 311            INDEX = 1                                                    INITIALIZE REJECT INDEX
+ 42300 312            IPPATR = IDATA(IQPATR)
+ 42500 313            IF(IPPATR.LE.0) PRINT2005,HHEADR(18),HHEADR(19)              ACCEPT EVENTS WITHOUT A 'PATR' BANK
+ 42600 315 2005   FORMAT('  RUN AND EVENT HAS NO PATR BANK ',2I5)
+ 42700 316            INDREJ = 21
+ 42800 317            IPPATR = IDATA(IQPATR)
+ 42900 318            IF(IPPATR.LE.0) LBACC = OR(LBACC,32)
+ 43000 320            IF(IPPATR.LE.0) XREPEAT
+ 43200 322            INDEX = 1                                                    PICK UP 'PATR' PARAMETERS
+ 43300 323            NTR    = IDATA(IPPATR+2)
+ 43400 324            LDTR   = IDATA(IPPATR+3)
+ 43500 325            IPTR0  = IPPATR + IDATA(IPPATR+1)
+ 43600 326            IPTR9  = IPTR0 + (NTR-1)*LDTR
+ 43700 327            ANTR = NTR
+ 43800 328            CALL HF1(3,ANTR,1.)
+ 44000 329            IF NTR.LE.0                                                  0 TRACKS
+ 44100 330            THEN
+ 44200 333               INDREJ = 22
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  9
+0CARD TARGET
+  NO  STM.NO
+ 
+ 44300 334               XREPEAT
+ 44400 335            CIF
+ 44500    C---
+ 44600    C--- SEARCH FOR TRACK WITH      > 12 HITS
+ 44700    C---                       PT   > 100 MEV
+ 44800    C---                       Z    > 300 MM
+ 44900    C---                       RMIN <  50 MM
+ 45000    C---
+ 45100    C---    THE FIRST OF THE TRACKLOOPS BELOW IS ONLY CONCERNED WITH EVENTS
+ 45200    C---    FROM THE FORWARD MUON - ECAP QUADRANT TRIGGER. INTRODUCED ON
+ 45300    C---    19.7.82, J.OLSSON AND G.PEARCE
+ 45400    C---
+ 45500 336            IF AND(LBAB4,MKMUT1).NE.0
+ 45600 337            THEN
+ 45700    C         LOOP OVER ALL TRACKS
+ 45800 340               FACC = 0
+ 45900 341               TRAC = 0
+ 46000 342               LBSHRT = 0
+ 46100 343               IF(AND(LBACC,4).NE.0) LBSHRT = 1
+ 46200 345               XO = 0.
+ 46300 346               YO = 0.
+ 46400 347               ZMIN  = 100000.
+ 46500 348               RMIN0 = 100000.
+ 46600    C
+ 46700 349               FOR IPTR=IPTR0,IPTR9,LDTR
+ 46800 350                  IF IDATA(IPTR+24).GT.LIMHFW
+ 46900 351                  THEN
+ 47000 354                     FACC = OR(FACC,1)
+ 47100 355                     CRV = ABS(ADATA(IPTR+25))
+ 47200 356                     CALL HF1(6,CRV,1.)
+ 47300 357                     IF CRV .LE..00150
+ 47400 358                     THEN
+ 47500 361                        FACC = OR(FACC,2)
+ 47600 362                        AZV = ABS(ADATA(IPTR+31))
+ 47700 363                        ZMIN = AMIN1(AZV,ZMIN)
+ 47900 364                        IF AZV .LT. 300.  .OR.  LBSHRT .NE. 0            INTERCEPT WITH Z-AXIS IF LONG TRACK
+ 48000 365                        THEN
+ 48100 368                           FACC = OR(FACC,4)
+ 48300 369                           CALL DRTRCK(IPTR,XO,YO,RMIN)                  CALC. DISTANCE TRACK-(XO,YO)
+ 48400 370                           RMIN = ABS(RMIN)
+ 48500 371                           RMIN0 = AMIN1(RMIN0,RMIN)
+ 48600 372                           IF ABS(RMIN).LT.   50.
+ 48700 373                           THEN
+ 48800 376                              TRAC = TRAC + 1.
+ 48900 377                              FACC = OR(FACC,8)
+ 49000 378                           CIF
+ 49100 379                        CIF
+ 49200 380                     CIF
+ 49300 381                  CIF
+ 49400 382               CFOR
+ 49500 384            ELSE
+ 49600    C         LOOP OVER ALL TRACKS
+ 49700 386               FACC = 0
+ 49800 387               TRAC = 0
+ 49900 388               LBSHRT = 0
+ 50000 389               IF(AND(LBACC,4).NE.0) LBSHRT = 1
+ 50100 391               XO = 0.
+ 50200 392               YO = 0.
+ 50300 393               ZMIN  = 100000.
+ 50400 394               RMIN0 = 100000.
+ 50500    C
+ 50600 395               FOR IPTR=IPTR0,IPTR9,LDTR
+ 50700 396                  IF IDATA(IPTR+24).GT.LIMHIT
+ 50800 397                  THEN
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE 10
+0CARD TARGET
+  NO  STM.NO
+ 
+ 50900 400                     FACC = OR(FACC,1)
+ 51000 401                     CRV = ABS(ADATA(IPTR+25))
+ 51100 402                     CALL HF1(6,CRV,1.)
+ 51200 403                     IF CRV .LE..00150
+ 51300 404                     THEN
+ 51400 407                        FACC = OR(FACC,2)
+ 51500 408                        AZV = ABS(ADATA(IPTR+31))
+ 51600 409                        ZMIN = AMIN1(AZV,ZMIN)
+ 51800 410                        IF AZV .LT. 300.  .OR.  LBSHRT .NE. 0            INTERCEPT WITH Z-AXIS IF LONG TRACK
+ 51900 411                        THEN
+ 52000 414                           FACC = OR(FACC,4)
+ 52200 415                           CALL DRTRCK(IPTR,XO,YO,RMIN)                  CALC. DISTANCE TRACK-(XO,YO)
+ 52300 416                           RMIN = ABS(RMIN)
+ 52400 417                           RMIN0 = AMIN1(RMIN0,RMIN)
+ 52500 418                           IF ABS(RMIN).LT.   50.
+ 52600 419                           THEN
+ 52700 422                              IF(TRAC.GT.0.) FACC = OR(FACC,8)
+ 52800 424                              TRAC = TRAC + 1.
+ 52900 425                           CIF
+ 53000 426                        CIF
+ 53100 427                     CIF
+ 53200 428                  CIF
+ 53300 429               CFOR
+ 53400 431            CIF
+ 53500 432            CALL HF1(7,ZMIN ,1.)
+ 53600 433            CALL HF1(8,RMIN0,1.)
+ 53700 434            IF(TRAC.GT. 8.) TRAC =  8.
+ 53800 436            IF(AND(LBACC,4).NE.0) TRAC = TRAC + 10.
+ 53900 438            CALL HF1(9,TRAC,1.)
+ 54000    C
+ 54200 439            IF AND(FACC,8).EQ.0                                          CHECK FACC
+ 54300 440            THEN
+ 54400    C                                                     >>>>> REJECT <<<<<
+ 54600 443               INDREJ = 23                                               REJECT, DET. REJECT CODE
+ 54700 444               IF(AND(FACC,1).NE.0) INDREJ = 24
+ 54800 446               IF(AND(FACC,2).NE.0) INDREJ = 25
+ 54900 448               IF(AND(FACC,4).NE.0) INDREJ = 26
+ 55000 450               INDEX = 1
+ 55100 451               XREPEAT
+ 55200 452            CIF
+ 55400    C                                                     ***** ACCEPT ***** FACC = 8
+ 55500 453            INDREJ = 30
+ 55600 454            INDEX  = 11
+ 55700 455            XREPEAT
+ 55800    C
+ 55900 456         OTHER
+ 56000 460            PRINT 2010, HHEADR(18),HHEADR(19),INDEX
+ 56100 461            INDEX = 1
+ 56200 462            RETURN
+ 56300 463         CSELECT
+ 56400    C
+ 56500 464      UNTIL .TRUE.
+ 56600    C
+ 56700    C
+ 56800    C
+ 56900    C
+ 57100    C                                                                        CALL SLOW PATREC FOR ACCEPTED EVENTS
+ 57200    C
+ 57300    C
+ 57400    C
+ 57500 465      IF INDEX.EQ.11 .AND. AND(LBACC,14).NE.0
+ 57600 469      THEN
+ 57800 472         IF IDATA(IQJETC).GT.0                                           CHECK IF 'JETC'-BANK
+ 57900 473         THEN
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE 11
+0CARD TARGET
+  NO  STM.NO
+ 
+ 58000 476            IPFAST = 2
+ 58100 477            CALL INPATR
+ 58200 478            CALL PATREC(0)
+ 58300 479            IPPATR = IDATA(IQPATR)
+ 58400 480            IPJHTL = IDATA(IQJHTL)
+ 58500 481            IF IPPATR.NE.0 .AND. IDATA(IPPATR-2).EQ.10
+ 58600 482            THEN
+ 58700 485               IDATA(IPPATR-2) = 9
+ 58800 486               IF(IPJHTL.NE.0 .AND. IDATA(IPJHTL-2).EQ.10)IDATA(IPJHTL-2)=9
+ 58900 488            CIF
+ 59100 489            CALL BDLS('PATR',10)                                         DELETE PATREC BANKS '10'
+ 59200 490            CALL BDLS('JHTL',10)
+ 59400 491            IPFAST = 0                                                   REINSTALL FAST PATREC LIMITS
+ 59500 492            CALL INPATR
+ 59600 493            ZFITLM(1) = 70.
+ 59700 494            ZFITLM(2) = 35.
+ 59800 495         CIF
+ 59900 496      CIF
+ 60100 497      IWRT = 0                                                           SET IWRT + LABEL IN 'HEAD'-BANK
+ 60200 498      IF INDEX.EQ.11
+ 60300 499      THEN
+ 60400 502         IPHEAD = IDATA(IQHEAD)*2
+ 60500 503         IF(AND(LBACC, 2).NE.0) IWRT = 1
+ 60600 505         IF(AND(LBACC, 4).NE.0) IWRT = IWRT + 8
+ 60700 507         IF(AND(LBACC, 8).NE.0) IWRT = IWRT +16
+ 60800 509         IF(IPHEAD.GT.0) HDATA(IPHEAD+27) = IWRT
+ 61000 511         LBTRBT = LBAB2                                                  PLOT TRIGGER BITS
+ 61100 512         TRBIT = 0.
+ 61200 513         FOR I=1,48
+ 61300 514            TRBIT = TRBIT + 1.
+ 61400 515            IF(TBIT(LBTRBT,31)) CALL HF1(113,TRBIT,1.)
+ 61500 517            LBTRBT = SHFTR(LBTRBT,1)
+ 61600 518            IF(I.EQ.32) LBTRBT = LBAB4
+ 61700 520            IF(I.EQ.16) LBTRBT = LBAB8
+ 61800 522         CFOR
+ 61900 524      CIF
+ 62000 525      IF(INDEX.EQ.11) IGG( 10) = IGG( 10) + 1
+ 62100    C
+ 62200 527      ANDREJ = INDREJ
+ 62300 528      CALL HF1(10,ANDREJ,1.)
+ 62400 529      IF(INDREJ.GT.0) IGG(INDREJ+10) = IGG(INDREJ+10) + 1
+ 62500 531      IF(IWRT  .GT.0) IGG(IWRT+50) = IGG(IWRT+50) + 1
+ 62600 533      IMPRT=IDATA(IQMPRS)
+ 62700 534      IF IMPRT.GT.0.AND.INDEX.EQ.11
+ 62800 535      THEN
+ 62900 538         IRFLAG=HDATA(2*IMPRT+3)
+ 63000 539         IF(AND(IRFLAG,4).NE.0) IGG(49)=IGG(49)+1
+ 63100 541         IF(AND(IRFLAG,8).NE.0) IGG(50)=IGG(50)+1
+ 63200 543      CIF
+ 63300    C
+ 63400    C     IF(IGG(4).LE.50) PRINT2009,HHEADR(18),HHEADR(19),
+ 63500    C    +                           LBTRB1,LBTRB2,LBACC,INDREJ,INDEX,IWRT
+ 63600    C
+ 63700 544      RETURN
+ 63800    C---
+ 63900    C--- ERROR EXIT FROM LGCALB, NO SPACE FOR 'ALGN'  OR ABNORMAL DATA
+ 64000    C---
+ 64100 545      PROC ERRLGC
+ 64200 546         IGG( 9) = IGG( 9) + 1
+ 64300 547         IF(IGG( 9).LT.20.AND.IPRN.GT.0) PRINT2006,HHEADR(18),HHEADR(19)
+ 64400 549         IERRLG = 1
+ 64500 550      CPROC
+ 64600 552      END
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE 12
+0CARD TARGET
+  NO  STM.NO
+ 
+0END OF SEGMENT
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         551 TARGET STATEMENTS
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  1
+0CARD TARGET
+  NO  STM.NO
+ 
+0END OF PROGRAM
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         551 TARGET STATEMENTS
+ 00000    C   19/05/80 703231340  MEMBER NAME  ZVTRCK   (JADESR)      SHELTRAN
+ 00100   2      SUBROUTINE ZVTRCK(ZVTX,IND,IPPATR)
+ 00200    C
+ 00300    C   *****************************************
+ 00400    C   *    DETERMINE VERTEX FROM PATR-BANK    *
+ 00500    C   *****************************************
+ 00600    C   19/05/80 : P. STEFFEN
+ 00700    C
+ 00800   3      IMPLICIT INTEGER*2 (H)
+ 00900    C
+          C----------------------------------------------------------------------
+          C             MACRO CDATA .... BOS COMMON.
+          C
+          C             THIS MACRO ONLY DEFINES THE IDATA/HDATA/ADATA NAMES.
+          C             THE ACTUAL SIZE OF /BCS/ IS FIXED ON MACRO CBCSMX
+          C             OR BY OTHER MEANS. A DEFAULT SIZE OF 40000 IS GIVEN HERE.
+          C
+          C----------------------------------------------------------------------
+          C
+         4      COMMON /BCS/ IDATA(40000)
+         5      DIMENSION HDATA(80000),ADATA(40000),IPNT(50)
+         6      EQUIVALENCE (HDATA(1),IDATA(1),ADATA(1)),(IPNT(1),IDATA(55))
+         7      EQUIVALENCE (NWORD,IPNT(50))
+          C
+          C------------------------ END OF MACRO CDATA --------------------------
+ 01100    C
+ 01200   8      COMMON /CWORK/ ZTR(120), HIST(100)
+ 01300   9      EQUIVALENCE (Z1,ZTR(1)) , (Z2,ZTR(2)) , (Z3,ZTR(3))
+ 01400    C
+ 01500    C     INITIALIZE PARAMETERS
+ 01600  10      DZBIN  =  60.
+ 01700  11      DZBIN2 = 120.
+ 01800  12      Z0BIN  =-3000.
+ 01900    C
+ 02000    C     PRINT OUT OF TRACK BANKS
+ 02100  13      IP = IPPATR
+ 02200    C
+ 02400  14      IND = -3                                                           CHECK IF PATR-BANK
+ 02500  15      IF(IP.LE.0) RETURN
+ 02600    C
+ 02800  17      IND = -2                                                           CHECK IF >0 TRACKS
+ 02900  18      IF(IDATA(IP+2).LE.0) RETURN
+ 03000    C
+ 03200  20      IND = -1                                                           LOOP OVER ALL TRACKS
+ 03300    C     PRINT 2008,IDATA(IP-3),IDATA(IP-2),IDATA(IP-1),IDATA(IP),
+ 03400    C    ,           IDATA(IP+1),IDATA(IP+2),IP
+ 03500    C2008 FORMAT(1H0,A4,8I12)
+ 03600  21      NTR = IDATA(IP+2)
+ 03700  22      LDTR = IDATA(IP+3)
+ 03800  23      JP0 = IP+IDATA(IP+1)
+ 03900  24      JP9 = JP0 + LDTR*NTR - 1
+ 04000  25      MTR = 0
+ 04100  26      FOR JP1 = JP0,JP9,LDTR
+ 04200  27         I0 = JP1+ 1
+ 04300  28         I9 = I0 + LDTR
+ 04400    C         PRINT 2009,(IDATA(I1),I1=I0,I9)
+ 04500    C2009 FORMAT(1H0,2I3,I8,2(I4,3F6.1,3F6.3),
+ 04600    C    ,   /,14X,I3,4E13.5,F6.2,I3,4E13.5,
+ 04700    C    ,   /,14X,I3,2F8.3,F6.1,I3,10X,6I3,8I6,2X,Z4)
+ 04800    C
+ 05000  29         IF ADATA(JP1+32).LT.60. .AND. IDATA(JP1+33).GT.12 .AND.         CHECK ZFIT, # OF HITS, P<100MEV
+ 05100         ?      ABS(ADATA(JP1+25)).LT..00150
+ 05200  30         THEN
+ 05300    C
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  2
+0CARD TARGET
+  NO  STM.NO
+ 
+ 05500  33            RSQ = ADATA(JP1+5)**2 + ADATA(JP1+6)**2                      CHECK RADIUS
+ 05600  34            IF RSQ.LT.250000.
+ 05700  35            THEN
+ 05800  38               MTR = MTR + 1
+ 05900  39               ZTR(MTR) = ADATA(JP1+31)
+ 06000  40            CIF
+ 06100  41         CIF
+ 06200  42      CFOR
+ 06300    C     PRINT 2001, MTR,(ZTR(I1),I1=1,MTR)
+ 06400    C2001 FORMAT('0Z(TRACKS):',I6,15F7.0)
+ 06500    C
+ 06700  44      IF(MTR.LE.0) RETURN                                                CHECK IF ANY GOOD Z
+ 06800  46      IND = 0
+ 06900    C
+ 07100  47      IF MTR.EQ.1                                                        CHECK IF SINGLE TRACK
+ 07200  48      THEN
+ 07300  51         ZVTX = Z1
+ 07400  52         RETURN
+ 07500  53      CIF
+ 07600    C
+ 07800  54      IF MTR.EQ.2                                                        2 TRACKS
+ 07900  55      THEN
+ 08000  58         IF ABS(Z2-Z1).GT.DZBIN2
+ 08100  59         THEN
+ 08300  62            ZVTX = Z1                                                    BAD VERTEX
+ 08400  63            IF(ABS(Z1).GT.ABS(Z2)) ZVTX = Z2
+ 08500  65            RETURN
+ 08600  66         CIF
+ 08800  67         ZVTX = (Z1+Z2)*.5                                               GOOD VERTEX
+ 08900  68         IND = 1
+ 09000  69         RETURN
+ 09100  70      CIF
+ 09200    C
+ 09400  71      IF MTR.EQ.3                                                        3 TRACKS
+ 09500  72      THEN
+ 09700  75         IF Z1.GT.Z2                                                     ORDER Z
+ 09800  76         THEN
+ 09900  79            ZW = Z2
+ 10000  80            Z2 = Z1
+ 10100  81            Z1 = ZW
+ 10200  82         CIF
+ 10300  83         IF Z2.GT.Z3
+ 10400  84         THEN
+ 10500  87            IF Z1.GT.Z3
+ 10600  88            THEN
+ 10700  91               ZW = Z3
+ 10800  92               Z3 = Z2
+ 10900  93               Z2 = Z1
+ 11000  94               Z1 = ZW
+ 11100  95            ELSE
+ 11200  97               ZW = Z3
+ 11300  98               Z3 = Z2
+ 11400  99               Z2 = ZW
+ 11500 100            CIF
+ 11600 101         CIF
+ 11800 102         IF ABS(Z2-Z1).GT.DZBIN2 .AND. ABS(Z3-Z2).GT.DZBIN2              CHECK IF ALL DISAGREE
+ 11900 103         THEN
+ 12000 106            ZVTX = Z1
+ 12100 107            IF(ABS(Z2).LT.ABS(ZVTX)) ZVTX = Z2
+ 12200 109            IF(ABS(Z3).LT.ABS(ZVTX)) ZVTX = Z3
+ 12300 111            RETURN
+ 12400 112         CIF
+ 12600 113         IF ABS(Z3-Z1).LT.DZBIN2                                         CHECK IF ALL AGREE
+ 12700 114         THEN
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  3
+0CARD TARGET
+  NO  STM.NO
+ 
+ 12800 117            ZVTX = (Z1+Z2+Z3) / 3.
+ 12900 118            IND = 1
+ 13000 119            RETURN
+ 13100 120         CIF
+ 13300 121         IF ABS(Z2-Z1).LT.DZBIN2 .AND. ABS(Z3-Z2).LT.DZBIN2              CHECK IF ONLY 2 AGREE
+ 13400 122         THEN
+ 13500 125            Z1 = (Z1+Z2) * .5
+ 13600 126            Z2 = (Z2+Z3) * .5
+ 13700 127            ZVTX = Z1
+ 13800 128            IF(ABS(Z2).LT.ABS(ZVTX)) ZVTX = Z2
+ 13900 130            IND = 1
+ 14000 131            RETURN
+ 14100 132         CIF
+ 14300 133         IF ABS(Z2-Z1).GT.DZBIN2                                         ONLY 2 AGREE
+ 14400 134         THEN
+ 14500 137            Z1 = Z2
+ 14600 138            Z2 = Z3
+ 14700 139         CIF
+ 14800 140         ZVTX = (Z1+Z2) * .5
+ 14900 141         IND = 1
+ 15000 142         RETURN
+ 15100 143      CIF
+ 15200    C
+ 15300                                                                             >3 TRACKS: HISTOGRAM Z
+ 15500 144      CALL SETS(HIST(1),0,200,0)                                         ZERO HISTOGRAM
+ 15700 145      FOR I=1,MTR                                                        FILL HISTOGRAM
+ 15800 146         IZ = (ZTR(I)-Z0BIN) / DZBIN
+ 15900 147         IF IZ.GT.0 .AND. IZ.LT.99
+ 16000 148         THEN
+ 16100 151            HIST(IZ  ) = HIST(IZ  ) + 1
+ 16200 152            HIST(IZ+1) = HIST(IZ+1) + 2
+ 16300 153            HIST(IZ+2) = HIST(IZ+2) + 1
+ 16400 154         CIF
+ 16500 155      CFOR
+ 16600    C     PRINT 2002, HIST
+ 16700    C2002 FORMAT('0HIST:'50I2,/,6X,50I2)
+ 16900 157      MPEAK0 = 0                                                         SEARCH FOR PEAK
+ 17000 158      ZVTX = -100000.
+ 17100 159      LBPEAK = 0
+ 17200 160      FOR IZ=1,99
+ 17300 161         MPEAK1 = HIST(IZ) + HIST(IZ+1)
+ 17400 162         IF MPEAK1.GT.3
+ 17500 163         THEN
+ 17600 166            IF MPEAK1.GT.MPEAK0
+ 17700 167            THEN
+ 17800 170               MZ = IZ
+ 17900 171               MPEAK = MPEAK1
+ 18000 172               LBPEAK = 1
+ 18100 173            ELSE
+ 18200 175               IF MPEAK1.EQ.MPEAK0
+ 18300 176               THEN
+ 18400 179                  LBPEAK = 2
+ 18500 180               ELSE
+ 18600 182                  IF LBPEAK.NE.3
+ 18700 183                  THEN
+ 18800 186                     ZV0  = MZ*DZBIN + Z0BIN
+ 18900 187                     DZV0 = DZBIN
+ 19000 188                     IF(LBPEAK.EQ.2) ZV0  = DZBIN*.5 + ZV0
+ 19100 190                     IF(LBPEAK.EQ.2) DZV0 = DZBIN*1.5
+ 19200    C     PRINT 2003, ZV0,DZV0,ZVTX
+ 19300    C2003 FORMAT(' NEW VERTEX:',3F8.1)
+ 19400 192                     IF ABS(ZV0).LT.ABS(ZVTX)
+ 19500 193                     THEN
+ 19600 196                        ZVTX = ZV0
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  4
+0CARD TARGET
+  NO  STM.NO
+ 
+ 19700 197                        DZVT = DZV0
+ 19800 198                     CIF
+ 19900 199                  CIF
+ 20000 200                  LBPEAK = 3
+ 20100 201               CIF
+ 20200 202            CIF
+ 20300 203         ELSE
+ 20400 205            IF LBPEAK.GT.0 .AND. LBPEAK.NE.3
+ 20500 206            THEN
+ 20600 209               ZV0  = MZ*DZBIN + Z0BIN
+ 20700 210               DZV0 = DZBIN
+ 20800 211               IF(LBPEAK.EQ.2) ZV0  = DZBIN*.5 + ZV0
+ 20900 213               IF(LBPEAK.EQ.2) DZV0 = DZBIN*1.5
+ 21000    C     PRINT 2003, ZV0,DZV0,ZVTX
+ 21100 215               IF ABS(ZV0).LT.ABS(ZVTX)
+ 21200 216               THEN
+ 21300 219                  ZVTX = ZV0
+ 21400 220                  DZVT = DZV0
+ 21500 221               CIF
+ 21600 222            CIF
+ 21700 223            LBPEAK = 0
+ 21800 224         CIF
+ 21900 225         MPEAK0 = MPEAK1
+ 22000 226      CFOR
+ 22200 228      ZVSUM = 0.                                                         AVERAGE VERTEX
+ 22300 229      NZVS  = 0
+ 22400 230      FOR I=1,MTR
+ 22500 231         IF ABS(ZTR(I)-ZVTX).LE.DZVT
+ 22600 232         THEN
+ 22700 235            ZVSUM = ZVSUM + ZTR(I)
+ 22800 236            NZVS  = NZVS + 1
+ 22900 237         CIF
+ 23000 238      CFOR
+ 23100 240      IF NZVS.GT.1
+ 23200 241      THEN
+ 23300 244         ZVTX = ZVSUM / NZVS
+ 23400 245         IND = 1
+ 23500 246      ELSE
+ 23600 248         ZVTX = -100000.
+ 23700 249         FOR I=1,MTR
+ 23800 250            IF(ABS(ZTR(I)).LT.ABS(ZVTX)) ZVTX = ZTR(I)
+ 23900 252         CFOR
+ 24000 254      CIF
+ 24100 255      RETURN
+ 24200    C
+ 24300 256      END
+0END OF SEGMENT
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         255 TARGET STATEMENTS
+1VERSION 1 (MAR 81 )                    SHELTRAN                        PAGE  1
+0CARD TARGET
+  NO  STM.NO
+ 
+0END OF PROGRAM
+0  OPTIONS IN EFFECT - LINECOUNT=64,LINEWIDTH=131,  SOURCE,  FORTRAN  NUMBERING
+0   0 ERRORS           0 WARNINGS         255 TARGET STATEMENTS

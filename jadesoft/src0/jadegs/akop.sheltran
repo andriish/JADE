@@ -1,0 +1,269 @@
+C   07/11/86 701231748  MEMBER NAME  AKOP     (S)           SHELTRAN
+      SUBROUTINE AKOP( P, NP, NMAXP, A, AXIS, ITMERR )
+C *---------------------------------------------------------
+C *
+C *  VERSION OF 21/05/79   LAST MOD 02/06/81   E.ELSEN/S.BETHKE
+C *  INPUT : P(4,NP)   NP MOMENTA PX,PY,PZ,ABS(P)
+C *          NP        NUMBER OF MOMENTA
+C *          NMAXP     CUTOFF FOR PERMUTED MOMENTA
+C *                    =0 MEANS NO CUTOFF
+C *  OUTPUT: AKOP      AKOPLANARITY VALUE
+C *          AXIS      AKOP AXIS
+C *          ITMERR    =1, IF LEFT TIME IS NOT ENOUGH TO CALCULATE THRST
+C *                    (NOW MIN.2 SECONDS ARE REQUIRED.)
+C *  METHOD: MOMENTUM CONSERVATION IS TAKEN CARE OF BY INTRODUCING
+C *          MISSING MOMENTUM VECTOR AT THE END OF P ARRAY.
+C *          AKOPLANARITY VALUE IS FOUND BY LOOKING THROUGH ALL
+C *          PERMUTATIONS OF THE MOMENTA - PRODUCTS (PI X PJ) * PK
+C *---------------------------------------------------------
+      DIMENSION P(1), AXIS(3)
+      DIMENSION PIN(320), IPERM(200),IPS(320),PS(320)
+      COMMON / CWORK / WORK(840)
+      EQUIVALENCE (WORK(1),PIN(1)),(WORK(321),IPERM(1))
+      EQUIVALENCE (WORK(521),PS(1),IPS(1))
+C
+      DATA IPINC / 4 /
+      DATA NLIMIT / 20 /
+      DATA NSEC / 2 /
+      DATA IER0 / 0/, IER1 /0/, IER2 /0/
+C
+C
+      ITMERR = 0
+C
+      AXIS(1) = 1.
+      AXIS(2) = 1.
+      AXIS(3) = 1.
+      A = 1000.
+C
+      IF NP .LE. 0
+      THEN
+      IF IER0 .LT. 10
+      THEN
+      WRITE(6,9103)
+ 9103 FORMAT(' +++ ERROR IN AKOP.  CALLED WITH ZERO PARTICLES +++')
+      CIF
+      IER0 = IER0 + 1
+      RETURN
+      CIF
+C
+C
+      NMAXP1 = NMAXP
+      IF  NP.GE.NLIMIT .AND. ( NMAXP.EQ.0 .OR. NMAXP.GT.NLIMIT )
+      THEN
+N     WARNING CONCERNING NUMBER OF PARAMETERS
+      IF IER1 .LT. 10
+      THEN
+      WRITE(6,9101) NP,NLIMIT,NMAXP
+ 9101 FORMAT(' +++++  WARNING FROM AKOP ROUTINE  +++++'/
+     *       2X,I4,' ARE TOO MANY INPUT VECTORS. INTERNAL LIMIT=',I4,
+     *' INPUT CUTOFF NMAXP=',I4,'. ONLY NLIMIT PARTICLES ARE PERMUTED')
+C
+      NMAXP1 = NLIMIT
+      CIF
+      IER1 = IER1 + 1
+      CIF
+C
+      NTOT = NP
+N     BALANCE MOMENTA IN P ARRAY
+      CALL BALANC( P, NTOT, PSUM )
+      IF PSUM .LT. 1.E-6
+      THEN
+      IF IER2 .LT. 10
+      THEN
+      WRITE(6,9104)
+ 9104 FORMAT(' +++ ERROR IN AKOP. MOMENTUM SUM AFTER BALANCE=0. +++')
+      CIF
+      IER2 = IER2 + 1
+      RETURN
+      CIF
+C
+      IF NTOT.GT.NMAXP1 .AND. NMAXP1.NE. 0
+      THEN
+N     SORT MOMENTA IN DECREASING ORDER
+      PERFORM SORT
+C
+      NP1 = NTOT
+      NTOT = NMAXP1 - 1
+N     PIN ARRAY = ORDERED P ARRAY
+      PERFORM FILLIN
+C
+N     BALANCE REDUCED SET OF MOMENTA
+      CALL BALANC( PIN, NTOT, PSUM1 )
+C
+N     AKOP AND AXIS FOR PIN ARRAY
+      PERFORM AKOPL
+      PERFORM AKOEXP
+      ELSE
+N     COPY FROM P TO PIN ARRAY
+      CALL UCOPY( P, PIN, NTOT*4 )
+N     AKOP   FOR PIN ARRAY
+      PERFORM AKOPL
+      CIF
+      RETURN
+C
+C
+C
+C--------------
+C
+      PROC SORT
+C--------------
+N     ORDER P ARRAY USING SHELLSORT ALGTHM
+N     SEQUENCE OF MOMENTA IS STORED IN IPERM
+      FOR J=1,NTOT
+N     INIT IPERM IN NATURAL ORDER
+      IPERM(J) = J*4
+      CFOR
+C
+      M = NTOT / 2
+      WHILE  M.GT.0
+      K = NTOT - M
+      FOR J=1,K
+      I = J
+      WHILE  I.GT.0
+      ILOW = IPERM(I)
+      IHIGH = IPERM(I+M)
+      IF  P(IHIGH) .GT. P(ILOW)
+      THEN
+      IPERM(I) = IHIGH
+      IPERM(I+M) = ILOW
+      I = I - M
+      ELSE
+      XWHILE
+      CIF
+      CWHILE
+      CFOR
+      M = M/2
+      CWHILE
+      CPROC
+C
+C
+C--------------
+C
+      PROC FILLIN
+C--------------
+N     PIN(1..4,J) = P(1..4,IPERM(J)/4)
+      FOR J=1,NTOT
+      IPJ = IPERM(J)
+      J4 = J*4
+      PIN(J4  ) = P(IPJ  )
+      PIN(J4-1) = P(IPJ-1)
+      PIN(J4-2) = P(IPJ-2)
+      PIN(J4-3) = P(IPJ-3)
+      CFOR
+      CPROC
+C
+C
+C----------------
+      PROC AKOPL
+C----------------
+C
+      IF A .NE. 0.
+      THEN
+      K1 = NTOT-1
+      FOR INDI=1,K1
+      K2 = INDI+1
+      FOR INDJ=K2,NTOT
+N     CALCULATE PIJ = PI X PJ
+      INDI4 = INDI * 4
+      P11 = PIN(INDI4-3)
+      P12 = PIN(INDI4-2)
+      P13 = PIN(INDI4-1)
+      INDJ4 = INDJ * 4
+      P21 = PIN(INDJ4-3)
+      P22 = PIN(INDJ4-2)
+      P23 = PIN(INDJ4-1)
+      PIJ1 = P12 * P23 - P13 * P22
+      PIJ2 = P13 * P21 - P11 * P23
+      PIJ3 = P11 * P22 - P12 * P21
+      PIJ4 = SQRT(PIJ1*PIJ1 + PIJ2*PIJ2 + PIJ3*PIJ3)
+      AIJ = 0.
+      IF PIJ4 .GT. 1.E-5
+      THEN
+      FOR INDK=1,NTOT
+N     CALCULATE SUM(PIJ*PK)
+      INDK4 = INDK * 4
+      AIJ = AIJ + ABS(PIJ1 * PIN(INDK4-3) + PIJ2 * PIN(INDK4-2)
+     *              + PIJ3 * PIN(INDK4-1))
+      CFOR
+C
+      AIJ = AIJ/PIJ4
+      IF AIJ .LT. A
+      THEN
+      AXIS(1) = PIJ1/PIJ4
+      AXIS(2) = PIJ2/PIJ4
+      AXIS(3) = PIJ3/PIJ4
+      A = AIJ
+      CIF
+      ELSE
+      IF NTOT .LE. 4
+      THEN
+      AXIS(1) = 0.
+      AXIS(2) = 0.
+      AXIS(3) = 0.
+      A = 0.
+      CIF
+      CIF
+C
+      CFOR
+      CFOR
+      A = 4. * ((A / PSUM)**2)
+      CIF
+      CPROC
+C
+C
+C--------------
+C
+      PROC AKOEXP
+C--------------
+N     COMPUTE AKOPL EXPLICITLY
+      NIPINC = NP1*IPINC
+      AA = 0.
+      FOR J=1,NIPINC,IPINC
+      AA = AA + ABS( AXIS(1)*P(J)+AXIS(2)*P(J+1)+AXIS(3)*P(J+2) )
+      CFOR
+      A = 4. * ((AA / PSUM)**2)
+      CPROC
+C
+      END
+C   23/05/79            MEMBER NAME  BALANC   (PHYS1)       SHELTRAN
+      SUBROUTINE BALANC( P, NTOT, PSUM )
+C *---------------------------------------------------------
+C *
+C *  VERSION OF 23/05/79      LAST MOD 14/05/80     E.ELSEN
+C *  PUT IN MOMENTUM BALANCING VECTOR BEHIND THE NTOT MOMENTA
+C *  IN P. NTOT IS CHANGED ON RETURN. EXTRA LOCATIONS IN P MUST
+C *  BE ACCOUNTED FOR IN CALLING ROUTINE.
+C *  PSUM = SUM | P |    FOR BALANCED SET
+C *  STORAGE :    P(1..3) = THREE VECTOR
+C *               P(4)    = TOTAL MOMENTUM      BOTH REPEATED NTOT TIMES
+C *---------------------------------------------------------
+C
+      DIMENSION P(1)
+C
+N     FIND SUM OF MOMENTA
+      PSUM1 = 0.
+      PSUM2 = 0.
+      PSUM3 = 0.
+      PSUM  = 0.
+      N4 = NTOT*4
+      FOR J=1,N4,4
+      PSUM1 = P(J  ) + PSUM1
+      PSUM2 = P(J+1) + PSUM2
+      PSUM3 = P(J+2) + PSUM3
+      PSUM  = P(J+3) + PSUM
+      CFOR
+      PTOT = SQRT( PSUM1*PSUM1 + PSUM2*PSUM2 + PSUM3*PSUM3 )
+N     EXTRA LOC FOR PSUM IN P IF PSUM .GT. .01 GEV
+      IF  PTOT .GT. .01
+      THEN
+      P(N4+1) = -PSUM1
+      P(N4+2) = -PSUM2
+      P(N4+3) = -PSUM3
+      P(N4+4) = PTOT
+      PSUM = PSUM + PTOT
+N     INCREMENT NUMBER OF MOMENTA
+      NTOT = NTOT + 1
+      CIF
+C
+      RETURN
+      END

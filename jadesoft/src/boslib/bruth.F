@@ -1,0 +1,10 @@
+C   07/06/96 606071832  MEMBER NAME  BRUTH    (S4)          FORTG1
+      SUBROUTINE BRUTH(IA,IB,IC)
+C             FOR RUTHERFORD LAB ONLY
+C     BOS SUBPROGRAM =1.XX=
+#include "acs.for"
+      IA=NLST
+      IB=NCI
+      IC=NAMAX
+  100 RETURN
+      END

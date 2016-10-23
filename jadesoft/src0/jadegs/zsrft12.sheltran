@@ -1,0 +1,619 @@
+C   09/06/83 803181311  MEMBER NAME  ZSRFT12  (JADEGS)      SHELTRAN
+C   09/06/83 803181242  MEMBER NAME  ZSRFT1   (S)           SHELTRAN
+      SUBROUTINE ZSRFT1(IPTR,LDTR,IPCO0,IPRES,LHIT,IQUAL,IOPT)
+C
+C        S-Z ("HELIX") REFIT OF A SINGLE TRACK
+C
+C    18.3.88   PROPER RUN NUMBER HANDLING USING LDATYP      E E
+C    22.2.88   MVC CHANGED TO MVCL (256 BYTES NOT ENOUGH!)  J.H./J.O.
+C    TEST VERSION 1.
+C
+C                                J. SPITZER  12/4/87
+C
+C    COVARIANCE MATRIX FOR FIT PARAMETERS IF AREA (LDTR) LARGE ENOUGH
+C
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cdata.for"
+#include "calibr.for"
+C
+      COMMON/CWORK/NDIWRK,WRK(200)
+      DIMENSION IWRK(200),HWRK(400)
+      EQUIVALENCE (WRK(1),IWRK(1),HWRK(1))
+C
+C
+      INTEGER DATE(5), IDAY /0/
+C-----------------------------
+      INTEGER NCHECK(5)/5*8/
+      REAL RCHECK(12,2,5)/
+     +   0.,  .004,  .01,  .045,  .06,  .1,  1.,  6., 4*0.,
+     +   0.,  .65,   .79,  .86,   .89, .91, .94,  1., 4*1.,
+     +   0.,  .004,  .01,  .045,  .06,  .1,  1.,  6., 4*0.,
+     +   0.,  .65,   .79,  .86,   .89, .91, .94,  1., 4*1.,
+     +   0.,  .004,  .01,  .045,  .06,  .1,  1.,  6., 4*0.,
+     +   0.,  .65,   .79,  .86,   .89, .91, .94,  1., 4*1.,
+     +   0.,  .004,  .01,  .045,  .06,  .1,  1.,  6., 4*0.,
+     +   0.,  .65,   .79,  .86,   .89, .91, .94,  1., 4*1.,
+     +   0.,  .004,  .01,  .045,  .06,  .1,  1.,  6., 4*0.,
+     +   0.,  .65,   .79,  .86,   .89, .91, .94,  1., 4*1./
+C
+C
+      REAL RESCUT/600./
+      DIMENSION ISORT1(71),ISORT2(3,71),IRESHT(71),ISORT3(91)
+     +,ISORT4(2,91),KSORT3(91),KSZSRT(91,2)
+      DATA IQHEAD/0/,MASK4/ZFFFFCFFF/
+C
+C
+C
+N     INITIALIZATION
+      DATA LBINIT /0/
+      IF LBINIT .EQ. 0
+      THEN
+         LBINIT = 1
+C
+         IQHEAD = IBLN('HEAD')
+C
+         CALL DAY2(DATE)
+         IDAY = DATE(1)*1000 + DATE(2)
+C
+         WRITE(6,137)
+ 137     FORMAT(/,' *** ZSRFT1 ***  (J.SPITZER) VERSION OF 18/3/88'/
+     +   ' COVARIANCE MATRIX IS PROVIDED',/,
+     +   ' IF THE TRACK AREA LONG ENOUGH, THE NUMBER',/,
+     +  ' OF HITS USED IN THE FIT IS AT LEAST 4.',
+     +   /)
+      CIF
+C
+C
+N     GET RUN #
+      IPHEAD = IDATA(IQHEAD)*2
+      NRUN = HDATA(IPHEAD+10)
+      NEV  = HDATA(IPHEAD+11)
+C
+N     TRACK #
+      ITRK = IDATA(IPTR+1)
+C
+C=======================================================================
+      IF LDATYP(DUMMY) .EQ. 1
+      THEN
+         SRESO=24.
+         STPFAC=.85
+      ELSE
+         SRESO=32.
+         STPFAC=.92
+      CIF
+      SIGMIN=(SRESO/1.6)**2
+      SIGFAC=(.14/30.)**2
+C
+C
+C-----------------------------------------------------------------------
+C
+C     GYMNASTICS FOR PRIVATE HIT QUALIFICATION
+C     AND FOR HANDLING MORE HITS ON SAME WIRE
+C
+C  STARTING VALUES OF FIT PARAMETERS Z=P1*S+P2
+C
+      PAR1=ADATA(IPTR+30)
+      PAR2=ADATA(IPTR+7)
+C
+      NHALL=0
+      NHWIR=0
+      NHPOT=0
+      NHPOTT=0
+      IPCO=IPCO0
+      IPCO9=IPRES-LHIT
+      REPEAT
+         NHWIR=NHWIR+1
+         IF NHWIR.GT.70
+         THEN
+            IQUAL=-1
+            RETURN
+         CIF
+         ISORT1(NHWIR)=NHWIR
+         ISORT2(1,NHWIR)=IPCO
+         ISORT2(3,NHWIR)=0
+         IW0=IWRK(IPCO)
+         LFL=0
+         LFL1=0
+         LFL2=0
+         WHILE IPCO.LE.IPCO9
+            IW9=IWRK(IPCO)
+            IF IW9.EQ.IW0
+            THEN
+N        HIT ON THE SAME WIRE
+               NHALL=NHALL+1
+               IF NHALL.GT.90
+               THEN
+                  IQUAL=-2
+                  RETURN
+               CIF
+               IF(ISORT2(3,NHWIR).EQ.0) ISORT2(2,NHWIR)=NHALL
+               ISORT2(3,NHWIR)=ISORT2(3,NHWIR)+1
+C
+               KSORT3(NHALL)= NHALL
+               LZGOOD=HWRK(2*IPCO+1)
+               IF LZGOOD.NE.0
+               THEN
+                  ISORT3(NHALL)=-1
+                  KSZSRT(NHALL,1)= 100000
+               ELSE
+                  ISORT3(NHALL)= 1
+                  IF LFL2.EQ.0
+                  THEN
+                     KSZSRT(NHALL,1)= WRK(IPCO+6)
+                     KSZSRT(NHALL,2)= WRK(IPCO+5)
+                     LFL2=1
+                  ELSE
+                     KSZSRT(NHALL,1)= 100000
+                  CIF
+                  LFL=1
+                  IF ABS(WRK(IPCO+5)-PAR1*WRK(IPCO+6)-PAR2).LT.RESCUT
+                  THEN
+                     IF LFL1.EQ.0
+                     THEN
+                        LFL1=1
+                        NHPOTT=NHPOTT+1
+                     CIF
+                  CIF
+               CIF
+C
+               IPCO=IPCO+LHIT
+            ELSE
+               XWHILE
+            CIF
+         CWHILE
+         IF LFL.EQ.1
+         THEN
+            NHPOT=NHPOT+1
+         ELSE
+            ISORT3(ISORT2(2,NHWIR))=-2
+         CIF
+      UNTIL IPCO.GT.IPCO9
+C-----------------------------------------------------------------------
+C
+C IF LESS THAN 2 WIRES WITH GOOD Z MEASUREMENT, NOTHING DONE
+      IF NHPOT.LT.2
+      THEN
+         IQUAL=-3
+         RETURN
+      CIF
+C-----------------------------------------------------------------------
+      KFLIP=2
+C
+      NHFIT=NHPOTT
+      LFOUND=-1
+      IF NHPOTT.LT.6.OR.NHPOTT.LT.NHPOT*.75
+      THEN
+C TRY TO FIND BETTER START VALUES
+         PERFORM STVSEA
+      CIF
+C-----------------------------------------------------------------------
+C
+      INDMAX=NHFIT/4+1
+      IF(INDMAX.GT.13) INDMAX=13
+      INDFIT=0
+      WHILE INDFIT.LT.INDMAX
+         INDFIT=INDFIT+1
+N    LINEAR FIT
+         PERFORM LINFIT
+         IF LNOCON.EQ.1
+         THEN
+C NO CONVERGENCE AS INDICATED BY LOSS OF TOO MANY HITS
+            IQUAL=-4
+            RETURN
+         CIF
+         IF(SIG.LT.SIGMIN) XWHILE
+         IF INDFIT.GE.2
+         THEN
+            PERFORM LLSTOP
+            IF LSTOP.EQ.1
+            THEN
+C      PREVIOUS FIT ACCEPTED, RESTORE ITS RESULTS
+               INDFIT=INDFIT-1
+               KFLIP=3-KFLIP
+               NHFIT=NHFTLS
+               PAR1=PAR1LS
+               PAR2=PAR2LS
+               SIG=SIGLST
+               S0=S0LS
+               S1=S1LS
+               S2=S2LS
+               S3=S3LS
+               S4=S4LS
+               XWHILE
+            CIF
+         CIF
+         IF(INDFIT.EQ.INDMAX.OR.NHFIT.EQ.2) XWHILE
+N      SAVE FIT RESULTS
+         NHFTLS=NHFIT
+         PAR1LS=PAR1
+         PAR2LS=PAR2
+         SIGLST=SIG
+         S0LS=S0
+         S1LS=S1
+         S2LS=S2
+         S3LS=S3
+         S4LS=S4
+N      HIT CLEANING
+         PERFORM HITCLN
+      CWHILE
+C
+C
+N     SET UP PATR-BANK
+      PERFORM FITBNK
+      IQUAL=1
+      RETURN
+C=======================================================================
+C
+N     *************************
+N     *      L I N F I T      *
+N     *************************
+C
+C
+N      LINEAR FIT
+      PROC LINFIT
+C
+      LNOCON=0
+N     GET EQUATIONS
+      KFLIP=3-KFLIP
+      NHF1=0
+      S0 = 0.
+      S1 = 0.
+      S2 = 0.
+      S3 = 0.
+      S4 = 0.
+      FOR IHWIR=1,NHWIR
+         IH=ISORT2(2,IHWIR)
+         NNH=ISORT2(3,IHWIR)
+         FOR JNH=1,NNH
+            ISORT4(KFLIP,IH+JNH-1)=0
+         CFOR
+         IF ISORT3(IH).EQ.1 .OR. ISORT3(IH).EQ.-1.AND.NNH.GT.1
+         THEN
+            RESMIN=10000.
+            FOR JNH=1,NNH
+               JH=IH+JNH-1
+               IF ISORT3(JH).EQ.1
+               THEN
+                  IPCO=ISORT2(1,IHWIR)+(JNH-1)*LHIT
+                  SA = WRK(IPCO+6)
+                  ZA = WRK(IPCO+5)
+                  WA = WRK(IPCO+7)
+                  DZRESA=ZA-PAR1*SA-PAR2
+                  DF0=ABS(DZRESA)
+                  IF DF0.LT.RESMIN
+                  THEN
+                     RESMIN=DF0
+                     S=SA
+                     W=WA
+                     DZRES=DZRESA
+                     JHUSE=JH
+                  CIF
+               CIF
+            CFOR
+            IF RESMIN.LT.RESCUT
+            THEN
+               NHF1=NHF1+1
+               S0=S0+W
+               S1=S1+S*W
+               S2=S2+S**2*W
+               S3=S3+DZRES*W
+               S4=S4+DZRES*S*W
+               ISORT4(KFLIP,JHUSE)=1
+            ELSE
+               ISORT3(IH)=-2
+            CIF
+         CIF
+      CFOR
+      IF NHF1.LT.2 .OR. S2.LT.1.
+      THEN
+         LNOCON=1
+      ELSE
+         NHFIT=NHF1
+C
+N        SOLVE EQUATIONS
+         F1 = 1. / S2
+         XX12 = S1*F1
+         YY1  = S4*F1
+         PARR2=(S3-S1*YY1)/(S0-S1*XX12)
+         PAR1=YY1-PARR2*XX12+PAR1
+         PAR2=PAR2+PARR2
+C
+N     CALC. CHISQ + SOLVE L/R AMBIGUITY
+         CHISQ = 0.
+         NHF1=0
+         FOR IHWIR=1,NHWIR
+            IRESHT(IHWIR)=-1
+            IH=ISORT2(2,IHWIR)
+            NNH=ISORT2(3,IHWIR)
+            IF ISORT3(IH).GE.0 .OR. ISORT3(IH).EQ.-1.AND.NNH.GT.1
+            THEN
+               RESMIN=10000.
+               FOR JNH=1,NNH
+                  JH=IH+JNH-1
+                  IF ISORT3(JH).GE.0
+                  THEN
+                     IFLG=ISORT3(JH)
+                     IPCO=ISORT2(1,IHWIR)+(JNH-1)*LHIT
+                     SA = WRK(IPCO+6)
+                     ZA = WRK(IPCO+5)
+                     WA = WRK(IPCO+7)
+                     DF0=ABS(ZA-PAR1*SA-PAR2)
+                     IF DF0.LT.RESMIN
+                     THEN
+                        RESMIN=DF0
+                        W=WA
+                     CIF
+                  CIF
+               CFOR
+               IF RESMIN.LT.8000.
+               THEN
+                  RESMIN=RESMIN*SQRT(W)
+                  IRESHT(IHWIR)=RESMIN*1.E4
+                  IF IFLG.EQ.1
+                  THEN
+                     CHISQ=CHISQ+RESMIN**2
+                     NHF1=NHF1+1
+                  CIF
+               CIF
+            CIF
+         CFOR
+         IF NHF1.LT.2
+         THEN
+            LNOCON=1
+         ELSE
+            IF NHF1.EQ.2
+            THEN
+               SIG=1.E-5
+            ELSE
+               SIG=CHISQ/(NHF1-2)
+            CIF
+         CIF
+         NHFIT=NHF1
+      CIF
+      CPROC
+C=======================================================================
+      PROC HITCLN
+C      LABEL HITS NOT TO BE USED IN THE NEXT ITRATION
+C-------------------------------------------------------------
+C
+N       SORT HITS ACCORDING TO RESIDUALS
+C  EXCLUDE THE INDFIT LARGEST RESIDUAL HITS,
+C  RESTORE THE OTHERS (EXLUDED FOR EVER HITS NOT COUNTED)
+C
+         CALL SHELL9(IRESHT,ISORT1,NHWIR)
+         KOMIT=0
+         FOR J1=1,NHWIR
+            IHWIR=ISORT1(NHWIR+1-J1)
+            IPCO=ISORT2(1,IHWIR)
+            NNH=ISORT2(3,IHWIR)
+            IH=ISORT2(2,IHWIR)
+            LFLG=0
+            FOR JNH=1,NNH
+               IHA=IH+JNH-1
+               IQA=ISORT3(IHA)
+               IF IQA.GT.-1
+               THEN
+                  IF LFLG.EQ.0
+                  THEN
+                     LFLG=1
+                     KOMIT=KOMIT+1
+                  CIF
+                  IF KOMIT.LE.INDFIT
+                  THEN
+                     ISORT3(IHA)=0
+                  ELSE
+                     ISORT3(IHA)=1
+                  CIF
+               CIF
+            CFOR
+         CFOR
+      CPROC
+C=======================================================================
+      PROC LLSTOP
+         IF INDFIT.LE.6
+         THEN
+            INDCK=INDFIT-1
+         ELSE
+            INDCK=5
+         CIF
+         ICHCK=NCHECK(INDCK)
+         WHILE SIGLST*SIGFAC.LT.RCHECK(ICHCK,1,INDCK)
+            ICHCK=ICHCK-1
+         CWHILE
+         IF(ICHCK.LT.1) ICHCK=1
+         IF SIG/SIGLST*STPFAC.GT.RCHECK(ICHCK,2,INDCK)
+         THEN
+            LSTOP=1
+         ELSE
+            LSTOP=0
+         CIF
+      CPROC
+C=======================================================================
+C
+C
+N     *************************
+N     *      F I T B N K      *
+N     *************************
+C
+C
+N     SET UP FIT-BANK
+      PROC FITBNK
+C
+      CTGTH=PAR1
+      CSTH = 1./SQRT(CTGTH**2 + 1.)
+      SNTH  = CSTH * CTGTH
+C
+C
+C
+N     COPY TRACK BANK
+         IFREE=NDIWRK-100
+         CALL MVCL(IWRK(IFREE),0,IDATA(IPTR+1),0,4*LDTR)
+C
+N     FILL FIT-BANK
+         IP    = IFREE - 1
+         IWRK(IP+ 2) = LAND(IWRK(IP+2),MASK4)
+         IWRK(IP+ 2) = LOR(IWRK(IP+2),4096)
+         WRK (IP+ 7) = PAR2
+         A=SQRT(WRK(IP+8)**2+WRK(IP+9)**2)
+         WRK (IP+ 8) = WRK (IP+ 8)/A*CSTH
+         WRK (IP+ 9) = WRK (IP+ 9)/A*CSTH
+         WRK (IP+10) = SNTH
+C CALCULATE TRACK LENGTH IN R-PHI FROM FIRST TO LAST POINT ON TRACK
+         CURVXY=WRK(IP+25)
+         IF(ABS(CURVXY).LT.1.E-9) CURVXY = SIGN(1.E-9,CURVXY)
+         UU=SQRT((WRK(IP+12)-WRK(IP+5))**2+(WRK(IP+13)-WRK(IP+6))**2)
+         IF(ABS(CURVXY*UU).GT.1.E-5) UU=2.*SIN(.5*CURVXY*UU)/CURVXY
+         WRK (IP+14) = PAR2+UU*PAR1
+         A=SQRT(WRK(IP+15)**2+WRK(IP+16)**2)
+         WRK (IP+15) = WRK (IP+15)/A*CSTH
+         WRK (IP+16) = WRK (IP+16)/A*CSTH
+         WRK (IP+17) = SNTH
+         IWRK(IP+33) = NHFIT
+         WRK (IP+32) = SQRT(SIG)
+C FIT TYPE WILL BE 2: "HELIX FIT"
+         IWRK(IP+29) = 2
+         WRK (IP+30) = PAR1
+C GET CLOSEST POINT (XP,YP) TO ORIGIN
+         DDR0=DISTXY(ADATA(IPTR+5),ADATA(IPTR+6),ADATA(IPTR+8),
+     +   ADATA(IPTR+9),1./CURVXY,0.,0.,XP,YP,FI)
+C CALCULATE TRACK LENGTH ALONG CIRCLE FROM FIRST POINT TO (XP,YP)
+         UU=SQRT((XP-WRK(IP+5))**2+(XP-WRK(IP+6))**2)
+         IF(ABS(CURVXY*UU).GT.1.E-5) UU=2.*SIN(.5*CURVXY*UU)/CURVXY
+         WRK (IP+31) = PAR2-PAR1*UU
+C
+         IF LDTR.GE.59 .AND. NHFIT.GE.4 .AND. LNOCON.EQ.0
+         THEN
+C CALCULATE COVARIANCE MATRIX
+            DET=S0*S2-S1**2
+            FACT=SIG/DET
+            WRK(IP+56)=SIG*(NHFIT-2)/20.**2
+            WRK(IP+57)=(S2+2.*UU*S1+UU**2*S0)*FACT
+            WRK(IP+58)=-(UU*S0+S1)*FACT
+            WRK(IP+59)=S0*FACT
+         CIF
+C
+C MARK HITS USED IN THE FIT
+         LFL=0
+         FOR IHWIR=1,NHWIR
+            IH=ISORT2(2,IHWIR)
+            NNH=ISORT2(3,IHWIR)
+            FOR JNH=1,NNH
+               IPCO=ISORT2(1,IHWIR)+(JNH-1)*LHIT
+               HWRK(2*IPCO+3)=ISORT4(KFLIP,IH+JNH-1)
+               IF(HWRK(2*IPCO-1).GT.100.AND.HWRK(2*IPCO+3).EQ.1) LFL=1
+            CFOR
+         CFOR
+         IF(LFL.EQ.1) IWRK(IP+ 2) = LOR(IWRK(IP+2),16384)
+C
+N     PUT RESULT INTO PATR-BANK
+         CALL MVCL(IDATA(IPTR+1),0,IWRK(IFREE),0,4*LDTR)
+C
+C CREATE Z-S BANK 'ZSPD'
+C
+         IF IOPT.GT.8
+         THEN
+            CALL CCRE(NPZSPD,'ZSPD',ITRK,5*NHALL+1,IERR)
+            IF IERR.EQ.0
+            THEN
+               CALL BSAW(1,'ZSPD')
+               NPZSP1=NPZSPD+1
+               IDATA(NPZSP1)=5
+               FOR IHWIR=1,NHWIR
+                  IH=ISORT2(2,IHWIR)
+                  NNH=ISORT2(3,IHWIR)
+                  FOR JNH=1,NNH
+                     IPCO=ISORT2(1,IHWIR)+(JNH-1)*LHIT
+                     IFL=ISORT4(KFLIP,IH+JNH-1)
+                     IF IFL.EQ.1
+                     THEN
+                        IFL=0
+                     ELSE
+                        IFL=16
+                     CIF
+                     IDATA(NPZSP1+1)=HWRK(2*IPCO+4)
+                     ADATA(NPZSP1+2)=WRK(IPCO+6)
+                     ADATA(NPZSP1+3)=WRK(IPCO+5)
+                     IDATA(NPZSP1+4)=IFL
+                     ADATA(NPZSP1+5)=WRK(IPCO+7)
+                     NPZSP1=NPZSP1+5
+                  CFOR
+               CFOR
+            CIF
+         CIF
+      CPROC
+C=======================================================================
+      PROC STVSEA
+C  SEARCH FOR STARTING VALUES
+C
+C  ORDER ACCORDING TO S
+         CALL SHELL9(KSZSRT(1,1),KSORT3,NHALL)
+         NH9=NHALL
+         WHILE KSZSRT(KSORT3(NH9),1).GT.99999
+            NH9=NH9-1
+         CWHILE
+         NH99=NH9
+         NH1=1
+         LFOUND=0
+         NHMAX=0
+         CI2MAX=1.E10
+         WHILE NH9.GT.NH1
+            FOR KK=1,3
+               IF KK.EQ.1
+               THEN
+                  JH1=NH1
+                  JH9=NH9
+               ELSE
+                  IF KK.EQ.2
+                  THEN
+                     JH9=JH9-1
+                  ELSE
+                     JH9=JH9+1
+                     JH1=JH1+1
+                  CIF
+               CIF
+               IF JH9.GT.JH1
+               THEN
+                  AS1=KSZSRT(KSORT3(JH1),1)
+                  AS9=KSZSRT(KSORT3(JH9),1)
+                  IF(AS9.LT.AS1+5.) XWHILE
+                  AZ1=KSZSRT(KSORT3(JH1),2)
+                  AZ9=KSZSRT(KSORT3(JH9),2)
+                  PAR1=(AZ9-AZ1)/(AS9-AS1)
+                  PAR2=AZ1-PAR1*AS1
+                  NHFIT=0
+                  CI2=0.
+                  FOR I=1,NH99
+                     DZ=ABS(KSZSRT(KSORT3(I),2)-PAR1*KSZSRT(KSORT3(I),1)
+     +               -PAR2)
+                     IF DZ.LT.RESCUT
+                     THEN
+                        NHFIT=NHFIT+1
+                        CI2=CI2+DZ**2
+                     CIF
+                  CFOR
+                  IF NHFIT.GT.NHPOT*.75
+                  THEN
+                     LFOUND=1
+                     XWHILE
+                  CIF
+                  IF NHFIT.GT.NHMAX .OR.NHFIT.EQ.NHMAX.AND.CI2.LT.CI2MAX
+                  THEN
+                     NHMAX=NHFIT
+                     P1MAX=PAR1
+                     P2MAX=PAR2
+                     CI2MAX=CI2
+                  CIF
+               CIF
+            CFOR
+            NH1=NH1+1
+            NH9=NH9-1
+         CWHILE
+         IF LFOUND.EQ.0 .AND. NHMAX.GT.0
+         THEN
+            NHFIT=NHMAX
+            PAR1=P1MAX
+            PAR2=P2MAX
+         CIF
+      CPROC
+      END

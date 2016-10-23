@@ -1,0 +1,282 @@
+C   22/07/80 110060808  MEMBER NAME  TRGCHK   (JADESR)      SHELTRAN
+      SUBROUTINE TRGCHK(LBTRCK,LBTRBT)
+C
+C     LAST CHANGES: ACCEPT UNKNOWN TRIGGER BITS
+C                   REQUIRE 3 TRACKS FOR 3 TRACK TRIGGER
+C                   P. STEFFEN 81/05/13  10.00
+C
+      IMPLICIT INTEGER*2 (H)
+      LOGICAL TBIT
+C
+#include "cdata.for"
+C
+#include "cheadr.for"
+C
+      COMMON /CWORK/ ILGE(84),HCLWR(96)
+C
+N     MASKS FOR EVENT TRIGGER  + HIGH ENERGY
+      DATA MKTREV /Z673/, MKT2AC /Z73/, MKEHIG /Z600/,MKUNTR /ZF88C/
+N     MASKS FOR TRIGGER IN 'LATC' BANK
+      INTEGER MKTRBT( 7) /1,2,4,8,16,32,64/
+N     MASKS FOR HITS IN LAYERS OF JETC
+C     INTEGER MKCLBT(16) /1,2,4,8,16,32,64,128,256,512,1024,2048,
+C    ,                    Z1000,Z2000,Z4000,Z8000/
+N     # OF CELLS FOR TOF COUNTER 1...7
+      INTEGER NCTOF ( 7) /2,3,3,3,3,3,3/
+N     1. CELL FOR TOF-COUNTER 1...7
+      INTEGER ICTOF ( 7) /0,1,2,3,4,5,6/
+C
+N     INITIALIZE LABEL FOR TRIGGER CHECK
+      LBTRCK = 0
+C
+N     CHECK IF UNKNOWN TRIGGER
+      IF LAND(LBTRBT,MKUNTR).NE.0
+      THEN
+        LBTRCK = 32
+        RETURN
+      CIF
+C
+N     REJECT LUMI-TRIGGER
+      IF(LAND(LBTRBT,MKTREV).EQ.0) RETURN
+C
+N     ACCEPT T1-ACCEPT TRIGGER
+      IF(LAND(LBTRBT,MKEHIG).NE.0) LBTRCK = 16
+C     PRINT 2991, HHEADR(17),HHEADR(18),HHEADR(19),NREC,LBTRBT,LBTRCK
+C2991 FORMAT(' **********************   EVENT:',4I6,1X,Z4,1X,Z4)
+C
+N     CHECK IF T1-POSTPONE
+      IF(LAND(LBTRBT,MKT2AC).EQ.0) RETURN
+C
+N     INITIALIZE LG-ROWS + CELL BITS
+      CALL SETSL(ILGE(1),0,528,0)
+C
+N     ACCUMULATE E(LG-ROWS)
+      REPEAT
+        IPALGN = IDATA(IBLN('ALGN'))
+        IF(IPALGN.LE.0) XREPEAT
+N       CHECK IF ANY LG-ENERGIES
+        IF(IDATA(IPALGN).LE. 3) XREPEAT
+        IPLG2 = IPALGN*2
+        NBARR = HDATA(IPLG2+ 4) - HDATA(IPLG2+ 3)
+N       CHECK IF ANY LG-ENERGY IN BARREL
+        IF(NBARR.LE.0) XREPEAT
+N       SUM ENERGIES OF LG-ROWS
+        IP0 = IPLG2 + 7
+        IP9 = IP0 + NBARR - 1
+        FOR IP=IP0,IP9,2
+          NBL  = HDATA(IP)
+          IROW = SHFTR(NBL,5)
+          ILGE(IROW+1) = ILGE(IROW+1) + HDATA(IP+1)
+        CFOR
+C     PRINT 2003, ILGE
+C2003   FORMAT('0EROW:',20I6,/,(6X,20I6))
+      UNTIL .TRUE.
+C
+N     ACCUMULATE CELL BITS OF 3. RING
+      IPJETC = IDATA(IBLN('JETC'))
+      IF(IPJETC.LE.0) RETURN
+C     PRINTOUT
+C     I0 = IPJETC*2 + 1
+C     I9 = I0 + IDATA(IPJETC)*2 - 1
+C     PRINT 2001, I0,I9,IDATA(IPJETC),(HDATA(I1),I1=I0,I9)
+C2001 FORMAT('0JETC:',3I6,/,(6X,20I6))
+C
+N     CHECK IF ANY JETC DATA
+      IF(IDATA(IPJETC).LE.50) RETURN
+      IPJC2 = IPJETC*2
+      NHTR3 = HDATA(IPJC2+99) - HDATA(IPJC2+51)
+N     CHECK IF ANY HITS IN R3
+      IF(NHTR3.LE.0) RETURN
+N     SET UP 1 LABEL/CELL WITH 1 BIT/LAYER
+      IP0 = IPJC2 + 100 + HDATA(IPJC2+51)
+      IP9 = IP0 + NHTR3 - 1
+      IWIR0 =-1
+      FOR IP=IP0,IP9,4
+        IWIR = HDATA(IP)
+        IWIR = SHFTR(IWIR,3)
+        HCLL = SHFTR(IWIR,3) - 95
+        IF(IWIR.NE.IWIR0) HCLWR(HCLL) = HCLWR(HCLL) + 1
+        IWIR0 = IWIR
+      CFOR
+C     PRINT 2004, HCLWR
+C2004 FORMAT('0HCLWR:',12I6,/,(7X,12I6))
+C
+N     CHECK IF 'LATC' BANK
+      IPLATC = IDATA(IBLN('LATC'))
+      IF(IPLATC.LE.0) RETURN
+N     LOOP OVER ALL TOF COUNTER
+      IPLT2 = IPLATC*2
+      IP0 = IPLT2 + 6
+      IP9 = IP0 + 5
+      ITLST =-100
+      ITOF0 = 0
+      ICLL0 = 0
+      NTRCK = 0
+      NTREL = 0
+      REPEAT
+        ITRBT = HDATA(IP0)
+        FOR JTOF=1,7
+          IF LAND(MKTRBT(JTOF),ITRBT) .NE. 0
+          THEN
+N           TOF COUNTER #
+            ITOF = ITOF0 + JTOF
+C
+N           CHECK IF TRACK IN JETC
+C
+C
+N           LABEL FOR OVERLAPPING CELLS
+            JCTOF = (ICTOF(JTOF) + ICLL0)*2 - 1
+N           INITIALIZE LABEL FOR TRACK CAND.
+            LBTRK = 0
+C
+N           CHECK IF 2 ADJACENT TOF
+            IF ITOF-ITLST.LE.2
+            THEN
+N             CHECK IF 2 DIFFERENT TRACKS
+              HCLL9 = NCTOF(JTOF)*2 + JCTOF - 1
+              HCLL1 =-99
+              MTRK = 0
+C     PRINT 2005, ITOF,JTOF,JCTOF,ITLST,HCLL0,HCLL9
+              FOR ICLL=HCLL0,HCLL9
+                IF HCLWR(ICLL).GE.6
+                THEN
+                  HDCLL = ICLL - HCLL1
+                  IF HDCLL.EQ.1
+                  THEN
+                    HCLL1 = -99
+                  ELSE
+                    IF HDCLL.NE.3 .OR. TBIT(ICLL,31)
+                    THEN
+                      MTRK = MTRK + 1
+                      HCLL1 = ICLL
+                    CIF
+                  CIF
+                CIF
+              CFOR
+              IF(MTRK.GE.2) LBTRK = 1
+            ELSE
+              NHIT5 = 0
+              NHIT6 = 0
+              IF JCTOF.LT.0
+              THEN
+                NHIT1 = HCLWR(95)
+                NHIT2 = HCLWR(96)
+                NHIT3 = HCLWR( 1)
+                NHIT4 = HCLWR( 2)
+                IF(NHIT2.GE.3 .AND. HCLWR(93).GE.6) NHIT2 = 8
+                IF(NHIT4.GE.3 .AND. HCLWR( 3).GE.6) NHIT4 = 8
+              ELSE
+                NHIT1 = HCLWR(JCTOF  )
+                NHIT2 = HCLWR(JCTOF+1)
+                NHIT3 = HCLWR(JCTOF+2)
+                NHIT4 = HCLWR(JCTOF+3)
+                IF NCTOF(JTOF).EQ.3
+                THEN
+                  NHIT5 = HCLWR(JCTOF+4)
+                  NHIT6 = HCLWR(JCTOF+5)
+                ELSE
+                  IF(NHIT2.GE.3 .AND. HCLWR(JCTOF-2).GE.6) NHIT2 = 8
+                  IF(NHIT4.GE.3 .AND. HCLWR(JCTOF+4).GE.6) NHIT4 = 8
+                CIF
+              CIF
+C     PRINT 2005,ITOF,JTOF,JCTOF,NHIT1,NHIT2,NHIT3,NHIT4,NHIT5,NHIT6
+C2005   FORMAT(' JETC:',20I6)
+C
+N             CHECK IF ENOUGH HITS FOR TRACK CAND.
+              IF(MAX0(NHIT1,NHIT2,NHIT3,NHIT4,NHIT5,NHIT6).GE.6) LBTRK=100000185
+            CIF
+C
+N           CHECK IF TRACK + COUNT
+            IF LBTRK.NE.0
+            THEN
+              NTRCK = NTRCK + 1
+              ITLST = ITOF
+              HCLL0 = JCTOF
+C     PRINT 2005, NHIT1,NHIT2,NTRCK
+C
+N             CHECK IF ELECTRON TRACK
+N             CORRESP. LG-ROW
+              IR = ITOF*2 - 3
+              IF ITOF.EQ.1
+              THEN
+                ILGENG = ILGE(83)+ILGE(  84)+ILGE(   1)+ILGE(   2)
+              ELSE
+                IF ITOF.EQ.42
+                THEN
+                  ILGENG = ILGE(82)+ILGE(  83)+ILGE(  84)+ILGE(   1)
+                ELSE
+                  ILGENG = ILGE(IR)+ILGE(IR+1)+ILGE(IR+2)+ILGE(IR+3)
+                CIF
+                IF(ILGENG.GT.1000) NTREL = NTREL + 1
+C     PRINT 2002,NTREL,ITOF,IR,ILGENG
+C2002 FORMAT(6X,20I6)
+C
+              CIF
+            CIF
+          CIF
+        CFOR
+      ICLL0 = ICLL0 + 8
+      ITOF0 = ITOF0 + 7
+      IP0   = IP0   + 1
+      UNTIL IP0.GT.IP9
+C
+N     CHECK IF ONLY 1 TRACK, NO E
+      LB1TCL = 0
+      IF NTRCK.EQ.1 .AND. NTREL.EQ.0
+      THEN
+N       CHECK CLEAN 1. RING
+        IPJC2 = IPJETC*2
+        NHTR1 = HDATA(IPJC2+27) - HDATA(IPJC2+ 3)
+N       CHECK IF ANY HITS IN R3
+        IF NHTR1.GT.96 .AND. NHTR1.LT.196
+        THEN
+N         COUNT HITS/HALF CELL
+          CALL SETS(HCLWR(1),0,96,0)
+          IP0 = IPJC2 + 100 + HDATA(IPJC2+ 3)
+          IP9 = IP0 + NHTR1 - 1
+          IWIR0 =-1
+          FOR IP=IP0,IP9,4
+            IWIR = HDATA(IP)
+            IWIR = SHFTR(IWIR,3)
+            HCLL = SHFTR(IWIR,3) + 1
+            IF(IWIR.NE.IWIR0) HCLWR(HCLL) = HCLWR(HCLL) + 1
+            IWIR0 = IWIR
+          CFOR
+C     PRINT 2004, HCLWR
+          MTRK = 0
+          HCLL1 =-99
+          FOR ICLL=1,48
+            IF HCLWR(ICLL).GE.6
+            THEN
+              HDCLL = ICLL - HCLL1
+              IF HDCLL.EQ.1
+              THEN
+                HCLL1 = -99
+              ELSE
+                IF HDCLL.NE.3 .OR. TBIT(ICLL,31)
+                THEN
+                  MTRK = MTRK + 1
+                  HCLL1 = ICLL
+                CIF
+              CIF
+            CIF
+          CFOR
+          IF(MTRK.EQ.2 .OR. MTRK.EQ.3) LB1TCL = 1
+        CIF
+      CIF
+C
+N     3 TRACKS IN 3 TRACK EVENT
+      IF(NTRCK .EQ.2 .AND. LAND(LBTRBT,64).NE.0) NTRCK = NTRCK - 1
+N     SET LABEL FOR TRIGGER CHECK
+N     2 TRACKS IN GENERAL
+      IF(NTRCK .GE.2) LBTRCK = LBTRCK + 2
+N     1 TRACK FOR TAGG-EVENTS ONLY
+      IF(NTRCK .EQ.1 .AND. LAND(LBTRBT,2).NE.0) LBTRCK = LBTRCK + 1
+N     1 TRACK FOR ELECTRON EVENTS ONLY
+      IF(NTREL .EQ.1) LBTRCK = LBTRCK + 4
+N     1 TRACK +1 TRACK IN CLEAN RING 1
+      IF(LB1TCL.EQ.1) LBTRCK = LBTRCK + 8
+C     PRINT 2009, NTRCK,NTREL,LB1TCL,LBTRCK
+C2009 FORMAT('0TRACKS:',4I6)
+      RETURN
+      END

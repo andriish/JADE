@@ -1,0 +1,209 @@
+Current directory is/home/pcl2483/pedro/jadesoft/src/jadegs
+
+Dependencies:
+-------------
+evread.F ... cadmin.for
+evread.F ... cgraph.for
+evread.F ... cdata.for
+evread.F ... cadmin.for
+evread.F ... cgraph.for
+evread.F ... cdata.for
+jetcal.F ... cdata.for
+jetcal.F ... cgraph.for
+ebeam.F ... cdata.for
+mctr4v.F ... cmubcs.for
+opunit.F ... cgraph.for
+evwrit9.F ... cadmin.for
+evwrit9.F ... cdata.for
+evwrit9.F ... cgraph.for
+messag.F ... cgraph.for
+errprt.F ... cheadr.for
+rdmtco9.F ... cmubcs.for
+evbkpr.F ... cdata.for
+runfix.F ... cdata.for
+prstat.F ... cadmin.for
+rdtrig.F ... cadmin.for
+rdresv.F ... cmubcs.for
+rdresv.F ... cjvtxc.for
+rdmodv.F ... cmubcs.for
+rdreso.F ... cmubcs.for
+rdmodn.F ... cmubcs.for
+rdpatr.F ... cmubcs.for
+rdalgn.F ... cdata.for
+rdalgn.F ... cgraph.for
+rddate.F ... cadmin.for
+rdrnhv.F ... cjvtxc.for
+rdrnhv.F ... cgeov.for
+rdiefv.F ... cjvtxc.for
+rdiefv.F ... cgeov.for
+rddouv.F ... cjvtxc.for
+ktmcon.F ... cdata.for
+ktmcon.F ... cgraph.for
+klread.F ... cgraph.for
+klread.F ... cdata.for
+klread.F ... cjvtxc.for
+klread.F ... cgeo1.for
+klread.F ... cjdrch.for
+klread.F ... cdsmax.for
+klread.F ... mvccal.for
+klread.F ... ciouni.for
+exjhtl.F ... cdata.for
+zvertf.F ... cdata.for
+zvertf.F ... cgraph.for
+zvertf.F ... czvpar.for
+zvertf.F ... cjdrch.for
+zvertf.F ... cdsmax.for
+zvertf.F ... clbpgm.for
+zvertf.F ... cworkzv.for
+zvertf.F ... czvpar.for
+cnewid.F ... cdata.for
+cnewid.F ... calibr.for
+jadebd.F ... cadmin.for
+jadebd.F ... ciouni.for
+jadebd.F ... cgraph.for
+jadebd.F ... cjdrch.for
+jadebd.F ... cgeo1.for
+jadebd.F ... cgeo2com.for
+jadebd.F ... cgeo2.for
+jadebd.F ... cgeo3com.for
+jadebd.F ... cgeo3.for
+jadebd.F ... cjvcel.for
+jadebd.F ... cjvtxc.for
+jadebd.F ... cgeov.for
+jadebd.F ... czsprm.for
+jadebd.F ... mccomf.for
+zsrftv.F ... cdata.for
+zsrftv.F ... calibr.for
+zsfit.F ... cdata.for
+zsfit.F ... cgraph.for
+zsfit.F ... czsprm.for
+xyblk.F ... cgraph.for
+xyblk.F ... cgeo1.for
+treltr.F ... cworkpr.for
+change.F ... cpatlm.for
+change.F ... cjdrch.for
+change.F ... cgraph.for
+change.F ... creply.for
+alphan.F ... creply.for
+ergtot.F ... cdata.for
+dedxbn.F ... cdata.for
+dedxbn.F ... cgraph.for
+dedxbn.F ... cjdrch.for
+dedxbn.F ... cdededx.for
+momenp.F ... cdata.for
+momenp.F ... cgraph.for
+moment.F ... cdata.for
+moment.F ... cgraph.for
+momgam.F ... cdata.for
+momgam.F ... cgraph.for
+momgam.F ... cgeo1.for
+errmom.F ... cdata.for
+errmom.F ... cgeo1.for
+zsxy.F ... cdata.for
+zsxy.F ... cjdrch.for
+zsxy.F ... cdsmax.for
+amps2z.F ... czsprm.for
+amps2z.F ... cjdrch.for
+dedxbk.F ... cdata.for
+jfetch.F ... cdata.for
+jfetch.F ... calibr.for
+jfetch.F ... cjdrch.for
+jfetch.F ... cdsmax.for
+jrecal.F ... cdata.for
+jrecal.F ... cgraph.for
+jrecal.F ... cjdrch.for
+zsrft1.F ... cdata.for
+zsrft1.F ... calibr.for
+drtrck.F ... cdata.for
+zsline.F ... czsprm.for
+zspur.F ... cdata.for
+zspur.F ... czsprm.for
+n50sco.F ... cdata.for
+fampco.F ... cdata.for
+jftnew.F ... cdata.for
+jftnew.F ... cjdrch.for
+track.F ... cdata.for
+rbpipe.F ... cadmin.for
+rbpipe.F ... cdata.for
+rbpipe.F ... cgeo1.for
+rbpipe.F ... cgeov.for
+xbpipe.F ... cdata.for
+xbpipe.F ... cadmin.for
+drpipe.F ... cadmin.for
+drpipe.F ... cdata.for
+drpipe.F ... cgeo1.for
+drpipe.F ... cgeov.for
+mctrcb.F ... cmubcs.for
+mctrcb.F ... cmubcs.for
+mchtrb.F ... cmubcs.for
+superv.F ... cgraph.for
+superv.F ... ciouni.for
+superv.F ... cadmin.for
+superv.F ... cbcsmx.for
+superv.F ... cjdrch.for
+superv.F ... clbpgm.for
+superv.F ... cpatlm.for
+vtxbnk.F ... cdata.for
+vtxpre.F ... cdata.for
+
+.F files sorted by include-files:
+-- ----- ------ -- --------------
+cadmin.for: evread.F evwrit9.F prstat.F rdtrig.F rddate.F jadebd.F rbpipe.F xbpipe.F drpipe.F superv.F
+calibr.for: cnewid.F zsrftv.F jfetch.F zsrft1.F
+cbcsmx.for: superv.F
+cdata.for: evread.F jetcal.F ebeam.F evwrit9.F evbkpr.F runfix.F rdalgn.F ktmcon.F klread.F exjhtl.F zvertf.F cnewid.F zsrftv.F zsfit.F ergtot.F dedxbn.F momenp.F moment.F momgam.F errmom.F zsxy.F dedxbk.F jfetch.F jrecal.F zsrft1.F drtrck.F zspur.F n50sco.F fampco.F jftnew.F track.F rbpipe.F xbpipe.F drpipe.F vtxbnk.F vtxpre.F
+cdededx.for: dedxbn.F
+cdsmax.for: klread.F zvertf.F zsxy.F jfetch.F
+cgeo1.for: klread.F jadebd.F xyblk.F momgam.F errmom.F rbpipe.F drpipe.F
+cgeo2.for: jadebd.F
+cgeo2com.for: jadebd.F
+cgeo3.for: jadebd.F
+cgeo3com.for: jadebd.F
+cgeov.for: rdrnhv.F rdiefv.F jadebd.F rbpipe.F drpipe.F
+cgraph.for: evread.F jetcal.F opunit.F evwrit9.F messag.F rdalgn.F ktmcon.F klread.F zvertf.F jadebd.F zsfit.F xyblk.F change.F dedxbn.F momenp.F moment.F momgam.F jrecal.F superv.F
+cheadr.for: errprt.F
+ciouni.for: klread.F jadebd.F superv.F
+cjdrch.for: klread.F zvertf.F jadebd.F change.F dedxbn.F zsxy.F amps2z.F jfetch.F jrecal.F jftnew.F superv.F
+cjvcel.for: jadebd.F
+cjvtxc.for: rdresv.F rdrnhv.F rdiefv.F rddouv.F klread.F jadebd.F
+clbpgm.for: zvertf.F superv.F
+cmubcs.for: mctr4v.F rdmtco9.F rdresv.F rdmodv.F rdreso.F rdmodn.F rdpatr.F mctrcb.F mchtrb.F
+cpatlm.for: change.F superv.F
+creply.for: change.F alphan.F
+cworkpr.for: treltr.F
+cworkzv.for: zvertf.F
+czsprm.for: jadebd.F zsfit.F amps2z.F zsline.F zspur.F
+czvpar.for: zvertf.F
+mccomf.for: jadebd.F
+mvccal.for: klread.F
+
+Library members sorted by include-files:
+------- ------- ------ -- -------------
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( evread.o evwrit9.o prstat.o rdtrig.o rddate.o jadebd.o rbpipe.o xbpipe.o drpipe.o superv.o ) :	 cadmin.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( cnewid.o zsrftv.o jfetch.o zsrft1.o ) :	 calibr.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( superv.o ) :	 cbcsmx.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( evread.o jetcal.o ebeam.o evwrit9.o evbkpr.o runfix.o rdalgn.o ktmcon.o klread.o exjhtl.o zvertf.o cnewid.o zsrftv.o zsfit.o ergtot.o dedxbn.o momenp.o moment.o momgam.o errmom.o zsxy.o dedxbk.o jfetch.o jrecal.o zsrft1.o drtrck.o zspur.o n50sco.o fampco.o jftnew.o track.o rbpipe.o xbpipe.o drpipe.o vtxbnk.o vtxpre.o ) :	 cdata.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( dedxbn.o ) :	 cdededx.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( klread.o zvertf.o zsxy.o jfetch.o ) :	 cdsmax.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( klread.o jadebd.o xyblk.o momgam.o errmom.o rbpipe.o drpipe.o ) :	 cgeo1.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( jadebd.o ) :	 cgeo2.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( jadebd.o ) :	 cgeo2com.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( jadebd.o ) :	 cgeo3.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( jadebd.o ) :	 cgeo3com.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( rdrnhv.o rdiefv.o jadebd.o rbpipe.o drpipe.o ) :	 cgeov.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( evread.o jetcal.o opunit.o evwrit9.o messag.o rdalgn.o ktmcon.o klread.o zvertf.o jadebd.o zsfit.o xyblk.o change.o dedxbn.o momenp.o moment.o momgam.o jrecal.o superv.o ) :	 cgraph.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( errprt.o ) :	 cheadr.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( klread.o jadebd.o superv.o ) :	 ciouni.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( klread.o zvertf.o jadebd.o change.o dedxbn.o zsxy.o amps2z.o jfetch.o jrecal.o jftnew.o superv.o ) :	 cjdrch.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( jadebd.o ) :	 cjvcel.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( rdresv.o rdrnhv.o rdiefv.o rddouv.o klread.o jadebd.o ) :	 cjvtxc.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( zvertf.o superv.o ) :	 clbpgm.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( mctr4v.o rdmtco9.o rdresv.o rdmodv.o rdreso.o rdmodn.o rdpatr.o mctrcb.o mchtrb.o ) :	 cmubcs.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( change.o superv.o ) :	 cpatlm.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( change.o alphan.o ) :	 creply.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( treltr.o ) :	 cworkpr.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( zvertf.o ) :	 cworkzv.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( jadebd.o zsfit.o amps2z.o zsline.o zspur.o ) :	 czsprm.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( zvertf.o ) :	 czvpar.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( jadebd.o ) :	 mccomf.for
+/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( klread.o ) :	 mvccal.for

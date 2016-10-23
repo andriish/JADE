@@ -1,0 +1,60 @@
+C   07/06/96 606071839  MEMBER NAME  CCRE     (S4)          FORTG1
+      SUBROUTINE CCRE(IND,NAME,NR,NWORD,IER)
+C     BOS SUBPROGRAM =1.4=
+#include "acs.for"
+      COMMON/BCS/IW(1)
+      REAL RW(1)
+      EQUIVALENCE (IW(1),RW(1))
+#include "star.for"
+      IND=0
+      IW(INAMV)=NAME
+      LFDI=MOD(IABS(NAMEV),NPRIM)+NAMAX1
+    1 LFDI=IW(LFDI+IPLST)
+      IF(IW(LFDI+INAMV).NE.IW(INAMV)) GOTO 1
+      IF(LFDI.EQ.0) LFDI=IBLN(IW(INAMV))
+      LFDK=LFDI+1
+      LFDI=IW(LFDI)
+      GOTO 3
+    2 LFDK=LFDI
+      LFDI=IW(LFDI-1)
+    3 IF(LFDI.EQ.0)        GOTO    10
+      IF(IW(LFDI-2).LT.NR) GOTO 2
+      IF(IW(LFDI-2).GT.NR) GOTO    10
+      IND=LFDI
+      IER=1
+      NSV=IW(IND)
+      IF(NSV.GE.NWORD) GOTO 100
+      CALL BCHF(IND,NWORD,IER)
+      IF(IER.GE.1) IER=2
+      IF(IER.EQ.2) GOTO 101
+      CALL VZERO(IW(IND+NSV+1),NWORD-NSV)
+      IER=1
+      GOTO 100
+   10 IER=2
+      NW=MAX0(0,NWORD)
+      NN=NW+4
+      IF(NEXT+NN.LT.NLST) GOTO 20
+      NHISTH(11)=NHISTH(11)+1
+      GOTO 101
+   20 INAME=NAME
+      IF(NOTLOW(XNAME)) GOTO 40
+      IF(NCPL+NN.LT.NSPL) GOTO 30
+      NHISTL(11)=NHISTL(11)+1
+      GOTO 101
+   30 NCPL=NCPL+NN
+   40 IER=0
+      IND=NEXT+3
+      IW(IND-3)=NAME
+      IW(IND-2)=NR
+      IW(IND)=NW
+      ISV=IW(LFDK-1)
+      IW(LFDK-1)=IND
+      IW(IND -1)=ISV
+      IF(NW.GT.0) CALL VZERO(IW(IND+1),NW)
+      NEXT=NEXT+NN
+      LIND=IND
+C
+  100 RETURN
+  101 IER=2
+      GOTO 100
+      END

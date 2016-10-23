@@ -1,0 +1,645 @@
+C   08/12/83 312131646  MEMBER NAME  USERX    (JADESR)      SHELTRAN
+      SUBROUTINE USER(INDEX)
+C
+C     TEST VERSION OF USRED82
+C          KEEP ONLY REJECTS WITH INDREJ=5
+C
+      IMPLICIT INTEGER*2 (H)
+      REAL LBACC
+      LOGICAL TBIT
+C---
+C---     DECREASING RUN NUMBERS IGNORED                 9/8/83  J.B.W.
+C---
+C---     NCALI=1/LUNITA(1)=22/LUNITA(2)=0 PUT BEFORE CALL TO R1MODE
+C---     AND CALLS TO DBASE ADDED FOR DATA-BASE OPERATION AT RAL
+C---                                                    3/12/82  J.B.W.
+C---
+C---     ALLOW FOR ONLY 1 KALIBRATION FILE (KALWRK0) ON UNIT 22
+C---                                                   23.09.82 (PST)
+C---
+C---     USER ROUTINE FOR 1982 REDUC1 PROGRAM
+C---                                                    5.03.82 (PST)
+C---
+C---
+#include "cdata.for"
+#include "cpatlm.for"
+#include "czvpar.for"
+#include "cworkzv.for"
+#include "cjdrch.for"
+#include "cheadr.for"
+#include "ciouni.for"
+C
+#include "cutsr1.for"
+C HBOOK COMMON
+CCCCC COMMON // BLCOMM(6000)
+C GBOOK COMMON - IE HBOOK LOOK-ALIKE USED AT RUTHERFORD
+      COMMON/CGBOOK/PLOT(116,13)
+C
+      COMMON /CREDRS/ LBAB2,LBAB4,LBAB8,LBAT2M,ARES(40)
+                      INTEGER IRES(40)
+                      EQUIVALENCE (ARES(1),IRES(1))
+C
+C
+      COMMON /CTLIM/ ISECLF
+      COMMON /CADMIN/ IEVTP,NRREAD,NRWRIT
+      COMMON/CALIBR/JPOINT(100),
+     +HMUCAL(8370),HLGMAI(5760),HTAGSY(384),HJPULS(9216),
+     +DELTA0(96,2),DELTA1(96,2),DELTA2(96,2),DELTA5(96,2),DELTA6(96,2)
+C
+      COMMON /CIGG/ IPRN,IGG(80),JIGG(80)
+C  IPRN = 0 --> NO PRINT  IPRN > 0 --> PRINT  IPRN> 1 --> PUNCH CARDS
+C
+      LOGICAL*1 CHOP
+      DATA LBSTRT/0/, LIMHIT/12/,MKMUT1/8/,LIMHFW/8/
+C
+ 2000 FORMAT('1')
+ 2004 FORMAT('  RUN AND EVENT HAS NO ZVTX BANK ',2I5)
+ 2006 FORMAT(' RUN AND EVENT ',2I6,' HAS RETURN1 IN LGCALB')
+ 2008 FORMAT(' USRED82: EVENT ',2I6,8(2X,Z4),4I6)
+C2009 FORMAT(' USRED82 (RETURN) :',2I6,3(2X,Z4),6I6)
+ 2010 FORMAT(' ***** ERROR IN USRED82 (INFORM PST), EVENT ',3I6)
+C
+C---
+C   INDEX =    2   CALLED IMMEDIATELY AFTER EVENT IS READ INTO CDATA.
+C              3   LEAD GLASS ENERGIES HAVE BEEN COMPUTED.
+C              4   FAST Z VERTEX RECONSTRUCTION HAS BEEN DONE.
+C              5   INNER DETECTOR PATTERN RECOGNITION HAS BEEN RUN.
+C              6   ENERGIES CLUSTERS IN THE LEAD GLASS HAVE BEEN FOUND.
+C              7   TRACKS AND CLUSTERS HAVE BEEN ASSOCIATED.
+C              8   MUON CHAMBER TRACKING HAS BEEN DONE.
+C              9   MUON AND INNER DETECTOR TRACKS HAVE BEEN ASSOCIATED.
+C             10   UNUSED
+C
+C-----------------------------------------------------------------------
+C     CASE 0 => INDEX = 0    =>    INITIALIZATION
+C-----------------------------------------------------------------------
+C
+      IF INDEX.EQ.0
+      THEN
+C------------------------
+C
+C    DATA BASE SYSTEM INITIALISATION
+C
+C------------------------
+        CALL DBASE(0,IDBCHP)
+C------------------------
+C
+C    PREPARE TO TRAP DECREASING RUN NUMBERS AND RUN NOS.LE.63
+C                         J.B.W.  8/8/83
+C
+C------------------------
+        NRUN = 63
+C       USE ONLY 1 CALIBRATION FILE (F11LHO.KALWRK0)
+        NCALI = 1
+        LUNITA(1) = 22
+        LUNITA(2) = 0
+C       REDUC1 OPERATION MODE
+        CALL R1MODE
+C       STOP JOB WHEN ISECLF SECONDS LEFT
+        ISECLF= 0
+        IPRN = 1
+C       REQUEST FAST VERSION OF PATREC
+        IPFAST = 0
+C
+C       BOS BANK POINTERS
+        IQHEAD = IBLN('HEAD')
+        IQTRIG = IBLN('TRIG')
+        IQALGN = IBLN('ALGN')
+        IQZVTX = IBLN('ZVTX')
+        IQJETC = IBLN('JETC')
+        IQPATR = IBLN('PATR')
+        IQJHTL = IBLN('JHTL')
+        IQMPRS = IBLN('MPRS')
+C       INITIALISE COUNTERS
+        FOR I = 1,80
+         IGG(I) = 0
+        JIGG(I) = 0
+        CFOR
+C
+C       INITIALISE HISTOGRAMS
+C       N.B. TO CONVERT GBOOK <-> HBOOK YOU MUST SWITCH THE COMMON
+C       DECLARATIONS IN SUBROUTINE PLOTSZ (MEMBER R1MODE) AND EITHER
+C       INSERT OR REMOVE INCLUDE(GBOOK) IN THE LKED STEP.
+C
+        CALL HLIMIT(6000)
+        CALL HBOOK1(111,'TRIGGER BITS (INPUT)      $', 50,0.,   50.)
+        CALL HBOOK1(112,'TRIGGER BITS (TRCK-ACC)   $',100,0.,  100.)
+        CALL HBOOK1(113,'TRIGGER BITS ACCEPTED     $',100,0.,  100.)
+        CALL HBOOK1(1,'ZVERTEX (ALL)$',100,-2000.,2000.)
+        CALL HBOOK1(2,'NHITS IN RING1 (ZVERTEX < 300 MMS)$', 50,0.,200.)
+        CALL HBOOK1(3,'NUMBER OF TRACKS$',100,0.,50.)
+        CALL HBOOK1(4,'LG ENERGY SUM (ALL)  $',100,0.02,40000.)
+        CALL HBOOK1(5,'LG ENDCAP ENERGY (BAD BLOCKS) $',100,0.,40000.)
+        CALL HBOOK1(  6,'TRACK CURVATURE           $', 50,  0., .010)
+        CALL HBOOK1(7,'ZMIN (TRACKS)                 $', 50,  0.,1000.)
+        CALL HBOOK1(8,'RMIN                          $', 50,  0., 300.)
+        CALL HBOOK1(9,'     ACCEPTED TRACKS          $', 50,  0.,  25.)
+        CALL HBOOK1(10,'REJECT INDEX                 $', 50,  0.,  50.)
+        CALL HBLACK(0)
+        PRINT2000
+        INDEX=INDEX+1
+        IF(.TRUE.) RETURN
+      CIF
+C
+C-----------------------------------------------------------------------
+C     CASE   => INDEX = 100  =>    END OF JOB
+C-----------------------------------------------------------------------
+C
+      IF INDEX.EQ.100
+      THEN
+C---
+C--- STATISTICS FROM LAST RUN
+C---
+        FOR I = 2,80
+        JIGG(I) = JIGG(I) + IGG(I)
+        CFOR
+        CALL STAT82
+C------------------------
+C
+C    DATA BASE SYSTEM TERMINATION
+C
+C------------------------
+        CALL DBASE(3,IDBCHP)
+C---
+C--- PRINT STATISTICS FOR SUM OF ALL RUNS PROCESSED
+C---
+        FOR I = 1,80
+        IGG(I) = JIGG(I)
+        CFOR
+        CALL STAT82
+        CALL H1EVLI(    0)
+C---
+C--- PRINT OUT HISTOGRAMS
+C---
+        CALL HISTDO
+        IF(.TRUE.) RETURN
+      CIF
+C
+C     OTHER USER CALLS
+C
+      IF(INDEX.GT.2 .AND. INDEX.LE.5) IGG(INDEX+2) = IGG(INDEX+2) + 1
+      REPEAT
+      INDREJ = 0
+      SELECT INDEX
+C
+C-----------------------------------------------------------------------
+C     CASE 1 => INDEX = 1    =>    START OF RUN
+C-----------------------------------------------------------------------
+C
+      CASE 1
+C---
+C--- MODIFIED TO IGNORE EVENTS WITH RUN NUMBERS LE 63
+C--- OR DECREASING RUN NUMBERS, BUT TO PROCESS ALL
+C--- PARTS OF A RUN SPLIT UP BY SUCH EVENTS.
+C---                                         J B WHITTAKER 17/8/83
+C---
+         IF HHEADR(18).GT.NRUN
+         THEN
+              NRUN=HHEADR(18)
+              IF NRUN.NE.IGG(1)
+              THEN
+C---               *
+C---               *  DATA BASE SYSTEM - ADD RECORD FOR LAST RUN
+C---               *  IF APPROPRIATE & OPEN RECORD FOR NEW ONE
+C---               *
+                   CALL DBASE(2,IDBCHP)
+C---               *
+C---               *  RESET STATISTICS ARRAYS READY FOR NEW RUN
+C---               *
+                   IGG(3) = IGG(3) + 1
+                   IF(IGG(4).NE.0) CALL STAT82
+                   IGG(1) = NRUN
+                   FOR I = 2,80
+                        JIGG(I) = JIGG(I) + IGG(I)
+                        IGG(I) = 0
+                   CFOR
+C---               *
+C---               *  PRINT RUN HEADER
+C---               *
+                   PRINT 2007,IGG(1)
+ 2007              FORMAT(1H0/
+     +             1X,10('='),20X,10('=')/
+     +             1X,10('='),' START OF RUN ',I5,1X,10('=')/
+     +             1X,10('='),20X,10('='))
+C---               *
+C---               *  CHANGE LIMITS OF ZRFIT
+C---               *
+                   IF LBSTRT.EQ.0
+                   THEN
+                        LBSTRT = 1
+                        ZFITLM(1) = 70.
+                        ZFITLM(2) = 35.
+                   CIF
+C---               *
+C---               *  CHECK IF RUN IS TO BE AXED
+C---               *
+                   CHOP=.FALSE.
+                   IF(IGG(1).LT.NRUNST) CHOP=.TRUE.
+                   IF NOTTOT.NE.0
+                   THEN
+                        FOR I=1,NOTTOT
+                             IF(IGG(1).EQ.NOTRUN(I)) CHOP=.TRUE.
+                        CFOR
+                   CIF
+C---               *
+C---               *  ALLOW FOR RUN BEING CHOPPED
+C---               *  BY DATA BASE SYSTEM
+C---               *
+                   CHOP = CHOP.OR.IDBCHP.NE.0
+                   IF(CHOP) PRINT 2018,IGG(1)
+ 2018              FORMAT(
+     +             1X,10('=')/
+     +             1X,10('='),' RUN',I6, ' AXED'/
+     +             1X,10('='))
+              CIF
+              INDEX=INDEX+1
+              IF(.TRUE.) RETURN
+         ELSE
+              IF HHEADR(18).LT.NRUN .OR. HHEADR(18).EQ.63
+              THEN
+                   CHOP = .TRUE.
+                   PRINT 2011, HHEADR(18)
+ 2011              FORMAT(' USRED82 .. RUN',I15,' RECORD ENCOUNTERED')
+C---               *
+C---               *  MARK THE DATA BASE
+C---               *
+                   CALL DBASE(10,IDBCHP)
+                   IF(.TRUE.) RETURN
+              ELSE
+                   CHOP = .FALSE.
+                   PRINT 2020, NRUN
+ 2020              FORMAT(' USRED82 - CONTINUING WITH RUN',I15)
+                   INDEX = 2
+                   IF(.TRUE.) RETURN
+              CIF
+         CIF
+C
+C-----------------------------------------------------------------------
+C     CASE 2 => INDEX = 2    =>    EVENT JUST READ IN
+C-----------------------------------------------------------------------
+C
+      CASE 2
+C---
+C--- REJECT UNWANTED RUNS
+C---
+        INDEX = 1
+        IF(HHEADR(18).EQ.NRUNST .AND. HHEADR(19).LT.NEVTST) RETURN
+        IF(CHOP) RETURN
+C------------------------
+C
+C    DATA BASE SYSTEM - SAVE HEADER INFORMATION FOR END OF RUN
+C
+C------------------------
+        CALL DBASE(1,IDBCHP)
+        IGG(4) = IGG(4) + 1
+N       PULSER EVENTS
+C                                                     ===== REJECT =====
+        INDREJ =  1
+        IF(HHEADR(20).GE.64) XREPEAT
+N       CHECK TRIGGER
+        IERRLG = 0
+        CALL LGCALB(&ERRLGC)
+        CALL TRCK82(LBACC,LBTRB1,LBTRB2,IERRLG)
+        PRINT 2008,HHEADR(18),HHEADR(19),LBTRB1,LBTRB2,
+     ,             LBACC,IERRLG,LBAB2,LBAB4,LBAB8,LBAT2M
+N       PLOT TRIGGER BITS
+        LBTRBT = LBTRB1
+        TRBIT = 0.
+        FOR I=1,32
+          TRBIT = TRBIT + 1.
+          IF TBIT(LBTRBT,31)
+          THEN
+            CALL HF1(111,TRBIT,1.)
+          CIF
+          LBTRBT = SHFTR(LBTRBT,1)
+          IF(I.EQ.16) LBTRBT = LBAT2M
+        CFOR
+        LBTRBT = LBAB2
+        TRBIT = 0.
+        FOR I=1,48
+          TRBIT = TRBIT + 1.
+          IF TBIT(LBTRBT,31)
+          THEN
+            CALL HF1(112,TRBIT,1.)
+          CIF
+          LBTRBT = SHFTR(LBTRBT,1)
+          IF(I.EQ.32) LBTRBT = LBAB4
+          IF(I.EQ.16) LBTRBT = LBAB8
+        CFOR
+N       LBACC=2
+C                                                     .... CONTINUE ....
+        INDEX  =  4
+        IF(AND(LBACC,2).NE.0) RETURN
+N       LBACC=4
+C                                                     .... CONTINUE ....
+        INDEX  =  4
+        IF(AND(LBACC,4).NE.0) RETURN
+N       LBACC=8
+C                                                     .... CONTINUE ....
+        INDEX  =  4
+        IF(AND(LBACC,8).NE.0) RETURN
+N       LBACC=1
+C                                                     ***** ACCEPT *****
+        INDREJ =  4
+        INDEX  = 11
+        IF(AND(LBACC,1).NE.0) XREPEAT
+C       LBACC = 0
+C                                                     ===== REJECT =====
+        INDREJ =  5
+        INDEX  =  1
+        XREPEAT
+C
+C-----------------------------------------------------------------------
+C     CASE 4 => INDEX = 4    =>    Z-VERTEX NOW CALCULATED
+C-----------------------------------------------------------------------
+C
+      CASE 4
+N       LBACC=2
+C                                                     ***** ACCEPT *****
+        INDEX  = 11
+        INDREJ = 11
+        IF(AND(LBACC,2).NE.0) XREPEAT
+N       LBACC=4
+C                                                     .... CONTINUE ....
+        INDEX  = 5
+        IF(AND(LBACC,4).NE.0) RETURN
+C
+        INDEX = 1
+        IPJCA  = IDATA(IQJETC)
+        IPJCA2 = IPJCA*2
+C  # OF HITS IN 1. RING (FOR PLOT PURPOSE ONLY)
+        NHITR1 = (HDATA(IPJCA2+27) - HDATA(IPJCA2+3)) / 4
+        IPZV   = IDATA(IQZVTX)
+C  PRINT EVENTS WITHOUT 'ZVTX' BANK
+        IF(IPZV.LE.0) WRITE(6,2004) HHEADR(18),HHEADR(19)
+N       CHECK IF 'ZVTX' BANK
+        IF IPZV.GT.0
+        THEN
+          IFLAG  = IDATA(IPZV+6)
+          ZVTX   = ADATA(IPZV+1)
+          PEAK   = ADATA(IPZV+4)
+          IGG(IFLAG+27) = IGG(IFLAG+27) + 1
+N         EVENTS WITHOUT ZVTX
+          IF IFLAG.LT.3
+          THEN
+            INDREJ = 12
+            XREPEAT
+C
+          ELSE
+            CALL HF1(1,ZVTX,1.)
+            IF ABS(ZVTX).LE.300.
+            THEN
+              ANHTR1 = NHITR1
+              CALL HF1(2,ANHTR1,1.)
+            ELSE
+N             ZV > 300.
+              INDREJ = 13
+              XREPEAT
+            CIF
+          CIF
+        ELSE
+N         NO 'ZVTX'-BANK
+          INDREJ = 14
+          XREPEAT
+        CIF
+C                                                     .... CONTINUE ....
+        INDEX = 5
+        RETURN
+C
+C-----------------------------------------------------------------------
+C     CASE 5 => INDEX = 5    =>    PATTERN RECOGNITION NOW COMPLETE
+C-----------------------------------------------------------------------
+C
+      CASE 5
+N       INITIALIZE REJECT INDEX
+        INDEX = 1
+        IPPATR = IDATA(IQPATR)
+N       ACCEPT EVENTS WITHOUT A 'PATR' BANK
+        IF(IPPATR.LE.0) PRINT2005,HHEADR(18),HHEADR(19)
+ 2005   FORMAT('  RUN AND EVENT HAS NO PATR BANK ',2I5)
+        INDREJ = 21
+        IPPATR = IDATA(IQPATR)
+        IF(IPPATR.LE.0) LBACC = OR(LBACC,32)
+        IF(IPPATR.LE.0) XREPEAT
+N       PICK UP 'PATR' PARAMETERS
+        INDEX = 1
+        NTR    = IDATA(IPPATR+2)
+        LDTR   = IDATA(IPPATR+3)
+        IPTR0  = IPPATR + IDATA(IPPATR+1)
+        IPTR9  = IPTR0 + (NTR-1)*LDTR
+        ANTR = NTR
+        CALL HF1(3,ANTR,1.)
+N       0 TRACKS
+        IF NTR.LE.0
+        THEN
+          INDREJ = 22
+          XREPEAT
+        CIF
+C---
+C--- SEARCH FOR TRACK WITH      > 12 HITS
+C---                       PT   > 100 MEV
+C---                       Z    > 300 MM
+C---                       RMIN <  50 MM
+C---
+C---    THE FIRST OF THE TRACKLOOPS BELOW IS ONLY CONCERNED WITH EVENTS
+C---    FROM THE FORWARD MUON - ECAP QUADRANT TRIGGER. INTRODUCED ON
+C---    19.7.82, J.OLSSON AND G.PEARCE
+C---
+        IF AND(LBAB4,MKMUT1).NE.0
+        THEN
+C         LOOP OVER ALL TRACKS
+          FACC = 0
+          TRAC = 0
+          LBSHRT = 0
+          IF(AND(LBACC,4).NE.0) LBSHRT = 1
+          XO = 0.
+          YO = 0.
+          ZMIN  = 100000.
+          RMIN0 = 100000.
+C
+          FOR IPTR=IPTR0,IPTR9,LDTR
+            IF IDATA(IPTR+24).GT.LIMHFW
+            THEN
+              FACC = OR(FACC,1)
+              CRV = ABS(ADATA(IPTR+25))
+              CALL HF1(6,CRV,1.)
+              IF CRV .LE..00150
+              THEN
+                FACC = OR(FACC,2)
+                AZV = ABS(ADATA(IPTR+31))
+                ZMIN = AMIN1(AZV,ZMIN)
+N               INTERCEPT WITH Z-AXIS IF LONG TRACK
+                IF AZV .LT. 300.  .OR.  LBSHRT .NE. 0
+                THEN
+                  FACC = OR(FACC,4)
+N                 CALC. DISTANCE TRACK-(XO,YO)
+                  CALL DRTRCK(IPTR,XO,YO,RMIN)
+                  RMIN = ABS(RMIN)
+                  RMIN0 = AMIN1(RMIN0,RMIN)
+                  IF ABS(RMIN).LT.   50.
+                  THEN
+                    TRAC = TRAC + 1.
+                    FACC = OR(FACC,8)
+                  CIF
+                CIF
+              CIF
+            CIF
+          CFOR
+        ELSE
+C         LOOP OVER ALL TRACKS
+          FACC = 0
+          TRAC = 0
+          LBSHRT = 0
+          IF(AND(LBACC,4).NE.0) LBSHRT = 1
+          XO = 0.
+          YO = 0.
+          ZMIN  = 100000.
+          RMIN0 = 100000.
+C
+          FOR IPTR=IPTR0,IPTR9,LDTR
+            IF IDATA(IPTR+24).GT.LIMHIT
+            THEN
+              FACC = OR(FACC,1)
+              CRV = ABS(ADATA(IPTR+25))
+              CALL HF1(6,CRV,1.)
+              IF CRV .LE..00150
+              THEN
+                FACC = OR(FACC,2)
+                AZV = ABS(ADATA(IPTR+31))
+                ZMIN = AMIN1(AZV,ZMIN)
+N               INTERCEPT WITH Z-AXIS IF LONG TRACK
+                IF AZV .LT. 300.  .OR.  LBSHRT .NE. 0
+                THEN
+                  FACC = OR(FACC,4)
+N                 CALC. DISTANCE TRACK-(XO,YO)
+                  CALL DRTRCK(IPTR,XO,YO,RMIN)
+                  RMIN = ABS(RMIN)
+                  RMIN0 = AMIN1(RMIN0,RMIN)
+                  IF ABS(RMIN).LT.   50.
+                  THEN
+                    IF(TRAC.GT.0.) FACC = OR(FACC,8)
+                    TRAC = TRAC + 1.
+                  CIF
+                CIF
+              CIF
+            CIF
+          CFOR
+        CIF
+        CALL HF1(7,ZMIN ,1.)
+        CALL HF1(8,RMIN0,1.)
+        IF(TRAC.GT. 8.) TRAC =  8.
+        IF(AND(LBACC,4).NE.0) TRAC = TRAC + 10.
+        CALL HF1(9,TRAC,1.)
+C
+N       CHECK FACC
+        IF AND(FACC,8).EQ.0
+        THEN
+C                                                     >>>>> REJECT <<<<<
+N         REJECT, DET. REJECT CODE
+          INDREJ = 23
+          IF(AND(FACC,1).NE.0) INDREJ = 24
+          IF(AND(FACC,2).NE.0) INDREJ = 25
+          IF(AND(FACC,4).NE.0) INDREJ = 26
+          INDEX = 1
+          XREPEAT
+        CIF
+N       FACC = 8
+C                                                     ***** ACCEPT *****
+        INDREJ = 30
+        INDEX  = 11
+        XREPEAT
+C
+      OTHER
+        PRINT 2010, HHEADR(18),HHEADR(19),INDEX
+        INDEX = 1
+        RETURN
+      CSELECT
+C
+      UNTIL .TRUE.
+C
+C
+C
+C
+N     CALL SLOW PATREC FOR ACCEPTED EVENTS
+C
+C
+C
+C
+      IF INDEX.EQ.11 .AND. AND(LBACC,14).NE.0
+      THEN
+N       CHECK IF 'JETC'-BANK
+        IF IDATA(IQJETC).GT.0
+        THEN
+          IPFAST = 2
+          CALL INPATR
+          CALL PATREC(0)
+          IPPATR = IDATA(IQPATR)
+          IPJHTL = IDATA(IQJHTL)
+          IF IPPATR.NE.0 .AND. IDATA(IPPATR-2).EQ.10
+          THEN
+            IDATA(IPPATR-2) = 9
+            IF(IPJHTL.NE.0 .AND. IDATA(IPJHTL-2).EQ.10)IDATA(IPJHTL-2)=900058000
+          CIF
+N         DELETE PATREC BANKS '10'
+          CALL BDLS('PATR',10)
+          CALL BDLS('JHTL',10)
+N         REINSTALL FAST PATREC LIMITS
+          IPFAST = 0
+          CALL INPATR
+          ZFITLM(1) = 70.
+          ZFITLM(2) = 35.
+        CIF
+      CIF
+N     SET IWRT + LABEL IN 'HEAD'-BANK
+      IWRT = 0
+      IF INDEX.EQ.11
+      THEN
+        IPHEAD = IDATA(IQHEAD)*2
+        IF(AND(LBACC, 2).NE.0) IWRT = 1
+        IF(AND(LBACC, 4).NE.0) IWRT = IWRT + 8
+        IF(AND(LBACC, 8).NE.0) IWRT = IWRT +16
+        IF(IPHEAD.GT.0) HDATA(IPHEAD+27) = IWRT
+N       PLOT TRIGGER BITS
+        LBTRBT = LBAB2
+        TRBIT = 0.
+        FOR I=1,48
+          TRBIT = TRBIT + 1.
+          IF(TBIT(LBTRBT,31)) CALL HF1(113,TRBIT,1.)
+          LBTRBT = SHFTR(LBTRBT,1)
+          IF(I.EQ.32) LBTRBT = LBAB4
+          IF(I.EQ.16) LBTRBT = LBAB8
+        CFOR
+      CIF
+      IF(INDEX.EQ.11) IGG( 10) = IGG( 10) + 1
+C
+      ANDREJ = INDREJ
+      CALL HF1(10,ANDREJ,1.)
+      IF(INDREJ.GT.0) IGG(INDREJ+10) = IGG(INDREJ+10) + 1
+      IF(IWRT  .GT.0) IGG(IWRT+50) = IGG(IWRT+50) + 1
+      IMPRT=IDATA(IQMPRS)
+      IF IMPRT.GT.0.AND.INDEX.EQ.11
+      THEN
+        IRFLAG=HDATA(2*IMPRT+3)
+        IF(AND(IRFLAG,4).NE.0) IGG(49)=IGG(49)+1
+        IF(AND(IRFLAG,8).NE.0) IGG(50)=IGG(50)+1
+      CIF
+C
+C     IF(IGG(4).LE.50) PRINT2009,HHEADR(18),HHEADR(19),
+C    +                           LBTRB1,LBTRB2,LBACC,INDREJ,INDEX,IWRT
+C
+      IF INDREJ.EQ.5
+      THEN
+        INDEX=11
+      ELSE
+        INDEX=1
+      CIF
+      RETURN
+C---
+C--- ERROR EXIT FROM LGCALB, NO SPACE FOR 'ALGN'  OR ABNORMAL DATA
+C---
+      PROC ERRLGC
+        IGG( 9) = IGG( 9) + 1
+        IF(IGG( 9).LT.20.AND.IPRN.GT.0) PRINT2006,HHEADR(18),HHEADR(19)
+        IERRLG = 1
+      CPROC
+      END

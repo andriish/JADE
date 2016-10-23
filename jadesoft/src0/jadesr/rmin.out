@@ -1,0 +1,120 @@
+evconv.f.txt:C---     BENCHMARK OR TO NEXT PROBABLE HIT COUNTER AS DETERMINED BY
+evconv1.f.txt:C---     BENCHMARK OR TO NEXT PROBABLE HIT COUNTER AS DETERMINED BY
+evfoldkw.f.txt:C---     IN CASE TERMINATOR VALUE "IOVERF=16" NEVER COMES AND "IOVERF"
+jeosum1.f.txt:SHOW '--- PRESS RETURN/ENTER TO SUBMIT, ANYTHING ELSE TO TERMINATE :'
+jeosum1.f.txt:SHOW '--- SUBMIT TERMINATED'
+jeosum1.f.txt:$ TERMINATE CLIST
+jeosum1.f.txt:SHOW '--- PRESS RETURN/ENTER TO SUBMIT, ANYTHING ELSE TO TERMINATE :'
+jeosum1.f.txt:SHOW '--- SUBMIT TERMINATED'
+jeosum1.f.txt:$ TERMINATE CLIST
+jeosum1.f.txt:C                          LAST MOD 19/11/81    P.WARMING
+jeosum1.f.txt:C   OUTPUT ONTO MANY DATASETS       07/04/82    P.WARMING
+jeosum1.f.txt:       IF ZMIN IS < 450 MM  THEN THE QUANTITY RMIN IS CALCULATED
+jeosum1.f.txt:        RMIN IS THE SMALLEST DISTANCE TO THE Z-AXIS OF ALL LONG TRACKS
+jeosum1.f.txt:       EVENTS ARE REJECTED IF    RMIN > 60 MM
+jeosum1.f.txt:       EVENTS ARE WRITTEN  IF    RMIN < 60 MM
+jeosum1.f.txt:  1355 EVENTS WENT INTO RMIN CUT     19.39%
+jeosum1.f.txt:   521 EVENTS REJECTED BY RMIN CUT       7.46%                     (REJ)
+jeosum1.f.txt:   834 EVENTS PASSED RMIN CUT AND ZMIN       68.08%                (WRI)
+jeosum1.f.txt:   249 EVENTS WENT INTO RMIN CUT      2.77%
+jeosum1.f.txt:    87 EVENTS REJECTED BY RMIN CUT       0.97%                     (REJ)
+jeosum1.f.txt:   162 EVENTS PASSED RMIN CUT AND ZMIN       45.63%                (WRI)
+jeosum1.f.txt:  ATTENTION AND THAT A RMIN-CUT IS PERFORMED. TEST RUNS OF THE OLD AND
+jeosum1.f.txt:  BY THE RMIN CUT.
+jeosum1.f.txt:SHOW ' TASK ¢(S0) NOT RECOGNISED .. CLIST TERMINATING'
+jeosum1.f.txt:SHOW '--- THE LIST IS TERMINATED WITH A NULL INPUT'
+jeosum1.f.txt:SHOW '--- PRESS RETURN/ENTER TO SUBMIT, ANYTHING ELSE TO TERMINATE :'
+jeosum1.f.txt:SHOW '--- SUBMIT TERMINATED'
+jeosum1.f.txt:$ TERMINATE CLIST
+jeosum1.f.txt:SHOW ' TASK ¢(S0) NOT RECOGNISED .. CLIST TERMINATING'
+jeosum1.f.txt:SHOW '--- THE LIST IS TERMINATED WITH A NULL INPUT'
+jeosum1.f.txt:SHOW '--- PRESS RETURN/ENTER TO SUBMIT, ANYTHING ELSE TO TERMINATE :'
+jeosum1.f.txt:SHOW '--- SUBMIT TERMINATED'
+jeosum1.f.txt:$ TERMINATE CLIST
+jeosum3.txt: 13400  78         CALL HBOOK1(8,'RMIN                          $', 50,  0., 300.)
+jeosum3.txt: 15800    C    DATA BASE SYSTEM TERMINATION
+jeosum3.txt: 44100    C---                       RMIN <  50 MM
+jeosum3.txt: 45700 340               RMIN0 = 100000.
+jeosum3.txt: 47500 361                           CALL DRTRCK(IPTR,XO,YO,RMIN)                  CALC. DISTANCE TRACK-(XO,YO)
+jeosum3.txt: 47600 362                           RMIN = ABS(RMIN)
+jeosum3.txt: 47700 363                           RMIN0 = AMIN1(RMIN0,RMIN)
+jeosum3.txt: 47800 364                           IF ABS(RMIN).LT.   50.
+jeosum3.txt: 49600 386               RMIN0 = 100000.
+jeosum3.txt: 51400 407                           CALL DRTRCK(IPTR,XO,YO,RMIN)                  CALC. DISTANCE TRACK-(XO,YO)
+jeosum3.txt: 51500 408                           RMIN = ABS(RMIN)
+jeosum3.txt: 51600 409                           RMIN0 = AMIN1(RMIN0,RMIN)
+jeosum3.txt: 51700 410                           IF ABS(RMIN).LT.   50.
+jeosum3.txt: 52800 425            CALL HF1(8,RMIN0,1.)
+jeosum3.txt: 00093  65         CALL HBOOK1(8,'RMIN $',100,0.,300.)
+jeosum3.txt: 00541    C       CHECK RMIN
+jeosum3.txt: 00542 453            RMIN=10000.
+jeosum3.txt: 00552 466                     IF(RM.LT.RMIN) RMIN=RM
+jeosum3.txt: 00556 472            CALL HF1(8,RMIN,1.)
+jeosum3.txt: 00558    C                                                     >>>>> REJECT <<<<< RMIN > 60.
+jeosum3.txt: 00560 474            IF(RMIN.GT.60.) XREPEAT
+jeosum3.txt: 00564 476            INDREJ = 30                                                  RMIN<60.
+jeosum3.txt: 13800  77         CALL HBOOK1(8,'RMIN                          $', 50,  0., 300.)
+jeosum3.txt: 16200    C    DATA BASE SYSTEM TERMINATION
+jeosum3.txt: 44900    C---                       RMIN <  50 MM
+jeosum3.txt: 46500 348               RMIN0 = 100000.
+jeosum3.txt: 48300 369                           CALL DRTRCK(IPTR,XO,YO,RMIN)                  CALC. DISTANCE TRACK-(XO,YO)
+jeosum3.txt: 48400 370                           RMIN = ABS(RMIN)
+jeosum3.txt: 48500 371                           RMIN0 = AMIN1(RMIN0,RMIN)
+jeosum3.txt: 48600 372                           IF ABS(RMIN).LT.   50.
+jeosum3.txt: 50400 394               RMIN0 = 100000.
+jeosum3.txt: 52200 415                           CALL DRTRCK(IPTR,XO,YO,RMIN)                  CALC. DISTANCE TRACK-(XO,YO)
+jeosum3.txt: 52300 416                           RMIN = ABS(RMIN)
+jeosum3.txt: 52400 417                           RMIN0 = AMIN1(RMIN0,RMIN)
+jeosum3.txt: 52500 418                           IF ABS(RMIN).LT.   50.
+jeosum3.txt: 53600 433            CALL HF1(8,RMIN0,1.)
+jeosum3.txt: 00400    C   *    DETERMINE VERTEX FROM PATR-BANK    *
+lgcut.f.txt:C     DETERMINES IF EVENT SHOULD BE KEPT OR REJECTED, BASED ON LG ENERGY
+lgcut.f.txt:C EVENTS INTO RMIN CUT
+lgcut.f.txt:     + I10,' EVENTS (',F6.2,'%) WENT INTO RMIN CUT                    ')
+lgcut.f.txt:C EVENTS REJECTED BY RMIN CUT
+lgcut.f.txt:     + I10,' EVENTS (',F6.2,'%) REJECTED BY RMIN CUT                  ',
+lgcut.f.txt:C EVENTS PASSED RMIN AND ZMIN CUTS
+lgcut.f.txt:     + I10,' EVENTS (',F6.2,'%) PASSED RMIN AND ZMIN CUTS             ',
+r1mode.f.txt:C ROUTINE TO DETERMINE REDUC1 MODE
+r1mode.f.txt:C DETERMINE CALIBRATION SOURCE
+r1mode.f.txt:C DETERMINE FIRST EVENT TO BE TREATED
+r1mode.f.txt:C DETERMINE RUNS TO BE SKIPPED
+stat82.f.txt:     +'EVENTS REJECTED BECAUSE NO GOOD TRACKS ALSO HAD RMIN < 50MMS'/
+stat820.f.txt:     +'EVENTS REJECTED BECAUSE NO GOOD TRACKS ALSO HAD RMIN < 50MMS'/
+userx.sheltran.txt:        CALL HBOOK1(8,'RMIN                          $', 50,  0., 300.)
+userx.sheltran.txt:C    DATA BASE SYSTEM TERMINATION
+userx.sheltran.txt:C---                       RMIN <  50 MM
+userx.sheltran.txt:          RMIN0 = 100000.
+userx.sheltran.txt:                  CALL DRTRCK(IPTR,XO,YO,RMIN)
+userx.sheltran.txt:                  RMIN = ABS(RMIN)
+userx.sheltran.txt:                  RMIN0 = AMIN1(RMIN0,RMIN)
+userx.sheltran.txt:                  IF ABS(RMIN).LT.   50.
+userx.sheltran.txt:          RMIN0 = 100000.
+userx.sheltran.txt:                  CALL DRTRCK(IPTR,XO,YO,RMIN)
+userx.sheltran.txt:                  RMIN = ABS(RMIN)
+userx.sheltran.txt:                  RMIN0 = AMIN1(RMIN0,RMIN)
+userx.sheltran.txt:                  IF ABS(RMIN).LT.   50.
+userx.sheltran.txt:        CALL HF1(8,RMIN0,1.)
+usred82.sheltran.txt:        CALL HBOOK1(8,'RMIN                          $', 50,  0., 300.)
+usred82.sheltran.txt:C    DATA BASE SYSTEM TERMINATION
+usred82.sheltran.txt:C---                       RMIN <  50 MM
+usred82.sheltran.txt:          RMIN0 = 100000.
+usred82.sheltran.txt:                  CALL DRTRCK(IPTR,XO,YO,RMIN)
+usred82.sheltran.txt:                  RMIN = ABS(RMIN)
+usred82.sheltran.txt:                  RMIN0 = AMIN1(RMIN0,RMIN)
+usred82.sheltran.txt:                  IF ABS(RMIN).LT.   50.
+usred82.sheltran.txt:          RMIN0 = 100000.
+usred82.sheltran.txt:                  CALL DRTRCK(IPTR,XO,YO,RMIN)
+usred82.sheltran.txt:                  RMIN = ABS(RMIN)
+usred82.sheltran.txt:                  RMIN0 = AMIN1(RMIN0,RMIN)
+usred82.sheltran.txt:                  IF ABS(RMIN).LT.   50.
+usred82.sheltran.txt:        CALL HF1(8,RMIN0,1.)
+usreduc1.sheltran.txt:        CALL HBOOK1(8,'RMIN $',100,0.,300.)
+usreduc1.sheltran.txt:C       CHECK RMIN
+usreduc1.sheltran.txt:        RMIN=10000.
+usreduc1.sheltran.txt:              IF(RM.LT.RMIN) RMIN=RM
+usreduc1.sheltran.txt:        CALL HF1(8,RMIN,1.)
+usreduc1.sheltran.txt:N       RMIN > 60.
+usreduc1.sheltran.txt:        IF(RMIN.GT.60.) XREPEAT
+usreduc1.sheltran.txt:N       RMIN<60.
+zvtrck.sheltran.txt:C   *    DETERMINE VERTEX FROM PATR-BANK    *

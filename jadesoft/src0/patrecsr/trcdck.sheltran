@@ -1,0 +1,201 @@
+C   31/01/80 102191206  MEMBER NAME  TRCDCK   (PATRECSR)    SHELTRAN
+      SUBROUTINE TRCDCK
+C
+      IMPLICIT INTEGER*2 (H)
+      LOGICAL TBIT
+C
+C     SUBROUTINE TO CHECK TRACK CANDIDATES
+C     AUTHOR: P. STEFFEN(78/11/21)
+C
+#include "cpatlm.for"
+C
+#include "cworkpr.for"
+      COMMON /CWORK/ DWORK(1000)
+#include "cworkeq.for"
+      EQUIVALENCE
+     ,           (ICELL ,IDWRK(1)),(NHIT  ,IDWRK(2)),(IRING ,IDWRK(3))
+     ,         , (IERRCD,IDWRK(4)),(NTRKEL,IDWRK(5))
+C
+      DIMENSION NTRC( 3), LHIT(3),MHIT(3)
+C
+N     I2-I4 CONVERSION:
+      INTEGER*2 HZW(2)
+      EQUIVALENCE (HZW(1),IZW)
+C
+N     LIMITS
+      COMMON /CPTSLM/ BKTRLM(20),HXREF(200,3)
+                      INTEGER LMBKTR(20)
+                      EQUIVALENCE (BKTRLM(1),LMBKTR(1))
+C
+ 2003 FORMAT(1H0,A4,I6,2(/,1X,24I4),/,1X,50I2)
+ 2004 FORMAT(1H0,'BACKTR:',5X,20I6)
+ 2005 FORMAT(1H ,12X,20I6)
+ 2006 FORMAT(1X,4I6,I3,2F10.3,I3,2F10.3,1X,Z5,2I3,2X,3I3)
+C
+      IF(HNTR.LE.0) RETURN
+C
+N     MIN. # OF UNIQUE HITS OF TRCAND
+      PERFORM PRINT
+      MINHIT = 1
+      PERFORM REDUCE
+      PERFORM PRINT
+      MINHIT = 5
+      PERFORM REDUCE
+      PERFORM PRINT
+C
+      RETURN
+C
+C
+      PROC REDUCE
+C
+N     SEARCH FOR TRELS CORRELATED WITH >1 TRCD
+      FOR ITRL=1,HNTR
+        IF HXREF(ITRL,2).NE.0
+        THEN
+          NTRC(1) = HXREF(ITRL,1)
+          NTRC(2) = HXREF(ITRL,2)
+          NTRC(3) = HXREF(ITRL,3)
+          LHIT(1) = 0
+          LHIT(2) = 0
+          LHIT(3) = 0
+          MHIT(1) = 0
+          MHIT(2) = 0
+          MHIT(3) = 0
+C     PRINT 2010, ITRL,NTRC
+C2010 FORMAT(' COVERED TREL:',10I6)
+N         CHECK IF TRCD HAVE UNIQUE TREL WITH >4 HITS
+          ITRC = 1
+          REPEAT
+            JTRC = NTRC(ITRC)
+            NTRL = HNREL(JTRC)
+N           LOOP OVER ALL TRELS OF 'JTRC'
+            LHIT0 = 0
+            MHIT0 = 0
+            FOR JTRL=1,NTRL
+              KTRL = HISTR(JTRL,JTRC)
+              KTRL = IABS(KTRL)
+              IF HXREF(KTRL,2).EQ.0
+              THEN
+N               COUNT HITS OF UNIQUE TRELS
+                MHIT0 = NRHT(KTRL) + MHIT0
+              ELSE
+N               COUNT HITS OF COMMON TRELS
+                LHIT0 = NRHT(KTRL) + LHIT0
+              CIF
+            CFOR
+N           MARK TRCD WITH <4 UNIQUE HITS
+            IF(MHIT0.LT.MINHIT) NTRC(ITRC) =-NTRC(ITRC)
+            MHIT(ITRC) = MHIT0
+            LHIT(ITRC) = LHIT0
+C     PRINT 2011, ITRC,JTRC,NTRL,MHIT0,LHIT0,NTRC(ITRC)
+C2011 FORMAT(' UNIQUE HITS:',10I6)
+          ITRC = ITRC + 1
+          UNTIL ITRC.GT.3 .OR. NTRC(ITRC).EQ.0
+C
+N         CHECK IF NO GOOD TRCD
+          IF NTRC(1).LE.0 .AND. NTRC(2).LE.0 .AND. NTRC(3).LE.0
+          THEN
+N           KEEP LONGEST TRCD
+            LHIT(1) = MHIT(1) + LHIT(1)
+            LHIT(2) = MHIT(2) + LHIT(2)
+            LHIT(3) = MHIT(3) + LHIT(3)
+            IF(MAX0(LHIT(1),LHIT(2)).LT.LHIT(3)) NTRC(3) =-NTRC(3)
+            IF(MAX0(LHIT(1),LHIT(3)).LT.LHIT(2)) NTRC(2) =-NTRC(2)
+            IF(MAX0(LHIT(2),LHIT(3)).LT.LHIT(1)) NTRC(1) =-NTRC(1)
+            IF NTRC(1).LE.0 .AND. NTRC(2).LE.0 .AND. NTRC(3).LE.0
+            THEN
+N             2 TRCD OF EQUAL LENGTH
+              IF LHIT(1).GE.LHIT(2)
+              THEN
+                NTRC(1) =-NTRC(1)
+              ELSE
+                NTRC(2) =-NTRC(2)
+              CIF
+            CIF
+          CIF
+C     PRINT 2012, TRC,LHIT,MHIT
+C2012 FORMAT(' CHECK:',10I6)
+C
+N         DELETE BAD TRCD
+          ITRC = 1
+          REPEAT
+            JTRC = NTRC(ITRC)
+N           CHECK IF BAD TRCD
+            IF JTRC.LT.0
+            THEN
+              JTRC = IABS(JTRC)
+              NTRL = HNREL(JTRC)
+N             LOOP OVER ALL TRELS OF 'JTRC'
+              FOR JTRL=1,NTRL
+                KTRL = HISTR(JTRL,JTRC)
+                KTRL = IABS(KTRL)
+N               DELETE TRACK IN XREF
+                IF HXREF(KTRL,1).EQ.JTRC
+                THEN
+                  HXREF(KTRL,1) = HXREF(KTRL,2)
+                  HXREF(KTRL,2) = HXREF(KTRL,3)
+                  HXREF(KTRL,3) = 0
+                ELSE
+                  IF HXREF(KTRL,2).EQ.JTRC
+                  THEN
+                    HXREF(KTRL,2) = HXREF(KTRL,3)
+                    HXREF(KTRL,3) = 0
+                  ELSE
+                    IF(HXREF(KTRL,3).EQ.JTRC) HXREF(KTRL,3)=0
+                  CIF
+                CIF
+              CFOR
+C
+N             REMOVE DELETED TRACK
+              NBYTE = (NTR-JTRC)*2
+              IF(NBYTE.GT.0)
+     ?        CALL MVC(HNREL(JTRC),0,HNREL(JTRC+1),0,NBYTE)
+              NBYTE = NBYTE*9
+              IF(NBYTE.GT.0)
+     ?        CALL MVCL(HISTR(1,JTRC),0,HISTR(1,JTRC+1),0,NBYTE)
+              HNREL(NTR) = 0
+              CALL SETS(HISTR(1,NTR),0,18,0)
+              NTR = NTR - 1
+              FOR I=1,HNTR
+                IF(HXREF(I,1).GT.JTRC) HXREF(I,1) = HXREF(I,1) - 1
+                IF(HXREF(I,2).GT.JTRC) HXREF(I,2) = HXREF(I,2) - 1
+                IF(HXREF(I,3).GT.JTRC) HXREF(I,3) = HXREF(I,3) - 1
+              CFOR
+C
+            CIF
+          ITRC = ITRC + 1
+          UNTIL ITRC.GT.3 .OR. NTRC(ITRC).EQ.0
+        CIF
+      CFOR
+C
+C       PRINT 2003, HPRO,HNTR,HNTCEL
+C       IP0 = HPTE0
+C       FOR I1=1,HNTR
+C       PRINT 2006, IP0,I1,(TRKAR(I1,I2),I2=1,11),
+C    ,              HXREF(I1,1),HXREF(I1,2),HXREF(I1,3)
+C          IP0 = IP0 + HLDTE
+C       CFOR
+C         PRINT 2004,NTR, (HNREL(I1),I1=1,NTR)
+C         FOR ITR=1,NTR
+C           NELM = HNREL(ITR)
+C           PRINT 2005, (HISTR(I1,ITR),I1=1,NELM)
+C         CFOR
+C
+      CPROC
+C
+      PROC PRINT
+        PRINT 2003, HPRO,HNTR,HNTCEL
+        IP0 = HPTE0
+        FOR I1=1,HNTR
+        PRINT 2006, IP0,I1,(TRKAR(I1,I2),I2=1,11),
+     ,              HXREF(I1,1),HXREF(I1,2),HXREF(I1,3)
+           IP0 = IP0 + HLDTE
+        CFOR
+        PRINT 2004,NTR, (HNREL(I1),I1=1,NTR)
+        FOR ITR=1,NTR
+          NELM = HNREL(ITR)
+          PRINT 2005, (HISTR(I1,ITR),I1=1,NELM)
+        CFOR
+      CPROC
+C
+      END

@@ -1,0 +1,8 @@
+C   18/10/82 606101312  MEMBER NAME  MCMAIN9  (S)           FORTRAN
+      COMMON / BCS / IW(33000)
+      CALL BINT( 33000, 10000, 500, 0 )
+      CALL MCJADE( 0, 50 )
+      CALL BSTA
+      CALL PALL
+      STOP
+      END

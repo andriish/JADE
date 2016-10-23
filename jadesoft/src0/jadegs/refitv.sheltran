@@ -1,0 +1,587 @@
+C   16/08/82 509161841  MEMBER NAME  REFITV   (JADEGS)      SHELTRAN
+      SUBROUTINE REFITV(IPTR,IPJHTL,ERRFAC)
+C
+C        REFIT TRACK ITRK IN 'PATR'-BANK USING ORIGIN
+C                   ONLY INTERMEDIATE VALUES STORED
+C                   FOR POSITION + DIRECTION AT 1. AND LAST HIT
+C                   THIS ROUTINE IS ONLY USED WITH SUBSEQUENT ZRFIT
+C                   USE REFITV IF ONLY R-PHI-FIT WANTED
+C        P. STEFFEN                    22/08/80
+C  CORRECTION OF UNINITIALIZED ARRAY NHTRNG     29.2.1984   J.OLSSON
+C  REMOVAL OF DEBUG PRINT...                    16.9.1985   J.OLSSON
+C
+      IMPLICIT INTEGER*2 (H)
+      LOGICAL DEADCL
+C
+#include "cdata.for"
+C
+#include "cgeo1.for"
+C
+#include "calibr.for"
+C
+#include "cworkpr.for"
+#include "cworkeq.for"
+C
+      EQUIVALENCE
+     ,          (HPCO0 ,HPWRK(17)),(HPCO9 ,HPWRK(18)),(HLDCO ,HPWRK(19))
+     ,         ,(ICELL ,IDWRK( 1)),(MHIT  ,IDWRK( 2)),(IRING ,IDWRK( 3))
+     ,         ,(IERRCD,IDWRK( 4)),(NTRKEL,IDWRK( 5))
+C
+#include "cpatlm.for"
+C
+#include "cjdrch.for"
+#include "cdsmax.for"
+C
+      INTEGER DATE(5), IDAY /0/
+      DIMENSION ITRCLL(6), NCNCK(24), NHTRNG(3)
+C
+N     JET-CHAMBER AND VERTEX RESOLUTION
+      DATA RESJ0 /.200/, RESV0 /.300/
+C
+N     MASK FOR L/R BIT IN HIT LABEL
+      INTEGER MKLRT1 /Z1000000/, MKLRT2 /Z100/
+C
+N     MASK FOR TRACKS AT CELL WALL
+      INTEGER MKBDCL(3) /Z10,Z20,Z40/
+      INTEGER MKDDCL(3) /Z01,Z02,Z04/
+C
+C     IF(IDATA(IPTR+1).LT. 4) RETURN
+C     I0 = IPTR + 1
+C     I9 = IPTR + 48
+C     PRINT 2001, (IDATA(I1),I1=I0,I9)
+C     I0 = IPJHTL*2 + 1
+C     I9 = I0 + IDATA(IPJHTL)*2 - 1
+C     PRINT 2000, IPJHTL,I0,I9,(HDATA(I1),I1=I0,I9)
+C     IPJETC = IDATA(IBLN('JETC'))
+C     I0 = IPJETC*2 + 1
+C     I9 = I0 + 109
+C     PRINT 2000, IPJETC,I0,I9,(HDATA(I1),I1=I0,I9)
+C2000 FORMAT('0REFIT:',3I8,/,(20(1X,Z4)))
+C2001 FORMAT(1H0,2I3,I8,2(I4,3F6.1,3F6.3),
+C    ,     /,14X,I3,4E13.5,F6.2,I3,4E13.5,
+C    ,     /,14X,I3,2F8.3,F6.1,I3,10X,6I3,8I6,2X,Z4)
+C2002 FORMAT('0FETCH:',2I3,2I5,12F9.5)
+C2003 FORMAT('0ROTATION:',12F10.5)
+C2004 FORMAT('0CIRC.CENTRE:',2I3, F10.5,2F10.0,F8.1,2F8.1)
+2005  FORMAT('0TRACK:',I6,/,(1X,3I6,4F8.3,I4,F8.3,2I4,F8.3,I6,F8.2))
+3001  FORMAT('0NHTRNG',3I6)
+C2006 FORMAT(1X,I6,5F8.3,F12.1,5F8.3)
+C2007 FORMAT(' FETCH:',I3,9F8.4,F10.5,F6.0)
+C2008 FORMAT(' FIT:',2I3,2F8.3,F5.0,3E12.5,F6.3,F6.3)
+C2009 FORMAT(' JHTL:',I8,1X,Z8,3I5)
+C2010 FORMAT(' HIT:',I6,12F8.2)
+C2011 FORMAT('0ABERR:',10F10.6)
+C2012 FORMAT('0ERROR:',10E13.6)
+C2014 FORMAT('0FIT-BANK:',5F8.3,5X,5F8.3,5X,F8.5,2F8.1)
+C2016 FORMAT('0ITRCLL =',6I8,/,(9X,6F8.3))
+C2107 FORMAT(' SIGLM:',10F8.3)
+C
+N     INITIALIZATION
+      DATA LBINIT /0/
+      IF LBINIT .EQ. 0
+      THEN
+        LBINIT = 1
+        PERFORM INIT
+      CIF
+C
+C
+N     GET RUN #
+      IPHEAD = IDATA(IQHEAD)*2
+      NRUN = HDATA(IPHEAD+10)
+      NEV  = HDATA(IPHEAD+11)
+C
+N     TRACK #
+      ITRK = IDATA(IPTR+1)
+C
+C
+N     RESERVE SPACE IN CWORK
+      HPFREE = 1
+      HPFRE1 = HPFREE
+C
+N     GET X-Y-VERTEX AND DETERMINE ERROR
+      IPV    = ICALIB(10)
+      XO     = ACALIB(IPV+ 1)
+      YO     = ACALIB(IPV+ 3)
+C     I0 = IPV + 1
+C     I9 = IPV + 6
+C     PRINT 2029, XO,YO,(ACALIB(I1),I1=I0,I9)
+      PTRANS = ABS(0.0299792458*BKGAUS/ADATA(IPTR+25)) * .001
+      RESV   = RESV0**2 + RESMS / PTRANS**2
+      WGHT0  = RESJ0**2 / RESV
+      F1     = ERRFAC
+      IF(F1 .LT. .10) F1 = .10
+      WGHT0  = WGHT0 / F1**2
+C     PRINT 2029, XO,YO,WGHT0,F1,RESV,RESMS,PTRANS
+C2029 FORMAT(' VERTEX',9E13.5)
+C     PRINT 2011,ABERR
+C
+C
+N     FETCH HITS, CALCULATE COORDINATES, AND
+N     FILL ARRAY IN /CWORK/
+      HPCO0  = HPFREE
+      LHIT   = 14
+      INDFET = 3
+      CALL JFETCH(IPTR,IPJHTL,WRK(HPCO0),LHIT,IPRES,INDFET,XO,YO)
+C
+C
+      HLDCO  = LHIT
+      HPCO9  = IPRES - 1
+      HPAR0  = IPRES
+      HLDPA  = 20
+      HPAR9  = HPAR0 + HLDPA - 1
+      HPFREE = HPAR9 + 1
+      XT     = WRK (IPRES   )
+      YT     = WRK (IPRES+ 1)
+      CSROT  = WRK (IPRES+ 2)
+      SNROT  = WRK (IPRES+ 3)
+      X0     = WRK (IPRES+ 9)
+      Y0     = WRK (IPRES+10)
+      XOR    =- XT*CSROT -  YT*SNROT
+      YOR    =  XT*SNROT -  YT*CSROT
+C     PRINT 2003, CSROT,SNROT,XX,YY,XT,YT,X0,Y0,XO,YO,XOR,YOR,WGHT0
+C
+N     INITIALIZE FIT PARAMETERS IN CWORK
+      WRK(HPAR0+ 4) = 0.
+      WRK(HPAR0+ 5) = 0.
+      WRK(HPAR0+ 6) = 0.
+      WRK(HPAR0+ 7) = 1000.
+      WRK(HPAR0+ 8) = 0.
+      CSTH   = WRK (IPRES+11)
+      SNTH   = WRK (IPRES+12)
+C
+N     ZVERT, THETA
+      ZVERT = ADATA(IPTR+31)
+      TGTH = ADATA(IPTR+30)
+C     PRINT 2007, HPCO0,HPCO9,HDLCO,HPFREE,(WRK(I1),I1=HPAR0,HPAR9)
+C
+C
+N     COPY TRACK BANK
+      HPTR0 = HPFREE
+      CALL MVC(IWRK(HPTR0),0,IDATA(IPTR+1),0,192)
+      HPFREE = HPFREE + 48
+      IWRK(HPTR0+1) = 0
+C  SET ARRAY NHTRNG    CORRECTION FROM 29.2.1984   J.OLSSON
+      IPCO = HPCO0 - HLDCO
+      NHTRNG(1) = 0
+      NHTRNG(2) = 0
+      NHTRNG(3) = 0
+      ILAYOL = -1
+      REPEAT
+        IPCO = IPCO + HLDCO
+        ILAY = IWRK(IPCO   )
+        IF ILAY.NE.ILAYOL
+        THEN
+         JRING = IWRK(IPCO+12)
+         NHTRNG(JRING) = NHTRNG(JRING) + 1
+         ILAYOL = ILAY
+        CIF
+      UNTIL IPCO.GE.HPCO9-HLDCO
+C
+C      PRINT 2005, LBCELL,(WRK(I),I=HPCO0,HPCO9)
+C      PRINT 3001, (NHTRNG(IR),IR=1,3)
+C
+C
+N     1. PARABOLA FIT
+N     LAST RING INCLUDED IN FIT
+      JRINGL = 3
+      PERFORM FPARA0
+C
+N     RELABEL HITS
+      ALBLM1 = 0.6
+      ALBLM2 = 3.0
+      PERFORM LABEL
+C     PRINT 2005, NHFIT,(WRK(I),I=HPCO0,HPCO9)
+C
+
+      REPEAT
+N       REFIT PARABOLA
+        PERFORM FPARA0
+C
+N       RELABEL HITS
+        PERFORM LABEL
+C
+N       REPEAT FIT IF >3 NEW GOOD HITS
+      UNTIL NHGOOD-NHFIT .LT.4
+C
+C     PRINT 2005, LBCELL,(WRK(I),I=HPCO0,HPCO9)
+C
+N     SET UP FIT-BANK
+      IF SIG.LT.1.
+      THEN
+        PERFORM FITBNK
+      CIF
+C
+N     CHECK IF BAD FIT AND LOW MOMENTUM
+      IF ABS(PAR1).GT..00030 .AND. NHTRNG(1)+NHTRNG(2).GT.16
+      THEN
+        ALBLM1 = 1.5
+        ALBLM2 = 3.0
+        PERFORM LABEL
+        JRINGL = 2
+        PERFORM FPARA0
+        ALBLM1 = 0.6
+        PERFORM LABEL
+        PERFORM FPARA0
+        PERFORM LABEL
+        IF SIG.LT..10
+        THEN
+          PERFORM FITBK1
+          IWRK(IP+ 4) = 32
+        CIF
+      CIF
+      IF ABS(PAR1).GT..00150 .AND. NHTRNG(1)+NHTRNG(2).GT.9
+      THEN
+        ALBLM1 = 1.5
+        ALBLM2 = 3.0
+        PERFORM LABEL
+        JRINGL = 1
+        NHTFIT = NHTRNG(1)
+        IF NHTFIT.LE.5
+        THEN
+          NHTFIT = NHTFIT + NHTRNG(2)
+          JRINGL = 2
+        CIF
+        IF NHTFIT.GT.9
+        THEN
+          PERFORM FPARA0
+          ALBLM1 = 0.6
+          PERFORM LABEL
+          PERFORM FPARA0
+          PERFORM LABEL
+          IF SIG.LT..10
+          THEN
+            PERFORM FITBK1
+            IWRK(IP+ 4) = 48
+          CIF
+        CIF
+      CIF
+C
+C     PRINT 2005, LBCELL,(WRK(I),I=HPCO0,HPCO9)
+      HPFREE = HPFRE1
+      RETURN
+C
+N     *************************
+N     *      F P A R A 0      *
+N     *************************
+C
+C
+N     PARABOLA FIT THROUG ORIGIN
+      PROC FPARA0
+C
+N     GET EQUATIONS
+N     WEIGHT ORIGIN AS POINT OF PARABOLA
+      S0 = WGHT0
+      S1 = X0*WGHT0
+      S2 = S1*X0
+      S3 = S2*X0
+      S4 = S3*X0
+      S7 = Y0 * WGHT0
+      S6 = S7*X0
+      S5 = S6*X0
+      IPCO = HPCO0
+      REPEAT
+       IF IWRK(IPCO+ 10).EQ.0 .AND. IWRK(IPCO+12).LE.JRINGL
+       THEN
+          X = WRK(IPCO+3)
+          Y = WRK(IPCO+4)
+          X2 = X**2
+          S1 = S1 + X
+          S2 = S2 + X2
+          S3 = S3 + X*X2
+          S4 = S4 + X2**2
+          S5 = S5 + Y*X2
+          S6 = S6 + Y*X
+          S7 = S7 + Y
+          S0 = S0 + 1.
+        CIF
+      IPCO = IPCO + HLDCO
+      UNTIL IPCO.GT.HPCO9
+      IF S0.LT.2.5
+      THEN
+        SIG = 1000.
+      ELSE
+C
+N       SOLVE EQUATIONS FOR PARABOLA FIT
+        F1 = 1. / S4
+        XX12 = S3*F1
+        XX13 = S2*F1
+        YY1  = S5*F1
+        XX22 = S2 - S3*XX12
+        XX23 = S1 - S3*XX13
+        YY2  = S6 - S3*YY1
+        XX32 = S1 - S2*XX12
+        XX33 = S0 - S2*XX13
+        YY3  = S7 - S2*YY1
+        IF XX22.GT.XX32
+        THEN
+          XX23 = XX23 / XX22
+          YY2  = YY2  / XX22
+          PAR3 = (YY3 - XX32*YY2) / (XX33 - XX32*XX23)
+          PAR2 = YY2 - XX23*PAR3
+        ELSE
+          XX33 = XX33 / XX32
+          YY3  = YY3  / XX32
+          PAR3 = (YY2 - XX22*YY3) / (XX23 - XX22*XX33)
+          PAR2 = YY3 - XX33*PAR3
+        CIF
+        PAR1 = YY1 - XX12*PAR2 - XX13*PAR3
+        DEG   = S0 - WGHT0 - 2.
+        NHFIT = S0 - WGHT0 + .1
+C
+C
+N       CALC. CHISQ + SOLVE L/R AMBIGUITY
+        CHISQ = 0.
+        DCHIM1 = 0.
+        IHITM1 = 0
+        XST    = 999999.
+        XEN    =-999999.
+        IPCO = HPCO0
+        REPEAT
+         IF IWRK(IPCO+ 10).EQ.0 .AND. IWRK(IPCO+12).LE.JRINGL
+         THEN
+            X = WRK(IPCO+3)
+            IF(X.LT.XST) XST = X
+            IF(X.GT.XEN) XEN = X
+            Y = WRK(IPCO+4)
+            F = (PAR1 *X + PAR2 )*X + PAR3
+            DCHI = Y - F
+            WRK(IPCO+13) = DCHI
+N           SUM FOR RMS
+            CHISQ = CHISQ + DCHI**2
+N           KEEP BIGGEST RMS
+C           IF ABS(DCHI).GE.DCHIM1
+C           THEN
+C             DCHIM1 = ABS(DCHI)
+C             IHITM1 = IPCO
+C           CIF
+C     PRINT 2006, IPCO,X,Y,F,DCHI,CHISQ
+          CIF
+        IPCO = IPCO + HLDCO
+        UNTIL IPCO.GT.HPCO9
+        SIG    =      CHISQ  / DEG
+C     PRINT 2008, ITRK,NHFIT,XST,SIG,DEG,PAR1,PAR2,PAR3,WGHT0,Y0
+C
+N       SET LIMIT FOR SIGMA
+        SIGLM = TRELLM(16)**2
+      CIF
+C
+      CPROC
+C
+N     *************************
+N     *      F I T B N K      *
+N     *************************
+C
+C
+N     SET UP FIT-BANK
+      PROC FITBNK
+C
+N     START + END POINTS
+      YST  = (PAR1 *XST + PAR2 )*XST + PAR3
+      YEN  = (PAR1 *XEN + PAR2 )*XEN + PAR3
+N     DIRECTION AT START + END POINT
+      TGST = PAR1*XST*2 + PAR2
+      DXST = 1./SQRT(TGST**2+1.)
+      DYST = DXST * TGST
+      TGEN = PAR1*XEN*2 + PAR2
+      DXEN = 1./SQRT(TGEN**2+1.)
+      DYEN = DXEN * TGEN
+N     MIN. OF PARABOLA
+      XMIN = -PAR2*.5 / PAR1
+      YMIN = (PAR1*XMIN + PAR2)*XMIN + PAR3
+C
+N     CURVATURE + ERROR
+C     CURV =-PAR1 * 2.
+      CVZW = TGST**2+1.
+      CVST =-PAR1 * 2 / (SQRT(CVZW)*CVZW)
+      DET = (S2*S0-S1*S1)*S4 + (S2*S1-S3*S0)*S3 + (S3*S1-S2*S2)*S2
+      SIG11 = (S2*S0 - S1*S1)/DET
+      SIG22 = (S4*S0 - S2*S2)/DET
+      SIG33 = (S4*S2 - S3*S3)/DET
+      SIG12 = (S3*S0 - S2*S1)/DET
+      SIG13 = (S3*S1 - S2*S2)/DET
+      SIG23 = (S4*S1 - S3*S2)/DET
+C     PRINT 2012, DET,SIG11,SIG22,SIG33,SIG12,SIG13,SIG23,SIG
+C
+C
+C     PRINT 2014, XST,YST,DXST,DYST,TGST,XEN,YEN,DXEN,DYEN,TGEN,CURV
+C
+N     FILL FIT-BANK
+      IP    = HPTR0 - 1
+      IWRK(IP+ 1) = ITRK
+      IWRK(IP+ 2) = 32
+      IWRK(IP+ 3) = IDAY
+      IWRK(IP+ 4) = 16
+      WRK (IP+ 5) = XST *CSROT - YST *SNROT + XT
+      WRK (IP+ 6) = XST *SNROT + YST *CSROT + YT
+      WRK (IP+ 7) = SQRT(WRK(IP+ 5)**2 + WRK(IP+ 6)**2) * TGTH + ZVERT
+      WRK (IP+ 8) = (DXST*CSROT - DYST*SNROT)*CSTH
+      WRK (IP+ 9) = (DXST*SNROT + DYST*CSROT)*CSTH
+      WRK (IP+10) = SNTH
+      IWRK(IP+11) = 0
+      WRK (IP+12) = XEN *CSROT - YEN *SNROT + XT
+      WRK (IP+13) = XEN *SNROT + YEN *CSROT + YT
+      WRK (IP+14) = SQRT(WRK(IP+12)**2 + WRK(IP+13)**2) * TGTH + ZVERT
+      WRK (IP+15) = (DXEN*CSROT - DYEN*SNROT)*CSTH
+      WRK (IP+16) = (DXEN*SNROT + DYEN*CSROT)*CSTH
+      WRK (IP+17) = SNTH
+      IWRK(IP+18) = 2
+      WRK (IP+19) = ATAN2(SNROT,CSROT)
+      WRK (IP+20) = XMIN*CSROT - YMIN*SNROT + XT
+      WRK (IP+21) = XMIN*SNROT + YMIN*CSROT + YT
+      WRK (IP+22) = PAR1
+C     IF(SIG  .LT.0) PRINT 2021,WRK(IP+1),S0,SIG
+C2021 FORMAT(' -VE SQRT:',I4,5E13.5)
+      WRK (IP+23) = SQRT(SIG)
+      IWRK(IP+24) = S0 + .001
+      WRK (IP+25) = CVST
+C     IF(SIG11.LT.0) PRINT 2021,WRK(IP+1),S0,SIG,SIG11
+      WRK (IP+26) = SQRT(SIG*SIG11) * 2.
+      WRK (IP+27) = CVST
+      WRK (IP+28) = CVST
+C     I0 = IP+ 1
+C     I9 = IP+48
+C     PRINT 2001,(WRK(I1),I1=I0,I9)
+      CPROC
+C
+N     *************************
+N     *      F I T B K 1      *
+N     *************************
+C
+C
+N     CHANGE FIT BANK (1.POINT)
+      PROC FITBK1
+C
+N     START POINT
+      YST  = (PAR1 *XST + PAR2 )*XST + PAR3
+N     DIRECTION AT START POINT
+      TGST = PAR1*XST*2 + PAR2
+      DXST = 1./SQRT(TGST**2+1.)
+      DYST = DXST * TGST
+N     MIN. OF PARABOLA
+      XMIN = -PAR2*.5 / PAR1
+      YMIN = (PAR1*XMIN + PAR2)*XMIN + PAR3
+C
+N     CURVATURE + ERROR
+C     CURV =-PAR1 * 2.
+      CVZW = TGST**2+1.
+      CVST =-PAR1 * 2 / (SQRT(CVZW)*CVZW)
+      DET = (S2*S0-S1*S1)*S4 + (S2*S1-S3*S0)*S3 + (S3*S1-S2*S2)*S2
+      SIG11 = (S2*S0 - S1*S1)/DET
+      SIG22 = (S4*S0 - S2*S2)/DET
+      SIG33 = (S4*S2 - S3*S3)/DET
+      SIG12 = (S3*S0 - S2*S1)/DET
+      SIG13 = (S3*S1 - S2*S2)/DET
+      SIG23 = (S4*S1 - S3*S2)/DET
+C     PRINT 2012, DET,SIG11,SIG22,SIG33,SIG12,SIG13,SIG23,SIG
+C
+C     PRINT 2014, XST,YST,DXST,DYST,TGST,XEN,YEN,DXEN,DYEN,TGEN,CURV,
+C    ,            XMIN,YMIN
+C
+N     FILL FIT-BANK
+      IP    = HPTR0 - 1
+      WRK (IP+ 5) = XST *CSROT - YST *SNROT + XT
+      WRK (IP+ 6) = XST *SNROT + YST *CSROT + YT
+      WRK (IP+ 7) = SQRT(WRK(IP+ 5)**2 + WRK(IP+ 6)**2) * TGTH + ZVERT
+      WRK (IP+ 8) = (DXST*CSROT - DYST*SNROT)
+      WRK (IP+ 9) = (DXST*SNROT + DYST*CSROT)
+      WRK (IP+10) = SNTH
+      IWRK(IP+18) = 2
+      WRK (IP+19) = ATAN2(SNROT,CSROT)
+      WRK (IP+20) = XMIN*CSROT - YMIN*SNROT + XT
+      WRK (IP+21) = XMIN*SNROT + YMIN*CSROT + YT
+      WRK (IP+22) = PAR1
+C     IF(SIG  .LT.0) PRINT 2022,WRK(IP+1),S0,SIG
+C2022 FORMAT(' -VE SQRT(1):',I4,5E13.5)
+      WRK (IP+23) = SQRT(SIG)
+      IWRK(IP+24) = S0 + .001
+      WRK (IP+25) = CVST
+C     IF(SIG11.LT.0) PRINT 2022,WRK(IP+1),S0,SIG,SIG11
+      WRK (IP+26) = SQRT(SIG*SIG11) * 2.
+      WRK (IP+27) = CVST
+C     I0 = IP+ 1
+C     I9 = IP+48
+C     PRINT 2001,(WRK(I1),I1=I0,I9)
+      CPROC
+C
+C
+N     *************************
+N     *      L A B E L        *
+N     *************************
+C
+C
+N     LABEL USED HITS
+      PROC LABEL
+C
+N       PRESET LAST HIT POINTER
+        IWL = -999
+C
+N       PRESET LAST HIT POINTER
+        IWL = -999
+        NHGOOD = 0
+        FOR IP = HPCO0,HPCO9,HLDCO
+          IW0 = IWRK(IP)
+          X   = WRK(IP+3)
+          Y   = WRK(IP+4)
+          F   = (PAR1*X + PAR2)*X + PAR3
+          DF  = F - Y
+N         SELECT CLOSEST HIT
+          LBGOOD = 4
+          IF(ABS(DF).LT.ALBLM2) LBGOOD = 1
+          IF(ABS(DF).LT.ALBLM1) LBGOOD = 0
+          IWRK(IP+ 10) = LBGOOD
+          IF(LBGOOD.EQ.0) NHGOOD = NHGOOD + 1
+          WRK (IP+13) = DF
+C
+N         CHECK IF 2 HITS FROM SAME WIRE
+          IF IWL.EQ.IW0
+          THEN
+N           SELECT CLOSEST HIT
+            IF ABS(DFL).LT.ABS(DF)
+            THEN
+              IF(IWRK(IP +10).EQ.0) NHGOOD = NHGOOD - 1
+              IWRK(IP +10) = 16
+            ELSE
+              IF(IWRK(IPL+10).EQ.0) NHGOOD = NHGOOD - 1
+              IWRK(IPL+10) = 16
+            CIF
+          CIF
+N         STORE LAST POINTERS + DF
+          IWL = IW0
+          IPL = IP
+          DFL = DF
+        CFOR
+C
+      CPROC
+C
+C
+N     *************************
+N     *      I N I T          *
+N     *************************
+C
+C
+N     INITIALIZE CONSTANTS
+      PROC INIT
+C
+        IQJETC = IBLN('JETC')
+        IQHEAD = IBLN('HEAD')
+      PRINT 2999
+ 2999 FORMAT(///,'0***************************************',
+     ,         /,' **                                   **',
+     ,         /,' **        WHO IS USING THIS          **',
+     ,         /,' **                                   **',
+     ,         /,' **     SUBROUTINE   REFITV  ???      **',
+     ,         /,' **    ==========================     **',
+     ,         /,' **                                   **',
+     ,         /,' **    PLEASE CONTACT  P. STEFFEN     **',
+     ,         /,' **                                   **',
+     ,         /,' **                                   **',
+     ,         /,' ***************************************',////)
+C
+        CALL DAY2(DATE)
+        IDAY = DATE(1)*1000 + DATE(2)
+C
+N       MULT. SCATTERING CONSTANTS
+        RESMS = .020**2/2. * .16 * (1. + ALOG10(.16) / 9) * 155.45**2
+      CPROC
+C
+      END

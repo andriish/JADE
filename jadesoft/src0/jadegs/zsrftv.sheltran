@@ -1,0 +1,704 @@
+C   09/06/83 806271304  MEMBER NAME  ZSRFTV   (JADEGS)      SHELTRAN
+C   09/06/83 803181238  MEMBER NAME  ZSRFTV   (S)           SHELTRAN
+      SUBROUTINE ZSRFTV(MODE,IOPT)
+C-----------------------------------------------------------------------
+C                                   J. SPITZER 22/4/87
+C                    UPDATED TO GIVE COMMON Z    1/6/87  J.S.
+C    16.5.88 ARSIN ARG PROTECTION ADDED E.E.
+C    13.5.88 (FRIDAY!) SEVERE BUG CORRECTED IN SEVERAL PLACES J.H./J.O.
+C            ARSIN INSTEAD OF SIN
+C    18.3.88   PROPER RUN NUMBER HANDLING USING LDATYP      E E
+C    22.2.88   MVC CHANGED TO MVCL (256 BYTES NOT ENOUGH!)  J.H./J.O.
+C
+C       A GENERAL S-Z FIT ROUTINE
+C       S = TRACK LENGTH ALONG THE CIRCLE COUNTED FROM THE
+C           FIRST POINT IN THE DIRECTION OF THE LAST ONE
+C
+C      MODE   = 0 : OVERWRITE OLD PATR-BANK WITH NEW RESULTS
+C      MODE   = 1 : CREATE NEW PATR-BANK WITH NEW RESULTS
+C
+C      IOPT =   1 : S-Z FIT SEPARATELY FOR ALL TRACKS
+C      IOPT =   2 : S-Z FIT SEPARATELY FOR ALL TRACKS AND SUBSEQUENTLY
+C                   A COMMON S-Z FIT FOR THOSE ONES WHICH
+C                   EXTRAPOLATE WITHIN 15 MM TO THE RUN VERTEX IN R-PHI
+C                   AND HAVE  | Z(R=0) | < 800 MM
+C      *****************************************************************
+C      *  THE FOLLOWIG OPTION NEEDS FILLING OF A COMMON IN ADDITION !!!*
+C      *****************************************************************
+C      IOPT =   4 : COMMON S-Z FITS FOR USER SPECIFIED (UPTO 5) SETS
+C                   OF TRACKS WITH USER SPECIFIED COMMON (X,Y) POINTS
+C                   IN R-PHI (OR SINGLE TRACK S-Z FIT, SEE LATER).
+C                   THE SINGLE TRACK S-Z FITS ARE ONLY DONE FOR THOSE
+C                   TRACKS WHICH APPEAR IN THE SETS.
+C                   IF A TRACK IS NOT WITHIN 15 MM TO THE SPECIFIED
+C                   (X,Y) POINT OR | Z(X,Y) | > 1600 MM, IT WILL BE
+C                   DISCARDED.
+C
+C    TRACK SELECTION PARAMETERS FOR COMMON Z FIT ARE IN /CCMZCT/
+C
+C    ( IOPT <= IOPT+8 CREATES A SPECIAL BANK IN ADDITION )
+C
+C    For details of the parameter setting see:
+C    JCN 95, p.1 and addendum p.7
+C    JCN 95, supplement 1, p.3
+C
+C
+C-----------------------------------------------------------------------
+C
+      IMPLICIT INTEGER*2 (H)
+C
+C-----------------------------------------------------------------------
+C *****************************************************************
+C *  THE COMMON TO BE FILLED BY THE USER IF IOPT=4 IS REQUESTED   *
+C *****************************************************************
+C
+      COMMON/CZSSTE/ NSETZS,NTSTZS(5),KTSTZS(100,2,5),XYSTZS(2,5),
+     +SQCHZS(3,5)
+C
+C NSETZS : NUMBER OF TRACK SETS FOR WHICH COMMON FIT IS TO BE DONE
+C NTSTZS(1..NSETZS) : NUMBER OF TRACKS IN EACH SET
+C KTSTZS(1..,1,I) TRACK SEQUENCE NUMBERS FOR SET "I"
+C XYSTZS(1,I), XYSTZS(2,I) : COMMON X,Y FOR SET "I"
+C
+C FOR SINGLE TRACK FIT PLEASE SET     NSETZS=1, NTSTZS(1)=1,
+C                                     KTSTZS(1,1,1)=ITRK (TR. SEQ. NR.)
+C                              NOTHING ELSE NEEDS TO BE SET.
+C
+C  ***********
+C  * ON EXIT *
+C  ***********
+C
+C  KTSTZS(.,2,.)  IS A FLAG THAT TELLS YOU:
+C       2 : TRACK WAS USED IN A COMMON Z-FIT
+C       1 : SINGLE TRACK FIT WAS SUCCESSFUL BUT
+C           THE TRACK WAS NOT USED IN A COMMON FIT
+C       0 : TRACK WAS NOT CONSIDERED FOR REFIT
+C      <0 : SINGLE TRACK FIT FAILED (TOO FEW USABLE HITS IN GENERAL)
+C
+C  THIS INFORMATION IS PROVIDED FOR IOPT=1 AND 2 AS WELL BUT
+C  WITHOUT FILLING  KTSTZS(J,1,.)=J
+C
+C  SQCHZS(1,.) : SQUARE ROOT OF {SUM OF WEIGHTED RESIDUAL SQUARES
+C                DIVIDED BY THE NUMBER OF DEGREES OF FREEDOM (LATTER=
+C                NHITS-NTRACKS-1)} FOR COMMON FIT (.)
+C                OR 0.0 IF NO COMMON FIT WAS PERFORMED.
+C                THE (DIFFERENT FOR DL8 AND FADC) NORMALIZATION
+C                TO GET THE CHI**2/DOF. IS LEFT FOR THE USER
+C  SQCHZS(2,.) : NUMBER OF HITS USED IN THE COMMON FIT OR 0.0; REAL !!!
+C  SQCHZS(3,.) : COMMON Z AT THE COMMON (X,Y)    (OR 0.0)
+C
+      COMMON/CCMZCT/ DIMPCT, ZCUTV, ZCUTVV, IZVCST(5)
+C
+C THIS COMMON IS BLOCK DATA SET IN   JADEBD
+C
+C     BLOCK DATA
+C     COMMON/CCMZCT/ DIMPCT, ZCUTV, ZCUTVV, IZVCST(5)
+C     DATA  DIMPCT /15./, ZCUTV /800./, ZCUTVV /1600./, IZVCST/5*0/
+C     END
+C=======================================================================
+C
+#include "cdata.for"
+#include "calibr.for"
+C
+      COMMON/CWORK/NDIWRK,WRK(20000)
+      DIMENSION IWRK(20000),HWRK(40000)
+      EQUIVALENCE (WRK(1),IWRK(1),HWRK(1))
+C
+      INTEGER ITRREQ(100)
+      REAL CORTRC(2,100)
+      DATA LBINIT /0/, IQPATR/0/, IQJHTL/0/, IQHEAD/0/, IQJETC/0/
+      DATA NPRLIM/50/,KPRLIM/0/
+C=======================================================================
+C
+      KOPT=IOPT
+      IF(KOPT.GT.8) KOPT=KOPT-8
+      IF KOPT.NE.1 .AND. KOPT.NE.2 .AND. KOPT.NE.4
+      THEN
+         IF KPRLIM.LT.NPRLIM
+         THEN
+            KPRLIM=KPRLIM+1
+            WRITE(6,100) IOPT
+100         FORMAT(' **** ZSRFTV CALLED WITH INVALID OPTION :',I8)
+         CIF
+         RETURN
+      CIF
+C
+C
+      IF KOPT.EQ.4
+      THEN
+C PRODUCE ARRAY OF ALL TRACKS REQUESTED; CHECK CONSISTENCY OF REQUEST
+         IF NTSTZS(1).EQ.1
+         THEN
+            KTC=KTSTZS(1,1,1)
+            IF KTC.LT.1 .OR. KTC.GT.100
+            THEN
+               LINCON=1
+            ELSE
+               LINCON=0
+               NTRREQ=1
+               ITRREQ(1)=KTC
+               KTSTZS(1,2,1)=0
+            CIF
+         ELSE
+            IF NSETZS.GE.1.AND.NSETZS.LE.5
+            THEN
+               NTRREQ=0
+               LINCON=0
+               FOR ISET=1,NSETZS
+                  SQCHZS(1,ISET)=0.
+                  SQCHZS(2,ISET)=0.
+                  SQCHZS(3,ISET)=0.
+                  NTSETI=NTSTZS(ISET)
+                  IF NTSETI.LT.2 .OR. NTSETI.GT.100
+                  THEN
+                     LINCON=1
+                     XFOR
+                  CIF
+                  FOR JT=1,NTSETI
+                     KTC=KTSTZS(JT,1,ISET)
+                     IF KTC.LT.1 .OR. KTC.GT.100
+                     THEN
+                        LINCON=1
+                        XFOR
+                     CIF
+                     KTSTZS(JT,2,ISET)=0
+                     LPRES=0
+                     IF NTRREQ.GT.0
+                     THEN
+                        FOR J=1,NTRREQ
+                           IF ITRREQ(J).EQ.KTC
+                           THEN
+                              LPRES=1
+                              XFOR
+                           CIF
+                        CFOR
+                     CIF
+                     IF LPRES.EQ.0
+                     THEN
+                        IF NTRREQ.EQ.100
+                        THEN
+                           LINCON=1
+                           XFOR
+                        CIF
+                        NTRREQ=NTRREQ+1
+                        ITRREQ(NTRREQ)=KTC
+                     CIF
+                  CFOR
+                  IF(LINCON.NE.0) XFOR
+               CFOR
+            ELSE
+               LINCON=1
+            CIF
+         CIF
+         IF LINCON.NE.0
+         THEN
+            IF KPRLIM.LT.NPRLIM
+            THEN
+               KPRLIM=KPRLIM+1
+               WRITE(6,200)
+200            FORMAT(' **** ZSRFTV: INVALID REQUEST IN /CZSSTE/')
+            CIF
+            RETURN
+         CIF
+      ELSE
+         SQCHZS(1,1)=0.
+         SQCHZS(2,1)=0.
+         SQCHZS(3,1)=0.
+         FOR J=1,100
+            KTSTZS(J,2,1)=0
+         CFOR
+      CIF
+C-----------------------------------------------------------------------
+N     INITIALIZATION
+      IF LBINIT .LE.0
+      THEN
+         LBINIT = 1
+         IQPATR = IBLN('PATR')
+         IQJHTL = IBLN('JHTL')
+         IQHEAD = IBLN('HEAD')
+         IQJETC = IBLN('JETC')
+      CIF
+C
+C-----------------------------------------------------------------------
+C
+N     CHECK IF PATR-BANK
+      IF(IDATA(IQPATR).LE.0) RETURN
+C-----------------------------------------------------------------------
+C
+C     CREATE NEW PATR BANK IF REQUESTED
+      IF MODE.EQ.1
+      THEN
+         IPPAT0 = IDATA(IQPATR)
+         NBNK1  = IDATA(IPPAT0-2) - 1
+         NWRD   = IDATA(IPPAT0)
+         NBYTE  = NWRD*4
+         CALL CCRE(IPPATR,'PATR',NBNK1,NWRD,IERR)
+         IF IERR.NE.0
+         THEN
+            PRINT 2900, IERR
+ 2900       FORMAT(' CREATION OF NEW PATR-BANK RESULTED IN ERROR',I3)
+            RETURN
+         CIF
+N        COPY CONTENTS OF 'PATR'-BANK
+         CALL MVCL(IDATA(IPPATR+1),0,IDATA(IPPAT0+1),0,NBYTE)
+      CIF
+C-----------------------------------------------------------------------
+C
+      IPPATR = IDATA(IQPATR)
+      IPTR   = IDATA(IPPATR+1) + IPPATR
+      LDTR   = IDATA(IPPATR+3)
+      NTR    = IDATA(IPPATR+2)
+C
+N     CHECK IF 1 TRACK
+      IF(NTR.LT.1) RETURN
+C
+      IF NTR.GT.100
+      THEN
+         IF KPRLIM.LT.NPRLIM
+         THEN
+            KPRLIM=KPRLIM+1
+            WRITE(6,300) NTR
+300         FORMAT(' **** ZSRFTV : NUMBER OF TRACKS IN PATR BANK :',
+     +      I4,'. FIRST 100 WILL BE CONSIDERED.')
+         CIF
+         NTR=100
+      CIF
+C
+C-----------------------------------------------------------------------
+C
+C GET LATEST AMPLITUDE CALIBRATION
+      CALL JRECAL(IERR)
+      IF IERR.NE.0
+      THEN
+         PRINT 6784,IERR
+ 6784    FORMAT(' *** ERROR IN JRECAL',I3)
+         RETURN
+      CIF
+C-----------------------------------------------------------------------
+C
+N     RECALIBRATE Z-COORDINATES
+      IPJETC = IDATA(IQJETC)
+      IPJHTL = IDATA(IQJHTL)
+C
+C MODEZ=1 MEANS    CALIBRATION ONLY
+C
+      MODEZ  = 1
+      CALL ZSFIT(IPJETC,IDATA(IPJETC-1),IPJHTL,IPPATR,MODEZ)
+C
+C
+C=======================================================================
+C
+C     COLLECTION OF HIT DATA IN /CWORK/ AND SINGLE TRACK FITS
+C
+C DIMENSION OF WRK(.)
+      NDIWRK=20000
+C NUMBER OF TRACKS STORED IN /CWORK/
+      NTRKS=0
+C POINTER TO TRACK DATA THAT STORES THE STRUCTURE OF WRK(.) ETC.
+      IDTR2=1
+C LENGTH OF ABOVE DATA PRO TRACK
+      LDTR2=11
+C LENGTH OF HIT AND SUBSEQUENT TRACK DATA IN /CWORK/
+      LHIT=8
+      LTRREC=0
+C POINTER TO FIRST HIT OF TRACK IN /CWORK/
+      IHIT1=NTR*LDTR2+1
+C
+C
+      FOR ITR=1,NTR
+C NO SPACE TO STORE MORE TRACKS
+         IF(IHIT1 .GT. NDIWRK-200-(70*LHIT+LTRREC)) XFOR
+C CHECK IF TRACK CONSIDERED FOR REFIT
+         IF KOPT.NE.4
+         THEN
+            LFIT=1
+         ELSE
+            LFIT=0
+            FOR J=1,NTRREQ
+               IF ITRREQ(J).EQ.ITR
+               THEN
+                  LFIT=1
+                  XFOR
+               CIF
+            CFOR
+         CIF
+         IF LFIT.EQ.1
+         THEN
+            INDFET = 4
+            CALL JFETCH(IPTR,IPJHTL,WRK(IHIT1),LHIT,IPRES,INDFET,XD,YD)
+            NHIT=(IPRES-1)/LHIT
+            IF NHIT.GT.1
+            THEN
+C OTHERWISE TRACK IS NOT CONSIDERED FOR REFIT
+               IPRES=IHIT1+IPRES-1
+C ----------------------------------------------------------------------
+C S-Z FIT FOR SINGLE TRACK; MARK USED HITS
+C IOPT IS PASSED ONLY TO INDICATE WHETHER SPECIAL BANK IS TO BE
+C CREATED (IF IOPT>8)
+               CALL ZSRFT1(IPTR,LDTR,IHIT1,IPRES,LHIT,IQUAL,IOPT)
+C-----------------------------------------------------------------------
+C
+C SET SINGLE TRACK FIT FLAG IN   KTSTZS(.,2,.)
+               IF KOPT.EQ.4
+               THEN
+                  IF NTSTZS(1).EQ.1
+                  THEN
+C  S-Z FIT OF A SINGLE TRACK WAS REQUESTED
+                     KTSTZS(1,2,1)=IQUAL
+                     RETURN
+                  ELSE
+                     FOR ISET=1,NSETZS
+                        NTSETI=NTSTZS(ISET)
+                        FOR JT=1,NTSETI
+                     IF(KTSTZS(JT,1,ISET).EQ.ITR)KTSTZS(JT,2,ISET)=IQUAL
+                        CFOR
+                     CFOR
+                  CIF
+               ELSE
+                  KTSTZS(ITR,2,1)=IQUAL
+               CIF
+C-----------------------------------------------------------------------
+               IF IQUAL.GT.0 .AND. KOPT.NE.1
+               THEN
+C STORE TRACK FOR SUBSEQUENT COMMON S-Z FIT
+                  NTRKS=NTRKS+1
+                  IWRK(IDTR2  )=ITR
+                  IWRK(IDTR2+1)=IPTR
+C
+                  IF(KOPT.EQ.2) IQUAL=2
+C
+                  IWRK(IDTR2+2)=IQUAL
+                  IWRK(IDTR2+3)=IHIT1
+                  IWRK(IDTR2+4)=IPRES
+C
+                  IHIT1=IPRES+LTRREC
+                  IDTR2=IDTR2+LDTR2
+               CIF
+            CIF
+         CIF
+         IPTR=IPTR+LDTR
+      CFOR
+C
+C NO COMMON FIT IS REQUESTED OR POSSIBLE
+C
+      IF(KOPT.EQ.1.OR.NTRKS.LT.2) RETURN
+C
+C=======================================================================
+C
+C     COMMON S-Z FIT TO RUN VERTEX
+C
+C
+      IF KOPT.EQ.2
+      THEN
+         IRUN=HDATA( 2*IDATA(IQHEAD) + 10)
+         IF  IRUN.GE.100
+         THEN
+            IPV    = ICALIB(10)
+            XCOMM  = ACALIB(IPV+ 1)
+            YCOMM  = ACALIB(IPV+ 3)
+         ELSE
+            XCOMM  = 0.
+            YCOMM  = 0.
+         CIF
+         IVNEED=IZVCST(1)
+C
+         PERFORM COMMZS
+C
+      CIF
+C
+C=======================================================================
+C
+C     COMMON S-Z FIT FOR USER SPECIFIED TRACK SETS
+C
+C
+      IF KOPT.EQ.4
+      THEN
+         FOR ISET=1,NSETZS
+            NTSETI=NTSTZS(ISET)
+            NTRFIT=0
+            IDTR2=1
+            FOR JTR=1,NTRKS
+               ITR=IWRK(IDTR2)
+               IWRK(IDTR2+2)=1
+               FOR JT=1,NTSETI
+                  IF KTSTZS(JT,1,ISET).EQ.ITR
+                  THEN
+                     NTRFIT=NTRFIT+1
+                     IWRK(IDTR2+2)=2
+                     XFOR
+                  CIF
+               CFOR
+               IDTR2=IDTR2+LDTR2
+            CFOR
+            IF NTRFIT.GE.2
+            THEN
+               XCOMM=XYSTZS(1,ISET)
+               YCOMM=XYSTZS(2,ISET)
+               IVNEED=IZVCST(ISET)
+               PERFORM COMMZS
+            CIF
+         CFOR
+      CIF
+C
+      RETURN
+C
+C
+C=======================================================================
+C
+C
+C  CODE FOR THE COMMON S-Z FIT
+C  HITS ARE USED   IFF   MARKED AS USED IN ZSRFT1
+C
+      PROC COMMZS
+C
+C STARTING VALUE FOR COMMON Z AND
+C CHECK IF TRACK CONSISTENT WITH THE COMMON POINT IN R-PHI
+C AND IF Z AT COMMON POINT IS WITHIN LIMITS
+C
+         ZCUT=ZCUTV
+         IF(KOPT.EQ.4) ZCUT=ZCUTVV
+         IDTR2=1
+         NTRFIT=0
+         ZCOMM=0.
+         FOR JTR=1,NTRKS
+            IF IWRK(IDTR2+2).EQ.2
+            THEN
+C TRACK WAS REQUESTED
+               IPTR=IWRK(IDTR2+1)
+C CALCULATE DISTANCE OF COMMON POINT TO CIRCLE IN R-PHI
+               CURVXY=ADATA(IPTR+25)
+               IF(ABS(CURVXY).LT.1.E-9) CURVXY = SIGN(1.E-9,CURVXY)
+               DDR0=DISTXY(ADATA(IPTR+5),ADATA(IPTR+6),ADATA(IPTR+8),
+     +         ADATA(IPTR+9),1./CURVXY,XCOMM,YCOMM,CORTRC(1,JTR),
+     +         CORTRC(2,JTR),FI)
+               IF ABS(DDR0).LT.DIMPCT
+               THEN
+C CIRCLE CLOSE ENOUGH TO COMMON POINT
+C TRACK DIRECTION AT COMMON POINT
+                  WRK(IDTR2+5)=COS(FI)
+                  WRK(IDTR2+6)=SIN(FI)
+C CALCULATE Z OF TRACK AT THE COMMON POINT
+                  DDR0=DISTXY(ADATA(IPTR+5),ADATA(IPTR+6),ADATA(IPTR+8),
+     +            ADATA(IPTR+9),1./CURVXY,0.,0.,XP,YP,FI)
+                  UU=SQRT((CORTRC(1,JTR)-XP)**2+(CORTRC(2,JTR)-YP)**2)
+                  ARGARG = .5*CURVXY*UU
+                  IF( ABS(ARGARG).GT.1.) ARGARG = SIGN( 1., ARGARG )
+                  IF(ABS(CURVXY*UU).GT.1.E-5)
+     +            UU=2.*ARSIN(ARGARG)/CURVXY
+CC                IF(ABS(CURVXY*UU).GT.1.E-5)
+CC   +            UU=2.*ARSIN(.5*CURVXY*UU)/CURVXY
+                  ZCOMM1=ADATA(IPTR+31)+ADATA(IPTR+30)*UU
+                  IF ABS(ZCOMM1) .LT. ZCUT
+                  THEN
+                     WRK(IDTR2+7)=ZCOMM1
+                     WRK(IDTR2+10)=CURVXY
+                     ZCOMM=ZCOMM+ZCOMM1
+                     NTRFIT=NTRFIT+1
+                  ELSE
+                     IWRK(IDTR2+2)=1
+                  CIF
+               ELSE
+                  IWRK(IDTR2+2)=1
+               CIF
+            CIF
+            IDTR2=IDTR2+LDTR2
+         CFOR
+C
+C STARTING VALUE OF COMMON Z; NO CHECK IF Z OF TRACK CONSISTENT WITH IT
+C COLLECT SUMS FOR COMMON Z FIT
+         IF NTRFIT.GE.2
+         THEN
+            ZCOMM=ZCOMM/NTRFIT
+COMIT       DZLIM=400.
+COMIT       NTRFIT=0
+            NHTOT=0
+            IF IVNEED.EQ.1
+            THEN
+C VERTEX CONSTRAINT OF 10 MM ON THE COMMON Z
+               S0=(20./10.)**2
+               IF( LDATYP(DUMMY).EQ.2 ) S0=S0*4.
+               S3=-ZCOMM*S0
+               S7=ZCOMM**2*S0
+            ELSE
+               S0=0.
+               S3=0.
+               S7=0.
+            CIF
+            S5=0.
+            S6=0.
+            IDTR2=1
+            FOR JTR=1,NTRKS
+               IF IWRK(IDTR2+2).EQ.2
+               THEN
+C TRACK REQUESTED AND SURVIVED THE R-PHI DISTANCE AND Z CUTS
+COMIT             IF ABS(WRK(IDTR2+7)-ZCOMM).LT.DZLIM
+COMIT             THEN
+C TRACK CLOSE ENOUGH IN Z
+COMIT                NTRFIT=NTRFIT+1
+                     IPTR=IWRK(IDTR2+1)
+                     CURVXY=WRK(IDTR2+10)
+                     CTGTH=ADATA(IPTR+30)
+                     S1=0.
+                     S2=0.
+                     S4=0.
+C LOOP OVER HITS
+                     IPCO =IWRK(IDTR2+3)
+                     IPCO9=IWRK(IDTR2+4)-LHIT
+                     FOR IP=IPCO,IPCO9,LHIT
+                        IF HWRK(2*IP+3).EQ.1
+                        THEN
+C HIT WAS USED IN THE SINGLE TRACK FIT
+C CALCULATE TRACK LENGTH IN R-PHI COUNTED FROM COMMON POINT
+                           UX=WRK(IP+3)-CORTRC(1,JTR)
+                           UY=WRK(IP+4)-CORTRC(2,JTR)
+                           UU=SQRT(UX**2+UY**2)
+                           ARGARG = .5*CURVXY*UU
+                           IF( ABS(ARGARG).GT.1.) ARGARG=SIGN(1.,ARGARG)
+                           IF(ABS(CURVXY*UU).GT.1.E-5)
+     +                     UU=2.*ARSIN(ARGARG)/CURVXY
+CC                         IF(ABS(CURVXY*UU).GT.1.E-5)
+CC   +                     UU=2.*ARSIN(.5*CURVXY*UU)/CURVXY
+                           IF(UX*WRK(IDTR2+5)+UY*WRK(IDTR2+6).LT.0.)
+     +                     UU=-UU
+C RESIDUAL TO LINE WITH START PARAMETERS
+                           DZ=WRK(IP+5)-ZCOMM-CTGTH*UU
+                           W=WRK(IP+7)
+                           NHTOT=NHTOT+1
+                           S0=S0+W
+                           S3=S3+DZ*W
+                           S1=S1+UU*W
+                           S2=S2+UU**2*W
+                           S4=S4+DZ*UU*W
+                           S7=S7+DZ**2*W
+                        CIF
+                     CFOR
+                     WRK(IDTR2+7)=S4
+                     WRK(IDTR2+8)=S1
+                     WRK(IDTR2+9)=S2
+                     S5=S5+S1*S4/S2
+                     S6=S6+S1*S1/S2
+COMIT             ELSE
+COMIT                IWRK(IDTR2+2)=1
+COMIT             CIF
+               CIF
+               IDTR2=IDTR2+LDTR2
+            CFOR
+C
+C RESULTS OF COMMON FIT; FILL 'PATR' BANK
+COMIT       IF NTRFIT.GE.2
+COMIT       THEN
+               DZCOMM=(S3-S5)/(S0-S6)
+               ZCOMMR=ZCOMM+DZCOMM
+C
+               ISETOP=1
+               IF(KOPT.EQ.4) ISETOP=ISET
+               SQCHZS(2,ISETOP)=NHTOT
+               SQCHZS(3,ISETOP)=ZCOMMR
+               SQCHZS(1,ISETOP)=S7+DZCOMM*(DZCOMM*S0-2.*S3)
+C
+               IDTR2=1
+               FOR JTR=1,NTRKS
+                  IF IWRK(IDTR2+2).EQ.2
+                  THEN
+                     IPTR=IWRK(IDTR2+1)
+                     PERFORM FITBNK
+C
+C SET SINGLE TRACK FIT FLAG IN   KTSTZS(.,2,.)
+                     ITR=IWRK(IDTR2)
+                     IF KOPT.EQ.4
+                     THEN
+                        FOR JT=1,NTSETI
+                         IF(KTSTZS(JT,1,ISET).EQ.ITR)KTSTZS(JT,2,ISET)=200059400
+                        CFOR
+                     ELSE
+                        KTSTZS(ITR,2,1)=2
+                     CIF
+C
+                  CIF
+                  IDTR2=IDTR2+LDTR2
+               CFOR
+C
+               IF(SQCHZS(1,ISETOP).LT.1.E-5) SQCHZS(1,ISETOP)=1.E-5
+               SQCHZS(1,ISETOP)=SQRT(SQCHZS(1,ISETOP)/(NHTOT-NTRFIT-1))
+C
+COMIT       CIF
+         CIF
+      CPROC
+C=======================================================================
+C
+C
+N     *************************
+N     *      F I T B N K      *
+N     *************************
+C
+C
+N     SET UP FIT-BANK
+      PROC FITBNK
+C
+      DCTGTH=(WRK(IDTR2+7)-DZCOMM*WRK(IDTR2+8))/WRK(IDTR2+9)
+C
+      SQCHZS(1,ISETOP)=SQCHZS(1,ISETOP)+DCTGTH*(DCTGTH*WRK(IDTR2+9)+
+     +2.*DZCOMM*WRK(IDTR2+8)-2.*WRK(IDTR2+7))
+C
+      CTGTH=ADATA(IPTR+30)+DCTGTH
+      CSTH = 1./SQRT(CTGTH**2 + 1.)
+      SNTH  = CSTH * CTGTH
+      CURVXY=WRK(IDTR2+10)
+C
+C
+C
+N     COPY TRACK BANK
+         IFREE=NDIWRK-100
+         CALL MVCL(IWRK(IFREE),0,IDATA(IPTR+1),0,4*LDTR)
+C
+N     FILL FIT-BANK
+         IP    = IFREE - 1
+         IWRK(IP+ 2) = LOR(IWRK(IP+2),8192)
+C FIRST POINT ON TRACK
+         UX=WRK(IP+5)-CORTRC(1,JTR)
+         UY=WRK(IP+6)-CORTRC(2,JTR)
+         UU=SQRT(UX**2+UY**2)
+         ARGARG = .5*CURVXY*UU
+         IF( ABS(ARGARG).GT.1.) ARGARG = SIGN( 1., ARGARG )
+         IF(ABS(CURVXY*UU).GT.1.E-5) UU=2.*ARSIN(ARGARG)/CURVXY
+CC       IF(ABS(CURVXY*UU).GT.1.E-5) UU=2.*ARSIN(.5*CURVXY*UU)/CURVXY
+         IF(UX*WRK(IDTR2+5)+UY*WRK(IDTR2+6).LT.0.) UU=-UU
+         WRK (IP+ 7) = ZCOMMR+CTGTH*UU
+         A=SQRT(WRK(IP+8)**2+WRK(IP+9)**2)
+         WRK (IP+ 8) = WRK (IP+ 8)/A*CSTH
+         WRK (IP+ 9) = WRK (IP+ 9)/A*CSTH
+         WRK (IP+10) = SNTH
+C LAST POINT ON TRACK
+         UX=WRK(IP+12)-CORTRC(1,JTR)
+         UY=WRK(IP+13)-CORTRC(2,JTR)
+         UU=SQRT(UX**2+UY**2)
+         ARGARG = .5*CURVXY*UU
+         IF( ABS(ARGARG).GT.1.) ARGARG = SIGN( 1., ARGARG )
+         IF(ABS(CURVXY*UU).GT.1.E-5) UU=2.*ARSIN(ARGARG)/CURVXY
+CC       IF(ABS(CURVXY*UU).GT.1.E-5) UU=2.*ARSIN(.5*CURVXY*UU)/CURVXY
+         IF(UX*WRK(IDTR2+5)+UY*WRK(IDTR2+6).LT.0.) UU=-UU
+         WRK (IP+14) = ZCOMMR+CTGTH*UU
+         A=SQRT(WRK(IP+15)**2+WRK(IP+16)**2)
+         WRK (IP+15) = WRK (IP+15)/A*CSTH
+         WRK (IP+16) = WRK (IP+16)/A*CSTH
+         WRK (IP+17) = SNTH
+C STORE COMMON FIT PARAMETERS
+         IWRK(IP+29) = 2
+         WRK (IP+30) = CTGTH
+C GET CLOSEST POINT (XP,YP) TO ORIGIN
+         DDR0=DISTXY(ADATA(IPTR+5),ADATA(IPTR+6),ADATA(IPTR+8),
+     +   ADATA(IPTR+9),1./CURVXY,0.,0.,XP,YP,FI)
+C CALCULATE TRACK LENGTH ALONG CIRCLE FROM FIRST POINT TO (XP,YP)
+         UX=XP-CORTRC(1,JTR)
+         UY=YP-CORTRC(2,JTR)
+         UU=SQRT(UX**2+UY**2)
+         ARGARG = .5*CURVXY*UU
+         IF( ABS(ARGARG).GT.1.) ARGARG = SIGN( 1., ARGARG )
+         IF(ABS(CURVXY*UU).GT.1.E-5) UU=2.*ARSIN(ARGARG)/CURVXY
+CC       IF(ABS(CURVXY*UU).GT.1.E-5) UU=2.*ARSIN(.5*CURVXY*UU)/CURVXY
+         IF(UX*WRK(IDTR2+5)+UY*WRK(IDTR2+6).LT.0.) UU=-UU
+         WRK (IP+31) = ZCOMMR+CTGTH*UU
+N     PUT RESULT INTO PATR-BANK
+         CALL MVCL(IDATA(IPTR+1),0,IWRK(IFREE),0,4*LDTR)
+      CPROC
+      END

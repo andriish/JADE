@@ -1,0 +1,27 @@
+C   21/11/78 C9012401   MEMBER NAME  ZBOS05   (S)           FORTRAN
+      SUBROUTINE BSCOM
+C     -----------------------------------------------------------------500000200
+C     5.  PRINTOUT OF BANKS
+C
+C     5.1  SINGLE BANKS
+C
+C               -- --
+C     CALL BPRS(NA,NR)
+C
+C
+C        WHERE NA = NAME
+C              NR = NUMBER OF BANK TO BE PRINTED
+C
+C
+C     5.2  SETS OF BANKS
+C
+C                                      ---
+C     CALL BPRM              CALL BPRL(LIM)
+C
+C     ALL BANKS OF THE CURRENT LIST OF NAMES ARE PRINTED. THE
+C     CALL OF BPRL IS IGNORED AFTER LIM EXECUTIONS.
+C
+C     THE PRINTING FORMAT OF EACH WORD IS CHOSEN AUTOMATICALLY
+C     (TEXT, INTEGER, REAL), NOT ALWAYS CORRECT.
+      RETURN
+      END

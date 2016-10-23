@@ -1,0 +1,80 @@
+1Nypatchy executing with files / options
+
+   1  PAM      -
+   2  FORT      /home/pcl2483/pedro/tmp/ytofort12491/jt63jade.f
+   3  read      /home/pcl2483/pedro/tmp/ytofort12491/jt63jade.cra
+   4  print     /home/pcl2483/pedro/tmp/ytofort12491/jt63jade.lis
+   5  CC       -    ...
+
+ Version: PATCHY  5.05 /3  1996/06/29 17.00     .RJP, today: 03/09/22  7.08
+
+     1  + +EXE.
+     2  + +OPT,MAP.
+          Status of options:  .BC..F......M........V........
+
+     3  + +SELF.+USE,P=LU63MN,JT63JA,JADEEV,LU63KERN,LU74KERN,RLU74.
+     4  + +USE,P=LU63MN,JT63JA,LU63KERN,LU74KERN,RLU74.
+     5  + +USE,P=LUCMMN.
+
+     6  + +PAM,10,R=LUCMMN,T=ATTACH,CARDS,T=CARDS.  jt74opal.car
+
+ ---> start reading file  jt74opal.car
+
+ Read Pam file: JETSET VERSION 7.4 TUNED TO OPAL DATA
+
+     1  + +PAM,11,T=ATTACH,CARDS,T=CARDS.  jt63jade
+
+ ---> start reading file  jt63jade.car
+
+ Read Pam file: JETSET VERSION 6.3 TUNED TO JADE DATA
+
+ Written      104 p=JT63JA   d=JT63JA         102 lines to logical FORT:1
+ Written      114 p=RLU74    d=RLU74           74 lines to logical FORT:1
+ Written      115 p=LU74KERN d=               124 lines to logical FORT:1
+ Written      116 p=LU63KERN d=              6012 lines to logical FORT:1
+
+ --------------------------------------
+ Summary of patches in processing order
+
+ Processing mode selections                        Other status bits for P=X
+
+ U - use                                           F - skipped by +PATCH,X,IF=...
+ L - list                                           M - skipped by +IMITATE,X
+ E - exe                                             X - not +EXE but deck to ASM
+ D - divert                                           P - partial +USE,X,D=...
+ X - xdivert                Self +         Self        R - P=X,T=REPEAT
+                    Inhibit Foreign  Trans   only       Q - quoted in IF=X
+                    ------- ------- ------ ------
+        Patch        ULEDX   ULEDX   LEDX   LEDX   FMXPRQ  Used from P=
+
+      0 CRA*               . U E   .      .  E   .     R   CRA*
+
+ JETSET VERSION 7.4 TUNED TO OPAL DATA
+      0 @JETSET            .   E   .      .  E   .
+      2 LUCMMN             . U E   .      .  E   .         CRA*
+      3 CRA*               . U E   .      .  E   .     R   CRA*
+
+ JETSET VERSION 6.3 TUNED TO JADE DATA
+    100 @JETSET            .   E   .      .  E   .
+    101 LU63MN             . U E   .      .  E   .         CRA*
+    102 JT63JA             . U E   .      .  E   .         CRA*
+    112 RLU74              . U E   .      .  E   .         CRA*
+    114 LU74KERN           . U E   .      .  E   .         CRA*
+    115 LU63KERN           . U E   .      .  E   .         CRA*
+    116 CRA*               . U E   .      .  E   .     R   CRA*
+
+ Name stack:       significant name length is 32 characters
+                1% used of   6000 name slots available
+                1% used of  48000 bytes of text available
+
+ Read:           7 lines from the cradle
+             28031 lines from   2 PAM files for  2 lines +PAM
+
+ Written:
+
+   physical FORT:0          4 units   6312 lines to file  /home/pcl2483/pedro/tmp/ytofort12491/jt63jade.f
+
+    logical FORT:1          4 decks written via FORT:0
+
+ No errors, no warnings.
+

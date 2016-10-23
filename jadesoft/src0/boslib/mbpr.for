@@ -1,0 +1,31 @@
+C   07/06/96 606071855  MEMBER NAME  MBPR     (S4)          FORTG1
+      SUBROUTINE MBPR(IU,IY,IZ)
+      INTEGER IU(1),IY(1),IZ(1)
+      N=IU(1)
+      LA=JDSTL(IY(1),IU(1))/4+1
+      IF(LA.NE.1) GOTO 10
+      IU(N-6)=IZ(1)
+      GOTO 100
+   10 IF(IU(N-6).LE.0) GOTO 100
+      LB=JDSTL(IZ(1),IU(1))/4+1
+      IF(LA.NE.2.OR.LB.NE.IU(N)) GOTO 20
+C     PRINT TOTAL STRUCTURE
+      WRITE(6,101)
+      CALL UWP(IU,1,N)
+      GOTO 90
+C     PRINT SELECTED BANKS
+   20 J=N-8
+   30 IF(J.LE.IU(N-3)) GOTO 90
+      J=J-1
+      LJ=IU(J)
+      IF(LJ.LT.LA.OR.LJ.GT.LB) GOTO 30
+      K=IU(LJ)
+      WRITE(6,102) (IU(K-4+I),I=1,4)
+      CALL UWP(IU(K+1),1,IU(K))
+      GOTO 30
+   90 IU(N-6)=IU(N-6)-1
+  100 RETURN
+  101 FORMAT('0MBOS - TOTAL STRUCTURE'/)
+  102 FORMAT('0MBOS - BANK ',9X,A4,',',I4,'   (PT.POS.=',I4,')',
+     1   '  LENGTH',I5/)
+      END

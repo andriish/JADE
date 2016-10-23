@@ -1,0 +1,849 @@
+C   14/01/82 201151105  MEMBER NAME  FTRKEL   (PATRECSR)    SHELTRAN
+C   18/01/80 201131458  MEMBER NAME  ORFTRKEL (JADESR)      SHELTRAN
+C   18/01/80 001181139  MEMBER NAME  ORFTRKEL (JADESR)      SHELTRAN
+      SUBROUTINE FTRKEL
+C
+C        FIND TRACK ELEMENTS FROM LINE ELEMENTS: P.STEFFEN(79/02/06)
+C                   MIN. DRIFTSPACE REQUIRED
+C                   NO STOP AT POINT OF DIVERGENCE
+C
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cworkpr.for"
+#include "cworkeq.for"
+C
+      EQUIVALENCE
+     ,           (ICELL ,IDWRK(1)),(MHIT  ,IDWRK(2)),(IRING ,IDWRK(3))
+     ,         , (IERRCD,IDWRK(4)),(NTRKEL,IDWRK(5))
+C
+#include "cpatlm.for"
+C
+#include "cjdrch.for"
+#include "cdsmax.for"
+C
+      DIMENSION HPBAK(16),HLYAR(16),HLBAR(16),DSPAR(16),RESAR(16)
+C
+N     MASK FOR GOOD LINEL
+      DATA MKGDLN / Z107/
+N     MASK FOR DIVERGING LINEL
+      DATA MKDIVL / Z100/
+C
+N     LABEL FOR NO CONTINUATION OF TREL
+      DATA LBNOCN / Z1/
+N     LABEL FOR KINK AT END POINT OF TREL
+      DATA LBKINK / Z2/
+N     LABEL FOR WALL AT END POINT OF TREL
+      DATA LBWALL / Z4/
+N     LABEL FOR WIRE PLANE AT END POINT OF TREL
+      DATA LBWIRE / Z8/
+N     LABEL FOR GOOD TREL
+      DATA LBTREL /Z1000/
+N     LEFT/RIGHT LABEL OF TREL
+      INTEGER LBLFRT(3) /Z10000,Z30000,Z20000/
+C
+N     FUNCTIONS
+      FPAR0(X) = (PAR10*X + PAR20)*X + PAR30
+      FPAR (X) = (PAR1 *X + PAR2 )*X + PAR3
+C
+C     PRINT 2900, IERRCD, ICELL, NTRCNT
+C     IF(ICELL.GT. 0) PRINT 2901, (WRK(I1),I1=HPHT0,HPHT9)
+C2001 FORMAT(1H0,9I6)
+C2002 FORMAT(1X,3I6,10F8.2)
+C2004 FORMAT('0********** UNDETERMINED L/R AMB. *********',I6,3F8.2)
+C2005 FORMAT(' 0-TREL-CAND.:',I6,10F8.2)
+C2006 FORMAT(1X,I6,F6.0,3F8.2,F12.1,5F8.2)
+C2007 FORMAT(' TRELAN:',3I6,10F10.4)
+C2008 FORMAT(' CUT   :',15I6)
+C2009 FORMAT(1X,I6,F6.0,9F8.2)
+C2010 FORMAT(' NEWCUT:',I6,F8.2,I6,F8.2)
+C2011 FORMAT(1X,3I6,F8.2)
+C2012 FORMAT(1X,I6,10F8.2)
+C2900 FORMAT(1H0,'ERROR CODE:',I4, ', ICELL:',I3,', TRACKS:',I4)
+C2901 FORMAT(1X,/,(1X,2I6,2F6.2,2X,Z4,6I6,F6.2))
+C2902 FORMAT(/,(1X,3I6,4F8.5,I3,2F6.2,I3,2F6.2,2X,Z4,2X,Z4,2X,Z5,F6.2))
+C
+N     PRESET COUNTER OF TRKELS
+      MTRK = 0
+N     PRESET COUNTER OF ZERO APPROACH. LINELS
+N     POINTER TO START OF TRELS + LENGTH OF TREL
+      HPTR0= HPFREE
+      HLDTR= 17
+N     POINTER TO CURRENT TRKEL
+      IPTR = HPTR0
+C
+N     LOOP OVER ALL LINE ELEMENTS
+      IP=HPHT0
+      REPEAT
+        LB = LAND(IWRK(IP+4),MKGDLN)
+        IFREEU = IWRK(IP+5)
+        IF(IFREEU.GT.0) IFREEU = IWRK(IFREEU+9)
+        IFREED = IWRK(IP+7)
+        IF(IFREED.GT.0) IFREED = IWRK(IFREED+9)
+        IF IWRK(IP+8).EQ.0 .AND. LB.EQ.7
+     .     .AND. ABS(WRK(IP+11)).GT..1
+     .     .AND. IFREEU.EQ.0 .AND. IFREED.EQ.0
+N       ONLY GOOD + UNUSED LINEL WITH L/R DIFF.
+        THEN
+          DS0 = WRK(IP+2)
+          SL0 = WRK(IP+3)
+N         COUNTER FOR LINELS
+          NLINEL = 1
+N         OFFSET FOR STAGGERING
+          DDSOFF = SIGN(TRELLM(1),WRK(IP+11))
+          IF(LAND(IWRK(IP),1).NE.0) DDSOFF =-DDSOFF
+N         SEARCH FOR END OF TRKEL IN LOWER LAYERS
+          INEXT = 5
+          PERFORM SREND
+          LBSTRT = LBEND
+          IPL = IWRK(IPH+5)
+          IWRK(IPH+8) = 1
+C
+N         SEARCH FOR END OF TRKEL IN HIGHER LAYERS
+          INEXT = 7
+          PERFORM SREND
+          IPH = IWRK(IPH+7)
+C     PRINT 2001, IP,IPL,IPH,NLINEL
+C
+N         CHECK IF TRKEL. (>3 HITS)
+          IF NLINEL+2.GE.LMTREL(13)
+N         *****  THIS MIGHT BE A TRACK ELEMENT  *****
+          THEN
+C
+N           CHECK FOR KINKS,
+N           CALCULATE TRACK PARAMETERS,
+N           STORE RESULTS IN TRKEL BANK
+            PERFORM TRCHCK
+C     PRINT 2001, IP,IPL,IPH,NLINEL
+          CIF
+        CIF
+      IP = IP + HLDHT
+      UNTIL IP.GT.HPHT9
+C
+N     SET POINTER TO END OF TRACK ARRAY
+      HPFREE= IPTR
+      HPTR9 = IPTR - 1
+C
+N     SET NUMBER OF TRKELS
+      NTRKEL = MTRK
+C
+C     IF(ICELL.GT. 0) PRINT 2900, IERRCD, ICELL, NTRCNT
+C     IF(ICELL.GT. 36) PRINT 2901, (WRK(I1),I1=HPHT0,HPHT9)
+C     IF(ICELL.GT. 36) PRINT 2902, (WRK(I1),I1=HPTR0,HPTR9)
+      RETURN
+N     *************************
+N     *      S R E N D        *
+N     *************************
+N     SEARCH FOR END OF TRKEL
+      PROC SREND
+C
+N         POINTER TO LAST LINEL
+          IPH   = IP
+N         POINTER
+          IPA   = IWRK(IP+INEXT)
+N         PRESET END LABEL
+          LBEND = 0
+            WHILE IPA.GT.0
+              IPNXT = IWRK(IPA+INEXT)
+C
+N             CHECK IF COMPLETE LINEL
+              IF IPNXT.LE.0
+              THEN
+                LBEND = LBNOCN
+                XWHILE
+              CIF
+C
+N             CHECK IF 'POINT OF DIVERGENCE'
+              IF IWRK(IPNXT+8).NE.0 .OR. LAND(IWRK(IPA+4),MKDIVL).NE.0
+              THEN
+                LBEND = LBKINK
+                XWHILE
+              CIF
+C
+              NLINEL = NLINEL + 1
+              IPH    = IPA
+N             GET POINTER TO NEXT LINEL.
+              IPA    = IPNXT
+            CWHILE
+      CPROC
+C
+N     *************************
+N     *      T R C H C K      *
+N     *************************
+N      CHECK TREL FOR KINKS + CALC. PARAMETERS
+      PROC TRCHCK
+C
+N       SET UP ARRAYS: HPBACK,HLYAR,HLBAR,DSPAR
+        IHIT = 0
+        IPA = IPL
+        REPEAT
+N         LABEL USED HITS
+          IWRK(IPA+8) = 1
+          IHIT = IHIT + 1
+          HPBAK(IHIT  ) = IPA
+          HLYAR(IHIT  ) = IWRK(IPA  )
+          DSPAR(IHIT) =  WRK(IPA+2)
+C     PRINT 2011, IPA,IHIT ,HLYAR(IHIT ),DSPAR(IHIT )
+        IPA = IWRK(IPA+ 7)
+        UNTIL IPA.GE.IPH
+N       LAST POINT IN ARRAYS
+        IWRK(IPA+8) = 1
+        HPBAK(IHIT+1) = IPA
+        HLYAR(IHIT+1) = IWRK(IPA  )
+        DSPAR(IHIT+1) =  WRK(IPA+2)
+N       POINTER TO 1. + LAST HIT
+        JHIT0 = 1
+        JHIT9 = IHIT + 1
+        IHIT9 = JHIT9
+        IHIT0 = 1
+        MHIT = IHIT9 - IHIT0 + 1
+C     PRINT 2011, IPA,IHIT9,HLYAR(IHIT9),DSPAR(IHIT9)
+N       MARKER FOR CUT OF TREL-CAND
+        MKCUT = 0
+C
+        WHILE MHIT.GE.LMTREL(13)
+C
+N         TREL ANALYSIS WITH PARABOLA FIT
+          DSTAG0 = 0.
+          NITER = LMTREL(6)
+          PERFORM TRELAN
+C
+          IF STAGSG.LE.SIGLM .AND. YPMIN.GE.TRELLM(10)
+          THEN
+C
+N           DET L/R
+            DSIGLR = ABS(SIGL-SIGR)
+            IF DSIGLR.GT.TRELLM(19) .AND.
+     ?         (MHIT.GT.6 .OR. STAGSG.LE.TRELLM(14)**2)
+            THEN
+              LBLR =-1
+              IF(SIGR.LT.SIGL) LBLR = 1
+            ELSE
+              LBLR = 0
+            CIF
+N           STORE TRACK PARAMETERS
+            PERFORM TRKPAR
+            MHIT = 0
+C
+N         BAD FIT: CUT + CONT. WITH 1. BRANCH
+          ELSE
+            PERFORM CUTREL
+            MHIT = IHIT9 - IHIT0 + 1
+          CIF
+C
+N         FETCH LEFT OVER BRANCH IF NOT ENOUGH HITS LEFT
+          IF MKCUT.NE.0 .AND. MHIT.LT.LMTREL(13)
+          THEN
+            IHIT0 = JHIT0
+            IHIT9 = JHIT9
+            MKCUT = 0
+            MHIT = IHIT9 - IHIT0 + 1
+          CIF
+        CWHILE
+      CPROC
+C
+N     *************************
+N     *      C U T R E L      *
+N     *************************
+N     CUT TREL
+      PROC CUTREL
+C
+        IHITM1 = IHITM0
+        IHITM2 = IHITM0
+        MHIT = IHIT9 - IHIT0 + 1
+C
+N       SELECT DIFFERENT CUT PROCEDURES
+        REPEAT
+C
+N         0-XING AT SMALL ANGLE
+          IF YPMIN.LT.TRELLM(10) .AND. STAGSG.LE.SIGLM
+N         CUT 0-XING TRACK AT MIN(PARABOLA)
+          THEN
+N           FIND HIT CLOSE TO MIN(PARABOLA)
+            HLYMIN = XPMIN
+            FOR IHIT=IHIT0,IHIT9
+              IF(HLYAR(IHIT).LE.HLYMIN) IHITM1 = IHIT
+            CFOR
+            IHITM2 = IHITM1 + 1
+C     PRINT 2003, IHITM1,IHITM2,XPMIN,YPMIN
+C2003 FORMAT(' CUTMIN:',2I6,2F10.1)
+            XREPEAT
+          CIF
+C
+N         0-XING AT BIG ANGLE
+          IF YPMIN.LT.10. .AND. MHIT.GE.5
+          THEN
+N           CUT 0-XING TRACK AT MIN(DRIFTSP.)
+            IHMIN  = IHIT0
+            DSMIN  = 100000.
+N           FIND HIT CLOSE TO MIN(PARABOLA)
+            FOR IHIT=IHIT0,IHIT9
+              IF DSPAR(IHIT).LT.DSMIN
+              THEN
+                DSMIN = DSPAR(IHIT)
+                IHMIN = IHIT
+              CIF
+            CFOR
+N           SAVE FOUND MIN.
+            IHMINS = IHMIN
+C
+N           0-XING: HIT BELOW MIN.
+N           INITIALIZE D(DRIFTSP.) OF ADJACENT HITS
+            DDSP   = 1000.
+            IF IHMIN.EQ.IHIT9
+            THEN
+N             MIN AT LAST HIT
+              IHMIN = IHMIN - 1
+            ELSE
+              IF IHMIN.GT.IHIT0
+              THEN
+                DDSP = DSPAR(IHMIN+1) - DSPAR(IHMIN-1)
+                IF(DDSP.GT.0) IHMIN = IHMIN - 1
+              CIF
+            CIF
+N           CHECK SLOPE
+            LBCUT = 0
+            IF IHMIN-2.LT.IHIT0
+            THEN
+              IF(DSPAR(IHMIN+3)-DSPAR(IHMIN+1).GT.2.0) LBCUT = 1
+            ELSE
+              IF IHMIN+3.GT.IHIT9
+              THEN
+                IF(DSPAR(IHMIN-2)-DSPAR(IHMIN  ).GT.2.0) LBCUT = 1
+              ELSE
+                ZSL1 = DSPAR(IHMIN-2) - DSPAR(IHMIN  )
+                ZSL2 = DSPAR(IHMIN+3) - DSPAR(IHMIN+1)
+                IF(ZSL1.GT.2.0 .OR. ZSL2.GT.2.0) LBCUT = 1
+              CIF
+            CIF
+            IF LBCUT.NE.0
+            THEN
+N             CHECK IF CLEAR MIN.
+              IF ABS(DDSP).GT..6 .AND. DSMIN.GT..6
+              THEN
+                IHITM1 = IHMIN
+                IHITM2 = IHMIN + 1
+              ELSE
+                IHITM1 = IHMINS - 1
+                IHITM2 = IHMINS + 1
+              CIF
+              XREPEAT
+            CIF
+          CIF
+C
+N         KINK OR DISCONTINUITY
+          IF MHIT.GE.6
+          THEN
+            DRES1 = 0.
+            DRES2 = 0.
+            IHMX1 =-1
+            IHMX2 =-1
+            DSL0  = PAR10*8.
+N           LOOP OVER ALL HITS
+            IHIT4 = IHIT0+4
+            FOR IHIT = IHIT0,IHIT9
+              X = HLYAR(IHIT)
+              Y = DSPAR(IHIT)
+              F = FPAR0(X)
+              DCHI = F - Y
+              RESAR(IHIT) = DCHI
+C
+N             FIND MAX.GAP + MAX.KINK
+              IF IHIT.GT.IHIT0
+              THEN
+C
+N               GAP:
+                DDRES1 = ABS(DCHI-DCHI1)
+                IF DDRES1.GT.DRES1
+                THEN
+                  DRES1 = DDRES1
+                  IHMX1 = IHIT
+                CIF
+C
+                IF IHIT.GE.IHIT4
+                THEN
+N                 KINK:
+C                 DDRES2 = ABS(2.*RESAR(IHIT-2) - RESAR(IHIT-4) - DCHI)
+                  DDRES2 = ABS(2.*DSPAR(IHIT-2)-DSPAR(IHIT-4)-Y + DSL0)
+                  IF DDRES2.GT.DRES2
+                  THEN
+                    DRES2 = DDRES2
+                    IHMX2 = IHIT-2
+                  CIF
+                CIF
+              CIF
+C     IF(ICELL.GT. 36)
+C    ,PRINT 2009, IHIT,X,Y,F,DCHI,DRES1,DRES2,DDRES1,DDRES2
+C
+              DCHI1 = DCHI
+            CFOR
+N           SCALE UP DDRES1 (COMPARABLE TO DDRES2)
+            DRES1 = DRES1 * 1.5
+C
+C     IF(ICELL.GT. 36) PRINT 2010, IHMX1,DRES1,IHMX2,DRES2
+C
+N           CHECK IF REAL CUT FOUND
+            DRES0 = TRELLM(16)*2.5
+            IF DRES0.LT.DRES2 .OR. DRES0.LT.DRES1
+            THEN
+C
+N             SELECT GAP OR KINK CUT
+              IF DRES1-DRES2 .LT. TRELLM(14)*1.4
+N             KINK CUT SELECTED
+              THEN
+C
+N               CHECK IF 0-XING
+                IF DSPAR(IHMX2).LT.TRELLM(10)
+                THEN
+N                 0-XING: SELECT CUT
+                  IF DSPAR(IHMX2-1).LT.DSPAR(IHMX2+1)
+                  THEN
+                    IHITM2 = IHMX2
+                    IHITM1 = IHMX2 - 1
+                  ELSE
+                    IHITM1 = IHMX2
+                    IHITM2 = IHMX2 + 1
+                  CIF
+                ELSE
+N                 NOT 0-XING: SELECT CUT
+                  IF DRES2.GT.TRELLM(14)*5.
+                  THEN
+                    IHITM1 = IHMX2
+                    IHITM2 = IHMX2
+                  ELSE
+                    IHITM1 = IHMX2 - 1
+                    IHITM2 = IHMX2 + 1
+                  CIF
+                CIF
+C
+N             GAP CUT SELECTED
+              ELSE
+                IHITM1 = IHMX1 - 1
+                IHITM2 = IHMX1
+              CIF
+            CIF
+          CIF
+        UNTIL .TRUE.
+C
+N       SELECT 1. BRANCH FOR CONT.
+C     IF(ICELL.GT. 36)
+C    ,PRINT 2008, IHIT0,IHIT9,MKCUT,JHIT0,JHIT9,IHITM1,IHITM2
+        IF MKCUT.EQ.2  .OR.
+     ?     ((IHITM1-IHIT0).GE.(IHIT9-IHITM2) .AND. MKCUT.EQ.0)
+        THEN
+N         SELECT 1. BRANCH
+          IF IHITM1.GT.IHIT0
+          THEN
+            IF(IHITM1.EQ.IHIT9) IHITM1 = IHITM1 - 1
+            IHIT9 = IHITM1
+            IF(MKCUT.NE.1) JHIT0 = MIN0(IHITM2,JHIT9)
+            MKCUT = 2
+          ELSE
+            IHIT9 = JHIT9
+            IHIT0 = IHIT0+1
+            JHIT0 = IHIT0
+            MKCUT = 0
+          CIF
+        ELSE
+N       SELECT 2. BRANCH
+          IF IHITM2.LT.IHIT9
+          THEN
+            IF(IHITM2.EQ.IHIT0) IHITM2 = IHITM2 + 1
+            IHIT0 = IHITM2
+            IF(MKCUT.NE.2) JHIT9 = MAX0(IHITM1,JHIT0)
+            MKCUT = 1
+          ELSE
+            IHIT0 = JHIT0
+            IHIT9 = IHIT9-1
+            JHIT9 = IHIT9
+            MKCUT = 0
+          CIF
+        CIF
+      CPROC
+C
+N     *************************
+N     *      T R K P A R      *
+N     *************************
+N     GET TREL PARAMETERS
+      PROC TRKPAR
+C
+N       FINAL FIT WITH STAGGERING CORRECTION
+        DSTAG0 = SWDEPL*LBLR
+        NITER = 0
+        PERFORM TRELAN
+C
+N       CHECK # OF HITS
+        IF MHIT.GE.LMTREL(13)
+        THEN
+C
+N         LABEL HITS OF TREL / FIND POINTER TO 1. + LAST HIT
+          FOR IHIT = IHIT0,IHIT9
+            IF HLBAR(IHIT).EQ.0
+            THEN
+              IPA = HPBAK(IHIT)
+              IWRK(IPA+10) = IWRK(IPA+9)
+              IWRK(IPA+ 9) = IPTR
+            CIF
+          CFOR
+C
+C
+N         SET LABELS FOR START + END POINT
+          LRIND = SHFTR(LBLR+3,1)
+          IF(DSMAX(ILAY0+1,IRING,LRIND)-5. .LT. DS0)
+     ?      LBSTRT = LOR(LBSTRT,LBWALL)
+          IF(DS0.LT.1.5) LBSTRT = LOR(LBSTRT,LBWIRE)
+          IF(DSMAX(ILAY9+1,IRING,LRIND)-5. .LT. DS9)
+     ?      LBEND  = LOR(LBEND ,LBWALL)
+          IF(DS9.LT.1.5) LBEND  = LOR(LBEND ,LBWIRE)
+C
+N         SET TRACK LABEL
+          LBTR = LOR(SHFTL(LBEND,4),LBSTRT)
+          LBTR = LOR(LBTR,LBTREL)
+N         SET L/R BIT
+          LBTR = LOR(LBTR,LBLFRT(LBLR+2))
+C
+N         SET BANK OF TREL
+          IWRK(IPTR   ) = IPHIT0
+          IWRK(IPTR+ 1) = IPHIT9
+          IWRK(IPTR+ 2) = MHIT
+          WRK (IPTR+ 3) = PAR1
+          WRK (IPTR+ 4) = PAR2
+          WRK (IPTR+ 5) = PAR3
+          WRK (IPTR+ 6) = SQRT(SIG)
+          IWRK(IPTR+ 7) = ILAY0
+          WRK (IPTR+ 8) = DS0
+          WRK (IPTR+ 9) = SLOP0
+          IWRK(IPTR+10) = ILAY9
+          WRK (IPTR+11) = DS9
+          WRK (IPTR+12) = SLOP9
+          IWRK(IPTR+13) = LBSTRT
+          IWRK(IPTR+14) = LBEND
+          IWRK(IPTR+15) = LBTR
+          I9 = IPTR + HLDTR - 1
+          MTRK = MTRK + 1
+          IPTR = IPTR + HLDTR
+        CIF
+      CPROC
+C
+N     *************************
+N     *      T R E L A N      *
+N     *************************
+C
+C
+N     TREL ANALYSIS WITH PARABOLA FIT
+      PROC TRELAN
+C
+N     ITERATE UNTIL GOOD PARABOLA FIT
+      ITER = 0
+C
+N     IF 1. HIT CLOSE TO ZERO +  2. HIT NOT:
+N     IGNORE 1. HIT
+      IF(DSPAR(IHIT0).LT.1.5 .AND. DSPAR(IHIT0+1).GT.5.) IHIT0 = IHIT0+100053900
+      IF(DSPAR(IHIT9).LT.1.5 .AND. DSPAR(IHIT9-1).GT.5.) IHIT9 = IHIT9-100054000
+N     INITIALIZE LABEL OF BAD HITS
+      IF NITER.GT.0
+      THEN
+        FOR IHIT=IHIT0,IHIT9
+          HLBAR(IHIT) = 0
+        CFOR
+      CIF
+C
+      REPEAT
+C
+N       FIT PARABOLA
+        PERFORM FPARAB
+C
+N       CHECK IF ENOUGH HITS
+        IF MHIT.LT.LMTREL(13)
+        THEN
+          STAGSG = 10000000.
+          IHITM0 = IHIT0 + 1
+          XREPEAT
+        CIF
+C
+N       CALC. CHISQ + SOLVE L/R AMBIGUITY
+        CHISQ = 0.
+        STAGS1 = 0.
+        STGSL1 = 0.
+        STGSL2 = 0.
+        STGSR1 = 0.
+        STGSR2 = 0.
+        DCHIM1 = 0.
+        IHITM1 = 0
+        FOR IHIT = IHIT0,IHIT9
+N         CHECK IF NOT REJECTED HIT
+          IF HLBAR(IHIT).EQ.0
+          THEN
+            X = HLYAR(IHIT)
+            DSTAG = DSTAG0
+            IF(LAND(HLYAR(IHIT),1).NE.0) DSTAG =-DSTAG0
+            Y = DSPAR(IHIT) + DSTAG
+            F = FPAR(X)
+            DCHI = Y - F
+            RESAR(IHIT) = DCHI
+N           SUM FOR RMS
+            CHISQ = CHISQ + DCHI**2
+N           KEEP BIGGEST RMS
+            IF ABS(DCHI).GE.DCHIM1
+            THEN
+              DCHIM1 = ABS(DCHI)
+              IHITM1 = IHIT
+            CIF
+N           SUM FOR RMS WITH CORRECTION OF STAGG.
+            IF LAND(HLYAR(IHIT),1).NE.0
+            THEN
+              STAGS1 = STAGS1 + DCHI
+              DCHIL = DCHI + SWDEPL
+              DCHIR = DCHI - SWDEPL
+            ELSE
+              STAGS1 = STAGS1 - DCHI
+              DCHIL = DCHI - SWDEPL
+              DCHIR = DCHI + SWDEPL
+            CIF
+            STGSL1 = STGSL1 + DCHIL
+            STGSL2 = STGSL2 + DCHIL**2
+            STGSR1 = STGSR1 + DCHIR
+            STGSR2 = STGSR2 + DCHIR**2
+C     IF(ICELL.GT. 36)
+C    ,PRINT 2006, IHIT,X,Y,F,DCHI,CHISQ,STAGS1,DCHIL,DCHIR,DSTAG0,SWDEPL
+          CIF
+        CFOR
+        SIG    =      CHISQ  / DEG
+        SIGL   = STGSL2 / DEG
+        SIGR   = STGSR2 / DEG
+        STAGSG = AMIN1(SIGL,SIGR)
+        STAGAV = STAGS1 / S0
+C
+N       SAVE PAR. OF 0-TH ITER.
+        IF ITER.EQ.0
+        THEN
+          PAR10 = PAR1
+          PAR20 = PAR2
+          PAR30 = PAR3
+          IHITM0 = IHITM1
+        CIF
+C
+N       CALC. MIN(PARABOLA)
+        YPMIN = 1000.
+        XPMIN = 1000.
+        IF(PAR1.NE.0.) XPMIN = -.5 * PAR2 / PAR1
+        IF(XPMIN.GT.HLYAR(IHIT0) .AND. XPMIN.LT.HLYAR(IHIT9))
+     ?    YPMIN = FPAR(XPMIN)
+C     IF(ICELL.GT. 36)
+C    ,PRINT 2007, MHIT,IHIT0,IHIT9,PAR1,PAR2,PAR3,SIGLM,SIG,SIGL,SIGR
+C    ,          ,XPMIN,YPMIN
+C
+N       GOOD FIT .OR. TOO SMALL # OF HITS: STOP
+        IF(STAGSG.LE.SIGLM .OR. MHIT.LE.LMTREL(13)) XREPEAT
+N       BAD FIT, <7 HITS, HIGH CURV: STOP
+        IF(MHIT.LE.6 .AND. ABS(PAR1).GT.TRELLM(9)) XREPEAT
+N       MIN(PARABOLA) CLOSE TO ZERO: STOP
+        IF(YPMIN.LT.      100.) XREPEAT
+C
+N       INCREASE LIMIT FOR STRAIGHT DISTORTED TRACKS
+        IF MHIT.GE.6.AND.ABS(PAR1).LT..010.AND.STAGSG.LT.TRELLM(14)*1.5
+        THEN
+          DCHI = RESAR(IHITM1)
+N         CORRECTION OF STAGG.
+          IF LAND(HLYAR(IHITM1),1).NE.0
+          THEN
+            DCHIL = DCHI + SWDEPL
+            DCHIR = DCHI - SWDEPL
+          ELSE
+            DCHIL = DCHI - SWDEPL
+            DCHIR = DCHI + SWDEPL
+          CIF
+          DCHI = DCHIL
+          IF(SIGR.GT.SIGL) DCHI = DCHIR
+          IF DCHI**2*.33 .LT. STAGSG
+          THEN
+            SIGLM = AMAX1(STAGSG*1.01,SIGLM)
+            XREPEAT
+          CIF
+        CIF
+C
+N       CHECK WORST POINT
+        IDHITM = IABS(IHITM1-IHITM0)
+        DDCHIM = DCHIM1
+        IF(IHITM1.NE.IHIT0 .AND. IHITM1.NE.IHIT9)
+     ?  DDCHIM = ABS(RESAR(IHITM1)-(RESAR(IHITM1-1)+RESAR(IHITM1+1))*.5)
+        IF(IDHITM.EQ.1) XREPEAT
+        IF(DDCHIM**2.LT.SIGLM*4.0) XREPEAT
+C
+N       LABEL WORST POINT + TRY AGAIN
+        IF IHITM1-IHIT0 .EQ. 1
+        THEN
+N         2. HIT BAD: CHECK IF NOT 1. HIT
+          SL0   = HLYAR(IHITM1)*PAR1*2. + PAR2
+          DDSP1 = ABS(DSPAR(IHIT0+1)+SL0    - DSPAR(IHIT0+2))
+          DDSP2 = ABS(DSPAR(IHIT0  )+SL0*2. - DSPAR(IHIT0+2))
+          IF(DDSP1 .LT. DDSP2) IHITM1 = IHIT0
+C     PRINT 2012,IHITM1,SL0,DSP0,DDSP1,DDSP2,RESAR(IHIT0),RESAR(IHIT0+1)
+        ELSE
+          IF IHIT9-IHITM1 .EQ. 1
+          THEN
+N           LAST BUT ONE HIT BAD: CHECK IF NOT LAST HIT
+            SL0   = HLYAR(IHITM1)*PAR1*2. + PAR2
+            DDSP1 = ABS(DSPAR(IHIT9-1)-SL0    - DSPAR(IHIT9-2))
+            DDSP2 = ABS(DSPAR(IHIT9  )-SL0*2. - DSPAR(IHIT9-2))
+            IF(DDSP1 .LT. DDSP2) IHITM1 = IHIT9
+C     PRINT 2012,IHITM1,SL0,DSP0,DDSP1,DDSP2,RESAR(IHIT9),RESAR(IHIT9-1)
+          CIF
+        CIF
+        IF(ITER.NE.NITER) HLBAR(IHITM1) = 1
+        ITER = ITER + 1
+      UNTIL ITER.GT.NITER
+C
+N     RESET LABEL OF BAD HITS
+      IF ITER.GT.0 .AND. STAGSG.LE.SIGLM
+      THEN
+N       REDUCE RANGE IF WORST POINTS AT END
+        IF(HLBAR(IHIT0).NE.0) IHIT0 = IHIT0 + 1
+        IF(HLBAR(IHIT0).NE.0) IHIT0 = IHIT0 + 1
+        IF(HLBAR(IHIT9).NE.0) IHIT9 = IHIT9 - 1
+        IF(HLBAR(IHIT9).NE.0) IHIT9 = IHIT9 - 1
+        IF(IHIT9.LT.JHIT0) JHIT0 = IHIT9
+        IF(IHIT0.GT.JHIT9) JHIT9 = IHIT0
+      CIF
+C
+      CPROC
+C
+N     *************************
+N     *      F P A R A B      *
+N     *************************
+C
+C
+N     PARABOLA FIT TO TREL-CAND
+      PROC FPARAB
+C
+N     GET EQUATIONS
+      S0 = 0.
+      S1 = 0.
+      S2 = 0.
+      S3 = 0.
+      S4 = 0.
+      S5 = 0.
+      S6 = 0.
+      S7 = 0.
+      FOR IHIT = IHIT0,IHIT9
+N       SELECT UNREJECTED HITS ONLY
+        IF HLBAR(IHIT).EQ.0
+        THEN
+          IX = HLYAR(IHIT)
+          X  = IX
+          DSTAG = DSTAG0
+          IF(LAND(IX,1).NE.0) DSTAG =-DSTAG0
+          Y = DSPAR(IHIT) + DSTAG
+          X2 = X**2
+          S1 = S1 + X
+          S2 = S2 + X2
+          S3 = S3 + X*X2
+          S4 = S4 + X2**2
+          S5 = S5 + Y*X2
+          S6 = S6 + Y*X
+          S7 = S7 + Y
+          S0 = S0 + 1.
+        CIF
+      CFOR
+      MHIT = S0 + .5
+C
+N     CHECK IF <3 HITS
+      IF MHIT.LT.3
+      THEN
+        SIG = TRELLM(12)**2
+        PAR1 = 0.
+        PAR2 = 0.
+        PAR3 = 0.
+        DEG = 1.
+        S0  = 1.
+      ELSE
+        IF MHIT.LE.4
+N       STRAIGHT LINE FIT IF 3 - 4 HITS
+        THEN
+          ZW1  = (S6*S0 - S1*S7)
+          ZW2  = (S2*S0 - S1**2)
+          PAR1   = 0.
+          PAR2   = ZW1 / ZW2
+          PAR3   =(S7 - PAR2*S1) / S0
+          DEG = S0 - 2.
+        ELSE
+N         SOLVE EQUATIONS FOR PARABOLA FIT
+          F1 = 1. / S4
+          XX12 = S3*F1
+          XX13 = S2*F1
+          YY1  = S5*F1
+          XX22 = S2 - S3*XX12
+          XX23 = S1 - S3*XX13
+          YY2  = S6 - S3*YY1
+          XX32 = S1 - S2*XX12
+          XX33 = S0 - S2*XX13
+          YY3  = S7 - S2*YY1
+          IF XX22.GT.XX32
+          THEN
+            XX23 = XX23 / XX22
+            YY2  = YY2  / XX22
+            PAR3 = (YY3 - XX32*YY2) / (XX33 - XX32*XX23)
+            PAR2 = YY2 - XX23*PAR3
+          ELSE
+            XX33 = XX33 / XX32
+            YY3  = YY3  / XX32
+            PAR3 = (YY2 - XX22*YY3) / (XX23 - XX22*XX33)
+            PAR2 = YY3 - XX33*PAR3
+          CIF
+          PAR1 = YY1 - XX12*PAR2 - XX13*PAR3
+          DEG = S0 - 3.
+C
+          IF MHIT.LT.6 .AND. ABS(PAR1).GT.TRELLM(9)
+N         STRAIGHT LINE FIT IF <6 HITS + TOO BIG CURV.
+          THEN
+            ZW1  = (S6*S0 - S1*S7)
+            ZW2  = (S2*S0 - S1**2)
+            PAR1   = 0.
+            PAR2   = ZW1 / ZW2
+            PAR3   =(S7 - PAR2*S1) / S0
+            DEG = S0 - 2.
+          CIF
+        CIF
+C
+      CIF
+C
+N       CALC. START + END POINT PARAM.
+        ILAY0 = HLYAR(IHIT0)
+        WR0   = ILAY0
+        DS0   = FPAR(WR0)
+        SLOP0 = WR0*PAR1*2. + PAR2
+        ILAY9 = HLYAR(IHIT9)
+        WR9   = ILAY9
+        DS9   = FPAR(WR9)
+        SLOP9 = WR9*PAR1*2. + PAR2
+C
+N       DETERMINE LIMIT OF SIGMA
+        MDHIT = IHIT9-IHIT0 + 1 - MHIT
+        IF ABS(PAR1).GT..05 .OR. (MHIT.LT.6 .AND. MDHIT.GT.0)
+        THEN
+N         CURVED TRACK
+          SIGLM = TRELLM(16)**2
+        ELSE
+N         STRAIGHT TRACK
+          SIG1 = TRELLM(16)
+          SIG2 = 0.
+          SIG3 = 0.
+N         INCREASE LIMIT FOR TRACKS AT WALL
+          IF(DSMAX(ILAY0+1,IRING,1)-5. .LT. DS0) SIG2 = TRELLM(17)
+N         INCREASE LIMIT FOR TRACKS AT WIRE PLANE
+          IF(DS0.LT.1.5) SIG3 = TRELLM(18)
+          IF(DSMAX(ILAY9+1,IRING,1)-5. .LT. DS9) SIG2 = SIG2+TRELLM(17)
+          IF(DS9.LT.1.5) SIG3 = SIG3 + TRELLM(18)
+          SIGLM = SIG1**2 + SIG2**2 + SIG3**2
+        CIF
+C
+N       SPECIAL LIMIT FOR RATHER STRAIGHT TRELS
+N       WITH BIG SLOPE
+        SIGSL = 0.
+        SLRAT =  AMIN1(ABS(SLOP0+SLOP9)*.1, 1.0)
+        IF(ABS(PAR1).LT..5 .AND. SLRAT .GT. 0.2)
+     ?  SIGSL = (SLRAT*TRELLM(17))**2 + TRELLM(16)**2
+        IF(SIGSL.GT.SIGLM) SIGLM = SIGSL
+C
+      CPROC
+C
+      END

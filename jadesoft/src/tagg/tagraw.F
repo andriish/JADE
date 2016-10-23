@@ -1,0 +1,143 @@
+C   12/03/84 412051642  MEMBER NAME  TAGRAW   (S)           FORTRAN
+C
+C
+C
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C
+C
+       SUBROUTINE TAGRAW(IWRITE,*)
+C
+C THIS IS A VERSION OF TAGADC THAT HANDLES RAW DATA
+C
+C
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C
+       IMPLICIT INTEGER*2 (H)
+C
+#include "cdata.for"
+C
+#include "cgraph.for"
+C
+#include "cwktag.for"
+C
+       DIMENSION CALIB(2)
+       DATA CALIB  / 10.0 , 6.6667 /
+       DATA ICOUNT / 0 /
+       LOGICAL NOMSG  / .FALSE. /
+       LOGICAL LERROR / .FALSE. /
+C
+C
+       IF ( NDDINN .NE. 0 ) NOMSG = .TRUE.
+C
+C FIND THE POINTERS ETC
+C
+C
+       CALL BLOC(IND,'ATAG',0,&9001)
+       I2S = ( IND * 2 ) + 3
+       I2F = 2 * ( IND + IDATA(IND) )
+       IF ( HDATA(I2F) .EQ. 0 ) I2F = I2F - 1
+C
+C
+C  UNPACK ADC DATA
+C
+       IADD = 0
+       DO  30 IS = I2S,I2F,1
+          IDD = HDATA(IS)
+C
+C IDD GE 0 => DATA,OTHERWISE -(ADDRESS)
+C
+          IF ( IDD .GE. 0 ) GOTO 103
+C
+C HERE IF IDD IS AN ADDRESS - CONVERT IT TO A (POSITIVE) ADDRESS
+C
+          IADD = IDD + 32768
+C
+C NOW GOTO END OF LOOP - NEXT BIT OF DATA IS CONTENTS BELONGING
+C TO THIS ADDRESS
+C
+          GOTO  30
+C
+  103     CONTINUE
+C
+C HERE FOR DATA
+C
+ 5903     CONTINUE
+          ITD = IS
+          IF ( (IADD .GE. 96) .OR. (IADD .LT. 0) ) GOTO 20
+C
+C CONVERT HARDWARE ADDRESS TO SOFTWARE ADDRESS
+C
+          CALL TAGH2S(ISAD,IADD,&19)
+C
+          IF ( (ISAD .GT. IENDPZ) .OR. (ISAD .LT. 0) ) GOTO 19
+C
+C
+C ISAD - SOFTWARE ADDRESS,IADD HARDWARE - ADDRESS,IDD - DATA
+C NOW FILL CATAG LOCATION (ISAD) WITH CORRECT ENERGY FOR
+C THIS BLOCK ( APPROXIMATELY IN MEV THANKS TO CALIB)
+C
+          CATAG(ISAD) = IDD * CALIB(MARK)
+C
+C
+C CHECK FOR CRAZY DATA
+C
+          IF ( (IDD .GE. 0) .AND. (IDD .LE. 4090) ) GOTO 20
+C
+C
+C
+C---------------------------------- ERROR CONDITIONS-----------------
+C
+   18     CONTINUE
+C
+           IF ( .NOT. NOMSG ) WRITE(6, 11)ISAD,CATAG(ISAD)
+   11      FORMAT(//,' +++  WARNING FROM TAGGING ROUTINE - TAGRAW -',
+     *                '   CATAG(',I4,') HAS CRAZY VALUE -',F12.3,
+     *                ' ---  IT HAS BEEN SET TO ZERO ')
+C
+C---                                     SET THE ARRAY TO ZERO
+C
+           CATAG(ISAD) = 0.0
+           IF ( .NOT. NOMSG ) LERROR = .TRUE.
+           GOTO 20
+C
+C--------------------------------------- HERE FOR ILLEGAL ADDRESS
+C
+   19      IF ( NOMSG ) GOTO 20
+           LERROR = .TRUE.
+           WRITE(6, 21)IHAD,ISAD
+   21      FORMAT(' +++ ILEGAL ADDRESS FOUND IN TAGRAW IHAD,ISAD ',2I10)
+C
+C    END OF ERROR HANDLING
+C
+   20     CONTINUE
+C
+C INCREMENT ADDRESS
+C
+          IADD=IADD+1
+   30  CONTINUE
+C
+C---                                     NOW TEST FOR ANY ERRORS
+C
+       IF ( NOMSG .OR. ( .NOT. LERROR ) )  RETURN
+       LERROR = .FALSE.
+C
+C---                                     IF THERE WAS AN ERROR THEN
+C---                                     DUMP OUT THE OFFENDING BANK
+C
+       CALL HPRS('ATAG',0)
+C
+C---                                     COUNT THE NUMBER OF ERRORS
+C
+       ICOUNT = ICOUNT + 1
+       IF ( ICOUNT .NE. 10 ) RETURN
+       NOMSG = .TRUE.
+       WRITE(6, 31)
+   31  FORMAT(///,'+++  MORE THAN TEN ERRORS DETECTED BY TAGRAW',
+     *            '  -- NO MORE MESSAGES  +++',///)
+   41  FORMAT(6(/,8(2X,F9.2)))
+C
+       RETURN
+C
+ 9001  RETURN 1
+C
+       END

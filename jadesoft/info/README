@@ -1,0 +1,49 @@
+Explanation of the files
+========================
+
+lumi.dat.ori:    
+
+ Contains the  JADE luminosities integrated in
+ consecutive runs with same cms energy (run periods).
+ The numbers were manually transfered from Olsson 
+ historic printout of the program 'TAKLUMI'
+
+lumi.dat: 
+
+ Like lumi.dat.ori, but with the following modifications:
+ 1. Tabulators are replaced by blanks.
+ 2. '0.0'-entries have been brought to the format of
+    the other entries.
+ 3. The missing run periods 540-564 and 581-591 were 
+    added in the head of the file. The corresponding 
+    luminosity numbers were retrieved from the very 
+    first page of the TAKLUMI printout where they are
+    given with an accuracy of 4 digits.
+
+jaderun.dat.ori: 
+
+ Contains an overview of the beam energies vs.
+ data taking period and run period.
+
+jaderun.dat:
+
+ Like jaderun.dat.ori, but in a format more suitable to
+ be processed by a kumac. In addition, the following lines 
+ were corrected:
+
+   1985   13.03  13.03  24801 24803    17.536  18
+   1985   22.03  22.03  24961 24970    16.500  18
+
+shutdown.dat:
+
+  Contains the shutdown periods.
+
+taklumi.f:
+
+  A FORTRAN program to read the original JADE luminosity files, i.e. the
+  luminosity vs. run information. It was modified to read the file
+ 'lumi.dat' that contains the luminosity vs. run period data.
+
+  N.B.: Checksums from Olssons fax are only reproduced exactly if 
+        the given run periods corresponding to these checksums 
+        match the run periods in the present luminosity file.

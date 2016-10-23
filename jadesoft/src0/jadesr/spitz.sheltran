@@ -1,0 +1,303 @@
+C   10/10/83 408221739  MEMBER NAME  SPITZ    (JADESR)      SHELTRAN
+      SUBROUTINE SPITZ(*)
+C
+C
+      IMPLICIT INTEGER*2 (H)
+N     * BOS COMMON
+      COMMON/BCS/ IDATA(35000)
+      DIMENSION ADATA(35000),HDATA(70000)
+      EQUIVALENCE (IDATA(1),ADATA(1)), (IDATA(1),HDATA(1))
+C
+      DATA ICALS/0/
+C
+N     * TO SAVE VALUES BETWEEN CALLS
+      DATA IPLHDR,IPLJTC/2*0/
+C     ,IPLHTL,IPLPTR /2*0/
+C
+      LOGICAL*1 PICTUR(120,16),STAR,SPACE,BORDER
+      DATA STAR/1H*/,SPACE/1H /,BORDER/1HI/,KPRNT1/0/,KPRNT2/0/
+     +,KPRMAX/20/
+      DIMENSION HHITS(4,128,2)
+C
+C-----------------------------------------------------------------------
+N     * INITIALISE
+      IF ICALS.EQ.0
+      THEN
+N     * FIX LOCATION OF POINTERS
+         IPLHDR=IBLN('HEAD')
+         IPLJTC=IBLN('JETC')
+         ICALS=1
+      CIF
+C-----------------------------------------------------------------------
+C=======================================================================
+C
+N     * NORMAL PROCESSING IN LOOP
+N     * POINTER OF I*2 'HEAD'
+      IPHDR2=IDATA(IPLHDR)*2
+      IPJETC=IDATA(IPLJTC)
+N     * BANK MISSING
+      IF IPHDR2.LE.0 .OR. IPJETC.LE.0
+      THEN
+         RETURN1
+      CIF
+      IRUN=HDATA(IPHDR2+10)
+      IF IRUN.LT.16803.OR.IRUN.GT.17326
+      THEN
+         RETURN1
+      CIF
+      IEVENT=HDATA(IPHDR2+11)
+C
+N     * CORRECT ALL JETC BANKS
+      WHILE IPJETC.GT.0
+N     * PRINT ONLY FOR ROW BANK HAVING THE
+N     *                     HIGHEST NUMBER
+         IF IDATA(IPJETC-1).LE.0
+         THEN
+            LPRFLG=1
+         ELSE
+            LPRFLG=0
+         CIF
+N     * POINTER-1 FOR JETC DATA IN HDATA
+         IPJTC2=2*IPJETC
+C=======================================================================
+N     * FIX CELL 1
+         IF IRUN.GE.16803.AND.IRUN.LE.17326
+         THEN
+N     * CLEAR PICTURE
+            IF KPRNT1.LT.KPRMAX.AND.LPRFLG.EQ.1
+            THEN
+               FOR I=1,16
+                  FOR J=1,120
+                     PICTUR(J,I)=SPACE
+                  CFOR
+                  PICTUR(60,I)=BORDER
+               CFOR
+            CIF
+            ICCLL=1
+            IND=ICCLL+IPJTC2+2
+            IHITPO=HDATA(IND)
+            IHITFT=(IHITPO-1)/4+1
+            IHITLT=(HDATA(IND+1)-1)/4
+            IHITPO=IHITPO+IPJTC2+100
+            IHITP1=IHITPO
+            IHIT=IHITFT
+            MH1=0
+            MH1L=0
+            WHILE IHIT.LE.IHITLT
+               MH1=MH1+1
+N     * COPY HITS OUT OF BANK
+               FOR J=1,4
+                  HHITS(J,MH1,1)=HDATA(IHITPO-1+J)
+               CFOR
+N     * GET WIRE NUMBER
+               IWIR=HDATA(IHITPO)
+               IWIR=SHFTR(IWIR,3)
+               IF(IWIR.LT.8) MH1L=MH1
+               IF KPRNT1.LT.KPRMAX .AND. LPRFLG.EQ.1
+               THEN
+N     * FILL UNCORRECTED HALF OF PICTURE
+                  ITIM3=HDATA(IHITPO+3)
+                  IP=ITIM3/3+1
+                  IF(IP.GT.60) IP=60
+                  PICTUR(IP,IWIR+1)=STAR
+               CIF
+               IHIT=IHIT+1
+               IHITPO=IHITPO+4
+            CWHILE
+            MH1U=MH1-MH1L
+            IHITPO=IHITP1
+            IF MH1U.GT.0
+            THEN
+N      * COPY BACK UPPER DL8 FIRST WITH
+N      * WIRE NUMBERS CORRECTED
+               FOR I=1,MH1U
+                  HHITS(1,I+MH1L,1)=HHITS(1,I+MH1L,1)-64
+                  FOR J=1,4
+                     HDATA(IHITPO-1+J)=HHITS(J,I+MH1L,1)
+                  CFOR
+                  IHITPO=IHITPO+4
+               CFOR
+            CIF
+            IF MH1L.GT.0
+            THEN
+N      COPY BACK LOWER DL8
+               FOR I=1,MH1L
+                  HHITS(1,I,1)=HHITS(1,I,1)+64
+                  FOR J=1,4
+                     HDATA(IHITPO-1+J)=HHITS(J,I,1)
+                  CFOR
+                  IHITPO=IHITPO+4
+               CFOR
+            CIF
+            IF KPRNT1.LT.KPRMAX.AND.MH1.GT.11.AND.LPRFLG.EQ.1
+            THEN
+N      * FILL CORRECTED HALF OF PICTURE AND PRINT
+               IHITPO=HDATA(IND)
+               IHITFT=(IHITPO-1)/4+1
+               IHITLT=(HDATA(IND+1)-1)/4
+               IHITPO=IHITPO+IPJTC2+100
+               IHIT=IHITFT
+               WHILE IHIT.LE.IHITLT
+                  IWIR=HDATA(IHITPO)
+                  IWIR=SHFTR(IWIR,3)
+                  ITIM3=HDATA(IHITPO+3)
+                  IP=ITIM3/3+1+60
+                  IF(IP.GT.120) IP=120
+                  PICTUR(IP,IWIR+1)=STAR
+                  IHIT=IHIT+1
+                  IHITPO=IHITPO+4
+               CWHILE
+               PRINT 5681,IRUN,IEVENT
+ 5681          FORMAT(' *** RUN',I8,'  EVENT',I8,'  CELL 1',/,
+     +         26X,'UNCORRECTED',50X,'CORRECTED')
+               PRINT 1672, ((PICTUR(M1,17-M2),M1=1,120),M2=1,16)
+ 1672          FORMAT(1X,120A1)
+               KPRNT1=KPRNT1+1
+            CIF
+         CIF
+C=======================================================================
+N     * FIX CELLS 94 AND 95
+         IF IRUN.GE.16826.AND.IRUN.LE.17304
+         THEN
+N     * CLEAR PICTURE
+            IF KPRNT2.LT.KPRMAX .AND. LPRFLG.EQ.1
+            THEN
+               FOR I=1,16
+                  FOR J=1,120
+                     PICTUR(J,I)=SPACE
+                  CFOR
+                  PICTUR(60,I)=BORDER
+               CFOR
+            CIF
+N     * COPY OUT CELL 94 THEN 95
+            FOR KC=1,2
+               ICCLL=93+KC
+               IND=ICCLL+IPJTC2+2
+               IHITPO=HDATA(IND)
+               IHITFT=(IHITPO-1)/4+1
+               IHITLT=(HDATA(IND+1)-1)/4
+               IHITPO=IHITPO+IPJTC2+100
+               IHIT=IHITFT
+               IF KC.EQ.1
+               THEN
+                  MH11=0
+                  MH11L=0
+                  IHITP1=IHITPO
+               ELSE
+                  MH21=0
+                  MH21L=0
+                  IND1=IND
+N     * SAVE LOCATION OF POINTER TO CELL 95
+               CIF
+               WHILE IHIT.LE.IHITLT
+                  IWIR=HDATA(IHITPO)
+                  IWIR=SHFTR(IWIR,3)
+                  IWIR=IWIR-(ICCLL-1)*16+1
+                  IF KC.EQ.1
+                  THEN
+                     MH11=MH11+1
+                     IF(IWIR.LT.9) MH11L=MH11
+                     MHX=MH11
+                  ELSE
+                     MH21=MH21+1
+                     IF(IWIR.LT.9) MH21L=MH21
+                     MHX=MH21
+                  CIF
+                  FOR J=1,4
+                     HHITS(J,MHX,KC)=HDATA(IHITPO-1+J)
+                  CFOR
+                  IF KPRNT2.LT.KPRMAX .AND. LPRFLG.EQ.1
+                  THEN
+N     * FILL UNCORRECTED PICTURE
+                     ITIM3=HDATA(IHITPO+3)
+                     IP=ITIM3/3+1
+                     IF(IP.GT.60) IP=60
+                     IF(KC.EQ.2) IP=IP+60
+                     PICTUR(IP,IWIR)=STAR
+                  CIF
+                  IHIT=IHIT+1
+                  IHITPO=IHITPO+4
+               CWHILE
+            CFOR
+            IF KPRNT2.LT.KPRMAX.AND.(MH11.GT.6.OR.MH21.GT.6)
+     +      .AND. LPRFLG.EQ.1
+            THEN
+N     * PRINT UNCORRECTED PICTURE
+               PRINT 5682,IRUN,IEVENT
+ 5682          FORMAT(' *** RUN',I8,'  EVENT',I8,'  CELLS 94 AND 95',
+     +         /,52X,'UNCORRECTED CELLS')
+               PRINT 1672, ((PICTUR(M1,17-M2),M1=1,120),M2=1,16)
+            CIF
+            MH11U=MH11-MH11L
+            MH21U=MH21-MH21L
+            IHITPO=IHITP1+MH11L*4
+            IF MH21L.GT.0
+            THEN
+N     * COPY BACK LOWER DL8 OF CELL 95
+N     * AFTER LOWER DL8 OF CELL 94
+               FOR I=1,MH21L
+                  HHITS(1,I,2)=HHITS(1,I,2)-64
+                  FOR J=1,4
+                     HDATA(IHITPO-1+J)=HHITS(J,I,2)
+                  CFOR
+                  IHITPO=IHITPO+4
+               CFOR
+            CIF
+N     * CORRECT POINTER TO CELL 95
+            HDATA(IND1)=IHITPO-IPJTC2-100
+            IF MH11U.GT.0
+            THEN
+N     * COPY BACK UPPER DL8 OF CELL 94
+N     * TO BE THE LOWER DL8 OF CELL 95
+N     * (94 LOWER AND 95 UPPER DL8 LEFT UNCHANGED)
+               FOR I=1,MH11U
+                  HHITS(1,I+MH11L,1)=HHITS(1,I+MH11L,1)+64
+                  FOR J=1,4
+                     HDATA(IHITPO-1+J)=HHITS(J,I+MH11L,1)
+                  CFOR
+                  IHITPO=IHITPO+4
+               CFOR
+            CIF
+            IF KPRNT2.LT.KPRMAX.AND.(MH11.GT.6.OR.MH21.GT.6)
+     +      .AND. LPRFLG.EQ.1
+            THEN
+N    * FILL AND PRINT CORRECTED PICTURE
+               FOR I=1,16
+                  FOR J=1,120
+                     PICTUR(J,I)=SPACE
+                  CFOR
+                  PICTUR(60,I)=BORDER
+               CFOR
+               FOR KC=1,2
+                  ICCLL=93+KC
+                  IND=ICCLL+IPJTC2+2
+                  IHITPO=HDATA(IND)
+                  IHITFT=(IHITPO-1)/4+1
+                  IHITLT=(HDATA(IND+1)-1)/4
+                  IHITPO=IHITPO+IPJTC2+100
+                  IHIT=IHITFT
+                  WHILE IHIT.LE.IHITLT
+                     IWIR=HDATA(IHITPO)
+                     IWIR=SHFTR(IWIR,3)
+                     IWIR=IWIR-(ICCLL-1)*16+1
+                     ITIM3=HDATA(IHITPO+3)
+                     IP=ITIM3/3+1
+                     IF(IP.GT.60) IP=60
+                     IF(KC.EQ.2) IP=IP+60
+                     PICTUR(IP,IWIR)=STAR
+                     IHIT=IHIT+1
+                     IHITPO=IHITPO+4
+                  CWHILE
+               CFOR
+               PRINT 4678
+4678           FORMAT(53X,'CORRECTED CELLS')
+               PRINT 1672, ((PICTUR(M1,17-M2),M1=1,120),M2=1,16)
+               KPRNT2=KPRNT2+1
+            CIF
+         CIF
+N     * NEXT JETC BANK
+         IPJETC=IDATA(IPJETC-1)
+      CWHILE
+      RETURN
+C=======================================================================
+      END

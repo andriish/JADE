@@ -1,0 +1,98 @@
+C   12/03/84 412041852  MEMBER NAME  CLSPS1   (S)           FORTRAN
+C
+        SUBROUTINE TAGPS1(SUM,IWRITE)
+C
+C WORK OUT CENTRE OF CLUSTER FOR 1981/2 TAGGER
+C
+C
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C
+C
+C
+#include "cwktag.for"
+C
+#include "comtag.for"
+C
+C
+C
+C----------------------  C O D E  --------------------------------------
+C
+C
+       TEST1 = SUM * 0.999
+       TEST2 = SUM * 0.025
+       XCORR = 0.0
+       YCORR = 0.0
+       SIGX  = 20.0
+       SIGY  = 20.0
+C
+C
+       CAND(1) = CLUS(1,2)
+       IF ( CAND(1) .LT. 0.0 ) GOTO 9010
+       ADDRES  = CLUS(1,1)
+       CAND(2) = XMAP (ADDRES)
+       CAND(3) = YMAP (ADDRES)
+       IF ( CAND(1) .GT. TEST1 ) GOTO 10
+C
+C
+C FIT TO RATIO OF ENERGIES FOR HIT BLOCK
+C AND NEXT LARGEST HIT BLOCK
+C
+       CALL TAGFIT(2,XFIT,YFIT,IWRITE,&10)
+C
+       XCORR = XFIT
+       YCORR = YFIT
+C
+C SOPHISTICATED CALCULATION OF ERROR ON X
+C
+       IF ( XCORR .GT. 5 ) SIGX = 5
+       IF ( YCORR .GT. 5 ) SIGY = 5
+C
+C ALSO FIT TO 3RD BLOCK ,IF IT HAS SIGNIFICANT FRACTION OF ENERGY
+C
+       IF ( CLUS(3,2) .LT. TEST2 ) GOTO 10
+       CALL TAGFIT(3,XFIT,YFIT,IWRITE,&10)
+C
+C CHOOSE ONE OF THE TWO FIT RESULTS - WHICHEVER IS THE LARGEST
+C
+       IF ( ABS(XFIT) .GT. ABS(XCORR) ) XCORR = XFIT
+       IF ( ABS(YFIT) .GT. ABS(YCORR) ) YCORR = YFIT
+C SOPHISTICATED CALCULATION OF ERROR ON X
+       IF ( XCORR .GT. 5 ) SIGX = 5
+       IF ( YCORR .GT. 5 ) SIGY = 5
+C
+C NOW ADD XCORR (CORRECTION ON X) TO X
+C AND SIMILARLY Y
+C
+   10  CONTINUE
+       CAND(2) = CAND(2) + XCORR
+       CAND(3) = CAND(3) + YCORR
+C
+C CAND(1) = ENERGY OF CLUSTER - ONLY FIRST 4 MEMBERS
+C
+       CAND(1) = CLUS(1,2) + CLUS(2,2) + CLUS(3,2) + CLUS(4,2 )
+       IF ( CAND(1) .LT. 0.0 ) GOTO 9010
+       SIGEN = 0.20 * SQRT( CAND(1) )
+C
+C DEBUG - WRITE OUT RESULT
+C
+       IF ( IWRITE .EQ. 1 ) WRITE(6, 601) ((CLUS(I,J),I=1,9),J=1,2)
+  601  FORMAT(' ++++ TAGPS1 : DEBUG  -  CLUS ARRAY ==>',/,
+     *           2(9(1X,F8.2),/) )
+       IF ( IWRITE .EQ. 1 ) WRITE(6,602) CAND(1 ) ,CAND(2 ) ,CAND(3)
+  602  FORMAT(' CLUSTER INFO ENERGY X Y ',3(2X,F12.2) )
+C
+C---------------------------------------- R E T U R N ------------------
+C
+       RETURN
+C
+C
+C---ERRORS :
+C
+C---                                      ENERGY < 0
+C
+ 9010  WRITE(6,9011) ((CLUS(I,J),I=1,9),J=1,2)
+       WRITE(6,602) CAND(1 ) ,CAND(2 ) ,CAND(3)
+ 9011  FORMAT(' ++++ TAGPS1 : NEGATIVE ENERGY  -  CLUS ARRAY ==>',/,
+     *           2(9(1X,F8.2),/) )
+       RETURN
+       END

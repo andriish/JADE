@@ -1,0 +1,48 @@
+$   28/05/84 407241248 MEMBER NAME  CLSEARCH (CLISTS)      NEWLIB
+$
+$   This CLIST searches for a string in the current PS
+$
+$  COMMAND=> SEARCH  string         ( copied from F22BOW )
+$
+$    where 'string' can be anything acceptable to the FIND command
+$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  FULL OFF
+  VERIFY OFF OFF
+  SET ESCAPE='%'
+  ON ATTENTION GOTO END
+  SHOW ' '
+  SHOW 'This is the SEARCH clist'
+  SHOW ' '
+  IF S0 = '' | N0 ^= 1
+    THEN
+      READ INTO S0 PROMPT 'Enter string to be searched for: '
+  ENDIF
+  SHOW ' '
+  SHOW 'Searching for string: ' || S0
+  SET N1=1
+  SET S2=MEMBER
+  LABEL TOP
+  SET S1=MEMBER(N1)
+  IF S1 = '  ' GOTO END
+  FULL ON
+  CHANGE %S1
+  FULL OFF
+  FIND %S0
+  IF SYSRC = 0
+    THEN
+     VERIFY ON
+     SHOW ' '
+     SHOW '-------> Member: ' || S1
+     FIND %S0
+     VERIFY OFF OFF
+  ENDIF
+  SET N1=N1+1
+  GOTO TOP
+  LABEL END
+  SET S0 = ''
+  FULL ON
+  VERIFY  ON
+  CHANGE %S2
+  SHOW ' '
+  SHOW 'SEARCH clist ended normally'

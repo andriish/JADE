@@ -1,0 +1,93 @@
+
+Start job at: Mon Sep 22 06:49:17 CEST 2003
+
+The version of the MC package is: mc105j
+found jt74opal.car as /home/pcl2483/pedro/jadesoft/util/mcgen/src/jt74opal.car
+found pythia5722.car as /home/pcl2483/pedro/jadesoft/util/mcgen/src/pythia5722.car
+found mc105j.car as /home/pcl2483/pedro/jadesoft/util/mcgen/mc/mc105j.car
+found pymaxi.car as /home/pcl2483/pedro/jadesoft/util/mcgen/src/pymaxi.car
+
+ YPATCHY  executing with Files / Options
+
+   1  PAM    11   -
+   2  ASM    21    /home/iwsatlas2/pedro/tmp/ytofort18914/mcpy57_105j.f
+   3  READ    2    /home/iwsatlas2/pedro/tmp/ytofort18914/mcpy57_105j.cra
+   4  PRINT   3    /home/iwsatlas2/pedro/tmp/ytofort18914/mcpy57_105j.lis
+   5  ASMA   22   -    ...
+
+ NUMBER OF GARBAGE COLLECTIONS =   0
+ NUMBER OF WORDS UNUSED =152649
+
+ -----------------
+ LINES IN  /QMACH/
+ NQL-NOR  MAX  PTH
+     108  110    0
+
+ ----------------------
+ NO.OF WARNINGS PRINTED
+
+ BAD CONTROL CARDS    0
+ MISSING SEQUENCES    0
+ LOST ACTIVATIONS     0
+ UNSATISF/ REF'S      0
+ LEVEL 1 CLASHES      0
+ LEVEL 2 CLASHES      0
+ ----------------------
+** mcpy57   === End of Compilation 1 ===
+** mcevbl   === End of Compilation 2 ===
+** mcpobl   === End of Compilation 3 ===
+** mcusff   === End of Compilation 4 ===
+** mcusin   === End of Compilation 5 ===
+** mcusev   === End of Compilation 6 ===
+** mcusfi   === End of Compilation 7 ===
+** pripar   === End of Compilation 8 ===
+** fin3out   === End of Compilation 9 ===
+** mcfill   === End of Compilation 10 ===
+** qqboos   === End of Compilation 11 ===
+** qqctrk   === End of Compilation 12 ===
+** mcfima   === End of Compilation 13 ===
+** mcanal   === End of Compilation 14 ===
+** jtfill   === End of Compilation 15 ===
+** ytest   === End of Compilation 16 ===
+** meanjet   === End of Compilation 17 ===
+** pymaxi   === End of Compilation 18 ===
+1501-510  Compilation successful for file mcpy57_105j.f.
+curdir = /home/pcl2483/pedro/jadesoft/util/mcgen/pythia tmpdir = /home/iwsatlas2/pedro/tmp/link18918
+arg = mcpy57_105j.o
+      found file mcpy57_105j.o
+arg = libmc105j
+      xoplib=whicho  -i -s .o libmc105j
+      xoplib=whicho  -i -s .a libmc105j
+      for libmc105j found library /home/pcl2483/pedro/jadesoft/util/mcgen/Rlib/libmc105j.a
+arg = libpythia5722
+      xoplib=whicho  -i -s .o libpythia5722
+      xoplib=whicho  -i -s .a libpythia5722
+      for libpythia5722 found library /home/pcl2483/pedro/jadesoft/util/mcgen/Rlib/libpythia5722.a
+arg = libjt74opal
+      xoplib=whicho  -i -s .o libjt74opal
+      xoplib=whicho  -i -s .a libjt74opal
+      for libjt74opal found library /home/pcl2483/pedro/jadesoft/util/mcgen/Rlib/libjt74opal.a
+arg = libckern105
+      xoplib=whicho  -i -s .o libckern105
+      xoplib=whicho  -i -s .a libckern105
+      for libckern105 found library /home/pcl2483/pedro/jadesoft/util/mcgen/Rlib/libckern105.a
+arg = libpx114
+      xoplib=whicho  -i -s .o libpx114
+      xoplib=whicho  -i -s .a libpx114
+      for libpx114 found library /home/pcl2483/pedro/jadesoft/util/mcgen/Rlib/libpx114.a
+ofiles: mcpy57_105j.o
+main: mcpy57_105j.run
+trace symbols:
+load symbols:
+files.o: mcpy57_105j.o
+opal libs:
+/home/pcl2483/pedro/jadesoft/util/mcgen/Rlib/libmc105j.a /home/pcl2483/pedro/jadesoft/util/mcgen/Rlib/libpythia5722.a
+/home/pcl2483/pedro/jadesoft/util/mcgen/Rlib/libjt74opal.a /home/pcl2483/pedro/jadesoft/util/mcgen/Rlib/libckern105.a
+/home/pcl2483/pedro/jadesoft/util/mcgen/Rlib/libpx114.a 
+dummy lib:
+cern libs: -L/cern/98/lib -lgraflib -lgrafX11 -lpacklib -lmathlib -lkernlib
+
+now beginning final pass
+/usr/bin/g77 -m -o mcpy57_105j.run -L/cern/98/lib mcpy57_105j.o /home/pcl2483/pedro/jadesoft/util/mcgen/Rlib/libmc105j.a /home/pcl2483/pedro/jadesoft/util/mcgen/Rlib/libpythia5722.a /home/pcl2483/pedro/jadesoft/util/mcgen/Rlib/libjt74opal.a /home/pcl2483/pedro/jadesoft/util/mcgen/Rlib/libckern105.a /home/pcl2483/pedro/jadesoft/util/mcgen/Rlib/libpx114.a -lgraflib -lgrafX11 -lpacklib -lmathlib -lkernlib -lxlf90 -lxlf -lxlfutil -lm -lc
+link completed with status 0
+mcpy57_105j.run moved to /home/pcl2483/pedro/jadesoft/util/mcgen/Rbin/.

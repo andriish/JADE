@@ -1,0 +1,663 @@
+C   06/02/81 308301443  MEMBER NAME  KNTREL   (PATRECSR)    SHELTRAN
+      SUBROUTINE KNTREL(HEARR,NUMTRK)
+C
+C     CALLS FITTING ROUTINES AND PATROL AND FILLS PATR AND JHTL BANKS
+C     RESULTS OF XYFIT AND PATROL ARE USED TO CORRECT BACKTRACE ARRAYS
+C
+C     IMCERT=1  MEANS BACKTR ARRAYS ARE NOT CORRECTED BY THE RESULTS
+C               OF XYFIT AND PATROL
+C
+C     IMCERT=0   MEANS 'FULL' EDITING WITH TRACK ELS ALSO
+C                BEING DELETED
+      IMPLICIT INTEGER*2 (H)
+      COMMON/CHEADR/HEAD(17),HRUN,HEV
+      COMMON/CADMIN/IEVTP,NREC,NRWRIT,NRERR
+      COMMON/CBKPAT/HTRK(100)
+#include "cdata.for"
+#include "ccycp.for"
+#include "cworkpr.for"
+#include "cworkeq.for"
+      EQUIVALENCE (ICELL ,IDWRK(1)),(NHIT  ,IDWRK(2))
+      DIMENSION HEARR(1)
+#include "cpatlm.for"
+      EQUIVALENCE (IXBKK(40),IXITER),(IXBKK(39),MAXITR),(JJPR,IXBKK(38))
+      EQUIVALENCE (IXBKK(37),MINHIT),(IXBKK(36),ICUT)
+C
+      INTEGER DATE(5), IDAY /0/
+C
+      DIMENSION NCNT1(127),NCNT2(127),IXREF0(127)
+      DIMENSION JCLLA(20),NCLLA(20)
+C
+C2001 FORMAT(1H0,2I3,I8,2(I4,3F6.1,3F6.3),
+C    ,     /,14X,I3,4E13.5,F6.2,I3,4E13.5,
+C    ,     /,14X,I3,2F8.3,F6.1,I3,10X,6I3,8I6,2X,Z4)
+C2002 FORMAT(1H0,40I3,/,1X,40I3,/,1X,40I3,/,1X,7I3)
+C2003 FORMAT(1H0,A4,3I6,2(/,1X,24I4),/,1X,50I2,
+C    ,       90(/,1X,2I6,I3,2F10.3,I3,2F10.3,1X,Z4,2I3))
+C2004 FORMAT(1H0,'BACKTR:',5X,20I6)
+C2005 FORMAT(1H ,12X,20I6)
+C2008 FORMAT(' JHTL-BANK:',2I6,/,(12X,20(2X,Z4)))
+C
+C
+C
+C        MINHIT IS THE MINIMUM NO OF UNUSED HITS
+C        LEFT ON A TRACKEL FOR IT TO BE BROUGHT
+C        BACK AT THE END AS AS A SEPARATE TRACK
+C
+C     ICUT IS THE MAX NO OF HITS LEFT UNCORRELATED
+C     BY PATROL BEFORE THE TRACKEL IS ASSIGNED TO THE TRACK
+C
+      DATA MSKTR1/Z7F/
+      DATA MSKDSP/Z2000/
+      DATA MAXTRK/100/
+      DATA MKBDHT /Z600/
+C
+ 458  FORMAT(' ',20(X,Z4))
+ 675  FORMAT('  ***** HIT LABEL MAY BE ZEROED **********')
+ 754            FORMAT('  HPFREE , HPLAST ',2I10)
+ 97           FORMAT(1X,30('+'),' KNTREL ERROR',I2,4I7)
+ 674  FORMAT('  **** NOT ENOUGH SPACE IN CWORK TO MOVE HIT LABEL *******
+     $ , HPFREE, HPLAST , NO OF WORDS ',3I7)
+C
+N     INITIALISE DATE + POINTER
+      IF IDAY.EQ.0
+      THEN
+        CALL DAY2(DATE)
+        IDAY = DATE(1)*1000 + DATE(2)
+        IQJHTL = IBLN('JHTL')
+        IQPATR = IBLN('PATR')
+      CIF
+C
+C     CALL PRPATR
+N     POINTER TO 'JHTL'-BANK
+      IPJHTL = IDATA(IQJHTL)
+N     NUMBER OF HITS
+      NHITT = (HPTSEC(97) - HPTSEC(1)) / 4
+N     POINTER TO 'PATR'-BANK
+      IPPATR = IDATA(IQPATR)
+N     CURRENT NUMBER OF TRACKS
+      NTR0  = IDATA(IPPATR+2)
+      ITRBK = NTR0
+N     LENGTH OF TRACK BANK
+      LTRBK = IDATA(IPPATR+3)
+N     POINTER TO NEXT TRACK BANK - 1
+      IPTRBK = IPPATR + IDATA(IPPATR+1) + ITRBK*LTRBK
+N     MEMORIZE 1. FREE LOC. IN CWORK
+      HPFRE0 = HPFREE
+C
+N     ZERO XREF: TRACK#(PATR) - TRACK#(BACKTR)
+      CALL SETSL(IXREF0(1),0,508,0)
+C
+      IF NTR.GT.0 .AND. NUMTRK.GT.0
+      THEN
+C
+N     PRINTOUT
+C       I9 = HNTR
+C       PRINT 2003, HPRO,HNTR,NTR,NUMTRK,
+C    ,              HNTCEL, ((TRKAR(I1,I2),I2=1,11),I1=1,I9)
+C
+C       I0 = HPHL0
+C       I9 = HPHL9
+C       PRINT 2008, I0,I9,(HWRK(I1),I1=I0,I9)
+C
+C         PRINT 2004,NTR, (HNREL(I1),I1=1,NTR)
+C         FOR ITR=1,NTR
+C           NELM = HNREL(ITR)
+C           PRINT 2005, (HISTR(I1,ITR),I1=1,NELM)
+C         CFOR
+C
+N       LOOP OVER ALL TRACKS AND FIT
+        LBEVTR = 0
+        IEDTK  = 0
+        ITR    = 0
+        MAXTR0 = MIN0(MAXTRK,NUMTRK)
+        WHILE IEDTK.LT.MAXTR0
+N       COUNTER FOR HEARR
+        IEDTK=IEDTK+1
+C
+N         EXTRACT TRACK NO
+          ITR=HEARR(IEDTK)
+C
+N         TRACK ARRAY SATURATED ?
+          IF(ITRBK.GT.MAXTRK .OR. ITR.GT.MAXTRK) XWHILE
+C
+          IF HNREL(ITR).GT.0
+          THEN
+            HPFREE = HPFRE0
+            CALL FXYZ(ITR)
+            NHIT = (HPHT9-HPHT0+1) / HLDHT
+N           MORE THAN THREE HITS
+            IF NHIT.GT.3
+            THEN
+N             POINTER TO RESULTS OF TRACK FITS
+              HPTR0 = HPFREE
+              HPTR9 = HPTR0 + 49
+              HLDTR = 50
+              HPFREE= HPTR9 + 1
+              IF HPFREE.LE.HPLAST
+              THEN
+                IWRK(HPTR0+47)=0
+                CALL XYFIT
+                IF WRK(HPTR0+22).LT.GFP(2)
+                THEN
+C
+N                 SET RADIUS LIMITS FOR PATROL
+                  RMIN = 150.
+                  RMAX = 850.
+                  IF NTRLM.GT.0
+                  THEN
+                    FOR I=1,NTRLM
+                      IF LMRTR(1,I).EQ.ITR
+                      THEN
+                        RMIN = RLMTR(2,I)
+                        RMAX = RLMTR(3,I)
+                        XFOR
+                      CIF
+                    CFOR
+                  CIF
+                  CALL PATROL(RMIN,RMAX)
+                CIF
+C
+                RMSFIT = WRK(HPTR0+22)
+                IF RMSFIT.GE.1000. .OR.
+     ?             IWRK(HPTR0+23).LT.5 .AND. IMCERT.EQ.0
+                THEN
+                  HNREL(ITR) = 0
+                ELSE
+                  NHGDZ = 0
+                  IDHTLB=IPJHTL*2-HPHL0+3
+                  FOR IIP=HPHT0,HPHT9,HLDHT
+                    IPHTLB=IWRK(IIP+2)
+                    IPHTL=HDATA(IPHTLB+IDHTLB)
+                IF(LAND(IPHTL,MKBDHT).EQ.0.AND.IPHTL.NE.0) IWRK(IIP+7)=800017100
+                    IF(IWRK(IIP+7).LT.8) NHGDZ = NHGDZ + 1
+                  CFOR
+C
+N                 CHECK IF <3 GOOD Z-HITS
+                  IF NHGDZ.LT.3
+                  THEN
+                    HNREL(ITR) = 0
+                  ELSE
+N                   >2 GOOD Z-HITS
+                    CALL ZRFIT
+C
+N                   DELETE BACKGROUND TRACK
+                    CRV  = ABS(WRK(HPTR0+24))
+                    ZINT = ABS(WRK(HPTR0+30))
+                    IF IYBKK(14).NE.0 .AND. CRV.GT.YBKK(12) .AND.
+     ?                 ZINT.GT.YBKK(15)
+                    THEN
+                      KP=HPTR0
+                      CSTH=WRK(KP+4)*WRK(KP+7)+WRK(KP+5)*WRK(KP+8)
+
+                      CSTH=CSTH/SQRT((WRK(KP+4)**2+WRK(KP+5)**2)*
+     *                          (WRK(KP+7)**2+WRK(KP+8)**2))
+                      IF(CSTH.LT.YBKK(13)) HNREL(ITR) = 0
+                    CIF
+C
+                    IF HNREL(ITR).GT.0
+                    THEN
+C
+N                     INCREASE TRACK BANK # + ANALYSE TRACK
+                      ITRBK = ITRBK + 1
+                      IXREF0(ITRBK) = ITR
+                      PERFORM TRKBNK
+C
+N                     DELETE TRACK IF <5 HITS REGISTERED
+                      IF NHTREG.LT.5
+                      THEN
+                        ITRBK  = ITRBK  - 1
+                        IPTRBK = IPTRBK - LTRBK
+                      CIF
+                    CIF
+C
+                  CIF
+                CIF
+              ELSE
+C               KERROR 2 .. NOT ENOUGH SPACE IN CWORK
+                KERROR = 2
+                PRINT97,KERROR,NREC,HRUN,HEV,ITR
+                PRINT 754,HPFREE,HPLAST
+                XWHILE
+              CIF
+            ELSE
+C             KERROR 1 .. NOT ENOUGH HITS ON TRACK
+              KERROR = 1
+              PRINT97,KERROR,NREC,HRUN,HEV,ITR
+              HNREL(ITR)=0
+            CIF
+          CIF
+        CWHILE
+C
+      HPFREE=HPFRE0
+      CIF
+C
+N     READJUST RECORD LENGTH + # OF TRACKS
+      NDIFF = IPTRBK - IPPATR - IDATA(IPPATR)
+      CALL BCHM(IPPATR,NDIFF,IRET)
+      IDATA(IPPATR+2) = ITRBK
+C
+N     ELIMINATE BAD + COVERED TRACKS IF IMCERT = 0
+      IF IMCERT.EQ.0 .AND. ITRBK.GT.0
+      THEN
+C
+N       COUNT CORRELATED + UNCORRELATED HITS
+C       I0 = IPJHTL*2 + 1
+C       I9 = (IDATA(IPJHTL)+IPJHTL)*2
+C       PRINT 2008, I0,I9,(HDATA(I1),I1=I0,I9)
+        PERFORM CNTHIT
+C       PRINT 2008, I0,I9,(HDATA(I1),I1=I0,I9)
+C
+        IDATA(IPPATR+4)=LBEVTR
+        IDATA(IPPATR+ 6) = NHITUC
+      CIF
+C
+N     ELIMINATE TRACKS WITH 0 TRELS
+      ITR = 0
+      WHILE ITR.LT.NTR
+      ITR = ITR + 1
+        NELM = HNREL(ITR)
+        IF NELM.LE.0
+        THEN
+          NBYTE = (NTR-ITR)*2
+          NTR = NTR - 1
+          IF NBYTE.GT.0
+          THEN
+            CALL MVCL(HNREL(ITR),0,HNREL(ITR+1),0,NBYTE)
+            NBYTE = NBYTE * 9
+            CALL MVCL(HISTR(1,ITR),0,HISTR(1,ITR+1),0,NBYTE)
+          CIF
+          ITR = ITR - 1
+        CIF
+      CWHILE
+C
+C
+      RETURN
+C
+C
+N     ***************************
+N     *      T R K B N K        *
+N     ***************************
+C
+N     SET TRACK BANK IN /CDATA/
+      PROC TRKBNK
+C
+      JP     = HPTR0
+      LBTRCK = 0
+C
+      IR1=0
+      IR2=0
+      IR3=0
+      NTRKEL=HNREL(ITR)
+      FOR ITN=1,NTRKEL
+        ITH=HISTR(ITN,ITR)
+        ITH=IABS(ITH)
+        IF(LAND(LBL(ITH),MSKDSP).NE.0)LBTRCK=LOR(LBTRCK,2048)
+        ITH=IPCL(ITH)
+        IF ITH.LE.24
+        THEN
+          IR1=1
+        ELSE
+          IF ITH.GT.48
+          THEN
+            IR3=1
+          ELSE
+            IR2=1
+          CIF
+        CIF
+      CFOR
+      IF(IR1.EQ.0)LBTRCK=LOR(LBTRCK,512)
+      IF(IR1.NE.0.AND.IR3.NE.0.AND.IR2.EQ.0) LBTRCK=LOR(LBTRCK,1024)
+      IF(CRV.GT..002) LBTRCK=LOR(LBTRCK,64)
+C
+C     I0 = JP
+C     I9 = JP+47
+C     PRINT 2001,(WRK(I1),I1=I0,I9)
+      TGTH       = WRK(JP+29)
+      Z0         = WRK(JP+30)
+      CSTH       = 1. / SQRT(TGTH**2+1.)
+      SNTH       = CSTH * TGTH
+      WRK(JP+ 6) = WRK(JP+ 6)*TGTH + Z0
+      WRK(JP+13) = WRK(JP+13)*TGTH + Z0
+      WRK(JP+ 7) = WRK(JP+ 7) * CSTH
+      WRK(JP+ 8) = WRK(JP+ 8) * CSTH
+      WRK(JP+ 9) = SNTH
+      WRK(JP+14) = WRK(JP+14) * CSTH
+      WRK(JP+15) = WRK(JP+15) * CSTH
+      WRK(JP+16) = SNTH
+      LBEVTR=LOR(LBEVTR,LBTRCK)
+C     PRINT 2001,(WRK(I1),I1=I0,I9)
+C
+N     INCREASE TRACK BANK COUNTER
+      HTRK(ITR)=ITRBK
+      IP0 = IPTRBK + 1
+      IP9 = IPTRBK + LTRBK
+      FOR IP = IP0,IP9
+        IDATA(IP) = 0
+      CFOR
+      IDATA(IPTRBK+ 1) = ITRBK
+      IDATA(IPTRBK+ 2) = IPFAST+1
+      IDATA(IPTRBK+ 3) = IDAY
+C
+N     RESULTS FROM X-Y-FIT + ZRFIT
+      IP1 = HPTR0+3
+      IP9 = IP1+29
+      JP  = IPTRBK + 3
+      FOR IP=IP1,IP9
+        JP = JP + 1
+        IDATA(JP) = IWRK(IP)
+      CFOR
+      IDATA(IPTRBK+47)=IWRK(HPTR0+46)
+      IDATA(IPTRBK+48)=LBTRCK
+C
+N     POINTER TO FIRST CELL -1
+      NPCLL  = 0
+N     INITIALIZE CELL #
+      ICELL0 = -1
+N     COUNTER OF REGISTERED HITS
+      NHTREG = 0
+C
+N     SET HIT LABELS
+N     LOOP OVER ALL HITS
+      IDHTLB = IPJHTL*2-HPHL0+3
+      IP     = HPHT0
+      REPEAT
+N       SELECT ONLY ACCEPTED HITS
+        IF IWRK(IP+10).GE.0 .AND. IWRK(IP+10).LE.2
+        THEN
+N         UPPER BITS
+          LBBDHT = IWRK(IP+10)
+          LBBDHT=LAND(LBBDHT,3)
+          LBBDHT = SHFTL(LBBDHT,9)
+N         POINTER TO HIT LABEL IN CWORK
+          IPHTLB = IWRK(IP+ 2)
+N         ORIGINAL HIT LABEL
+          LBHIT0 = HWRK(IPHTLB)
+          LBHIT1 = HWRK(IPHTLB+1)
+N         TKEL NO
+          ITREL = IABS(IWRK(IP+ 8))
+N         TKEL NO WITHIN RING
+          JTREL = NTREL(ITREL)*2
+N         TRACK NO
+N         SET TRACK #
+          LBHIT = ITRBK*2
+N         SET L/R BIT
+          IF(IWRK(IP+8).GT.0) LBHIT = LOR(LBHIT,256)
+N         FETCH HIT LABEL OF TRACK
+          IPHTL1 = IPHTLB + IDHTLB
+          IPHTL2 = IPHTLB + IDHTLB +1
+N         HIT LABEL IN CDATA
+          LBHIT1 = HDATA(IPHTL1)
+          LBHIT2 = HDATA(IPHTL1+1)
+          RES=WRK(IP+13)
+          RES=ABS(RES)/.2
+          IRES=IFIX(RES)
+          IF(IRES.GT.31) IRES=31
+          IRES=SHFTL(IRES,11)
+          LBHIT=LBHIT+IRES
+N         LABEL FOR REGISTERED HIT
+          LBREG = 0
+C
+          IF LAND(MSKTR1,SHFTR(LBHIT1,1)).NE.ITRBK
+     ¢      .OR.LAND(LBHIT1,MKBDHT).NE.0
+          THEN
+          IF LAND(LBHIT1,MKBDHT).NE.0
+          THEN
+N           PRIOR HIT IS BAD(XYFIT)
+            IF LBBDHT.EQ.0
+             THEN
+N             THIS HIT IS GOOD
+              LBREG = 1
+              LBHIT1 = LBHIT
+N             SET BIT FOR GOOD  Z-COORDINATE
+              IF(IWRK(IP+7).EQ.0) LBHIT1 = LOR(LBHIT1,1)
+            ELSE
+N             NEW HIT IS ALSO BAD
+              ITLND=LAND(LBHIT1,MKBDHT)
+              IF LBBDHT.LT.ITLND
+              THEN
+                LBHIT1 = LOR(LBHIT,LBBDHT)
+                LBREG = 1
+N               SET BIT FOR GOOD  Z-COORDINATE
+                IF(IWRK(IP+7).EQ.0) LBHIT1 = LOR(LBHIT1,1)
+              CIF
+            CIF
+          ELSE
+N           NO BAD PRIOR HIT
+            IF LBHIT1.EQ.0
+N           FIRST TRACK FOR THIS HIT NOW
+            THEN
+              LBHIT1 = LOR(LBHIT,LBBDHT)
+              LBREG = 1
+N             SET BIT FOR GOOD  Z-COORDINATE
+              IF(IWRK(IP+7).EQ.0) LBHIT1 = LOR(LBHIT1,1)
+N             SECOND TRACK FOR THIS HIT NOW
+            ELSE
+              IF LBBDHT.EQ.0 .AND. LBHIT2.EQ.0
+              THEN
+                LBHIT2 = LOR(LBHIT,LBBDHT)
+                LBREG = 1
+N               SET BIT FOR GOOD  Z-COORDINATE
+                IF(IWRK(IP+7).EQ.0) LBHIT2 = LOR(LBHIT2,1)
+              CIF
+            CIF
+          CIF
+          HDATA(IPHTL1) = LBHIT1
+          HDATA(IPHTL2) = LBHIT2
+N         COUNT REGISTERED HIT
+          NHTREG = NHTREG + 1
+N         CHECK IF NEW CELL
+          ICELL = IWRK(IP+9)
+          IF LBREG.NE.0
+          THEN
+            IF ICELL.EQ.ICELL0
+            THEN
+              NCLLA(JPCLL) = NCLLA(JPCLL) + 1
+            ELSE
+              ICELL0 = ICELL
+              JPCLL = 0
+              IF NPCLL.GT.1
+              THEN
+                FOR I1=1,NPCLL
+                  IF(ICELL.EQ.JCLLA(I1)) JPCLL = I1
+                CFOR
+              CIF
+              IF JPCLL.EQ.0
+              THEN
+                NPCLL        = NPCLL + 1
+                JPCLL        = NPCLL
+                JCLLA(JPCLL) = ICELL
+                NCLLA(JPCLL) = 1
+              ELSE
+                NCLLA(JPCLL) = NCLLA(JPCLL) + 1
+              CIF
+            CIF
+          CIF
+        CIF
+        CIF
+      IP = IP + HLDHT
+      UNTIL IP.GT.HPHT9
+C
+N     REDUCE # OF CELLS TO 6
+      WHILE NPCLL.GT.6
+        NHTMIN = 99999
+        FOR I1=1,NPCLL
+          IF NCLLA(I1).LT.NHTMIN
+          THEN
+            NHTMIN = NCLLA(I1)
+            JPCLL = I1
+          CIF
+        CFOR
+        JCLLA(JPCLL) = JCLLA(NPCLL)
+        NCLLA(JPCLL) = NCLLA(NPCLL)
+        NPCLL = NPCLL - 1
+      CWHILE
+C
+N     STORE CELLS IN TRACK BANK
+      IPCLL  = IPTRBK + 33
+      FOR I1 = 1,NPCLL
+        IPCLL  = IPCLL + 1
+        IDATA(IPCLL) = JCLLA(I1)
+      CFOR
+C
+N     INCREASE POINTER TO TRACK BANK
+      IPTRBK = IPTRBK + LTRBK
+C
+      CPROC
+C
+C
+N     ***************************
+N     *      C N T H I T        *
+N     ***************************
+C
+N     COUNT CORRELATED + UNCORRELATED HITS
+      PROC CNTHIT
+C
+C
+N     NO CHECK IF NO TRACKS
+      NTR1  = ITRBK
+      LPATR = IDATA(IPPATR)
+C
+      IPHL0 = IPJHTL*2 + 3
+      ILDHL = IDATA(IPJHTL)*2 - 2
+      IPHL9 = ILDHL + IPHL0 - 1
+C
+N     COUNT HITS OF TRACK
+      CALL SETSL(NCNT1(1),0,1016,0)
+      NHITUC = 0
+      FOR I=IPHL0,IPHL9,2
+        IZW1  = HDATA(I  )
+        ITRK1 = LAND(SHFTR(IZW1,1),127)
+        IF ITRK1.GT.0
+        THEN
+          IZW2  = HDATA(I+1)
+          ITRK2 = LAND(SHFTR(IZW2,1),127)
+          IF ITRK2.LE.0
+          THEN
+            NCNT1(ITRK1) = NCNT1(ITRK1) + 1
+          ELSE
+            NCNT2(ITRK1) = NCNT2(ITRK1) + 1
+            NCNT2(ITRK2) = NCNT2(ITRK2) + 1
+          CIF
+        ELSE
+          NHITUC = NHITUC + 1
+        CIF
+      CFOR
+C
+N     ELIMINATE COVERED OR TOO SHORT TRACKS
+C     PRINT 2002, NCNT1,NCNT2,IXREF0
+C     CALL PRPATR
+      MTR = 0
+      LTRBK = IDATA(IPPATR+3)
+      IPTR0 = IPPATR + IDATA(IPPATR+1)
+      IPTR9 = (NTR1-1)*LTRBK + IPTR0
+      FOR ITR=1,NTR1
+        IF NCNT1(ITR).GE.5 .AND. NCNT1(ITR)+NCNT2(ITR).LT.LMPATR(1)
+        THEN
+N         CHECK IF TRACKS LEAVES IN Z DIRECT.
+          IPTR1 = 0
+          JTR = MTR + 1
+          FOR IP=IPTR0,IPTR9,LTRBK
+            IF IDATA(IP+1).EQ.JTR
+            THEN
+              IPTR1 = IP
+              XFOR
+            CIF
+          CFOR
+          IF(IPTR1.NE.0 .AND.ABS(ADATA(IPTR1+14)).LT.1000.)NCNT1(ITR)=1
+        CIF
+        IF NCNT1(ITR).LT.5
+        THEN
+          PERFORM ELIMTR
+          NCNT1(ITR) =-NCNT1(ITR)
+          JTR = IXREF0(ITR)
+          HNREL(JTR) = 0
+C     PRINT 2002, NCNT1,NCNT2
+        ELSE
+N         COUNT REMAINING TRACKS
+          MTR = MTR + 1
+        CIF
+      CFOR
+C
+C
+      IDATA(IPPATR+2) = MTR
+C     PRINT 2002, NCNT1,NCNT2,MTR
+C
+N     READJUST RECORD LENGTH + # OF TRACKS
+      LENG  = IDATA(IPPATR+2)*IDATA(IPPATR+3) + IDATA(IPPATR+1)
+      NDIFF = LENG - IDATA(IPPATR)
+      IF(NDIFF.NE.0) CALL BCHM(IPPATR,NDIFF,IRET)
+C
+      CPROC
+C
+C
+N     ***************************
+N     *      E L I M T R        *
+N     ***************************
+C
+N     ELIMINATE TRACK ITR
+      PROC ELIMTR
+C
+N       LOOP OVER HIT LABEL ARRAY
+        JTR = MTR + 1
+        ITRDIF = ITR - JTR
+        FOR I=IPHL0,IPHL9,2
+          IZW1  = HDATA(I  )
+          ITRK1 = LAND(SHFTR(IZW1,1),127)
+          IZW2  = HDATA(I+1)
+          ITRK2 = LAND(SHFTR(IZW2,1),127)
+          IF ITRK2.EQ.JTR
+          THEN
+            HDATA(I+1) = 0
+            ITRK2 = 0
+            IND1  = ITRK1 + ITRDIF
+            NCNT1(IND1) = NCNT1(IND1) + 1
+            NCNT2(IND1) = NCNT2(IND1) - 1
+C     DATA NPREL /0/
+C     NPREL = NPREL + 1
+          CIF
+          IF ITRK1.EQ.JTR
+          THEN
+            HDATA(I ) = HDATA(I+1)
+            HDATA(I+1) = 0
+            ITRK1 = ITRK2
+            ITRK2 = 0
+            IF ITRK1.GT.0
+            THEN
+              IND1  = ITRK1 + ITRDIF
+              NCNT1(IND1) = NCNT1(IND1) + 1
+              NCNT2(IND1) = NCNT2(IND1) - 1
+            CIF
+          CIF
+C         DECREASE TRACK # FOR HIGHER TRACK #'S
+          IF(ITRK1.GT.JTR) HDATA(I  ) = HDATA(I  )-2
+          IF(ITRK2.GT.JTR) HDATA(I+1) = HDATA(I+1)-2
+        CFOR
+C     PRINT 2002, NCNT1,NCNT2
+C
+N       ELIMINATE TRACK IN PATR-BANK
+        FOR IP=IPTR0,IPTR9,LTRBK
+          IF IDATA(IP+1).EQ.JTR
+          THEN
+            IPTR1 = IP
+            XFOR
+          CIF
+        CFOR
+C
+        IF IPTR1.GT.0
+        THEN
+          IPTR2 = IPTR1 + LTRBK
+          NBYTE = (IPTR9 -IPTR2 + LTRBK) * 4
+          IPTR9 = IPTR9 - LTRBK
+          IF NBYTE.GT.0
+          THEN
+            CALL MVCL(IDATA(IPTR1+1),0,IDATA(IPTR2+1),0,NBYTE)
+            FOR IP=IPTR1,IPTR9,LTRBK
+              IDATA(IP+1) = IDATA(IP+1) - 1
+            CFOR
+          CIF
+        CIF
+C
+      CPROC
+C
+      END

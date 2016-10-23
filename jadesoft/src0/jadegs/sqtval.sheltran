@@ -1,0 +1,34 @@
+C   09/06/83 703131348  MEMBER NAME  SQTVAL   (S)           SHELTRAN
+      FUNCTION SQTVAL(F,G,AL,EPS)
+C                                  J. SPITZER
+C     CALCULATE SQTVAL=F*(SQRT(1+G*AL**2/F**2)-1).
+C     TO ACHIEVE GOOD PRECISION, FOR LARGE F THE TAYLOR EXPANSION
+C     IS USED UPTO AT MOST 15 TERMS
+C     EPS IS THE REQUIRED ABSOLUTE PRECISION
+C
+      S=(AL/F)*G
+      U=-S*(AL/F)
+      S=-.5*S*AL
+      IF ABS(U).GT..3
+      THEN
+         IF U.LT..98
+         THEN
+            SQTVAL=F*(SQRT(1.-U)-1.)
+         ELSE
+            SQTVAL=0.
+            PRINT 100,F,G,AL
+100         FORMAT(1X,' SQTVAL',3E16.7)
+         CIF
+         RETURN
+      CIF
+      VAL=-S*(1.+.25*U+.125*U**2)
+      Q=S*U**3/12.8
+      N=5
+      WHILE ABS(Q).GT.EPS .AND.N.LT.15
+         VAL=VAL-Q
+         Q=Q*U*(1.-1.5/N)
+         N=N+1
+      CWHILE
+      SQTVAL=VAL
+      RETURN
+      END

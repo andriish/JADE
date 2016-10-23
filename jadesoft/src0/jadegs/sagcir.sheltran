@@ -1,0 +1,37 @@
+C   09/06/83 703131338  MEMBER NAME  SAGCIR   (S)           SHELTRAN
+      FUNCTION SAGCIR(FPP,CP,G,SP,EPS)
+C                                   J. SPITZER
+C     CALCULATE SAGCIR=(SQRT(1+G*(FPP*CP)**2)-1)/(FPP*CP)
+C               SP    =SAGCIR/CP
+C     TO ACHIEVE GOOD PRECISION, FOR SMALL FPP*CP THE TAYLOR EXPANSION
+C     IS USED UPTO AT MOST 15 TERMS
+C     EPS IS THE REQUIRED ABSOLUTE PRECISION
+C
+      FP=FPP*CP
+      U=-(G*FP)*FP
+      S=-.5*G*FPP
+      IF ABS(U).GT..3
+      THEN
+         IF U.LT..98
+         THEN
+            SAGCIR=(SQRT(1.-U)-1.)/FP
+         ELSE
+            SAGCIR=0.
+            PRINT 100,FPP,CP,G
+100         FORMAT(1X,' SAGCIR',3E16.7)
+         CIF
+         SP=SAGCIR/CP
+         RETURN
+      CIF
+      VAL=-S*(1.+.25*U+.125*U**2)
+      Q=S*U**3/12.8
+      N=5
+      WHILE ABS(Q).GT.EPS .AND.N.LT.15
+         VAL=VAL-Q
+         Q=Q*U*(1.-1.5/N)
+         N=N+1
+      CWHILE
+      SP=VAL
+      SAGCIR=SP*CP
+      RETURN
+      END

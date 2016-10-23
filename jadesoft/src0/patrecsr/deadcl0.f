@@ -1,0 +1,141 @@
+C   12/03/81 104071458  MEMBER NAME  DEADCL0  (PATRECSR)    FORTRAN
+C
+      LOGICAL FUNCTION DEADCL(ICELL,NRUN)
+C
+C     LAST UPDATE :   26/04/80
+C     LAST UPDATE :   04/11/80
+C     LAST UPDATE :   01/03/81
+C     LAST UPDATE :   11/03/81
+C     FUNCTION DEADCL NOW RUN# DEPENDENT
+C     FUNCTION DEADCL ACCEPTS ONLY CELLNUMBERS BETWEEN 1 AND 96 INCL.
+C     FUNCTION DEADCL RETURNS .TRUE.  IF THE CELL 'ICELL' IS DEAD
+C     FUNCTION DEADCL RETURNS .FALSE. IF THE CELL 'ICELL' IS STILL ALIVE
+C     FUNCTION DEADCL NOW ALSO APPLICABLE FOR MC-DATA:   MC INPUT IS
+C                            READ IN FROM COMMON /CRDSTA/ AT EACH EVENT
+C-----------------------------------------------------------------------
+      INTEGER*2 HITD,HCELLD
+      LOGICAL IC(96),LC(96),LCS(96)
+      COMMON / CRDSTA / NDEAD, NCDEAD, HITD(10), HCELLD(10)
+      EXTERNAL RDMTCO
+C
+      DATA MERR/0/
+      DATA   IC /
+     ,  .FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,
+     ,  .FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,
+     ,  .TRUE. ,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,
+     ,  .FALSE.,.FALSE.,.FALSE.,.TRUE. ,.FALSE.,.FALSE.,.FALSE.,.FALSE.,
+     ,  .FALSE.,.FALSE.,.FALSE.,.FALSE.,.TRUE. ,.FALSE.,.FALSE.,.FALSE.,
+     ,  .FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,
+     ,  .FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,
+     ,  .FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,
+     ,  .TRUE. ,.TRUE. ,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,
+     ,  .FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,
+     ,  .TRUE. ,.TRUE. ,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,
+     ,  .FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE./
+C
+C                                      --- CHECK CELL NUMBER ---
+  100 IF (ICELL.GE.1.AND.ICELL.LE.96) GOTO 110
+      DEADCL = .TRUE.
+      MERR = MERR + 1
+      IF (MERR.LT.100) PRINT 6000, ICELL
+ 6000 FORMAT(' ********** ILLEGAL CELL NUMBER',I10,' FOUND **********')
+      RETURN
+C
+C                                      --- CHECK RUN NUMBER ---
+  110 IF (NRUN.LE.100) GOTO 300
+C
+C                                      --- REAL DATA ---
+      DATA NCA /0/
+      IF (NCA.EQ.0) PRINT 6101
+ 6101 FORMAT('0---->  DEADCL FUNCTION  <----  LAST UPDATE 11/03/81'/' ')
+      NCA = NCA + 1
+C
+  113 IF (NRUN.LT.6286) GOTO 114
+      DEADCL = .FALSE.
+      RETURN
+C
+  114 IF (NRUN.LT.5800) GOTO 115
+      DEADCL = .FALSE.
+      IF (ICELL.EQ.65 .OR. ICELL.EQ.66) DEADCL = .TRUE.
+      RETURN
+C
+  115 IF (NRUN.LT.5548) GOTO 120
+      DEADCL = IC(ICELL)
+      RETURN
+C                                      --- OLD RUNS ---
+  120 CALL UCOPY(IC(1),LC(1),96)
+      IF (NRUN.NE.5547) GOTO 190
+      DO 180 J=25,48
+  180 LC(J) = .TRUE.
+      GOTO 200
+  190 LC(28) = .FALSE.
+      IF (NRUN.GE.3311) GOTO 200
+      LC(73) = .TRUE.
+      LC(74) = .TRUE.
+      IF (NRUN.GE.2789) GOTO 200
+      LC(81) = .FALSE.
+      LC(82) = .FALSE.
+      IF (NRUN.GE.2776) GOTO 200
+      LC(65) = .FALSE.
+      LC(66) = .FALSE.
+      IF (NRUN.GE.2745) GOTO 200
+      LC(73) = .FALSE.
+      LC(74) = .FALSE.
+      IF (NRUN.GE.2304) GOTO 200
+      LC(37) = .FALSE.
+  200 DEADCL = LC(ICELL)
+      RETURN
+C
+C                                      --- MONTE CARLO DATA ---
+  300 CONTINUE
+      DATA NCALL / 0 /
+      NCALL = NCALL + 1
+      DO 310 J=1,96
+  310 LC(J) = .FALSE.
+C                                      --- READ DEAD CELLS FROM /CRDSTA/
+      MCDEAD = 0
+      IF (NCDEAD.LE.0 .OR. NCDEAD.GT.10) GOTO 330
+      MCDEAD = NCDEAD
+      DO 320 K=1,NCDEAD
+      KC = HCELLD(K)
+      IF (KC.LE.0 .OR. KC.GT.96) GOTO 320
+      LC(KC) = .TRUE.
+  320 CONTINUE
+C                                       --- AT 1. CALL:
+C                                           PRINT DEAD CELL STATUS ---
+  330 IF (NCALL.GT.1) GOTO 340
+      PRINT 6600
+      IF (MCDEAD.EQ.0) PRINT 6601
+      IF (MCDEAD.NE.0) PRINT 6602, MCDEAD,(HCELLD(IPR),IPR=1,MCDEAD)
+      PRINT 6603
+ 6600 FORMAT('0',16('DEADCELL'),'DEAD'/'       LOGICAL FUNCTION ',
+     ,       '  D E A D C L   CALLED FOR MONTE CARLO DATA')
+ 6601 FORMAT('       NO DEAD CELLS FOUND IN COMMON/CRDSTA/')
+ 6602 FORMAT(' ',6X,I2,' DEAD CELLS FOUND IN COMMON/CRDSTA/ :',10I4)
+ 6603 FORMAT('       NO FURTHER CELLS SET TO <DEAD>'/
+     ,       ' ',16('CELLDEAD'),'CELL'/' ')
+      IF (NCALL.NE.1) GOTO 350
+C
+      DO 335 J=1,96
+  335 LCS(J) = LC(J)
+      GOTO 350
+C                                      --- AT ALL LATER CALLS:
+C                                          CHECK STATUS OF DEAD CELLS --
+  340 ICHECK = 0
+      DO 345 J=1,96
+  345 ICHECK = ICHECK + LXOR(LC(J),LCS(J))
+      IF (ICHECK.EQ.0) GOTO 350
+C                                       --- PRINT NEW STATUS ---
+      PRINT 6604
+ 6604 FORMAT('0',16('DEADCELL'),'DEAD'/'       STATUS OF DEAD CELLS IN',
+     ,       ' MONTE CARLO CHANGED, NEW STATUS IS:')
+      PRINT 6602, MCDEAD,(HCELLD(IPR),IPR=1,MCDEAD)
+      PRINT 6603
+C
+      DO 348 J=1,96
+  348 LCS(J) = LC(J)
+C                                      --- CHECK CHANGE OF DEAD CELLS --
+  350 DEADCL = LC(ICELL)
+C
+      RETURN
+      END

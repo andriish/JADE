@@ -1,0 +1,102 @@
+C   13/01/82            MEMBER NAME  PRHTAR   (PATRECSR)    SHELTRAN
+C   24/03/80 201111011  MEMBER NAME  ORPRHTAR (JADESR)      SHELTRAN
+C   10/09/79 C9091001   MEMBER NAME  PRHTAR9  (JADESR)      SHELTRAN
+C   13/03/79 C9062901   MEMBER NAME  ORPRHTAR (JADESR)      SHELTRAN
+C   13/03/79            MEMBER NAME  PRHTARP8 (JADESR)      SHELTRAN
+      SUBROUTINE PRHTAR
+C
+C     GENERATE ARRAY OF HITS FROM ONE CELL: P.STEFFEN(78/11/15)
+C
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cdata.for"
+#include "ccycp.for"
+C
+#include "cworkpr.for"
+#include "cworkeq.for"
+C
+      EQUIVALENCE
+     ,            (ICELL,IDWRK(1)),(NHIT,IDWRK(2)),(IRING,IDWRK(3))
+C
+#include "cjdrch.for"
+C
+N     INITIALIZE POINTERS
+      DATA LBINIT /0/
+      IF LBINIT .EQ. 0
+      THEN
+        LBINIT = 0
+        IQJHTL = IBLN('JHTL')
+C       CONST. FOR VAR. OF DRIFT VEL.
+        DSD0   =-.63
+        DSD1   = 1.8
+        DSD2   = 4.0
+        DRV0   = 0.8
+        DRV1   = (DSD2 - (DSD1-DSD0)*DRV0) / (DSD2-DSD1)
+      CIF
+C
+N     SET DRIFT SPACE BIN
+      DSBIN1 = TIMDEL(1,IRING)
+      DSBIN2 = TIMDEL(2,IRING)
+N     START POINTER OF CELL
+      IP0 = HPTSEC(ICELL)
+N     END POINTER OF CELL
+      IP9 = HPTSEC(ICELL+1) - 1
+N     START POINTER TO HIT LABEL ARRAY -1
+      IPHL = (HPTSEC(ICELL)-HPTSEC(1))/4 + IDATA(IQJHTL) + 1
+N     POINTER OF NEW HIT ARRAY
+      HPHT0 = HPFREE
+      HLDHT = 12
+      IPHT  = HPHT0
+N     COUNTER FOR NUMBER OF HITS IN HIT ARRAY
+      JHIT = 0
+      NWRD2 = NWORD*2
+N     LOOP OVER ALL HITS OF CELL
+      FOR IP=IP0,IP9,4
+        IPHL = IPHL + 1
+        IF IDATA(IPHL).EQ.0
+        THEN
+        IF HDATA(IP+1).GT.0 .AND. HDATA(IP+2).GT.0
+        THEN
+          IWIR = HDATA(IP)
+          IWIR = SHFTR(IWIR,3)
+N         LAYER NUMBER WITHIN RING 3
+          ILAYR = LAND(IWIR,15)
+N         CHANGE DRIFT SPACE BIN FOR 8 HIGHER LAYERS
+          IF(ILAYR.GE.8) DSBIN1 = DSBIN2
+N         DRIFT SPACE
+          DS =(HDATA(IP+3)) * DSBIN1
+          IF DS.LT.4.0
+          THEN
+            IF DS.GT.DSD1
+            THEN
+              DS = (DSD1-DSD0)*DRV0 + (DS-DSD1)*DRV1
+            ELSE
+              DS = (DS-DSD0)*DRV0
+            CIF
+            IF(DS.LT.0.1) DS = 0.1
+          CIF
+N         SET ARRAY
+          WRK(IPHT+2)  = AMAX1(DS,0.)
+          IWRK(IPHT  ) = ILAYR
+N         BACK POINTER
+          IWRK(IPHT+1) = IP
+          IWRK(IPHT+4) = 0
+          IWRK(IPHT+5) = 0
+          IWRK(IPHT+6) = 0
+          IWRK(IPHT+7) = 0
+N         INCREASE POINTERS
+          IPHT = IPHT + HLDHT
+N         INCREASE HIT COUNTER
+          JHIT = JHIT + 1
+        CIF
+        CIF
+      CFOR
+C
+N     NUMBER OF HITS
+      NHIT = JHIT
+N     SET START + END POINTER IN ARRAY
+      HPHT9 = IPHT - 1
+      HPFREE= IPHT
+C
+      RETURN
+      END

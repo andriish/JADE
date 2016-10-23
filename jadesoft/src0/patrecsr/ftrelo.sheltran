@@ -1,0 +1,793 @@
+C   03/10/80 102191156  MEMBER NAME  FTRELO   (PATRECSR)    SHELTRAN
+      SUBROUTINE FTRELO
+C
+C        FIND TRACK ELEMENTS FROM LINE ELEMENTS: P.STEFFEN(80/06/27)
+C                   HISTOGRAM METHOD USING INTERACTION POINT
+C                   NO STOP AT POINT OF DIVERGENCE
+C
+      IMPLICIT INTEGER*2 (H)
+      LOGICAL TBIT
+C
+#include "cheadr.for"
+      EQUIVALENCE (HRUN,HHEADR(18)) , (HEV,HHEADR(19))
+C
+#include "cworkpr.for"
+#include "cworkeq.for"
+C
+      EQUIVALENCE
+     ,           (ICELL ,IDWRK(1)),(MHIT  ,IDWRK(2)),(IRING ,IDWRK(3))
+     ,         , (IERRCD,IDWRK(4)),(NTRKEL,IDWRK(5))
+C
+#include "cpatlm.for"
+C
+#include "cjdrch.for"
+#include "cdsmax.for"
+C
+      DIMENSION HPBAK(16),HLYAR(16),HLBAR(16),DSPAR(16),
+     ,          XTRAR(16),YTRAR(16),RESAR(16)
+      DIMENSION HST( 80), HSTL(5),HSTR(5)
+C
+N     AVERAGE RADIUS FOR PAIR CONVERSION IN BEAM PIPE OR TANK
+      DATA XCV /152.7/
+C
+N     MASK FOR GOOD LINEL
+C     DATA MKGDLN / Z107/
+N     MASK FOR DIVERGING LINEL
+C     DATA MKDIVL / Z100/
+C
+N     LABEL FOR NO CONTINUATION OF TREL
+C     DATA LBNOCN / Z1/
+N     LABEL FOR KINK AT END POINT OF TREL
+C     DATA LBKINK / Z2/
+C
+N     SIGMA(CURV) FOR HITS IN 3 RINGS
+      REAL SGCRV(3) /.000062,.000035,.000025/
+C
+C     IF(ICELL.NE.40 .AND. ICELL.NE.58) RETURN
+C2001 FORMAT(' L/R DET.:',10F8.3)
+C2006 FORMAT(1X,I6,5F8.2,F12.1,5F8.2)
+C2013 FORMAT('0FIT:',I3,F5.2,F5.1,F10.6,F7.3,F5.1,F7.4,F6.1,F5.2)
+C2014 FORMAT(' X,Y,ZW1,ZW2,CRV0,CRV,IBNL:',6F10.5,I10)
+C2100 FORMAT(' LINEL ',4I6,2F6.2,I4)
+C2101 FORMAT('0HISTOGRAM:',20I2,2X,20I2,/,(11X,20I2,2X,20I2))
+C2102 FORMAT(' PEAK =', 7I6,6F10.5)
+C2103 FORMAT(' TREL:',2I6,3(/,1X,16I7),3(/,1X,16F7.2))
+C2900 FORMAT(1H0,'ERROR CODE:',I4, ', ICELL:',I3,', TRACKS:',I4)
+C2901 FORMAT(1X,/,(1X,2I6,2F6.2,2X,Z4,4F7.1,2I6,F6.2))
+C
+N     POINTER TO CURRENT TRKEL
+      ITRK = 0
+C
+N     CALCULATE X,Y COORDINATES
+      DR =  RINCR(IRING)
+      R0 = FSENSW(IRING)
+N     RADIUS AROUND WIRE FOR CORR. OF DRIFTSPACE
+      DRC = RINCR(1)*.5 * DRICOS
+C
+      FOR IP = HPHT0,HPHT9,HLDHT
+        ILAY = IWRK(IP  )
+        Y    = SWDEPL
+        IF(LAND(ILAY,1).NE.0) Y =-Y
+        X    = ILAY * DR + R0
+        DS   =  WRK(IP+2)
+        IF DS.LE.DRC
+        THEN
+          DX   = 0.
+          DY   = DS
+        ELSE
+          DX   =-(DS-DRC)*DRISIN
+          DY   = (DS-DRC)*DRICOS + DRC
+        CIF
+        WRK(IP+5) = X - DX
+        WRK(IP+7) = X + DX
+        WRK(IP+6) = Y - DY
+        WRK(IP+8) = Y + DY
+      CFOR
+C     PRINT 2900, IRING, ICELL, NTRCNT
+C     IF(ICELL.LE.47) PRINT 2901, (WRK(I1),I1=HPHT0,HPHT9)
+C
+N     LOOP OVER HITS + SEARCH FOR LINE ELEMENT
+      IPHT1 = HPHT9 - HLDHT + 1
+      REPEAT
+N       1. HIT
+        IL1 = IWRK(IPHT1  )
+        IF(IL1.LT. 2) XREPEAT
+N       CHECK IF UNUSED
+        DSP1 =  WRK(IPHT1+2)
+        IF DSP1.GT.0.7 .AND. IWRK(IPHT1+9).LE.0
+        THEN
+          IL2 =  IL1 - 1
+          IL3 =  IL2 - 1
+C
+N         SEARCH STRAIGHTEST LINEL
+          DSLM = 1000.
+C
+N         SEARCH FOR 2. HIT
+          IPHT2 = IPHT1 - HLDHT
+          WHILE IPHT2.GE.HPHT0 .AND. IWRK(IPHT2).GE.IL2
+N           CHECK IF NEXT LAYER + UNUSED HIT
+            DSP2 = WRK(IPHT2+2)
+            IF DSP2.GT.0.7.AND.IWRK(IPHT2).EQ.IL2.AND.IWRK(IPHT2+9).LE.000000109
+            THEN
+              IF ABS(DSP2-DSP1).LE.12.5
+              THEN
+C
+N               SEARCH FOR 3. HIT
+                IPHT3 = IPHT2 - HLDHT
+                WHILE IPHT3.GE.HPHT0 .AND. IWRK(IPHT3).GE.IL3
+N                 CHECK IF NEXT LAYER + UNUSED HIT
+                  DSP3 = WRK(IPHT3+2)
+                  IF DSP3.GT.0.7 .AND.
+     ?               IWRK(IPHT3).EQ.IL3 .AND. IWRK(IPHT3+9).LE.0
+                  THEN
+N                   SEARCH FOR SRAIGHTEST LINEL
+                    DSL = DSP2*2.-DSP3-DSP1
+                    IF ABS(DSL).LT.DSLM .AND. DSP1+DSP2+DSP3.GT.3.0
+                    THEN
+                      IF IWRK(IPHT1+9).EQ.0 .OR. IWRK(IPHT2+9).EQ.0
+     ?                   .OR. IWRK(IPHT3+9).EQ.0
+                      THEN
+                        DSLM  = ABS(DSL)
+                        SDSLM = DSL
+                        MP1 = IPHT1
+                        MP2 = IPHT2
+                        MP3 = IPHT3
+                      CIF
+                    CIF
+                  CIF
+                IPHT3 = IPHT3 - HLDHT
+                CWHILE
+              CIF
+            CIF
+          IPHT2 = IPHT2 - HLDHT
+          CWHILE
+C
+N         'XREPEAT' = STOP ANALYSIS
+          REPEAT
+
+
+
+N           CHECK IF GOOD LINEL
+            LBLRLE = LAND(IL2,1)*2 - 1
+            IF(SDSLM.LT.0) LBLRLE =-LBLRLE
+C     IF(ICELL.LE.47)PRINT 2100, IL1,MP1,MP2,MP3,DSLM,SDSLM,LBLRLE
+            IF(DSLM.GE.2.0) XREPEAT
+C
+N           GOOD LINEL, FETCH OTHER HITS
+            LBLRLE = LAND(IL2,1)*2 - 1
+            IF(SDSLM.LT.0) LBLRLE =-LBLRLE
+            PERFORM CVHIST
+C
+N           LOOP OVER L/R SOL. TRY BEST ONE FIRST
+            LRLOOP = 1
+            SIGLM = .250
+            SIG0 = 1000.
+            WHILE LRLOOP.LE.2
+C
+N             FETCH HITS CONTRIBUTING TO HISTOGRAM PEAK
+              PERFORM FETHST
+C
+N             CHECK IF AT LEAST 4 HITS
+              IF(NHTTR.LT.4) XWHILE
+C
+N             FIT PARABOLA THROUGH ORIGIN
+              WGHT0 = 0.01
+              Y0    = 0.
+              PERFORM FPARA0
+N             CHECK IF DIST. TO ORIGIN ACCEPTABLE
+              IF ABS(PAR3).GT.3.0
+              THEN
+                WGHT0 = 0.1
+                IF PAR1*PAR3.LE.0.
+                THEN
+                  Y0 =-SIGN(2.,PAR1)
+                  PERFORM FPARA0
+                ELSE
+                  DORMX = XCV**2*PAR1 + SIGN(2.,PAR1)
+                  IF ABS(PAR3).GT.ABS(DORMX)
+                  THEN
+N                   TOO BIG DIST., REPEAT FIT WITH RESTRICTION
+                    Y0 = DORMX
+                    PERFORM FPARA0
+                  CIF
+                CIF
+              CIF
+C
+N             CHECK IF REASONABLE FIT
+              SIGLM = .50
+              IF SIG.GT.SIGLM
+              THEN
+N               BAD FIT, CHECK IF ONLY 1 BAD HIT
+                SIG1 = (SIG*DEG - DCHIM1**2) / (DEG-1.)
+                IF(SIG1.GT.SIGLM .AND. LRLOOP.EQ.1) XREPEAT
+              CIF
+C
+N             FETCH HITS
+              FETLIM = 0.65
+              PERFORM FETHIT
+              WGHT0 = .01
+              IF NHTTR.GE.4
+              THEN
+N               FIT PARABOLA THROUGH ORIGIN
+                PERFORM FPARA0
+C
+N               CHECK IF DIST. TO ORIGIN ACCEPTABLE
+                IF ABS(PAR3).GT.3.0
+                THEN
+                  WGHT0 = 0.1
+                  IF PAR1*PAR3.LE.0.
+                  THEN
+                    Y0 =-SIGN(2.,PAR1)
+                    PERFORM FPARA0
+                  ELSE
+                    DORMX = XCV**2*PAR1 + SIGN(2.,PAR1)
+                    IF ABS(PAR3).GT.ABS(DORMX)
+                    THEN
+N                     TOO BIG DIST., REPEAT FIT WITH RESTRICTION
+                      Y0 = DORMX
+                      PERFORM FPARA0
+                    CIF
+                  CIF
+                CIF
+              CIF
+N             CHECK IF REASONABLE FIT
+              IF SIG.GT.SIGLM
+              THEN
+N               BAD FIT, CHECK IF ONLY 1 BAD HIT
+                SIG1 = (SIG*DEG - DCHIM1**2) / (DEG-1.)
+                IF(SIG1.GT.SIGLM .AND. LRLOOP.EQ.1) XREPEAT
+              CIF
+C
+N             DET. CORRECTED SIGMA
+              SIGCOR = SIG
+              IF LRLOOP.EQ.2
+              THEN
+                DDSTG = DSTAG - DSTAG0
+                SIGCOR = SIG - (DEG-DEG0)*.01 + DDSTG*.1 + .01
+C     IF(ICELL.LE.47)PRINT 2001, SIG,SIGCOR,SIG0,DEG,DEG0,DSTAG,DSTAG0
+              CIF
+C
+N             STORE BEST SOLUTION
+              IF SIGCOR .LT. SIG0
+              THEN
+                LBLR0 = LBLRTR
+                SIG0  = SIG
+                SIGLM0= SIGLM
+                PAR10 = PAR1
+                PAR20 = PAR2
+                PAR30 = PAR3
+                DSTAG0= DSTAG
+                DEG0  = DEG
+N               STOP IF GOOD FIT
+                IF(SIG.LT..08) XWHILE
+              CIF
+            LBLRTR =-LBLRTR
+            LRLOOP = LRLOOP + 1
+            CWHILE
+C
+N           CHECK IF GOOD SOL. FOUND
+            IF(SIG0.GT..25) XREPEAT
+C
+N           RESTORE PARAMETERS
+            LBLRTR = LBLR0
+            SIG    = SIG0
+            PAR1   = PAR10
+            PAR2   = PAR20
+            PAR3   = PAR30
+C
+N           LABEL HITS
+            ITRK = ITRK + 1
+            ALBLM1 = 0.7
+            ALBLM2 = 2.0
+            PERFORM LABEL
+C
+N           CHECK IF GOOD SOLUTION IN R2
+            IF(SIG0.GT..10 .AND. ICELL.LE.48) XREPEAT
+C
+N           CHECK IF CURV.(>200MEV)
+            IF(ABS(PAR1).GT..00040 .OR. NHTGD.LT.4) XREPEAT
+C
+N           TRACE TRACK THROUGH ORIGIN
+            HPFRE1 = HPFREE
+            CALL TRACEO(ITRK,PAR1,PAR2,PAR3)
+            HPFREE = HPFRE1
+C
+          UNTIL .TRUE.
+C
+        CIF
+      IPHT1 = IPHT1 - HLDHT
+      UNTIL IPHT1.LT.HPHT0
+C
+N     SET POINTER TO END OF TRACK ARRAY
+C
+N     SET NUMBER OF TRKELS
+C
+C     IF(ICELL.LE.47)PRINT 2900, IERRCD, ICELL, NTRCNT
+C     IF(ICELL.LE.47)PRINT 2901, (WRK(I1),I1=HPHT0,HPHT9)
+      RETURN
+C
+N     *************************
+N     *      C V H I S T      *
+N     *************************
+N     HISTOGRAM OF CURVATURES
+      PROC CVHIST
+C
+N     ZERO HISTOGRAM
+      CALL SETS(HST(1),0,160,0)
+      DCRV =  SGCRV(IRING)
+      CRV1 = -DCRV*20.
+      IW1 = IL2
+C
+N     LOOP OVER L/R SOLUTIONS
+      ILRSOL =-3
+      REPEAT
+      ILRSOL = ILRSOL + 2
+        IF ILRSOL.LT.0
+        THEN
+N         LEFT SOLUTION
+          ZW1L = (WRK(MP1+5)+WRK(MP2+5)+WRK(MP3+5)) / 3.
+          ZW2L = (WRK(MP1+6)+WRK(MP2+6)+WRK(MP3+6)) / (ZW1L*3.)
+          ZW1  = ZW1L
+          ZW2  = ZW2L
+          X    = WRK(MP1+5)
+          Y    = WRK(MP1+6)
+          CV1  = (ZW2*X - Y) / ((ZW1-X)*X)
+          X    = WRK(MP3+5)
+          Y    = WRK(MP3+6)
+          CV3  = (ZW2*X - Y) / ((ZW1-X)*X)
+          CRVL = (CV1 + CV3) * .5 + CRV1
+          CRV0 = CRVL
+        ELSE
+N         RIGHT SOLUTION
+          ZW1R = (WRK(MP1+7)+WRK(MP2+7)+WRK(MP3+7)) / 3.
+          ZW2R = (WRK(MP1+8)+WRK(MP2+8)+WRK(MP3+8)) / (ZW1R*3.)
+          ZW1  = ZW1R
+          ZW2  = ZW2R
+          X    = WRK(MP1+7)
+          Y    = WRK(MP1+8)
+          CV1  = (ZW2*X - Y) / ((ZW1-X)*X)
+          X    = WRK(MP3+7)
+          Y    = WRK(MP3+8)
+          CV3  = (ZW2*X - Y) / ((ZW1-X)*X)
+          CRVR = (CV1 + CV3) * .5 + CRV1
+          CRV0 = CRVR
+        CIF
+        CALL SETS(HST(1),0,160,0)
+        FOR IP0 = HPHT0,HPHT9,HLDHT
+          IF IWRK(IP0).NE.IW1
+          THEN
+            X    = WRK(IP0+5)
+            Y    = WRK(IP0+6)
+            DX   = ZW1 - X
+            IBNL = 1000
+            IBNR = 1000
+            IF ABS(DX).GT.5.0
+            THEN
+              CRV = (ZW2*X - Y) / (DX*X)
+              IBNL = (CRV-CRV0) / DCRV + 1
+C     IF(MP1.EQ.994)PRINT 2014, X,Y,ZW1,ZW2,CRV0,CRV,IBNL
+            CIF
+            X   = WRK(IP0+7)
+            Y   = WRK(IP0+8)
+            DX  = ZW1 - X
+            IF ABS(DX).GT.5.0
+            THEN
+              CRV = (ZW2*X - Y) / (DX*X)
+              IBNR = (CRV-CRV0) / DCRV + 1
+C     IF(MP1.EQ.994)PRINT 2014, X,Y,ZW1,ZW2,CRV0,CRV,IBNR
+            CIF
+            IF IABS(IBNL-IBNR).GT.3
+            THEN
+              IF(IBNL.GT.0 .AND. IBNL.LE.40) HST(IBNL) = HST(IBNL) + 1
+              IF(IBNR.GT.0 .AND. IBNR.LE.40) HST(IBNR) = HST(IBNR) + 1
+            CIF
+          CIF
+        CFOR
+C
+C     IF(ICELL.LE.47)PRINT 2101, HST
+        MHST = 0
+        IMAX = 0
+        FOR I=19,22
+          NHST = HST(I-1) + HST(I  ) + HST(I+1)
+          IF NHST.GE.MHST
+          THEN
+            MHST = NHST
+            IMAX = I
+          CIF
+        CFOR
+C     IF(ICELL.LE.47)PRINT 2102, IMAX,MHST,NHST
+C
+N       STORE PEAK FOR L/R SOLUTION
+        IF ILRSOL.LT.0
+        THEN
+          MHSTL = MHST
+          IMAXL = IMAX
+          CALL MVC(HSTL(1),0,HST(IMAX-2),0,10)
+        ELSE
+          MHSTR = MHST
+          IMAXR = IMAX
+          CALL MVC(HSTR(1),0,HST(IMAX-2),0,10)
+        CIF
+      UNTIL ILRSOL.EQ.1
+C
+N     SELECT L/R SOLUTION ACCORD. TO HIST.-PEAK
+      LBLRTR = 1
+      IF(MHSTL.GT.MHSTR) LBLRTR =-1
+N     IF AMBIGUOUS L/R SOL. USE LINEL
+      IF(IABS(MHSTL-MHSTR).LE.1 .AND. LBLRTR.NE.LBLRLE) LBLRTR=-LBLRTR
+C
+      CPROC
+C
+N     *************************
+N     *      F E T H S T      *
+N     *************************
+C
+C
+N     FETCH HITS CONTRIBUTING TO HISTOGRAM PEAK
+      PROC FETHST
+C
+C
+N     EVALUATE PEAK
+      IF LBLRTR.LT.0
+      THEN
+        MHST = MHSTL
+        IMAX = IMAXL
+        CALL MVC(HST(1),0,HSTL(1),0,10)
+        ZW1 = ZW1L
+        ZW2 = ZW2L
+        CRV0 = CRVL
+      ELSE
+        MHST = MHSTR
+        IMAX = IMAXR
+        CALL MVC(HST(1),0,HSTR(1),0,10)
+        ZW1 = ZW1R
+        ZW2 = ZW2R
+        CRV0 = CRVR
+      CIF
+C
+N     CORRECT FOR DOUBLE PEAK
+      IF IMAX.EQ.19 .AND.
+     ?   HST(1).GT.0 .AND. HST(1).GT.HST(2) .AND. HST(5).NE.0
+      THEN
+        IMAX = IMAX + 1
+      CIF
+      IF IMAX.EQ.22 .AND.
+     ?   HST(5).GT.0 .AND. HST(5).GT.HST(4) .AND. HST(1).NE.0
+      THEN
+        IMAX = IMAX - 1
+      CIF
+      IM1 = IMAX - 1
+      IM3 = IMAX + 1
+      NHST  = HST(2) + HST(3) + HST(4)
+      NHTTR = 0
+      IF NHST.GE.3
+      THEN
+C     IF(ICELL.LE.47)PRINT 2102,IMAX,MHST,LBLRTR,IM1,IM3,MHSTL,MHSTR
+C
+N       FETCH HITS OF PEAK IN HISTOGRAM
+        IHIT = 0
+        ILAYL = -1
+        LBHDEL = 0
+        CALL SETS(HLBAR(1),0,32,0)
+        FOR IP0 = HPHT0,HPHT9,HLDHT
+          IBNL = -1000
+          IBNR = -1000
+          IF IABS(IWRK(IP0)-IW1).LE.1
+          THEN
+            IF LBLRTR.LT.0
+            THEN
+              IF(IP0.EQ.MP1.OR.IP0.EQ.MP2.OR.IP0.EQ.MP3) IBNL = IMAX
+            ELSE
+              IF(IP0.EQ.MP1.OR.IP0.EQ.MP2.OR.IP0.EQ.MP3) IBNR = IMAX
+            CIF
+          ELSE
+            X   = WRK(IP0+5)
+            Y   = WRK(IP0+6)
+            DX  = ZW1 - X
+            IF ABS(DX).GT.5.0
+            THEN
+              CRV = (ZW2*X - Y) / (DX*X)
+              IBNL = (CRV-CRV0) / DCRV + 1
+C     IF(MP1.EQ.994) PRINT 2014, X,Y,ZW1,ZW2,CRV0,CRV,IBNL
+            CIF
+            X   = WRK(IP0+7)
+            Y   = WRK(IP0+8)
+            DX  = ZW1 - X
+            IF ABS(DX).GT.5.0
+            THEN
+              CRV = (ZW2*X - Y) / (DX*X)
+              IBNR = (CRV-CRV0) / DCRV + 1
+C     IF(MP1.EQ.994) PRINT 2014, X,Y,ZW1,ZW2,CRV0,CRV,IBNR
+            CIF
+          CIF
+          IF IABS(IBNL-IBNR).GT.3
+          THEN
+            ILAY = IWRK(IP0)
+            IF IBNL.GE.IM1 .AND. IBNL.LE.IM3
+            THEN
+              IF ILAY.EQ.ILAYL
+              THEN
+N               ELIMINATE 2 HITS IN 1 LAYER
+                IF(LBHDEL.EQ.0) IHIT = IHIT - 1
+                LBHDEL = 1
+              ELSE
+                IHIT = IHIT + 1
+                HPBAK(IHIT  ) = IP0
+                HLYAR(IHIT  ) = ILAY
+                HLBAR(IHIT  ) =   1
+                DSPAR(IHIT  ) = WRK(IP0+2)
+                XTRAR(IHIT  ) = WRK(IP0+5)
+                YTRAR(IHIT  ) = WRK(IP0+6)
+                ILAYL = ILAY
+                LBHDEL = 0
+              CIF
+            ELSE
+            IF IBNR.GE.IM1 .AND. IBNR.LE.IM3
+            THEN
+              IF ILAY.EQ.ILAYL
+              THEN
+N               ELIMINATE 2 HITS IN 1 LAYER
+                IF(LBHDEL.EQ.0) IHIT = IHIT - 1
+                LBHDEL = 1
+              ELSE
+                IHIT = IHIT + 1
+                HPBAK(IHIT  ) = IP0
+                HLYAR(IHIT  ) = ILAY
+                HLBAR(IHIT  ) =   1
+                DSPAR(IHIT  ) = WRK(IP0+2)
+                XTRAR(IHIT  ) = WRK(IP0+7)
+                YTRAR(IHIT  ) = WRK(IP0+8)
+                ILAYL = ILAY
+                LBHDEL = 0
+              CIF
+            CIF
+            CIF
+          CIF
+        CFOR
+        NHTTR = IHIT
+C     IF(ICELL.LE.47)
+C    ,PRINT 2103, IPHT1,NHTTR,HPBAK,HLBAR,HLYAR,XTRAR,YTRAR,DSPAR
+      CIF
+C
+      CPROC
+C
+N     *************************
+N     *      F E T H I T      *
+N     *************************
+C
+C
+N     FETCH HITS
+      PROC FETHIT
+C
+        IHIT = 0
+        IWL  =-1
+        CALL SETS(HLBAR(1),0,32,0)
+        FOR IP0 = HPHT0,HPHT9,HLDHT
+          IW0 = IWRK(IP0)
+          X   = WRK(IP0+5)
+          Y   = WRK(IP0+6)
+          F   = (PAR1 *X + PAR2 )*X + PAR3
+          DFL = F - Y
+          IF ABS(DFL).LT.FETLIM
+          THEN
+            IF IWL.EQ.IW0
+            THEN
+N             ELIMINATE HIT IF 2 HITS IN SAME LAYER
+              IHIT = IHIT - 1
+            ELSE
+              IHIT = IHIT + 1
+              HPBAK(IHIT  ) = IP0
+              HLYAR(IHIT  ) = IW0
+              HLBAR(IHIT  ) =   1
+              DSPAR(IHIT  ) = WRK(IP0+2)
+              XTRAR(IHIT  ) = WRK(IP0+5)
+              YTRAR(IHIT  ) =   Y
+              IWL = IW0
+            CIF
+          CIF
+          X   = WRK(IP0+7)
+          Y   = WRK(IP0+8)
+          F   = (PAR1 *X + PAR2 )*X + PAR3
+          DF  = F - Y
+          IF ABS(DF).LT.FETLIM
+          THEN
+            IF IWL.EQ.IW0
+            THEN
+N             ELIMINATE HIT IF 2 HITS IN SAME LAYER
+              IHIT = IHIT - 1
+            ELSE
+              IHIT = IHIT + 1
+              HPBAK(IHIT  ) = IP0
+              HLYAR(IHIT  ) = IW0
+              HLBAR(IHIT  ) =   1
+              DSPAR(IHIT  ) = WRK(IP0+2)
+              XTRAR(IHIT  ) = WRK(IP0+7)
+              YTRAR(IHIT  ) =   Y
+              IWL = IW0
+            CIF
+          CIF
+        CFOR
+        NHTTR = IHIT
+C     IF(ICELL.LE.47)
+C    ,PRINT 2103, IPHT1,NHTTR,HPBAK,HLBAR,HLYAR,XTRAR,YTRAR,DSPAR
+C
+      CPROC
+C
+N     *************************
+N     *      F P A R A 0      *
+N     *************************
+C
+C
+N     PARABOLA FIT THROUG ORIGIN
+      PROC FPARA0
+C
+N     GET EQUATIONS
+N     WEIGHT ORIGIN AS POINT OF PARABOLA
+      S0 = WGHT0
+      S1 = 0.
+      S2 = 0.
+      S3 = 0.
+      S4 = 0.
+      S5 = 0.
+      S6 = 0.
+      S7 = Y0 * WGHT0
+      FOR IHIT = 1,NHTTR
+          X = XTRAR(IHIT)
+          Y = YTRAR(IHIT)
+          X2 = X**2
+          S1 = S1 + X
+          S2 = S2 + X2
+          S3 = S3 + X*X2
+          S4 = S4 + X2**2
+          S5 = S5 + Y*X2
+          S6 = S6 + Y*X
+          S7 = S7 + Y
+          S0 = S0 + 1.
+      CFOR
+      MHIT = S0
+C
+N     SOLVE EQUATIONS FOR PARABOLA FIT
+      F1 = 1. / S4
+      XX12 = S3*F1
+      XX13 = S2*F1
+      YY1  = S5*F1
+      XX22 = S2 - S3*XX12
+      XX23 = S1 - S3*XX13
+      YY2  = S6 - S3*YY1
+      XX32 = S1 - S2*XX12
+      XX33 = S0 - S2*XX13
+      YY3  = S7 - S2*YY1
+      IF XX22.GT.XX32
+      THEN
+        XX23 = XX23 / XX22
+        YY2  = YY2  / XX22
+        PAR3 = (YY3 - XX32*YY2) / (XX33 - XX32*XX23)
+        PAR2 = YY2 - XX23*PAR3
+      ELSE
+        XX33 = XX33 / XX32
+        YY3  = YY3  / XX32
+        PAR3 = (YY2 - XX22*YY3) / (XX23 - XX22*XX33)
+        PAR2 = YY3 - XX33*PAR3
+      CIF
+      PAR1 = YY1 - XX12*PAR2 - XX13*PAR3
+      DEG = S0 - WGHT0 - 2.
+C
+N     CALC. CHISQ + SOLVE L/R AMBIGUITY
+      CHISQ = 0.
+      DCHIM1 = 0.
+      IHITM1 = 0
+N     L/R AMB. FROM STAGGERING
+      NEVN   = 0
+      CHEVN  = 0.
+      NUNE   = 0
+      CHUNE  = 0.
+      IHSTRT = 0
+      FOR IHIT = 1,NHTTR
+          IF(IHSTRT.EQ.0) IHSTRT = IHIT
+          IHEND = IHIT
+          X = XTRAR(IHIT)
+          Y = YTRAR(IHIT)
+          F   = (PAR1 *X + PAR2 )*X + PAR3
+          DCHI = Y - F
+          RESAR(IHIT) = DCHI
+N         SUM FOR RMS
+          CHISQ = CHISQ + DCHI**2
+N         KEEP BIGGEST RMS
+          IF ABS(DCHI).GE.DCHIM1
+          THEN
+            DCHIM1 = ABS(DCHI)
+            IHITM1 = IHIT
+          CIF
+          ILAY = HLYAR(IHIT)
+          IF ABS(DCHI).LT. 0.6
+          THEN
+            IF LAND(ILAY,1).EQ.0
+            THEN
+              NEVN  = NEVN  + 1
+              CHEVN = CHEVN + DCHI
+            ELSE
+              NUNE  = NUNE  + 1
+              CHUNE = CHUNE + DCHI
+            CIF
+          CIF
+C     IF(ICELL.LE.47)PRINT 2006, ILAY,X,Y,F,DCHI,CHISQ,XTRAR(IHIT)
+      CFOR
+      SIG    =      CHISQ  / DEG
+      DSTAG = -1000.
+      IF(NEVN.GT.1.AND. NUNE.GT.1) DSTAG = ABS(CHEVN/NEVN - CHUNE/NUNE)
+C
+N     LIMIT OF SIGMA
+      SIGLM = .25
+C
+C     IF(ICELL.LE.47)PRINT 2013,NHTTR,SIG,DEG,PAR1,PAR2,PAR3,WGHT0,Y0
+C
+      CPROC
+C
+N     *************************
+N     *      L A B E L        *
+N     *************************
+C
+C
+N     LABEL USED HITS
+      PROC LABEL
+C
+        NHTGD  = 0
+        FOR IP0 = HPHT0,HPHT9,HLDHT
+          IW0 = IWRK(IP0)
+          X   = WRK(IP0+5)
+          Y   = WRK(IP0+6)
+          F   = (PAR1 *X + PAR2 )*X + PAR3
+          DFL = F - Y
+          X   = WRK(IP0+7)
+          Y   = WRK(IP0+8)
+          F   = (PAR1 *X + PAR2 )*X + PAR3
+          DFR = F - Y
+N         SELECT CLOSEST HIT
+          DF  = DFL
+          IF(ABS(DFR).LT.ABS(DFL)) DF = DFR
+          IF ABS(DF).LT.ALBLM2
+          THEN
+C
+N           CLOSE HIT
+            ILBLR = 1
+            IF(DF.EQ.DFR) ILBLR = 2
+            IF ABS(DF).LT.ALBLM1
+            THEN
+N             HIT BELONGS TO TRACK
+              NHTGD  = NHTGD + 1
+              IF(IWRK(IP0+ 9).LT.0) IWRK(IP0+ 9) = 0
+              IF(IWRK(IP0+10).LT.0) IWRK(IP0+10) = 0
+              IWRK(IP0+10) = IWRK(IP0+9)
+              IWRK(IP0+ 9) = ITRK
+              IF IWRK(IP0+10).NE.0
+              THEN
+                LB2 = LAND(IWRK(IP0+4),    3)*4
+              ELSE
+                LB2 = 0
+              CIF
+              LB1 = LAND(IWRK(IP0+4),MKLR1)
+              LB1 = LOR(LB1,LB2)
+              IWRK(IP0+4) = LOR(LB1,ILBLR)
+            ELSE
+N             HIT MAY BELONG TO TRACK
+              IF IWRK(IP0+ 9).LE.0
+              THEN
+                IWRK(IP0+10) = IWRK(IP0+9)
+                IWRK(IP0+ 9) =-ITRK
+                IF IWRK(IP0+10).NE.0
+                THEN
+                  LB2 = LAND(IWRK(IP0+4),    3)*4
+                ELSE
+                  LB2 = 0
+                CIF
+                LB1 = LAND(IWRK(IP0+4),MKLR1)
+                LB1 = LOR(LB1,LB2)
+                IWRK(IP0+4) = LOR(LB1,ILBLR)
+              CIF
+            CIF
+          CIF
+        CFOR
+C
+      CPROC
+C
+      END

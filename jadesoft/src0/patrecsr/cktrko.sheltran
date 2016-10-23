@@ -1,0 +1,263 @@
+C   29/07/80 102191150  MEMBER NAME  CKTRKO   (PATRECSR)    SHELTRAN
+      SUBROUTINE CKTRKO(LBTRCK,LBCELL)
+C
+C        CHECK TRACK FROM ORIGIN
+C        P. STEFFEN                    29/07/80
+C
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cdata.for"
+#include "ccycp.for"
+C
+#include "cworkpr.for"
+#include "cworkeq.for"
+C
+      EQUIVALENCE
+     ,          (HPCO0 ,HPWRK(17)),(HPCO9 ,HPWRK(18)),(HLDCO ,HPWRK(19))
+     ,         ,(ICELL ,IDWRK( 1)),(MHIT  ,IDWRK( 2)),(IRING ,IDWRK( 3))
+     ,         ,(IERRCD,IDWRK( 4)),(NTRKEL,IDWRK( 5))
+C
+#include "cpatlm.for"
+C
+#include "cjdrch.for"
+#include "cdsmax.for"
+C
+N     MASKS FOR HITS IN LAYERS OF JETC
+      INTEGER MKLY(16) /1,2,4,8,16,32,64,128,256,512,1024,2048,
+     ,                  Z1000,Z2000,Z4000,Z8000/
+C
+N     MASKS FOR DEAD CELL BITS
+      INTEGER MKDDCL(3) /Z01,Z02,Z04/, LBDDCL /ZFFFF/
+C
+N     MASK FOR TRACKS AT CELL WALL
+      INTEGER MKBDCL(3) /Z10,Z20,Z40/
+C
+N     ROAD LIMITS
+      REAL RDLIM(5,2) / -2.0, -1.0, 1.0, 2.0, 8.5,
+     ,                  -3.0, -2.0, 2.0, 3.0, 8.5/
+C
+N     INITIALIZE INDEX FOR ROAD LIMITS
+      DATA INDLM /-1/
+C
+      DIMENSION  LBHT(15)
+C
+C2001 FORMAT('0ROAD LIMITS:',I2,5F6.1)
+C2003 FORMAT(' CKTRK:',3I3,5X,5(1X,Z4),5X,5(1X,Z4),5X,5(1X,Z4))
+C2005 FORMAT('0TRACK:',I6,/,(1X,3I6,4F8.1,I4,F6.2,2I4,F8.3,I6,F8.1))
+C
+N     INITIALIZE RETURN LABEL
+      LBTRCK = 0
+C
+N     INITIALIZE LABELS
+      CALL SETS(LBHT(1),0,60,0)
+C
+N     LOOP OVER ALL HITS + SET BITS FOR HITS IN LAYERS
+N     PREVIOUS RING #
+      JRING0 = 0
+      FOR IP = HPCO0,HPCO9,HLDCO
+        ILAY   = IWRK(IP   )
+        JRING  = IWRK(IP+12)
+        LBGOOD = IWRK(IP+ 7)
+        DF     = WRK (IP+13)*IWRK(IP+2)
+C
+N       CHECK IF RING # CHANGES
+        IF JRING.NE.JRING0
+        THEN
+          JRING0 = JRING
+N         SET INDEX FPOR ROAD LIMITS
+          INDLM1 = 1
+          IF(LAND(MKBDCL(JRING),LBCELL).NE.0) INDLM1 = 2
+N         CHANG LIMITS IF NEW INDEX
+          IF INDLM1.NE.INDLM
+          THEN
+            INDLM = INDLM1
+            RDLM1 = RDLIM(1,INDLM)
+            RDLM2 = RDLIM(2,INDLM)
+            RDLM3 = RDLIM(3,INDLM)
+            RDLM4 = RDLIM(4,INDLM)
+            RDLM5 = RDLIM(5,INDLM)
+C     PRINT 2001, INDLM,RDLM1,RDLM2,RDLM3,RDLM4,RDLM5
+          CIF
+        CIF
+C
+N       EXCLUDE DOUBLE HITS FROM L/R AMB.
+        IF LBGOOD .NE. 16
+        THEN
+N         SET LBGOOD
+          LBGOOD = 1
+          IF(DF.LE. RDLM1 .OR.  DF.GE. RDLM5) LBGOOD = 5
+          IF(DF.GE. RDLM1 .AND. DF.LT. RDLM2) LBGOOD = 2
+          IF(DF.GE. RDLM3 .AND. DF.LT. RDLM4) LBGOOD = 3
+          IF(DF.GE. RDLM4 .AND. DF.LT. RDLM5) LBGOOD = 4
+          INDEX = JRING*5 - 5 + LBGOOD
+          LBHT(INDEX) = LOR(LBHT(INDEX),MKLY(ILAY+1))
+        CIF
+      CFOR
+C
+N
+      LMGAP = 3
+      MGAP  = 0
+      MGAP1 = 0
+      MGAPM = 0
+      MCON  = 0
+      ILAYR = 0
+      ILLST = 0
+      NHGD  = 0
+N     LABEL FOR BIG GAP AT CELL BOUND
+      LBOUND = 0
+C
+N     LOOP OVER ALL RINGS + LAYERS
+      JRING = 0
+      REPEAT
+      JRING = JRING + 1
+        INDEX = JRING*5 - 5
+        NHGC  = 0
+        NHTRC = 0
+        LB1   = LBHT(INDEX + 1)
+N       COVER SINGLE MISSING GOOD HITS
+        PERFORM CKGDHT
+C
+        LB2   = LBHT(INDEX + 2)
+        LB3   = LBHT(INDEX + 3)
+C
+N       LABEL FOR COVERED HITS
+        LB4   = LBHT(INDEX + 4)
+N       SET BITS FOR COVERED HITS IF DEAD CELL
+        IF(LAND(MKDDCL(JRING),LBCELL).NE.0) LB4 = LBDDCL
+C
+        LB5   = LBHT(INDEX + 5)
+        LBCV  = LOR(  LB3,  LB4)
+C
+N       CONSISTENCY CHECK OF COVERED HITS
+        IF LBCV.NE.0
+        THEN
+          PERFORM CKCVHT
+        CIF
+C
+        LBGC  = LOR( LBCV,  LB1)
+        LBTRC = LOR( LBGC,  LB2)
+        LBHIT = LOR(LBTRC,  LB4)
+C
+        IL = 0
+        WHILE IL.LT.16
+        IL    = IL    + 1
+        ILAYR = ILAYR + 1
+          MKLY1 = MKLY(IL)
+          IF LAND(LBGC,MKLY1).EQ.0
+          THEN
+N           COUNT GAPS EXCEPT LAYERS 1,2,15,16
+            IF IL.GT.2 .AND. IL.LT.15
+            THEN
+              MGAP  = MGAP  + 1
+              MGAP1 = MGAP1+ 1
+              MCON  = 0
+            CIF
+          ELSE
+            NHGC  = NHGC + 1
+            MCON  = MCON + 1
+            IF MCON.GE.2 .OR. MGAP1.EQ.1
+            THEN
+              MGAP  = 0
+              MGAPM = 0
+              ILLST = ILAYR
+              IF(MCON.EQ.4) LBOUND = 0
+            CIF
+            MGAPM = MAX0(MGAPM,MGAP1)
+            MGAP1 = 0
+          CIF
+          IF(LAND(LBTRC,MKLY1).NE.0) NHTRC = NHTRC + 1
+          IF(LAND(LB1  ,MKLY1).NE.0) NHGD  = NHGD  + 1
+          IF MGAPM.GE.4 .OR. MGAP.GE.6
+          THEN
+N           CHECK IF GAP AT CELL BOUND
+            LBACC = 0
+            IF(LAND(MKBDCL(JRING),LBCELL).NE.0 .AND. MGAPM.LE.6
+     ?         .AND. MGAP.LE.7) LBACC = 1
+C           IF(IL.GE.15 .OR. IL.LE.5) LBACC = 1
+            IF LBACC.NE.0
+            THEN
+              LBOUND = 1
+              ILLSTB = ILLST
+            ELSE
+              LBTRCK = ILLST
+              XREPEAT
+            CIF
+          CIF
+        CWHILE
+C
+N       CHECK # OF HITS
+C       IF NHTRC.LT.10
+C       THEN
+C         LBTRCK =-JRING*100
+C         XREPEAT
+C       CIF
+      UNTIL JRING.EQ.3
+C
+      IF(LBTRCK.EQ. 0) LBTRCK = ILLST
+      IF(LBOUND.NE. 0) LBTRCK = ILLSTB
+      IF(NHGD  .LT. 8 .AND. LBTRCK.GT.0) LBTRCK =-LBTRCK
+C     IF(LBTRCK.LE.16) PRINT 2005, ICELL,(WRK(I),I=HPCO0,HPCO9)
+C     PRINT 2003, ICELL,LBTRCK,NHGD, LBHT
+C
+      RETURN
+C
+C
+N     *************************
+N     *      M K G D H T      *
+N     *************************
+C
+C
+N     ALLOW SINGEL MISSING HIT BETWEEN GOOD ONES
+      PROC CKGDHT
+C
+N       SHIFT LABEL BY 1 BIT
+        LBGD2 = SHFTL(LB1 ,1)
+C
+N       LOOP OVER HITS + DELETE SINGLES
+        MKGD1 = 7
+        MKGD2 = 5
+        MKGD3 = 2
+        FOR IL=1,16
+          LBZW  = LAND(LBGD2,MKGD1)
+          IF LBZW.EQ.MKGD2
+          THEN
+            LBGD2 = LOR(MKGD3,LBGD2)
+          CIF
+          MKGD1 = SHFTL(MKGD1,1)
+          MKGD2 = SHFTL(MKGD2,1)
+          MKGD3 = SHFTL(MKGD3,1)
+        CFOR
+        LBPR = SHFTR(LBGD2,1)
+        LB1  = SHFTR(LBGD2,1)
+C
+      CPROC
+C
+C
+N     *************************
+N     *      C K C V H T      *
+N     *************************
+C
+C
+N     CHECK BITS FOR COVERED HITS
+      PROC CKCVHT
+C
+N       SHIFT LABEL BY 1 BIT
+        LBCV2 = SHFTL(LBCV,1)
+C
+N       LOOP OVER HITS + DELETE SINGLES
+        MKCV1 = 7
+        MKCV2 = 2
+        FOR IL=1,16
+          LBZW  = LAND(LBCV2,MKCV1)
+          IF LBZW.EQ.MKCV2
+          THEN
+            LBCV2 = LAND(LCOMPL(MKCV2),LBCV2)
+          CIF
+          MKCV1 = SHFTL(MKCV1,1)
+          MKCV2 = SHFTL(MKCV2,1)
+        CFOR
+        LBCV = SHFTR(LBCV2,1)
+C
+      CPROC
+C
+      END

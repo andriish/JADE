@@ -1,0 +1,16 @@
+main: zread.run
+trace symbols:
+load symbols:
+files.o: zread.o
+opal libs:
+dummy lib:
+cern libs: -L/cern/99/lib -lgraflib -lgrafX11 -lpacklib -lmathlib -lkernlib
+
+now beginning final pass
+/usr/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/libg2c.a(open.o): In function `f_open':
+/mnt/cnsrc/src/compilers/gcc-2.95.3/i686-pc-linux-gnu/libf2c/libI77/open.c:213: the use of `tempnam' is dangerous, better use `mkstemp'
+link completed with status 0
+link end
+
+zread.Linux.run created.
+

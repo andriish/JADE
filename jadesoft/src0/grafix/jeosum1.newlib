@@ -1,0 +1,1324 @@
+$   22/03/97 703222146  MEMBER NAME  JEOSUM1  (GRAFIX.S) M  NEWLIB
+    17/07/85 901192002  MEMBER NAME  $HISTORY (S)           DATA
+************************************************************************
+*                                                                      *
+*         G R A F I X        H I S T O R Y    M E M B E R              *
+*                                                                      *
+************************************************************************
+*                                                                      *
+*  Please enter all changes to the GRAFIX   library at the bottom of   *
+*  this history member.                                                *
+*                                                                      *
+*                                                                      *
+************************************************************************
+
+
+
+  IDFUN   19.03.85  J.O.   UPDATED
+  CAPMRK  15.04.85  J.O.   UPDATED  FOR NEW  HEAD BANK ETC
+  RZHITS  17.04.85  C.B.   ERROR PRINTOUT COMMENTED OUT NOW
+  RZHITS  17.04.85  C.B.   NEW VERSION FROM SUSAN CARTWRIGHT
+  DRVCRD  23.04.85  C.B.   NEW VERSION FROM JOERG HAGEMANN
+  DSVAC   23.04.85  C.B.   NEW VERSION FROM JOERG HAGEMANN
+  EVDISP  24.04.85  C.B.   NEW VERSION FROM JOERG HAGEMANN
+  BANKPR  24.04.85  C.B.   NEW VERSION FROM JOERG HAGEMANN
+  DRAWVC  24.04.85  C.B.   NEW VERSION FROM JOERG HAGEMANN
+  JADARG  24.04.85  C.B.   CORRECTION FOR ARGUMENT ERROR RECOVERY
+  CAPMRK  26.04.85  J.O.   CAPMRK UPDATED, T2 COINC. PRINT
+  SAFCHK   8.07.85  C.B.   SAFCHK RESCUED FROM GRAPHS BACKUP
+
+  ----->   8.07.85  C.B.   MANY ROUTINES FROM JADEGS BROUGHT HERE
+
+  KOMMAN  17.07.85  C.B.   CHANGED FOR MULTIPLE COMMAND LINES
+  SEPCMD  17.07.85  C.B.   NEW S/R FOR MULTIPLE COMMAND LINES
+  LOCFLD  17.07.85  C.B.   CHANGED FOR MULTIPLE COMMAND LINES
+  JADCMD  17.07.85  C.B.   CHANGED FOR MULTIPLE COMMAND LINES
+  HELPUS  17.07.85  C.B.   NEW ROUTINE FOR HELP SYSTEM
+  HELPLI  17.07.85  C.B.   NEW ROUTINE FOR HELP SYSTEM
+ HELPPROG 17.07.85  C.B.   NEW PROGRAM FOR HELP SYSTEM
+ HELPMOD  17.07.85  C.B.   DATA MEMBER FOR HELP SYSTEM
+  SCANNR  17.07.85  C.B.   OLD SETF AND CPAR COMMANDS REMOVED
+  DEFCMD  17.07.85  C.B.   OLD SETF AND CPAR COMMANDS REMOVED
+  WALLOC  17.07.85  C.B.   RENAMED FROM WALLOK
+  EFMASS  17.07.85  C.B.   FROM JADEGS. LOWER CASE LETTERS USED,CLRCON.
+  MENU    17.07.85  C.B.   UPDATED
+ HELPPROG 19.07.85  C.B.   IGNORE NEWLIB HEADER LINE NOW
+  SCANNR  19.07.85  C.B.   COMMAND MACRO ADDED
+  KOMMAN  19.07.85  C.B.   COMMAND MACRO ADDED
+  DEFCMD  19.07.85  C.B.   COMMAND MACRO ADDED
+  DEFMAC  19.07.85  C.B.   DEFINES MACROS
+  EXEMAC  19.07.85  C.B.   EXECUTES A MACRO
+  RESMAC  19.07.85  C.B.   RESTORES ONE LEVEL OF MACRO
+ GRBLOCK  19.07.85  C.B.   ADD NEW COMMON
+  MENU    19.07.85  C.B.   UPDATED
+  NOTICE  19.07.85  C.B.   UPDATED
+  NEWS    19.07.85  C.B.   UPDATED
+  EXPMAC  22.07.85  C.B.   RENAMED FROM EXEMAC
+  KOMMAN  22.07.85  C.B.   CALLS EXPMAC NOW. CDEF NOW (80,31) EVERYWHERE
+  FINABR  22.07.85  C.B.   LARGER CGRAP4 ARRAYS ALLOW 200 COMMANDS
+ GRBLOCK  22.07.85  C.B.   AS ABOVE
+  HELPLI  22.07.85  C.B.   AS ABOVE
+  SETCMD  22.07.85  C.B.   AS ABOVE + IPOS4 CHECKED TO BE 200 OR LESS
+  DEFCMD   3.08.85  C.B.   CHANGES FOR EDITMAC AND OTHER IMPROVEMENTS
+  DEFMAC   3.08.85  C.B.   CHANGES FOR EDITMAC AND OTHER IMPROVEMENTS
+  EDIMAC   3.08.85  C.B.   CHANGES FOR EDITMAC AND OTHER IMPROVEMENTS
+  EXPMAC   3.08.85  C.B.   CHANGES FOR EDITMAC AND OTHER IMPROVEMENTS
+  GPHMAIN  3.08.85  C.B.   CHANGES FOR EDITMAC AND OTHER IMPROVEMENTS
+  HELPLI   3.08.85  C.B.   CHANGES FOR EDITMAC AND OTHER IMPROVEMENTS
+  HELPUS   3.08.85  C.B.   CHANGES FOR EDITMAC AND OTHER IMPROVEMENTS
+  HLPMAC   3.08.85  C.B.   CHANGES FOR EDITMAC AND OTHER IMPROVEMENTS
+  MENU     3.08.85  C.B.   CHANGES FOR EDITMAC AND OTHER IMPROVEMENTS
+  NEWS     3.08.85  C.B.   CHANGES FOR EDITMAC AND OTHER IMPROVEMENTS
+  NOTICE   3.08.85  C.B.   CHANGES FOR EDITMAC AND OTHER IMPROVEMENTS
+  SCANNR   3.08.85  C.B.   CHANGES FOR EDITMAC AND OTHER IMPROVEMENTS
+  DEFCMD   5.08.85  C.B.   CHANGES FOR DELMAC AND RENAMAC
+  DELMAC   5.08.85  C.B.   CHANGES FOR DELMAC AND RENAMAC
+  HELPMOD  5.08.85  C.B.   CHANGES FOR DELMAC AND RENAMAC AND MACRO
+  LOCMAC   5.08.85  C.B.   CHANGES FOR DELMAC AND RENAMAC
+  MENU     5.08.85  C.B.   CHANGES FOR DELMAC AND RENAMAC
+  NEWS     5.08.85  C.B.   CHANGES FOR DELMAC AND RENAMAC
+  NOTICE   5.08.85  C.B.   CHANGES FOR DELMAC AND RENAMAC
+  RENMAC   5.08.85  C.B.   CHANGES FOR DELMAC AND RENAMAC
+  SCANNR   5.08.85  C.B.   CHANGES FOR DELMAC AND RENAMAC
+  IDFUN    5.08.85  C.B.   JOBNAM RETURNS 2 REAL*8 STRINGS
+  KOMMAN   5.08.85  C.B.   CALLS PROFIL
+  NEWS     5.08.85  C.B.   CORRECTED
+  PROFIL   5.08.85  C.B.   READS MACRO PROFILE DATASET
+  RENMAC   5.08.85  C.B.   SMALL CHANGES
+  HELPLI   5.08.85  C.B.   SMALL CHANGES
+  PROFIL   6.08.85  C.B.   USE COMMON /CWORK3/ RATHER THAN CWORK1
+  HELPUS   6.08.85  C.B.   USE COMMON /CWORK3/ RATHER THAN CWORK
+  FWCHEV   7.08.85  C.B.   NEW TAGGING NAMES + TAGINT NOW CALLED ONCE
+  BLNUMB   7.08.85  C.B.   NEW TAGGING NAMES + TAGINT NOW CALLED ONCE
+  PROJEC   9.08.85  C.B.   BUGS REMOVED + GENERAL TIDY UP
+  PROJVW   9.08.85  C.B.   NEW. CALLED BY PROJEC
+  GRBLOCK  9.08.85  C.B.   CGRAP5 EXTENDED BY 1 WORD FOR KOMMAN
+  KOMMAN   9.08.85  C.B.   IMPROVED ERROR HANDLING
+  GPHMAIN  9.08.85  C.B.   MINOR CHANGE TO OUTPUT (MENTIONS HELP)
+  SCANNR   9.08.85  C.B.   CSTV2 AND STANDARD VIEW AFTER N  BUG FIXED
+  CIRDIS  10.08.85  C.B.   CDTL 23 BUG FIXED WITH MOVEA STATEMENT
+  PARDIS  10.08.85  C.B.   CDTL 23 BUG FIXED WITH MOVEA STATEMENT
+  CDST    10.08.85  C.B.   CDTL 23 AND 14 DESCRIPTIONS CHANGED
+  TRKHIT  10.08.85  C.B.   NOW CALLS DISPZC
+  DISPZC  10.08.85  C.B.   DISPLAYS Z CHAMBER HITS
+  KOMMAN  11.08.85  C.B.   IMPROVED STRUCTURE
+  CDST    11.08.85  C.B.   RENUMBERED THE FORTRAN LINE NUMBERS
+  DEFCMD  12.08.85  C.B.   COMMAND LIM REMOVED
+  SCANNR  12.08.85  C.B.   COMMAND LIM REMOVED
+  HELPMOD 12.08.85  C.B.   COMMAND LIM REMOVED
+  MENU    12.08.85  C.B.   COMMAND LIM REMOVED. MUONS AND MUR2 ADDED.
+  GPHMAIN 12.08.85  C.B.   JULY --> AUGUST
+  NOTICE  14.08.85  C.B.   SMALL CHANGE
+  MENU    14.08.85  C.B.   CHANGES IN ORDERING AND LAYOUT
+  CDST    14.08.85  C.B.   CHANGED SOME DESCRIPTIONS
+  CDST    15.08.85  C.B.   CHANGED SOME DESCRIPTIONS
+  MENU    15.08.85  C.B.   CHANGED SOME DESCRIPTIONS
+  DEFCMD  15.08.85  C.B.   ADDED SOME SYNONYMS
+  MENU    19.08.85  C.B.   CHANGED SOME DESCRIPTIONS
+ HELPMOD  19.08.85  C.B.   CHANGED SOME DESCRIPTIONS
+ AXSHOW    5.11.85  J.O.   CORRECTION OF BUG IN AXSHOW (HELLENBRAND)
+ NEWS      5.11.85  J.O.   UPDATED TO THE SAME EFFECT.
+ AXSHOW   19.11.85  J.O.   CORRECTION OF THE ABOVE CORRECTION  KHH, JEO
+ EFMASS   04.12.85  J.O.   /CJJONI/ --> /CJIONI/   SET IN JADEBD
+ CAPMRK   20.12.85  C.B.   REFORMATTED. CHANGES FOR NEW OPT 46 & OPT 47
+ CROAX    20.12.85  C.B.   DOES NOTHING IF OPT 48 IS ON.
+ CDST     20.12.85  C.B.   NEW OPTIONS 46,47 AND 48. BUG FIXED 41 TO 45
+ NEWS     20.12.85  C.B.   UPDATED
+ NOTICE   20.12.85  C.B.   UPDATED
+ #GRAPHIX 20.12.85  C.B.   NEW K TIME : REDUCED TO 9 SECS
+ GPHMAIN  20.12.85  C.B.   NEW DATE PRINTED
+ RSDISP   20.12.85  C.B.   EXTRA SUBROUTINES MOVED TO OWN MEMBERS
+ BANKLS   20.12.85  C.B.   ADDED. CAPTION INFO SUPPRESSED (OPT 46,13)
+ TRTEXT   20.12.85  C.B.   ADDED.
+ GMTEXT   20.12.85  C.B.   ADDED.
+ XXXYYY   20.12.85  C.B.   ADDED.
+ LGCLST   20.12.85  C.B.   ADDED. CAPTION INFO SUPPRESSED (OPT46,13)
+ MENU     20.12.85  C.B.   COMMAND  HLP / LASER  ADDED.
+ HELPMOD  20.12.85  C.B.   COMMAND  HLP / LASER  ADDED.
+ NEW      20.12.85  C.B.   COMMAND  HLP / LASER  ADDED.
+ NOTICE   20.12.85  C.B.   COMMAND  HLP / LASER  ADDED.
+ DISPLY   20.12.85  C.B.   COMMAND  HLP / LASER  ADDED.
+ DEFCMD   20.12.85  C.B.   COMMAND  HLP / LASER  ADDED.
+ DISPLY   18.03.86  C.B.   PICTURE SHIFT BEFORE LASER OUTPUT
+ DRAWPI    3.05.86  J.O.   MODIFIED TO CURVED ROOF PI
+ DRAWMU    3.05.86  J.O.   INSTALLED PRIOR TO UPDATE OF DEDX (K.AMBRUS)
+ DEDXV1    6.06.86  J.O.   INSTALLED PRIOR TO UPDATE OF DEDXDS
+ DEDXB1    6.06.86  J.O.   INSTALLED PRIOR TO UPDATE OF DEDXDS
+ JFXYRZ    6.06.86  J.O.   INSTALLED PRIOR TO UPDATE OF DEDXDS
+ DEDXV1    8.06.86  J.O.   MODIFICATION   (SKARD DEDX VS R-HITS OPTION)
+ DEDXB1    8.06.86  J.O.   MODIFICATION
+ DEDXDS    8.06.86  J.O.   MODIFIED, OLD VERSION IS DEDXDS0
+ DEDXDS    9.06.86  J.O.   CDTL 49 NOW SWITCHES PREVIOUS FEATURE ON/OFF
+ DEDXV1    9.06.86  J.O.   CORRECTED BY SKARD
+ NEWS      9.06.86  J.O.   NEWS ABOUT THE PREVIOUS OPTION
+ CDST      9.06.86  J.O.   CDTL 49 INCLUDED
+ GRBLOCK   9.06.86  J.O.   CDTL 49 IS TRUE BY DEFAULT
+ DEDXV1   10.06.86  J.O.   UPDATE OF DEDXV1, ACCORDING TO JAJ SKARD
+ AXSHOW   10.06.86  C.B.   FROM J.H. LIBRARY
+ BANKPR   10.06.86  C.B.   FROM J.H. LIBRARY
+ CALCOR   10.06.86  C.B.   FROM J.H. LIBRARY
+ CIRDIS   10.06.86  C.B.   FROM J.H. LIBRARY
+ COMWRD   10.06.86  C.B.   FROM J.H. LIBRARY
+ CGRCOM   10.06.86  C.B.   FROM J.H. LIBRARY
+ CONVRT   10.06.86  C.B.   FROM J.H. LIBRARY
+ DEFCMD   10.06.86  C.B.   FROM J.H. LIBRARY
+ DISPLY   10.06.86  C.B.   FROM J.H. LIBRARY
+ DRAWVC   10.06.86  C.B.   FROM J.H. LIBRARY
+ DRFTIM   10.06.86  C.B.   FROM J.H. LIBRARY
+ DRVCRD   10.06.86  C.B.   FROM J.H. LIBRARY
+ DRWHIT   10.06.86  C.B.   FROM J.H. LIBRARY
+ DSVAC    10.06.86  C.B.   FROM J.H. LIBRARY
+ FICOOV   10.06.86  C.B.   FROM J.H. LIBRARY
+ JADISP   10.06.86  C.B.   FROM J.H. LIBRARY
+ KOORD    10.06.86  C.B.   FROM J.H. LIBRARY
+ PARDIS   10.06.86  C.B.   FROM J.H. LIBRARY
+ PICK     10.06.86  C.B.   FROM J.H. LIBRARY
+ TRUTH    10.06.86  C.B.   FROM J.H. LIBRARY
+ PRMPRS   10.06.86  C.B.   FROM J.H. LIBRARY
+ PRZVTX   10.06.86  C.B.   FROM J.H. LIBRARY
+ PRTPEV   10.06.86  C.B.   FROM J.H. LIBRARY
+ PRTPTR   10.06.86  C.B.   FROM J.H. LIBRARY
+ PRATOF   10.06.86  C.B.   FROM J.H. LIBRARY
+ PRTPVX   10.06.86  C.B.   FROM J.H. LIBRARY
+ PRN50S   10.06.86  C.B.   FROM J.H. LIBRARY
+ SCANNR   10.06.86  C.B.   FOR DEFVIEW MACRO FEATURE
+ GPHMAIN  10.06.86  C.B.   FOR DEFVIEW MACRO FEATURE
+ WELCME   10.06.86  C.B.   FOR DEFVIEW MACRO FEATURE
+ ENDMES   10.06.86  C.B.   FOR DEFVIEW MACRO FEATURE
+ RALLOC   10.06.86  C.B.   FOR DEFVIEW MACRO FEATURE
+ CALLOC   10.06.86  C.B.   FOR DEFVIEW MACRO FEATURE
+ SETUPG   10.06.86  C.B.   FOR DEFVIEW MACRO FEATURE
+ SETDEF   10.06.86  C.B.   FOR DEFVIEW MACRO FEATURE
+ KOMMAN   10.06.86  C.B.   FOR DEFVIEW MACRO FEATURE
+ GRBLOCK  10.06.86  C.B.   FOR DEFVIEW MACRO FEATURE
+ CDST     10.06.86  C.B.   CORRECTED MISTAKE MADE EARLIER
+ NEWS     10.06.86  C.B.   NEW NEWS ADDED
+ NOTICE   10.06.86  C.B.   DEDX NOTICE ADDED
+ NEWS     11.06.86  C.B.   PICK AND VTXC EXPLAINED.
+ HELPMOD  11.06.86  C.B.   PICK AND VTXC EXPLAINED.
+ MENU     11.06.86  C.B.   PICK AND VTXC LISTED.
+ DISPLY   11.06.86  C.B.   CORRECTED LOSS OF CALL PTRANS(335,100)
+ EVDISP   26.07.86  J.O./J.H. VTX DISPLAY FOR MC DATA WITH NO VTXC BANK
+ DISPLY   02.08.86  J.O.   CORRECTED BUG IN COMMAND JETC (NNJETC=0)
+ ZTRGVW   05.08.86  J.O.   UPDATED FOR NEW FORMAT (BANK DESCR. 2) 1986
+ BANKPR   05.08.86  J.O.       "    "   "    "       "    "    "    "
+ IDFUN    06.08.86  J.O.   UPDATED FOR SOME NEWCOMERS..
+ DEDXDS   20.08.86  J.O.   INCLUDE MOM.ERROR IN PRINT OUT OF DEDX
+ BANKPR   20.08.86  J.O.   INCLUDE MOM.ERROR IN PRINT OUT OF DEDX
+ BANKPR   25.08.86  J.O.   ZTRG PRINT AND LASER PRINTER HARDCOPY
+ PRJ68K   27.08.86  J.O.   PRINT ROUTINE FOR J68K INSTALLED
+ DEDXB1   27.08.86  J.O.   UPDATED FOR COMMON /CDEDXU/NHFCUT
+ DEDXV1   27.08.86  J.O.   UPDATED BY J.A.S.
+ DEDXDS   27.08.86  J.O.   UPDATED FOR COMMON /CDEDXU/NHFCUT  (DEDX -6)
+ BANKPR   28.08.86  J.O.   UPDATED TO INCLUDE PRINT OF J68K BANK (E.E)
+ PRJ68K   28.08.86  J.O.   UPDATED (BY E.ELSEN)
+ #GRAPHIX 28.08.86  J.O.   UPDATED TO INCLUDE FORTRAN 77 LINK LIB.
+ DEDXV1   28.08.86  J.O.   UPDATED BY J.A.S.
+ BANKPR   08.09.86  J.O.   BANKPR9 VERSION FOR TEST OF PALL PRINT
+ BANKPR   09.09.86  J.O.   BANKPR9 IS NOW STANDARD, OLD IS BANKPR0
+          17.09.86  J.O.   NEW COMMAND (J68K) INSTALLED, DISPLAYS FADC
+                           DATA OF THE JETCHAMBER. AUTHOR: G.ECKERLIN
+                           INVOLVED ROUTINES: SCANNR, DEFCMD, CDST,
+                           J68KDS,FADCAX,FADDRW,NEWS,NOTICE
+ IDFUN    04.03.87  J.O.   UPDATED FOR SOME NEWCOMERS..
+ FWDISP   12.03.87  J.O.   RESULT DISPLAY IN FW VIEW. AFFECTED ROUTINES:
+                           FWDISP,RSDISP,NEWS
+ DISPLY   16.04.87  J.O.   HLP WITH TRAILING NR, STEERS TO L1,L2,..
+                           AFFECTED ROUTINES: DISPLY,DEFCMD,NOTICE,NEWS
+ HELDIS   21.04.87  J.O.,JS.  HELIX DISPLAY MODIFIED, UPDATE OF RSDISP
+                           AND VXDISP. OLD HELDIS NOW HELDIS0
+ DEDXDS   04.05.87  J.O.   UPDATE OF DEDX-6, PMCUT CHANGE NOW POSSIBLE
+ IDFUN    05.05.87  J.O.   UPDATED FOR SOME NEWCOMERS..
+ DEDXDS   20.05.87  J.O.   SLIGHT BUG CORRECTED
+ ZFIT,ETC.20.05.87  J.O.,  UPDATE OF J68KDS,FADDRW,DEFCMD,NOTICE,NEWS,
+                E.E,G.E    MENU. ADD NEW ROUTINES ZFIT, ZFITDS FOR THE
+                           NEW COMMAND ZFIT
+ IMPLICIT INTEGER*2(H) IN SOME ROUTINES, MAKE /BCS/ SMALLER  20.5.87 J.O
+ RSDISP   29.05.87  J.O.   UPDATE RSDISP FOR PARDIS DISPLAY, RZ TYPE 2
+ DEDXB1   31.05.87  J.O.   UPDATED CALIBRATION PERIODS, PMCUT AND PRINT
+ RSDISP   04.06.87  J.O.   CORRECT FOR HELIX TYPE FIT
+ VXDISP   04.06.87  J.O.   CORRECT FOR HELIX TYPE FIT
+ CIRDIS   04.06.87  J.O.   CORRECT FOR HELIX TYPE FIT
+ ZFIT     16.06.87  J.O.,E.E  UPDATE OF ZFIT
+ HELPMOD  20.07.87  CKB.,E.E  UPDATE OF ZFIT
+ HELPMOD  23.07.87  CKB.   UPDATE FOR HLP/LASER WITH ARGUMENT
+                           CORRECTIONS TO TEXT FOR ZFIT
+ DEFCMD   23.07.87  CKB.   LASER HAS ONE ARGUMENT LIKE HLP
+ RUTRCK   08.08.87  J.O.   UPDATE FOR SPITZER S-Z FITS  (OLD: RUTRCK0)
+ DEDXWV   01.09.87  J.O.   UPDATE FOR USE WITH NEW DEDXBN FROM K.AMBRUS
+ DTHCV1   01.09.87  J.O.   NEW VERSION OF DRTHCV,FOR NEW DEDXBN K.AMBRUS
+ DEDXDS   16.11.87 E.E.,J.O. UPDATE FOR NEW DEDXBN WITH MC SIMULATION
+                           THE OLD PROGRAM DEDXB1 IS NOW OBSOLETE
+ DEDXV1   16.11.87 E.E.,J.O. UPDATE FOR NEW DEDXBN WITH MC SIMULATION
+ DEDXDS   20.11.87 E.E.,J.O. FURTHER UPDATE FOR DEDX MC DISPLAY
+ DEDXV1   20.11.87 E.E.,J.O. SEE JCN 97 FOR DETAILS.
+ LOCFLD   18.01.88  C.B.   MOVED TO JADEGS
+ NUMFUN   18.01.88  C.B.   MOVED TO JADEGS
+ AXSHOW   24.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ BANKLS   24.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ BANKPR   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ CAPMRK   24.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ CIRDIS   24.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ CRVT9    24.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ CTDIST   24.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ DEFCMD   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ DISAXI   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ DISPLY   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ DISPVC   24.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ DRAWER   24.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ DRAWID   24.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ DRAWVC   24.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ DRAWBP   24.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ DRHATC   24.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ DRVCRD   24.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ DRWHIT   24.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ DSVAC    24.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ EDVP     25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ EFMASS   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ ELLIPS   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ EVDISP   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ EVTAX    25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ FICOOV   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ GPHMAIN  25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ GRBLOCK  25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ GVTXFT   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ HELPMOD  25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ HITPNT   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ HITSCL   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ JADCMD   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ KOMMAN   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ KOORD    25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ MULDSP   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ PARCOR   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ PARDIS   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ PLYGON   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ RSDISP   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ SCANNR   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ SETSCL   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ TRKHIT   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ TRNUMB   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ TRN4V    25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ TRPVTX   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ TRTEXT   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ TRUTH    25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ VCDO     25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ VHITLD   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ VRXCIR   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ VTXCRV   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ VTXCRW   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ VXDISP   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ WELCME   25.07.88  C.B.   IMPROVED VERSION FROM F22HAG.GRAF.S
+ DEFCMD   27.07.88  C.B.   PRINT HAS 2 ARGUMENTS IN DEFINITION
+ EVDISP   09.08.88  J.H.   UPDATED FOR AUTO DISPLAY OF VTX-CHAMBER
+                           EVDISP0 KEPT
+ TRKHIT   17.10.88  J.H.   UPDATED FOR DISPLAY OF VTX-CHAMBER
+ DISPLY   17.10.88  J.H.   UPDATED FOR NEW TRKHIT
+ VXDISP   19.01.89  J.O.   UNDEF. VAR. AH03 NOW SET (BUG SEEN BY D.P.)
+//* 20/12/85 810171939  MEMBER NAME  #GRAPHIX (S)           JCL
+//         JOB 00010622,CLASS=E,TIME=(0,15),MSGLEVEL=(2,0)
+//*MAIN RELPRI=LOW
+//*
+//**********************************************************************
+//*                                                                    *
+//*    GRAPHICS LINKING JOB WITH NO OVERLAYS                           *
+//*    GRAPHICS LINKING JOB WITH NO OVERLAYS       -------             *
+//*    GRAPHICS LINKING JOB WITH NO OVERLAYS       J A D E             *
+//*    GRAPHICS LINKING JOB WITH NO OVERLAYS       -------             *
+//*    GRAPHICS LINKING JOB WITH NO OVERLAYS                           *
+//*                                                                    *
+//*                                                                    *
+//**********************************************************************
+//*                                                                    *
+//*    USES CERN STYLE JCL PROCEDURE   L I N K                         *
+//*                                                                    *
+//*    NOTE: UNIT=FAST  M U S T  BE GIVEN IN THE DEFINITION OF         *
+//*          THE DDNAME SYSLMOD. OTHERWISE UNIT=DISK IS ASSUMED.       *
+//*                                                                    *
+//**********************************************************************
+//*
+//NEWLIB EXEC NEWLIB,PS=NULLFILE,
+// PL='F11LHO.GRAPHL',TO=DISK
+./ SCRATCH JADE0
+//*
+//COMPR EXEC COMPRESS,LIB='F11LHO.GRAPHL'
+//*
+//LINK EXEC LINK,LPRM='LIST,SIZE=(512K,72K)',LRGN=600K
+//*
+//L.SYSLIB  DD DSN=F11LHO.GRAFIX.L,DISP=SHR,VOL=SER=STOR05,UNIT=FAST
+//          DD DSN=F22KLE.VERTEX.L,DISP=SHR,VOL=SER=STOR05,UNIT=FAST
+//          DD DSN=F22KLE.JVTXC.GL,DISP=SHR,VOL=SER=STOR05,UNIT=FAST
+//          DD DSN=F11LHO.JADEGL,DISP=SHR,VOL=SER=STOR05,UNIT=FAST
+//          DD DSN=F11GOD.PATRECLD,DISP=SHR,VOL=SER=STOR05,UNIT=FAST
+//          DD DSN=JADELG.LOAD,DISP=SHR,VOL=SER=STOR05,UNIT=FAST
+//          DD DSN=JADEPR.JADELD,DISP=SHR,VOL=SER=STOR05,UNIT=FAST
+//          DD DSN=F22ALL.JADEMUL,DISP=SHR,VOL=SER=STOR05,UNIT=FAST
+//          DD DSN=F22NAR.TOFLIB.L,DISP=SHR,VOL=SER=STOR05,UNIT=FAST
+//          DD DSN=F11LHO.TAGG.L,DISP=SHR,VOL=SER=STOR05,UNIT=FAST
+//          DD DSN=F1EBLO.BOSLIB.L,DISP=SHR,VOL=SER=DISK71,UNIT=FAST
+//          DD DSN=R02SCH.AG2USER.LOAD,DISP=SHR
+//          DD DSN=R02SCH.TSOIPS.LOAD,DISP=SHR
+//          DD DSN=R02SCH.TCSUSER.LOAD,DISP=SHR
+//          DD DSN=SYS1.DESY.LHXE,DISP=SHR
+//          DD DSN=SYS1.FORT.LHXE,DISP=SHR
+//          DD DSN=SYS1.FORT.LF77,DISP=SHR
+//          DD DSN=R01UTL.CERN.KERNLIB4,DISP=SHR
+//*
+//*                LOAD MODULE OUTPUT
+//*
+//L.SYSLMOD DD DSN=F11LHO.GRAPHL,DISP=SHR,VOL=SER=STOR05,UNIT=FAST
+//*
+//*L.SYSLMOD DD DSN=F22???.GRAPHL,DISP=(NEW,CATLG,DELETE),UNIT=FAST,
+//*         SPACE=(TRK,(90,10,5),RLSE),DCB=R01DCB.LOAD
+//*
+//*                ADDITIONAL DD DEFINITIONS FOLLOW (IF ANY)
+//*
+//*
+//*                LINKAGE EDITOR INPUT COMMANDS
+//*
+//L.SYSIN   DD *
+  INCLUDE SYSLIB(GPHMAIN,MUINIG)
+  ENTRY MAIN
+  NAME JADE(R)
+/*
+    17/07/85 901192002  MEMBER NAME  JADEOVLY (S)           DATA
+ INCLUDE SYSLIB(GPHMAIN,MUINIG)
+ OVERLAY ONE
+  INSERT IDFUN
+  INSERT JOBNAM
+  INSERT NOTICE
+  INSERT OPUNIT
+  INSERT STWADD
+  INSERT WALLOK
+  INSERT STPLST
+  INSERT NEWS
+  INSERT CDST
+  INSERT MENU
+  INSERT HELPUS
+  INSERT RETTEN
+  INSERT GNUREC
+  INSERT SAFCHK
+  INSERT FREEDD
+  INSERT INITT
+  INSERT GETSDD
+  INSERT GETPDD
+  INSERT ALCDYN
+  INSERT DALDYN
+  INSERT GETDD
+  INSERT RESET
+  INSERT TERM
+  INSERT NEWPAG
+  INSERT FINITT
+  INSERT ABEND
+  INSERT ERRSET
+  INSERT ERRPRT
+ OVERLAY ONE
+  INSERT ZVERTF
+  INSERT MCTR4V
+  INSERT TRUTH
+  INSERT TRKNM
+  INSERT BANKPR
+  INSERT AGRPR
+  INSERT TRIG2
+  INSERT TBGDIS
+  INSERT TBGSTR
+  INSERT CIRSEG
+  INSERT ECAPQ
+  INSERT EXJHTL
+ OVERLAY ONE
+  INSERT MUANA
+  INSERT MUANAF
+  INSERT MUFFLE
+  INSERT MUFFLM
+  INSERT MUFFLR
+  INSERT MUFFLS
+  INSERT MUFFLT
+  INSERT MUFFLX
+  INSERT MUFFLY
+  INSERT MUENDP
+  INSERT MUFFLZ
+  INSERT MUFMAT
+  INSERT MUREGM
+  INSERT MUREGY
+  INSERT MUREGS
+  INSERT MUDCHK
+  INSERT MUCUTS
+  INSERT MATIN1
+  INSERT MUFFLB
+  INSERT MULOCH
+  INSERT MULOC2
+  INSERT MUSAFE
+  INSERT MUDUMP
+ OVERLAY ONE
+  INSERT SRTREL
+  INSERT FLINEL
+  INSERT FTRKEL
+  INSERT PRHTAR
+ OVERLAY ONE
+  INSERT KNTREL
+  INSERT TRHTCK
+  INSERT LRFIT
+  INSERT TRLCHI
+  INSERT PARFIT
+  INSERT CIRFIT
+  INSERT RESIDS
+  INSERT NEWINC
+  INSERT FXYZ
+  INSERT XYFIT
+  INSERT ZRFIT
+  INSERT PCWORK
+  INSERT ERRORM
+  INSERT PATROL
+  INSERT BAKPAK
+  INSERT TRLORD
+  INSERT PATROL
+  INSERT BACKTR
+  INSERT RSTBTR
+  INSERT LFRT
+  INSERT SIDE1
+  INSERT BAKFIT
+  INSERT BSIDE
+  INSERT COREC
+  INSERT SLCOR
+  INSERT BSTORE
+  INSERT RINCON
+  INSERT INTJN1
+  INSERT CHOOSE
+ OVERLAY ONE
+  INSERT EVREAD
+  INSERT MUCON
+  INSERT MUCONW
+  INSERT PARCHN
+  INSERT EVWRIT
+  INSERT RDMODN
+  INSERT RDDOUB
+  INSERT RDINEF
+  INSERT RDMERG
+  INSERT RDPOIN
+  INSERT RDRDMH
+  INSERT RDPATR
+  INSERT RDRESO
+  INSERT RDDDCL
+  INSERT RDDATE
+  INSERT RDHEAD
+  INSERT RDTRIG
+  INSERT RDTRG1
+  INSERT RD82T1
+  INSERT RDALGN
+  INSERT RDTRG2
+  INSERT RD82T2
+  INSERT PRSTAT
+  INSERT NVERT
+  INSERT CHANGE
+  INSERT ALPHAN
+  INSERT INITZV
+  INSERT MUINI
+  INSERT MUFINI
+  INSERT LGINIT
+  INSERT KALIBR
+  INSERT MUREG
+  INSERT LGCALB
+  INSERT LGERSE
+  INSERT LGBADC
+  INSERT LGSUBC
+  INSERT JETCAL
+  INSERT EVREA1
+  INSERT KTMCON
+ OVERLAY ONE
+  INSERT EVDISP
+  INSERT CRICRO
+  INSERT FICOOR
+  INSERT HITMRK
+  INSERT HODRFI
+  INSERT MUHDSP
+  INSERT MUHIT
+  INSERT ECAPS
+  INSERT PBGRFI
+  INSERT PBGCYL
+  INSERT PBGSUM
+  INSERT TR3DSP
+  INSERT PBGRZ
+  INSERT PHNUMB
+  INSERT RROTAT
+  INSERT FWCHEV
+  INSERT HITDSP
+  INSERT CRTREL
+  INSERT BLSHOW
+  INSERT BLNUMB
+  INSERT LGDEAD
+  INSERT FWMUHT
+  INSERT FTDLHO
+  INSERT TOFSMP
+  INSERT TOFSM2
+  INSERT TOFSM3
+  INSERT ATFUGR
+  INSERT RZHITS
+  INSERT RZDRAW
+ OVERLAY ONE
+  INSERT RSDISP
+  INSERT RZROLL
+  INSERT RZTRCK
+  INSERT GMTEXT
+  INSERT LGCDIR
+  INSERT ILCTRC
+  INSERT INTOLG
+  INSERT LGEERR
+  INSERT LGCRN2
+  INSERT LGAVDE
+  INSERT SHMAX
+  INSERT LGAVDP
+  INSERT LGCHC2
+  INSERT LGBHIT
+  INSERT LGEHIT
+  INSERT LGBFIL
+  INSERT LGEFIL
+  INSERT LGECOR
+  INSERT BRLGN
+  INSERT LGECR0
+  INSERT POSEND
+  INSERT ANGBAR
+  INSERT LGNMEC
+  INSERT LGREIN
+  INSERT TPCNST
+  INSERT TRTEXT
+  INSERT GAMDIS
+  INSERT LGCLST
+  INSERT TRKROL
+  INSERT RUTRCK
+  INSERT YAMADA
+  INSERT PARDIS
+  INSERT CIRDIS
+  INSERT BANKLS
+  INSERT LINDIS
+  INSERT LGANAL
+  INSERT LGDCPY
+  INSERT IDATTM
+  INSERT LGCRNR
+  INSERT LGEIGN
+  INSERT LGCCTL
+  INSERT LGTHCR
+  INSERT LGESMR
+  INSERT LGCLPB
+  INSERT LGCLPC
+  INSERT LGCLUS
+  INSERT LGNBLS
+  INSERT LGSRTH
+  INSERT VTXAFT
+  INSERT VTXPRE
+  INSERT VTXPNT
+  INSERT VTXBNK
+  INSERT VTXSRC
+  INSERT VTXEE
+  INSERT VTXS
+  INSERT GVTXFT
+  INSERT VRTPOS
+  INSERT VERTEX
+  INSERT SMINVD
+  INSERT EFMASS
+  INSERT GETGAM
+  INSERT VTXINI
+  INSERT JEGAIN
+ OVERLAY ONE
+  INSERT MCGJET
+  INSERT JETREC
+  INSERT RJXX
+  INSERT MINUS
+  INSERT RESTAR
+  INSERT SUMTHR
+  INSERT SPHERC
+  INSERT ARROW
+ OVERLAY ONE
+  INSERT JADISP
+  INSERT RZDET
+  INSERT ECAP
+  INSERT ECAPCY
+  INSERT DRACAP
+  INSERT FWCAP
+  INSERT FWNEW
+  INSERT NEWCAP
+  INSERT RUTEXT
+  INSERT FWCAP1
+  INSERT FW83
+  INSERT FWC83
+  INSERT BARSEC
+  INSERT FORWRD
+  INSERT MUPIC
+  INSERT MUWIRE
+  INSERT MUVIER
+  INSERT FWMUCN
+ OVERLAY ONE
+  INSERT DEDXDS
+  INSERT DEDXBN
+  INSERT DEDXBK
+  INSERT DEDXVW
+  INSERT DRTHCV
+  INSERT MOMENP
+  INSERT ERRMOM
+  INSERT POLINT
+  INSERT DSORT
+  INSERT DECHIF
+  INSERT CHIFT1
+  INSERT DETHRY
+  INSERT THDEDX
+  INSERT DENS
+  INSERT ZSFIT
+  INSERT ZRECAL
+  INSERT ZSPUR
+  INSERT ZSXY
+  INSERT ZSLINE
+  INSERT MVB
+ OVERLAY ONE
+  INSERT TOFDS
+  INSERT LGBTDC
+  INSERT TOFVW
+  INSERT TOFBK
+  INSERT TOFINT
+  INSERT TOFIN2
+  INSERT TOFMAS
+  INSERT TOFARD
+  INSERT TFARNW
+  INSERT TOFBRA
+  INSERT TOFCLC
+  INSERT TOFMA2
+  INSERT TOFAR2
+  INSERT TOFCL2
+  INSERT TOFCOR
+  INSERT TFSTOR
+  INSERT TFCTD1
+  INSERT CMASS
+  INSERT MOCARD
+  INSERT ATOFUN
+  INSERT ATOFRW
+ OVERLAY ONE
+  INSERT EVIPR4
+  INSERT EVIPR2
+  INSERT BOX3
+  INSERT TRIANQ
+  INSERT QPLOTS
+  INSERT PLIMIT
+  INSERT SUMPAT
+  INSERT CHCLSP
+  INSERT SPHRIX
+  INSERT BOX
+  INSERT EHIST
+  INSERT OUTPRD
+  INSERT MOTAPR
+  INSERT MTOPRM
+  INSERT KIPRCR
+  INSERT VECSUB
+ OVERLAY ONE
+  INSERT FAMPDS
+  INSERT FAMPCO
+  INSERT FAMPFT
+  INSERT ZTRGVW
+  INSERT DSFADC
+  INSERT DRAWER
+  INSERT REALNM
+  INSERT N50SDS
+  INSERT N50SCO
+    19/07/85 807251354  MEMBER NAME  HELPNEW  (S)        M  DATA
+Command:      RA      or  RAn  or  RA n
+Displays the current event in the R-Phi view (Front).
+Visible: TOF, z-chamber, Jet chamber, vertex chamber/beam pipe counters
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      RB      or  RBn  or  RB n
+Displays the current event in the R-Phi view (Front).
+Visible: Lead Glass, TOF, z-chamber, Jet chamber, vertex chamber/BP counters
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      RC      or  RCn  or  RC n
+Displays the current event in the R-Phi view (Front).
+Visible: Muon Filter, Lead Glass, TOF, z-chamber, Jet chamber, vertex chamber
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      ZXA     or  ZXAn  or  ZXA n
+Displays the current event in the ZX view (Top).
+Visible: TOF, z-chamber, Jet chamber, vertex chamber/beam pipe counters
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      ZXB     or  ZXBn  or  ZXB n
+Displays the current event in the ZX view (Top).
+Visible: Lead Glass, TOF, z-chamber, Jet chamber, vertex chamber/BP counters
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      ZXC     or  ZXCn  or  ZXC n
+Displays the current event in the ZX view (Top).
+Visible: Muon Filter, Lead Glass, TOF, z-chamber, Jet chamber, vertex chamber
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      ZXD     or  ZXDn  or  ZXD n
+Displays the current event in the ZX view (Top).
+Visible: Tagging Det, Mu Filter, LG, TOF, z-chamber, Jet chamber,vertex chamber
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      ZYA     or  ZYAn  or  ZYA n
+Displays the current event in the ZY view (Side).
+Visible: TOF, z-chamber, Jet chamber, vertex chamber/beam pipe counters
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      ZYB     or  ZYBn  or  ZYB n
+Displays the current event in the ZY view (Side).
+Visible: Lead Glass, TOF, z-chamber, Jet chamber, vertex chamber/BP counters
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      ZYC     or  ZYCn  or  ZYC n
+Displays the current event in the ZY view (Side).
+Visible: Muon Filter, Lead Glass, TOF, z-chamber, Jet chamber, vertex chamber
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      ZYD     or  ZYDn  or  ZYD n
+Displays the current event in the ZY view (Side).
+Visible: Tagging Det, Mu Filter, LG, TOF, z-chamber, Jet chamber,vertex chamber
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      FW      or  FWn   or  FW n
+Displays the overall view of the Forward (Tagging) Detector.
+The energy values shown are coded if view not magnified. Code is as follows:
+
+ 0          0 : less than 10 MeV
+ 1 .. 9     1 :  10 MeV  to   20 MeV         2 :  20 MeV  to   30 MeV   etc
+ A .. I     A : 100 MeV  to  200 MeV         B : 200 MeV  to  300 MeV   etc
+ J .. R     J :   1 GeV  to    2 GeV         K :   2 GeV  to    3 GeV   etc
+ S .. Z     S :  10 GeV  to   20 GeV         T :  20 GeV  to   30 GeV   etc
+
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      RU      or  RUn   or  RU n
+Displays the rolled-out view of the LG array incl. end caps and tagging det.
+The energy values shown are coded if view not magnified. Code is as follows:
+
+ 0          0 : less than 10 MeV
+ 1 .. 9     1 :  10 MeV  to   20 MeV         2 :  20 MeV  to   30 MeV   etc
+ A .. I     A : 100 MeV  to  200 MeV         B : 200 MeV  to  300 MeV   etc
+ J .. R     J :   1 GeV  to    2 GeV         K :   2 GeV  to    3 GeV   etc
+ S .. Z     S :  10 GeV  to   20 GeV         T :  20 GeV  to   30 GeV   etc
+
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      CYL     or  CYLn  or  CYL n
+Displays the current event in a cylindrical perspective view.
+Visible: Inner detector hits, barrel lead glass. See also EC and FC.
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      FWMU    or  FWMUn  or FWMU n
+Displays the Forward Muon Counters on their own.
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      ZC      or  ZCn   or  ZC n           Synonym:      RZ
+Displays the rolled out view of the z-chamber.
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      VRX
+Displays a close-up R-Phi view of the primary vertex region.
+Concentric rings show the scale. There is no hardware visible.
+-----------
+Command:      VRZX
+Displays a close-up ZX view of the primary vertex region.
+Concentric rectangles show the scale. There is no hardware visible.
+-----------
+Command:      VRZY
+Displays a close-up ZY view of the primary vertex region.
+Concentric rectangles show the scale. There is no hardware visible.
+-----------
+Command:      VC    or   VCn   or   VC n
+Displays a close-up R-Phi view of the Vertex Chamber
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      STVW    or   STVWn   or   STVW n           Synonym:   S
+Displays the current event in the standard view.
+The standard view is initially RB but can be changed with the CSTV command.
+This command is useful if a magnified view has been made the standard.
+The detector hardware will be displayed if a non-zero argument  'n'  is given.
+-----------
+Command:      TRUE    or  TRUEn   or  TRUE n
+Displays the original 4-vectors in a Monte Carlo event. Argument 'n' means:
+         < 0 :  Draw charged track (-n)
+ absent or 0 :  Draw only charged tracks
+           1 :  Draw only photons
+           2 :  Draw both charged tracks and photons
+           3 :  List particle charges, origin coordinates and momentum vectors
+           4 :  Draw jet axis
+-----------
+Command:      PRINT   or   PRINTn m   or  PRINT n m    Synonym:  BW
+Prints out the contents of a specified BOS bank on the graphics screen.
+       Arguments: /n (name of bank), m (bank number).
+The bank name is prompted for. A hardcopy can be made of each page of output.
+
+If several banks of the same name exist, the bank number will be requested.
+
+Many banks are printed with their own format; for the rest, I*2 values are
+assumed. If the printout extends over several pages, you are given the option
+to stop after each page.
+
+PRINT followed by a negative number, eg PRINT-1, will list all banks present.
+-----------
+Command:      H    or   Hn   or   H n           Synonym:  Q
+Causes a hardcopy of the current view to be sent to the INTERNAL plotter.
+After a short space of time, a message will be displayed confirming that the
+data have been submitted to the relevant queue.
+the argument  'n' specifies the number of copies to be made (maximum 4).
+-----------
+Command:      HX                                Synonym:  QX
+Causes a hardcopy of the current view to be sent to the EXTERNAL plotter.
+This is intended for urgent production of pictures only.
+-----------
+Command:      MENU
+Displays a list of all available commands (short forms) on this screen.
+A brief explanation is also given.
+-----------
+Command:      RESET                             Synonym:  RS
+Resets the magnification scale to normal magnification.
+The picture is also redrawn. Note that changing views automatically resets the
+scale.
+-----------
+Command:      ZOOM    or   ZOOMn   or   ZOOM n         Synonym:  JOYS
+Activates the joystick to create a magnified view. To magnify a specific
+rectangular area, give the ZOOM command without an argument. Then using the
+joystick, locate the cross-hairs on 2 opposite corners, pressing CONTROL + E
+to get the positions read in. The view will be automatically redrawn.
+
+Alternatively, specify a magnification factor 'n', eg ZOOM 2.0, and specify
+the position of the centre of the magnified view. Again end with CONTROL + E.
+Note: the CONRAC devices have graphics tablets instead of joysticks. Input is
+      accepted when any of the blue buttons on the mouse is pressed.
+-----------
+Command:      DET
+Draws the detector onto the current event display.
+Special arguments:
+     DET 1   or  DET1     :  Draw end cap LG detector outline in R-Phi views
+     DET 2   or  DET2     :  Draw tagging detector outline in R-Phi views
+     DET 3   or  DET3     :  Draw end cap and tagging detectors in R-Phi views
+-----------
+Command:      COM
+Adds a comment to the picture which will also appear on any hardcopy made. It
+will be lost when the view is changed or redrawn. The position of the comment
+is given with the joystick (end with CONTROL + E) and then the text is
+requested from the keyboard.
+-----------
+Command:      PRO
+Draws projections of the Z-X and Z-Y views in smaller scale onto R-Phi views.
+In Z views, the projections are of the other Z view and the R-Phi view.
+Note that this occurs automatically if CDTL 17 is ON.
+If projections are drawn onto a magnified view, only those hits visible in the
+main view will appear in the projections.
+-----------
+Command:      OPT     or  OPTn   or  OPT n             Synonym:  CDTL
+Reverses an internal flag which controls some aspect of picture drawing. If no
+argument 'n' is given, the complete list of flags ('CDTLs' as they are known)
+is displayed, along with their status. You are then requested to specify one
+which will then be flipped. If an argument is given, eg OPT  9, then that flag
+is flipped and its new status reported. See also STAT.
+-----------
+Command:      STAT    or  STATn  or  STAT n            Synonym:  CDST
+Displays the status of internal drawing flag 'n' (ON or OFF) unless 'n' is 0
+or absent, in which case, the status of all flags is given. See also OPT.
+-----------
+Command:      TRLG
+Displays the LG (T1) trigger information for data in 1982 and after.
+-----------
+Command:      NEWS
+Displays news of recent changes to the graphics program.
+-----------
+Command:      RES    or  RESn   or   RES n
+Displays analysis results for the Central Tracking Detectors and the LG Shower
+Counters as appropriate for the view and the relevant drawing flags (CDTL's).
+
+For the track detector views, tracks and track lists are output while for the
+rolled-out LG view (RU), cluster and cluster lists are output. In addition for
+the RU view, the impact points of charged tracks at the LG blocks are shown
+but the polygons used should NOT be interpreted as indicating error ellipses.
+CDTL 28(29) controls the drawing of photons with (without) charged tracks.
+
+See also VRES.
+-----------
+Command:      HELP
+Gives help on a number of topics. At present these include the complete set of
+commands but in future, help of a more general nature may be available.
+
+On giving the HELP command, the HELP subsystem is entered and a list of items
+where help can be given is displayed. When prompted, type in an item or just
+press ENTER (or RETURN) to exit the subsystem. Typing  ?  will display the full
+HELP list.
+N.B. Any user-defined macros can also be examined with HELP.
+-----------
+Command:      TR    or  TRn   or   TR n
+Displays the Jet Chamber hits (along with the rest of the event) with various
+options. Argument 'n' has the following meanings:
+    0  :  Show the list of options.
+    1  :  Display all hits associated with tracks removing mirror hits.  <---
+    2  :  Display all hits not associated with any track.
+    3  :  Display all hits associated with tracks, marking selected ones.
+    4  :  Display all hits, marking those that are associated with tracks.
+    5  :  Display raw event, marking selected tracks.
+    6  :  As for code 3 but distinguishing hits with good and bad z coordinates
+This command uses the 'JHTL' bank with the lowest number.
+TR1 is recommended for suppressing Jet Chamber mirror hits.
+-----------
+Command:      RET
+Returns to editing when graphics display commands have been used in EDIT mode.
+Otherwise this command has no effect. See EDIT for more details about editing.
+-----------
+Command:      MASS
+Computes the invariant mass of a system of particles. The particle numbers and
+types are prompted for. MASS can be used for charged tracks, photons and track
+associated clusters. If more than 1 charged track is used, a vertex fit is
+made and the 4-vectors are taken with respect to this point. The results are
+displayed on this screen.
+-----------
+Command:      TRG2
+Writes Trigger 2  (T2)  information onto the Jet Chamber display.
+-----------
+Command:      SAVE
+(Editing only.) Writes the current contents of COMMON  / CWORK / out to a
+scratch dataset, together with HEAD bank information. A catalogued scratch
+dataset must have been allocated before starting the graphics session.
+-----------
+Command:      VRES   or  VRESn   or  VRES n
+Draws analysis results onto the screen like RES but first uses information
+from the Dittmann vertex finding program (see VX) to assign charged tracks to
+vertices for drawing purposes. Photons are assumed to originate from the main
+vertex found. The options 'n' specify the following actions:
+
+  absent or 0  :   Display all tracks from their vertices
+        n < 0  :   Display all tracks from vertex |n| only,  eg. VRES-2
+        n > 0  :   Display track 'n' only, eg. VRES 5
+-----------
+Command:      VX     or  VXn    or   VX n
+Displays the results of the Dittmann vertex program. Several options specified
+by 'n' are available:
+  absent or 0 :  Display main vertex with a cross (X)
+            1 :  Display all vertices as crosses (X), with identifying numbers
+                 close by. A list of vertex information is also written.
+            2 :  Display all candidate photon conversions to e+e-
+            3 :  Create the 'GVTX' bank with results from the vertex search
+            4 :  Show the Run Vertex position in R-Phi views.
+Automatic vertex display is possible with CDTL 27. See HELP for CDTL and CDST.
+-----------
+Command:      BL    or   BLn   or BL n
+Displays information about the Lead Glass shower counters if the current view
+is RU or FW. The options specified by 'n' are:
+      1 :  Display this list of options
+      2 :  Write block numbers for all block with energy. Needs magnification.
+      3 :  Show all blocks 'killed' in the analysis. Marked with a cross.
+      4 :  Show the 'spinning' (noisy) blocks. Marked with a heavy box.
+      5 :  Show the 'dead' blocks. Marked with a heavy circle.
+    345 :  Show the 'killed', 'spinning' and 'dead' blocks.
+      6 :  Write out the meaning of the block energy code.   <-----
+      7 :  List cluster numbers for known 'spinning' blocks. (Any view)
+-----------
+Command:      MUR2
+Lists 3 lines of track data for each track, the third being the results of
+muon analysis from the MUR2 results bank. With RES and VRES, a third line is
+only displayed if the track has a positive 'muon quality'. See JCN 22.
+-----------
+Command:      DRAW   or  DRAWn   or  DRAW n
+Draws various lines which can be useful in detailed studies of an event. The
+options 'n' are:
+        1 :  Show this options list
+        2 :  Draw point X,Y on screen
+        3 :  Draw circle with radius RAD and centre X,Y
+        4 :  Draw line between X1,Y1 and X2,Y2
+        5 :  Draw parabola (x0,y0,c,alpha) from xpb to xpe
+        6 :  Draw hit in detector system with coordinates given in fit system
+        7 :  Draw line given by a point, slope and length
+The points and radii are prompted for as necessary. The units are  mm.
+-----------
+Command:      EC    or  ECn   or  EC n
+Adds the end cap LG hits to R-Phi views including CYL.  The argument 'n' has
+the following meaning:
+             1 :  Show -z end cap blocks which contain energy
+             2 :  Show +z end cap blocks which contain energy
+             3 :  Show both -z and +z end cap block which contain energy
+N.B. Use  DET 1  or  DET 3  to draw the end cap detector outline.
+-----------
+Command:      FC    or  FCn   or  FC n
+Adds the Tagging System shower counter hits to R-Phi views including CYL. The
+argument 'n' has the following meaning:
+         1 :  Show energy deposited in the -z tagger
+         2 :  Show energy deposited in the +z tagger
+         3 :  Show energy deposited in both -z and +z taggers
+N.B. Use  DET 2  or  DET 3  to draw the tagging detector outline.
+-----------
+Command:      PATR   or   PATRn   or  PATR n
+Selects PATR bank 'n' to be used for pattern recognition results display.
+By default, the lowest numbered PATR bank is chosen otherwise. No check is
+made to ensure that PATR bank 'n' exists until it is used.
+-----------
+Command:      JETC   or   JETCn   or  JETC n
+Selects JETC bank 'n' to be used for Jet Chamber hit display. By default, the
+highest numbered JETC bank is chosen otherwise. No check is made to ensure that
+JETC bank 'n' exists until it is used.
+-----------
+Command:      LASER  or   LASERn  or  LASER n     Synonym:  HLP
+Causes a hardcopy of the current view to be sent to the LASER PRINTERS.
+This is intended for high quality pictures.
+( L1: computer center user area,
+  L2: lab 1b, room 234
+  L3: lab 49, room   4
+  L4: lab 30, room 215a)
+Selection is given by argument 'n'.
+-----------
+Command:      VTXC   or   VTXCn   or  VTXC n
+Selects VTXC bank 'n' to be used for Vertex Chamber hit display. By default,
+the highest numbered VTXC bank is chosen otherwise. No check is made to ensure
+that VTXC bank 'n' exists until it is used.
+-----------
+Command:      PICK
+Returns the coordinates of a point on the screen selected by the joystick
+mechanism. See ZOOM for details about using the joystick or graphics tablet.
+-----------
+Command:      EDVP
+Enters EDIT mode to allow editing of the pattern recognition results of
+the Vertex Chamber (VPAT 9 bank).
+-----------
+Command:      DAX  or  DAXn   or  DAX n
+Displays special axis (selected by option parameter 'n') and fill information
+in common /CVTX2/ used in Dittmann/Kleinwort- vertex program.
+The options 'n' are:
+        1 : display of tau flight direction for tau-tau-events
+        2 : display of sphericity axis
+        3 : display of thrust axis
+        4 : calculation of impact parameter for a selected track versus
+            given axis
+        5 : MC: display of 4-vector C- or B-HADRON flight direction
+-----------
+Command:      VCDO  or  VCDOn   or  VCDO n
+Reverses an internal flag which controls some aspect of picture drawing. If no
+argument 'n' is given, the complete list of flags ('VCDOs' as they are known)
+is displayed, along with their status. You are then requested to specify one
+which will then be flipped. If an argument is given, eg VCDO 9, then that flag
+is flipped and its new status reported.
+-----------
+Command:      DIST or  DISTn    or  DIST n
+Calculates distance for:
+        n : 0   two points given by joystick
+        n : 1   a point given by joystick and a selected track
+-----------
+Command:      MUTYP
+Shows a list of all good muons of displayed event.
+-----------
+Command:      SPVA    or   SPVAn m    or   SPVA n m
+Executes code in subroutine SPARE which is a dummy in the standard graphics
+program. Private modules can contain a user's own special version of SPARE
+thus allowing a customised graphics program. Up to 2 arguments can be passed
+to SPARE, namely 'n' and 'm'.
+-----------
+Command:      CLUS   or   CLUSn   or   CLUS n
+Displays the results of the LG energy cluster analysis. The various options
+specified by  'n'  are:
+   absent  or  0 :  Display cluster structure in barrel and endcaps
+               1 :  Display cluster structure and photon directions (LGCDIR)
+               2 :  Output the numerical results from the cluster analysis
+               3 :  Execute cluster analysis, deleting first old results.
+                    Nothing is drawn. Needs BUPDAT0/1 calibration!
+For most users, the RES or VRES command will be more appropriate.
+-----------
+Command:      ZV    or   ZVn    or   ZV n
+Displays the results of the z-vertex finding routine.
+This command actually invokes a sub-editor and therefore requires some effort
+on your part. Not recommended.
+-----------
+Command:      VFIT    or   VFITn   or   VFIT n     Synonym:  GVTX
+Performs a vertex fit of selected charged tracks using the Dittmann program.
+The track numbers are prompted for and the result of the fit is displayed
+in the form of a vertex position and a text output. The options selected by
+'n' are: -1 : list of options,   0 : normal settings (pure Dittmann program)
+          2 : run vertex constraint,   4 : axis constraint
+          8 : fits in r-phi and z independent
+         16 : local statistics for each track
+         32 : overwrite PATR-bank for type-2-tracks with helix parameters
+         64 : message from vtxee if conversion search failed
+        128 : switch on penalty function for davidon-algorithm
+        512 : call VTXEE for photon conversion search.
+-----------
+Command:      MUPT    or   MUPTn   or   MUPT n
+Displays the results of muon analysis and optionally re-analyses. The options
+specified by 'n' are:             (MUQ = muon quality)
+ absent or 0 :  Draw extrapolations of all ID tracks into the muon filter
+         < 0 :  Re-analyse for muons and display as for n = 0
+ 0 < n < 100 :  Extrapolate only ID track 'n' into the muon filter as if a mu
+         100 :  Draw only muon tracks with MUQ between 1 and 99
+         200 :  Draw only muon tracks with MUQ = 100 or greater
+         300 :  Draw all tracks with MUQ = 0 with associated hit outside yoke
+        1000 :  Draw all Level A good muons  (See also MUONS)
+        5000 :  Draw all Level B good muons
+        9000 :  Draw all Level C good muons     <--- best muon class
+-----------
+Command:      MUONS     or   MUONS 5000   or  MUONS 9000
+Displays all good muons (Level A,B,C selection respectively).
+This is the recommended display command for muon results.
+-----------
+Command:      DELETE   or  DELETEn m  or  DELETE n m   Synonym:  BDLS
+       Arguments: /n (name of bank), m (bank number).
+Deletes a BOS bank for the current event (in data memory). The name is prompt-
+ed for, as well as the bank number if more than 1 exists with that name.
+To delete all banks of a given name, type -100 when it asks you for the bank
+name to be deleted.
+
+N.B. If the bank is JETC, a remaining JETC bank will be renumbered to ensure
+that Jet Chamber calibration is done correctly at SUPERVISOR level 4. For this
+to be useful, the command should be given at level 2 or 3.
+-----------
+Command:      C
+Continues to the next stopping point in the analysis chain as set by the user.
+If only  one  is set up, the analysis will be completed, the event written out
+(if an output dataset has been defined) and the next event processed up to the
+next stopping point. See also CSTL about changing the stopping points.
+-----------
+Command:      JUMP   or  JUMPn  or  JUMP n
+Jumps directly to SUPERVISOR level 'n'. No stop will occur there unless you
+have set the relevant 'stop flag' with the CSTL command.
+-----------
+Command:      N     or  Nn  or  N n              Synonym:  NN
+Reads the next event. If an argument 'n' is given, then the new event will be
+that which is n events after the current event on the input dataset. 'n' can be
+negative as well as positive.  N2 skips one event. N-1 selects the previous one
+-----------
+Command:      WRIT
+Writes out the current event in its current state and reads the next one. At
+the first execution of WRIT, the output dataset will be allocated and so a
+dsname will be requested. It must be a catalogued dataset, empty or filled.
+The write mode is BOS 'S', i.e. 1 event per record.
+-----------
+Command:      STOP                             Synonyms:  END, EXIT, QUIT
+Ends a graphics session and outputs the SUPERVISOR statistics.
+In emergencies (!), CONTROL + G   or  PA1 can be used to abort a session.
+-----------
+Command:      LEVELS   or  LEVELSn   or  LEVELS n         Synonym:  CSTL
+Changes the stopping points (i.e. the different levels) in the graphics USER
+routine called by the SUPERVISOR. Type in the required stopping points, one
+per line, ending with a zero  or  use argument 'n' to set one new level.
+The default settings at session start are 2 and 6.
+-----------
+Command:      CSTV   or  CSTVn   or  CTSV n             Synonym:  CS
+Changes the standard view and/or associated options. The default standard view
+is RB with automatic event display for each new event. The options 'n' are:
+        1 :  Make the current view the standard view.
+        2 :  Turn OFF/ON the automatic display of a new event.
+        3 :  Turn ON/OFF the automatic detector drawing with the standard view
+-----------
+Command:      EDIT
+(Experts only!) Enters EDIT mode to allow editing of the pattern recognition
+results of the Jet Chamber. Numerous subcommands are available including a
+graphics display sub-subsystem. Hackers are referred to JCN 28.
+See also RET and SAVE.
+-----------
+Command:      DEDX   or   DEDXn   or  DEDX n
+Displays the results of the dE/dx program. Several options 'n' are available.
+ absent or 0 :  dE/dx results are listed on the screen for all tracks
+       n > 0 :  dE/dx for track  n is listed and energy loss for each hit drawn
+          -1 :  'DEDX' bank created with dE/dx results
+          -2 :  dE/dx vs. p   graph drawn with theoretical curves
+          -4 :  as for -2 but drawn small on current view
+          -5 :  as for -2 but with much larger dE/dx range. Good for low mom p
+-----------
+Command:      QP   or  QPn   or  QP n
+Executes the Q-plot analysis program of Kobayashi. Several options 'n' exist.
+         1 :  2 different planes of the momentum ellipsoid are displayed
+         2 :  3 different planes of the momentum ellipsoid are displayed
+         3 :  Triangular Q-plot is drawn on current screen.
+This analysis uses charged tracks and photons.
+-----------
+Command:      TOF    or   TOFn    or  TOF n
+Performs the analysis of the Time-of-Flight (TOF) Counters and displays the
+results. The options 'n' are as follows:
+  absent or 0 :  TOF results for all charged tracks written to this screen
+        n > 0 :  TOF results for track 'n' are written on this screen
+           -1 :  The bank 'TOFR' is created. See help for BW
+           -2 :  Graph of beta vs. momentum is drawn with theoretical curves
+           -3 :  TOF information from the Lead Glass counters (1982 and after)
+           -4 :  As -2 but drawn in the lower right corner of current view
+-----------
+Command:      FIND    or   FINDn m    or  FIND n m
+Searches for a particular event by Run Number 'n' and Event Number 'm'. If
+n and m are omitted, they are prompted for. If the event is on the dataset, it
+will be found and displayed. However it won't be found if that event has
+already been passed.
+-----------
+Command:      AX     or   AXn m   or  AX n m
+Displays the results of Goddards's Jet Axis Program. The options 'n' are:
+        1 :  Draw sphericity axis
+        2 :  Draw 2-jet analysis axes
+        3 :  Draw 3-jet analysis axes
+        4 :  Draw 4-jet analysis axes
+     m  n :  For 'm'-jet analysis, draw tracks for jet 'n' only
+     m -1 :  'm'-jet analysis and thrust axis display
+-----------
+Command:      FADC
+Displays the Flash ADC information for those Jet Chamber wires so equipped.
+This command is only of use for test data.
+-----------
+Command:      ZTRG
+Displays information about the z trigger. For testing purposes only.
+-----------
+Command:      RECAL                         Synonym:  NWCL
+Performs a new calibration and analysis of the Jet Chamber and LG shower
+counters. The BUPDAT0/1 calibration datasets must have been selected at the
+start of the session or the program will abort!
+-----------
+Command:      FAMP
+Displays the results of any pattern recognition done by the FAMP ( = Fast
+Amsterdam Microprocessor) if a Jet Chamber view is on screen.
+-----------
+Command:      ND50
+Displays the results of any pattern recognition done by the NORD 50 online
+computer if a Jet Chamber view is on screen.
+-----------
+Command:      MORE                          Synonym:  NEW
+Changes the input event dataset. First the program requests conformation that
+a new input dataset is really wanted. If so, a dsname is requested and the
+event is read in from the new dataset.
+-----------
+Command:      VAC    or   VACn   or  VAC n
+Displays the Flash ADC information for cell 'n' of the Vertex Chamber.
+-----------
+Command:      MACRO
+Defines a sequence of commands (separated by semi-colons ";") as a  single  new
+command with a name of your choice. First of all the name is prompted  for.  It
+can have up to 8 letters. Next the macro  is  defined,  e.g.  N;TR1;VRES;QP3  .
+Macros can be nested up to 9 deep, i.e. macros can be called from other macros.
+Invoking a macro is just the same as invoking any other command; just give  its
+name when the arrow prompt appears. Pressing ENTER after  using  a  macro  will
+cause it to be invoked again. A macro library will be automatically read in  if
+it has the name: YOURID.GRAPHICS.PROFILE.MACROS .  It  must  contain  pairs  of
+lines as follows:   macro_name                   e.g.        SCAN
+                    macro_definition             e.g.        N;TR1;VRES;MUONS
+See also EDITMAC, DELMAC and RENAMAC.
+-----------
+Command:      EDITMAC
+Allows the editing of an existing macro.  The macro name is prompted for and
+then the macro definition is displayed on the screen. Next you are requested to
+type in a new definition. Pressing just ENTER retains the old definition.
+See also MACRO for details about using macros plus DELMAC and RENAMAC.
+-----------
+Command:      DELMAC
+Deletes an existing user-defined macro. The macro name is prompted for and the
+current definition displayed. You are then asked to verify that the macro
+should be deleted. Verification requires a reply of YES or JA or a short form.
+See also MACRO, EDITMAC, RENAMAC.
+-----------
+Command:      RENAMAC
+Renames an existing user-defined macro. First the old name is promped for and
+the current macro definition displayed. Next you are requested to type in the
+new name which must be unique and have 8 letters or less with no semi-colons.
+If you wish to keep the old name, simply press ENTER.
+See also MACRO, EDITMAC and DELMAC.
+-----------
+Command:      J68K   or   J68Kn  or  J68K n
+Displays the Flash ADC information for cell 'n' of the Inner Detector.
+If n is missing or 0 the cells available in the J68K bank are listed.
+Specify a negative cell number (-n) to start enlarged display of
+selected wires. The wire range will then be prompted for.
+Use OPT  50...53 for display detail selection.
+-----------
+Command:      ZFIT   or   ZFIT n or ZFIT n m
+Display hits in z-s plane, marking track associated ones with a cross and
+rejected hits with a box. The vertical scale of the symbols is proportional to
+the assumed error. The results of ZSFIT (Dittmann ) and ZSRFTV ( Spitzer ) can
+be selected with the first parameter n, where the latter also allows for a
+common z-fit.
+The results are displayed from a bank ZSPD which may already exist for the
+event and can be viewed with the selection "ZSPD Bank" as a third selection.
+The second parameter m specifies the track number. The user is prompted
+for parameters that are not supplied.
+-----------

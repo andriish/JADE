@@ -1,0 +1,185 @@
+*   14/06/78 C8061403   MEMBER NAME  MVC      (SOURCE)      ASSEMBLER
+* DESYLIB
+* CALL MVC  (A,NA,B,NB,M)
+* MOVE M BYTES VON (B,NB) NACH (A,NA)
+*
+MVC      START
+         ENTRY MVCL,SHRS,SETS,SETSL,ICLC,ICLCL,DRUECK,TR
+         USING *,15
+         B     ANF1
+         DC    AL1(3)
+         DC    CL3'MVC'
+ANF1     STM   2,6,28(13)
+         LM    2,6,0(1)
+         L     6,0(6)
+         BCTR  6,0
+         A     2,0(3)
+         A     4,0(5)
+         EX    6,MVCI
+         B     REST
+*
+* CALL MVCL(A,NA,B,NB,M)
+* MOVE-LONG M BYTES FROM (B,NB) TO (A,AN)
+*
+         USING *,15
+MVCL     B     ANF2
+         DC    AL1(4)
+         DC    CL4'MVCL'
+ANF2     STM   2,6,28(13)
+         LM    2,6,0(1)      ARGUMENT-ADRESSEN
+         A     2,0(3)        ADR. ZIELFELD
+         A     4,0(5)        ADR. QUELLFELD
+         L     3,0(6)        LAENGE ZIELFELD
+         LR    5,3           LAENGE QUELLFELD
+         MVCL  2,4           MOVE LONG
+         B     REST
+*
+* CALL SHRS(A,NA,M,L)
+* SHIFT RIGHT M BYTES LANGE STRING (A,NA) UM L BYTES
+*
+         USING *,15
+SHRS     B     ANF3
+         DC    AL1(4)
+         DC    CL4'SHRS'
+ANF3     STM   2,6,28(13)
+         LM    2,5,0(1)
+         A     2,0(3)
+         L     4,0(4)
+         AR    2,4
+         BCTR  2,0
+         L     5,0(5)
+         AR    5,2
+LOOP1    MVC   0(1,5),0(2)
+         BCTR  2,0
+         BCTR  5,0
+         BCT   4,LOOP1
+         B     REST
+*
+* CALL SETS(A,NA,M,C)
+* SET  CHAR C INTO M BYTES STARTING AT (A,NA)
+*
+         USING *,15
+SETS     B     ANF4
+         DC    AL1(4)
+         DC    CL4'SETS'
+ANF4     STM   2,6,28(13)
+         LM    2,5,0(1)
+         L     6,0(4)
+         L     3,0(3)
+         LA    4,0(2,3)
+         LA    2,1(4)
+         MVC   0(1,4),0(5)
+         BCTR  6,0
+         LTR   6,6
+         BZ    REST
+         BCTR  6,0
+         EX    6,MVCI
+         B     REST
+*
+* CALL SETSL(A,NA,M,C)
+* SET CHAR C INTO M BYTES STARTING AT (A,NA) SET CHAR. LONG
+*
+         USING *,15
+SETSL    B     ANF5
+         DC    AL1(5)
+         DC    CL5'SETSL'
+ANF5     STM   2,6,28(13)
+         LM    2,5,0(1)      ARGUMENT-ADRESSEN
+         A     2,0(3)        ADR. ZIELFELD
+         L     3,0(4)        LAENGE ZIELFELD
+         LA    4,1(2)        DUMMY QUELLADR.
+         IC    5,0(5)        CHARACTER
+         SLL   5,24          CHAR. ALS PADDING CHAR. COUNT=0
+         MVCL  2,4           MOVE FINDET NICHT STATT NUR PADDING
+         B     REST
+*
+* KOND=ICLC(A,NA,B,NB,M)
+* VERGLEICHE DIE M BYTES LANGEN STRINGS (A,NA) UND (B,NB)
+* KOND=0,WENN GLEICH. =1,WENN A KLEINER. =2,WENN A GROSSER
+*
+         USING *,15
+ICLC     B     ANF6
+         DC    AL1(4)
+         DC    CL4'ICLC'
+ANF6     STM   2,6,28(13)
+         LM    2,6,0(1)
+         A     2,0(3)
+         A     4,0(5)
+         L     6,0(6)
+         BCTR  6,0
+         EX    6,CLCI
+         BALR  0,0
+         SLL   0,2
+         SRL   0,30
+         B     REST
+*
+* KOND=ICLCL(A,NA,B,NB,M) COMPARE LONG
+* COMPARE THE M BYTES LONG STRING (A,NA) AND (B,NB)
+* KOND=0 IF A EQUAL B, =1 IF A LOW, =2 IF A HIGH
+*
+         USING *,15
+ICLCL    B     ANF7
+         DC    AL1(5)
+         DC    CL5'ICLCL'
+ANF7     STM   2,6,28(13)
+         LM    2,6,0(1)      ARGUMENT-ADRESSEN
+         A     2,0(3)        ADR. ZIELFELD
+         A     4,0(5)        ADR. QUELLFELD
+         L     3,0(6)        LAENGE ZIELFELD
+         LR    5,3           LAENGE QUELLFELD
+         CLCL  2,4           COMPARE
+         BALR  0,0           PSW BIT 32 BIS 63 INS NULL-REGISTER
+         SLL   0,2           COND.CODE HERAUSFILTERN
+         SRL   0,30          UND AUF BIT 62 UND 63 SCHIEBEN
+         B     REST
+*
+* CALL DRUECK(A,NA,M)
+* FUEHRENDE NULLEN IN M BYTES LANGER STRING (A,NA) UNTERDRUECKEN
+*
+         USING *,15
+DRUECK   B     ANF8
+         DC    AL1(6)
+         DC    CL6'DRUECK'
+ANF8     STM   2,6,28(13)
+         LM    2,4,0(1)
+         A     2,0(3)
+         L     4,0(4)
+         BCTR  4,0
+         LTR   4,4
+         BZ    REST
+LOOP2    CLI   0(2),C'0'
+         BNE   REST
+         MVI   0(2),C' '
+         LA    2,1(2)
+         BCT   4,LOOP2
+         B     REST
+*
+* CALL TR(A,NA,B,NB,M)
+* WIE  TR-ASSEMBLER-INSTRUKTION, CODE IN M BYTE LANGER STRING(A,NA)
+* WIRD IN CODE (B,NB)UEBERSETZT
+*
+         USING *,15
+TR       B     ANF9
+         DC    AL1(2)
+         DC    CL2'TR'
+ANF9     STM   2,6,28(13)
+         LM    2,6,0(1)
+         A     2,0(3)
+         A     4,0(5)
+         L     6,0(6)
+         BCTR  6,0
+         EX    6,TRI
+*
+REST     LM    2,6,28(13)    RESTAURIEREN
+         MVI   12(13),X'FF'
+         BR    14
+*
+MVCI     MVC   0(0,2),0(4)
+*
+CLCI     CLC   0(0,2),0(4)
+*
+TRI      TR    0(0,2),0(4)
+*
+         END
+*ALIAS  MVCL,SHRS,SETS,SETSL,ICLC,ICLCL,DRUECK,TR
+*NAME MVC(R)

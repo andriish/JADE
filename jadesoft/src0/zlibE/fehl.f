@@ -1,0 +1,20 @@
+      SUBROUTINE FEHLER(IFEHL,*)
+      IMPLICIT NONE
+      INTEGER IFEHL
+      CHARACTER*40 CMESS(100),C
+      SAVE CMESS
+C
+      WRITE(6,'(A)') CMESS(IFEHL)
+      RETURN 1
+C
+      ENTRY FEHLTX(IFEHL,C)
+C
+      IF (IFEHL.LT.1 .OR. IFEHL .GT. 100) THEN
+         WRITE(6,'(''ERROR IN FEHLER: IFEHL='',I3,''  MESG='',A)') 
+     +        IFEHL,C
+         STOP
+      ENDIF
+      CALL UBLANK(CMESS(IFEHL),1,10)
+      CMESS(IFEHL)=C
+      RETURN
+      END

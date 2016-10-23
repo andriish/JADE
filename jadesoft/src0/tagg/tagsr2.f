@@ -1,0 +1,51 @@
+C   12/03/84 412041854  MEMBER NAME  TAGSR2   (S)           FORTRAN
+C
+C
+C
+C
+       SUBROUTINE TAGSR2(ICLUS)
+C
+C
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C
+C   THIS ROUTINE SORTS A SINGLE CLUSTER INTO ORDER OF ENERGY
+C   SO THAT BY THE END CLUS(I,1) = ADDRESS,CLUS(I,2) = ENERGY
+C   AND CLUS(I,2 ) >CLUS(I + 1,2)
+C
+C  ICLUS - INPUT - POINTER TO CLUSTER IN CLUSTER MAP CMAP(10,9)
+C                  PRODUCED BY TAGPOS
+C
+C
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+#include "comtag.for"
+CC
+#include "cwktag.for"
+
+       DIMENSION STEMP(2)
+C
+       NNEI = NLIST(CMAP(ICLUS,1),1,MARK)
+       IEND = NNEI + 1
+       DO 5 I = 1,IEND
+C
+C                                   GET ADDRESS FROM CLUSTER MAP
+C                                   AND ENERGY FROM CATAG
+C
+          CLUS(I,1) = CMAP(ICLUS,I)
+          CLUS(I,2) = CATAG(CLUS(I,1))
+    5  CONTINUE
+C
+C                                   RIPPLE SORT
+C
+       DO 10 J = 1 ,NNEI
+          DO 11 K = 1,NNEI
+             IF ( CLUS(K,2) .GT. CLUS(K+1,2) )  GOTO 11
+             STEMP(1)    = CLUS(K,1)
+             STEMP(2)    = CLUS(K,2)
+             CLUS(K,1)   = CLUS(K+1,1)
+             CLUS(K,2)   = CLUS(K+1,2)
+             CLUS(K+1,1) = STEMP(1)
+             CLUS(K+1,2) = STEMP(2)
+   11     CONTINUE
+   10  CONTINUE
+  100  RETURN
+       END

@@ -1,0 +1,14 @@
+C   07/06/96 606071824  MEMBER NAME  BNXT     (S4)          FORTG1
+      SUBROUTINE BNXT(IND,*)
+C     BOS SUBPROGRAM =1.10=
+#include "acs.for"
+      COMMON/BCS/IW(1)
+      IF(KPOS.EQ.0) GOTO 10
+      IND=IW(KPOS)
+      KPOS=0
+      GOTO 20
+   10 IND=IW(IND-1)
+   20 IF(IND.EQ.0) GOTO 101
+  100 RETURN
+  101 RETURN 1
+      END

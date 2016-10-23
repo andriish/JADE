@@ -1,0 +1,81 @@
+Current directory is/home/pcl2483/pedro/jadesoft/src/interface
+
+Dependencies:
+-------------
+plot10.F ... cplot10.for
+plot10.F ... cpltcol.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cpltcol.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cpltcol.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cpltcol.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+setcol.F ... cplot10.for
+setcol.F ... cpltcol.for
+igwlcm.F ... cplot10.for
+
+.F files sorted by include-files:
+-- ----- ------ -- --------------
+cplot10.for: plot10.F setcol.F igwlcm.F
+cpltcol.for: plot10.F setcol.F
+
+Library members sorted by include-files:
+------- ------- ------ -- -------------
+/home/pcl2483/pedro/jadesoft/lib/libinterface.a( plot10.o setcol.o igwlcm.o ) :	 cplot10.for
+/home/pcl2483/pedro/jadesoft/lib/libinterface.a( plot10.o setcol.o ) :	 cpltcol.for

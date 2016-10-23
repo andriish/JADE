@@ -1,0 +1,5 @@
+C   24/08/85 511062038  MEMBER NAME  NINT     (S)           FORTRAN
+      INTEGER FUNCTION NINT(X)
+      NINT = X + 0.5
+      RETURN
+      END

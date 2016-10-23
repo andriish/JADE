@@ -1,0 +1,127 @@
+C   10/03/79 209031402  MEMBER NAME  @LGHIST  (SOURCE)      FORTRAN
+C
+C    S.YAMADA   09-03-79  10:25
+C     LAST MODIFICATION   09-03-79  23:25
+C
+C---- SIMPLE TEST PROGRAM FOR LGANAL FOR REAL DATA.
+C
+C
+      IMPLICIT INTEGER *2 (H)
+C
+      COMMON /BCS/ IDATA(6000)
+      DIMENSION  RDATA(6000),HDATA(12000)
+      EQUIVALENCE (IDATA(1),RDATA(1)), (HDATA(1),IDATA(1))
+C
+      COMMON /CWORK/ LNG,HNORD,HNORML,HPOINT(4),HLGADC(2,2000),
+     1               LGCL(3),LNGCL,NPNT(4),IDENT(2),NCLST,NCLBEC(3),
+     2               ETOT(4),NNEUT,EGAM(4),IFLAG(5),NWPCL,CLMPRP(801)
+      DIMENSION  MAPCL(51), HLGAD1(1000)
+      EQUIVALENCE (MAPCL(1),CLMPRP(1)), (HLGADC(1,1),HLGAD1(1))
+C
+      COMMON /CLGPRM/ ITH,MAXCLS,IRLTHD,IRLTH2,IRLTH3
+      COMMON /CLGMSB/ AMSGVL(5)
+      DIMENSION MSGVAL(5)
+      EQUIVALENCE (AMSGVL(1),MSGVAL(1))
+      COMMON /CTPCNS/ EBMGEV, BKGAUS
+C
+C---- INITIALIZATION
+      CALL BINT(6000,4000,500,0)
+C
+      CALL LGINIT
+      BKGAUS = 0.01
+      ITH = 45
+C
+      NEV = 0
+C
+        DO 1000 N=1,300
+C
+C----   CHECK TIME
+        IF( NTIME(DUM).LT.200 ) GO TO 100
+C
+        DATA NUNITI/1/
+        CALL BREAD(NUNITI,&1000,&200)
+C
+        CALL KALIBR
+        CALL CLOC( NPR,    'ALGN',1 )
+        IF( NPR.GT. 0 ) GO TO 1
+C
+        CALL LGCALB(&1000)
+C       LG-HIT MAP
+    1   CALL LGHITM(JDMP)
+        IF(JDMP.EQ.0) GO TO 30
+        DATA JDCNT/0/
+        JDCNT = JDCNT+1
+        IF(JDCNT.GT.3) GO TO 30
+                    WRITE(6,6666) N
+ 6666               FORMAT('0======== N=',I3,' ========')
+                    CALL HPRS( 'HEAD',0)
+                    CALL LGADCD(2,8)
+                    CALL HPRS( 'ALGL',0)
+C                   CALL BPRS( 'ALGN',1)
+C                   CALL BPRS( 'ALGN',1)
+C
+   30   CALL LGANAL
+C
+C----   DUMP THE RESULTS
+C       CALL LGSHOW
+C       CALL LGADCD(2,5)
+C----   SECOND STEP ANALYSIS
+C       POINTERS OF THE NECESSARY BANKS
+        NPPATR = 0
+        NPR = 0
+        NPCL = 0
+        IPP = IBLN('PATR')
+        NPPATR = IDATA(IPP)
+C----   SHIFT NPPATR BY 1 TO SKIP THE BANK-DESCRIPTER WORD.
+C----   TAKE ONLY 2-TRACK EVENTS
+        IF( IDATA(NPPATR+2).NE.2) GO TO 20
+        NEV = NEV+1
+C
+        CALL CLOC( NPR,    'ALGN',1 )
+        CALL BLOC( NPCL,   'LGCL',1, &90)
+        GO TO 10
+C
+C----   SOME BANK IS MISSING
+   90   MSGVAL(1) =  NPPATR
+        MSGVAL(2) =  NPR
+        MSGVAL(3) =  NPCL
+        CALL LGMESG( 1, 2 )
+        GO TO 20
+C
+   10   CONTINUE
+C***    CALL LGCDIR( NPPATR, NPR, NPCL )
+        CALL LGHIST( NPCL )
+C
+C
+   20   CALL BSLT
+        CALL BDLG
+C
+ 1000   CONTINUE
+      GO TO 100
+  200 MSGVAL(1) = N
+      CALL LGMESG( 1,1 )
+  100 WRITE(6,6100) N,NEV
+ 6100 FORMAT('0 NO.OF READ AND PLOTTED EVENTS=',2I6)
+      CALL LGHITL
+      CALL HISTDO
+      STOP
+      END
+C
+C/////////////////////////////////////////////////////
+C
+C
+C---- DUMMY ENERGY CORRECTION
+      SUBROUTINE LGECOR(ADATA,DEP,IFLAG)
+C
+C  THIS PROGRAM CALCULATE THE INCIDENT ENERGY
+      IFLAG=0
+      RETURN
+C************************************
+      ENTRY LGECR0(NVR)
+C
+C  VERSION NUMBER (DATE)   79 03 12    DUMMY SUB.
+C
+      DATA IVR/790312/
+      NVR=IVR
+      RETURN
+      END

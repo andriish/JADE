@@ -1,0 +1,9 @@
+C   07/06/96 606071859  MEMBER NAME  PALL     (S4)          FORTG1
+      SUBROUTINE PALL
+      CALL PCOND
+      CALL PSTOR(0)
+      CALL PTABL(0)
+      CALL PHIST(0)
+      CALL PCORR(0)
+      RETURN
+      END

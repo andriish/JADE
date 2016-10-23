@@ -1,0 +1,619 @@
+C   26/03/81            MEMBER NAME  ZRFIT    (PATRECSR)    SHELTRAN
+C   27/09/79 103261204  MEMBER NAME  ORZRFIT  (JADESR)      SHELTRAN
+C   26/09/79            MEMBER NAME  ZRFIT    (JADESR)      SHELTRAN
+C   17/07/79 C9080501   MEMBER NAME  ZRFIT8   (JADESR)      SHELTRAN
+C   17/07/79 C9071701   MEMBER NAME  ZRFITA   (PATRECS)     SHELTRAN
+C   01/07/79            MEMBER NAME  ZRFIT9   (PATRECSR)    SHELTRAN
+C   30/03/79 C9062901   MEMBER NAME  ZRFITT   (JADESR)      SHELTRAN
+C   13/03/79 C9033001   MEMBER NAME  ORZRFIT  (JADESR)      SHELTRAN
+C   13/03/79 C9031301   MEMBER NAME  ZRFIT9   (JADESR)      SHELTRAN
+      SUBROUTINE ZRFIT
+C
+C     LINEAR FIT OF Z-R OF TRACKS: P.STEFFEN(78/11/15)
+C
+      IMPLICIT INTEGER*2 (H)
+C
+C     MODIFIED WITH PREPROCESSOR TO SELECT HITS ON TRACK
+C              LINE ELEMENT METHOD  A LA FLINEL
+C              HISTOGRAMMING METHOD A LA ZVERTF    P.STEFFEN 20.9.79
+C
+#include "cheadr.for"
+C
+#include "cjdrch.for"
+C
+#include "cgraph.for"
+#include "cworkpr.for"
+#include "cworkeq.for"
+C
+      DIMENSION SUM(10),HIST(200)
+      EQUIVALENCE
+     ,           (ICELL ,ADWRK(1)),(NHIT  ,ADWRK(2)),(IRING ,ADWRK(3))
+     ,         , (IERRCD,ADWRK(4)),(NTRKEL,ADWRK(5))
+     ,         , (SUM(1),ADWRK(101))
+C
+#include "cpatlm.for"
+C
+      DATA SBRAT/2./, NPKMIN /4/, NBINZ/200/
+C
+      IERRLB = 0
+C
+N     PRINT OUT OF LIMITS
+C     DATA NPR0 /0/
+C     IF(NPR0.EQ.0) PRINT 2002, ZFITLM
+C2002 FORMAT('0LIMITS OF ZRFIT:',2F8.2,2I6,F8.2,6X,4F8.2,I6)
+C     NPR0 = 1
+C
+      IP0 = HPHT0
+      IP9 = HPHT9
+      IDP = HLDHT
+      IP8 = IP9 - IDP + 1
+N     OFFSET FOR R-Z TO OVERCOME ROUNDING ERRORS
+      Z0 = .5*(WRK(IP0+5)+WRK(IP9-IDP+6))
+      R0 = .5*(WRK(IP0+6)+WRK(IP9-IDP+7))
+C
+N     SET MAX Z OF DETECTOR
+      ZMAXLM = ZMAX + 20.
+C
+N     INITIALIZE GOODNESS LABEL OF POINTS
+      NHIT = 0
+      NBAD = 0
+      FOR IP=HPHT0,HPHT9,HLDHT
+        IF(IWRK(IP+ 7).GE.10) IWRK(IP+7) = 16
+        IF(ABS(WRK(IP+ 5)).GE.ZMAXLM) IWRK(IP+7) = 16
+        IF(IWRK(IP+10).NE. 0) IWRK(IP+7) = LOR(IWRK(IP+7),8)
+        IF(IWRK(IP+ 7).EQ. 0) NHIT = NHIT + 1
+        IF(IWRK(IP+ 7).LT.16) NBAD = NBAD + 1
+      CFOR
+      NBAD = NBAD - NHIT
+
+C
+N     RESTORE DELETED HITS(KNTREL) IF TOO MANY
+      IF NHIT.LT.16 .AND. NBAD.GE.8
+      THEN
+      NHIT = 0
+        FOR IP=HPHT0,HPHT9,HLDHT
+          IF IWRK(IP+ 7).LT.16 .AND. IWRK(IP+10).EQ.0
+          THEN
+            IWRK(IP+7) = 0
+            NHIT = NHIT + 1
+          CIF
+        CFOR
+      CIF
+C
+N     CHECK IF ENOUGH GOOD HITS
+      IF NHIT.LT.3
+      THEN
+        IWRK(HPTR0+28) = 1
+        WRK (HPTR0+29) = 0.
+        WRK (HPTR0+30) = 0.
+        WRK (HPTR0+31) = 1000000.
+        IWRK(HPTR0+32) = 0.
+        IWRK(HPTR0+47) = LOR(IWRK(HPTR0+47),384)
+        RETURN
+      CIF
+C
+N     POINT SELECTION 1 (P.ST.) ?????????
+      IF LAND(LMZFIT(10),1).NE.0
+      THEN
+N       CHECK POINTS BEFORE DOING FIRST FIT
+        PERFORM ZSTRT1
+      CIF
+N     POINT SELECTION 2 (J.OL.) ?????????
+      IF LAND(LMZFIT(10),2).NE.0
+      THEN
+N       CHECK POINTS BEFORE DOING FIRST FIT
+        PERFORM ZSTRT2
+      CIF
+C
+      NITER = 0
+      REPEAT
+C
+N       LINE FIT OF ALL POINTS
+        PERFORM LINFIT
+N       SAVE RESULT
+        A1SV   = A1
+        B1SV   = B1
+        RMSSV  = RMS
+        NDEGSV = NDEG
+C
+N       CHECK IF RMS OK
+        IF RMS.LE.ZFITLM(1) .OR. NDEG.LT.6
+N       RMS IS GOOD
+        THEN
+          XREPEAT
+        CIF
+C
+N       BAD RMS: REJECT BAD HITS
+        IF LAND(LMZFIT(10),1).EQ.0
+        THEN
+N         PREPRO 2, IF NOT YET CALLED
+          PERFORM ZSTRT1
+        ELSE
+N         DELETE HITS FOUND BY PATROL
+          PERFORM MKPTHT
+        CIF
+N       CHECK IF HITS REJECTED
+        IF NBAD.EQ.0
+        THEN
+          XREPEAT
+        CIF
+C
+N       REPEAT LINE FIT WITHOUT BAD HITS
+        PERFORM LINFIT
+        IF RMS.LE.ZFITLM(1)
+        THEN
+N         SAVE RESULT
+          A1SV   = A1
+          B1SV   = B1
+          RMSSV  = RMS
+          NDEGSV = NDEG
+C
+N         MARK HITS OUTSIDE 3 SIGMA DISTANCE
+          DZMAX = ZFITLM(2)*3
+          PERFORM MKBDHT
+          XREPEAT
+        CIF
+      NITER = NITER + 1
+      UNTIL NITER.GE.1
+C
+N
+      IF(RMS.GT.ZFITLM(1) .OR. NDEG.LT.6) IERRLB = LOR(IERRLB,128)
+C
+N     SAVE RESULTS IN WRK
+      IWRK(HPTR0+28) = 1
+      WRK (HPTR0+29) = B1SV
+      WRK (HPTR0+30) = A1SV
+      WRK (HPTR0+31) = RMSSV
+      IWRK(HPTR0+32) = NDEGSV+2
+      IWRK(HPTR0+47) = LOR(IWRK(HPTR0+47),IERRLB)
+C     PRINT 2000, NDEGSV,ZW1,ZW2,B1SV,A1SV,RMSSV
+C       PERFORM PRINT
+C
+      RETURN
+C
+N     ***************************
+N     *      M K B D H T        *
+N     ***************************
+C
+N     MARK BAD HITS
+      PROC MKBDHT
+C
+        NBAD = 0
+        NGOOD = 0
+        FOR IPHIT = HPHT0,HPHT9,HLDHT
+          IF IWRK(IPHIT+7).LE.8
+          THEN
+            R1 = WRK(IPHIT+6)
+            Z1 = WRK(IPHIT+5)
+            ZF = R1*B1 + A1
+            DZ = Z1 - ZF
+            IF ABS(DZ).GT.DZMAX
+N           MARK BAD AND GOOD HITS
+            THEN
+              NBAD = NBAD + 1
+              IWRK(IPHIT+7) = 1
+            ELSE
+N             COUNT HITS THAT CAN BE USED
+              NGOOD = NGOOD + 1
+              IWRK(IPHIT+7) = 0
+            CIF
+          CIF
+        CFOR
+C
+N     DELETE BAD HIT LABELS IF NOT ENOUGH HITS LEFT
+      IF NGOOD.LT.LMZFIT(3)
+      THEN
+        FOR IP1 = IP0,IP9,IDP
+          IWRK(IP1+7) = LAND(IWRK(IP1+7),14)
+C         WRK(IP1+7) = BITOFF(WRK(IP1+7),31)
+        CFOR
+        NBAD = 0
+      CIF
+C
+      CPROC
+C
+N     ***************************
+N     *      M K P T H T        *
+N     ***************************
+C
+N     MARK PATROL-HITS
+      PROC MKPTHT
+C
+        NBAD = 0
+        NGOOD = 0
+        FOR IPHIT = HPHT0,HPHT9,HLDHT
+          IF IWRK(IPHIT+7).LT.4
+          THEN
+            IF IABS(IWRK(IPHIT+8)).GE.1000
+N           MARK BAD AND GOOD HITS
+            THEN
+              NBAD = NBAD + 1
+              IWRK(IPHIT+7) = LOR(IWRK(IPHIT+7),4)
+            ELSE
+N             COUNT HITS THAT CAN BE USED
+              NGOOD = NGOOD + 1
+              IWRK(IPHIT+7) = 0
+            CIF
+          CIF
+        CFOR
+      CPROC
+C
+N     ***************************
+N     *      L I N F I T        *
+N     ***************************
+C
+N     FIT LINE TO R-Z COORDINATES
+      PROC LINFIT
+C
+        IHIT = 0
+        SUM(1) = 0.
+        SUM(2) = 0.
+        SUM(3) = 0.
+        SUM(4) = 0.
+        SUM(5) = 0.
+        FOR IPHIT = IP0,IP9,IDP
+          IF IWRK(IPHIT+7).EQ.0
+          THEN
+            IHIT =  IHIT + 1
+            R1 = WRK(IPHIT+6) - R0
+            Z1 = WRK(IPHIT+5) - Z0
+            SUM( 1) = SUM( 1) + R1
+            SUM( 2) = SUM( 2) + R1**2
+            SUM( 3) = SUM( 3) + Z1
+            SUM( 4) = SUM( 4) + Z1**2
+            SUM( 5) = SUM( 5) + R1*Z1
+          CIF
+        CFOR
+        ANHIT= IHIT
+        NDEG = IHIT - 2
+        IF NDEG.GT.0
+        THEN
+          ZW1  = (SUM(5)*ANHIT - SUM(1)*SUM(3))
+          ZW2  = (SUM(2)*ANHIT - SUM(1)**2)
+          B1   = ZW1 / ZW2
+          A1   =(SUM(3) - B1*SUM(1)) / ANHIT + Z0 - B1*R0
+          CHSQ = SUM(4)*ANHIT - SUM(3)**2 - ZW1**2/ZW2
+          RMS  = CHSQ / (IHIT*NDEG)
+          IF(RMS.GT.0) RMS = SQRT(RMS)
+        ELSE
+          B1   = 0.
+          A1   = 0.
+          RMS  = 1000000.
+        CIF
+C     IF LBPR.NE.0
+C     THEN
+C       PERFORM PRINT
+C     CIF
+      CPROC
+C
+N     ***************************
+N     *      Z S T R T 2        *
+N     ***************************
+C
+      PROC ZSTRT2
+N     CHECK POINTS BEFORE MAKING THE FIRST FIT
+C
+N     MARK BAD HITS WITH NO CLOSE ADJACENT ONES
+C
+      SIGL2 = ZFITLM(2)*2.
+      SIGL4 = ZFITLM(2)*3.5
+      NHIT  = 0
+      IP10  = 0
+      IP3   = IP0
+      REPEAT
+        IF IWRK(IP3+ 7).EQ. 0
+        THEN
+N         POINTER TO 1. USEFUL POINT
+          IF(IP10.LE.0) IP10 = IP3
+N         INITIALIZE BAD HIT LABEL
+          NHIT = NHIT + 1
+          IF NHIT.EQ.1
+N         1. HIT
+          THEN
+            R1 = WRK(IP3+6)
+            Z1 = WRK(IP3+5)
+            IP1 = IP3
+          ELSE
+            IF NHIT.EQ.2
+N           2. HIT
+            THEN
+              R2 = WRK(IP3+6)
+              Z2 = WRK(IP3+5)
+              IP2 = IP3
+            ELSE
+N             3. HIT
+              R3 = WRK(IP3+6)
+              Z3 = WRK(IP3+5)
+N             DEVIATION OF CENTRAL POINT FROM STRAIGHT LINE
+              DR31 = R3-R1
+              DELT = 0.
+              IF(ABS(DR31).GT.15.) DELT = Z2-Z1 - (R2-R1)*(Z3-Z1)/DR31
+              IF(ABS(DELT).GT.SIGL4) IWRK(IP2+7) = 4
+              IF ABS(DELT).GT.SIGL2
+              THEN
+                IF(IP1.EQ.IP0) IWRK(IP1+7) = 4
+                IF(IP3.EQ.IP8) IWRK(IP3+7) = 4
+              CIF
+              R1 = R2
+              R2 = R3
+              Z1 = Z2
+              Z2 = Z3
+              IP1 = IP2
+              IP2 = IP3
+            CIF
+          CIF
+        CIF
+      IP3 = IP3 + IDP
+      UNTIL IP3.GT.IP9
+N     LAST USEFUL POINT
+      IP90 = IP2
+C
+N     CROSS CHECK REJECTED HITS
+N     POINTER TO 1. GOOD HIT
+      IP1 = IP10
+N     SEARCH 2. GOOD HIT
+      IP2 = 0
+      IP3 = IP1
+      REPEAT
+      IP3 = IP3 + IDP
+        IF IWRK(IP3+ 7).LE.4
+        THEN
+N         COUNT GOOD HITS
+          IP2 = IP3
+          XREPEAT
+        CIF
+      UNTIL IP3.EQ.IP9
+      IF IP2.LE.0
+      THEN
+        NHIT = 0
+N     LOOP OVER REMAINING HITS
+      ELSE
+        REPEAT
+        IP3 = IP3 + IDP
+          IF IWRK(IP3+ 7).LE.4
+          THEN
+            IF IWRK(IP3+7).EQ.4 .OR. IWRK(IP1+7).EQ.4
+            THEN
+              R1 = WRK(IP1+6)
+              Z1 = WRK(IP1+5)
+              R2 = WRK(IP2+6)
+              Z2 = WRK(IP2+5)
+              R3 = WRK(IP3+6)
+              Z3 = WRK(IP3+5)
+N             DEVIATION OF CENTRAL POINT FROM STRAIGHT LINE
+              DR31 = R3-R1
+              DELT = 1000000.
+              IF(ABS(DR31).GT.15.) DELT = Z2-Z1 - (R2-R1)*(Z3-Z1)/DR31
+              IF ABS(DELT).LT.SIGL2
+              THEN
+N               MARK 1. + 3. HIT AS BEEING GOOD
+                IWRK(IP1+7) = 0
+                IWRK(IP3+7) = 0
+              CIF
+            CIF
+            IP1 = IP2
+            IP2 = IP3
+          CIF
+        UNTIL IP3.GE.IP90
+N       COUNT GOOD HITS
+        NHIT = 0
+        FOR IP1=IP0,IP9,IDP
+          IF(IWRK(IP1+7).EQ.0) NHIT = NHIT + 1
+        CFOR
+      CIF
+C
+N     DELETE BAD HIT LABELS IF NOT ENOUGH HITS LEFT
+      IF NHIT.LT.LMZFIT(3)
+      THEN
+        FOR IP1 = IP0,IP9,IDP
+          IWRK(IP1+7) = LAND(IWRK(IP1+7),11)
+C         WRK(IP1+7) = BITOFF(WRK(IP1+7),29)
+        CFOR
+      CIF
+C
+      CPROC
+C
+N     ***************************
+N     *      Z S T R T 1        *
+N     ***************************
+C
+N     CHECK POINTS BEFORE MAKING THE FIRST FIT
+      PROC ZSTRT1
+C
+N     FIND INTERSEPT WITH Z-AXIS
+C
+C
+N     ZERO HISTOGRAM
+      FOR I = 1,NBINZ
+        HIST(I) = 0
+      CFOR
+N     AVERAGE RADIUS
+      AVRAD  = 0.
+      NAVRAD = 0
+N     LOOP OVER ALL PAIRS OF HITS
+      IP91 = IP9 - IDP
+      Z0HIST = -7000.
+      DZHIST = 70.
+      FOR IPHIT = IP0,IP91,IDP
+        IF IWRK(IPHIT+7).EQ.0
+        THEN
+N         1. HIT
+          R1 = WRK(IPHIT+6)
+          AVRAD  = R1 + AVRAD
+          NAVRAD =  1 + NAVRAD
+          Z1 = WRK(IPHIT+5)
+          IP1 = IPHIT + IDP
+          FOR IPHIT2 = IP1,IP9,IDP
+            IF IWRK(IPHIT2+7).EQ.0
+            THEN
+N             2. HIT
+              R2 = WRK(IPHIT2+6)
+              Z2 = WRK(IPHIT2+5)
+              IF ABS(R1-R2).GT.ZFITLM(6)
+              THEN
+N               Z-INTERSEPT
+                ZCON = (Z1*R2 - R1*Z2)/(R2-R1)
+                IZV = (ZCON - Z0HIST) / DZHIST + 1
+                IF IZV.GT.0 .AND. IZV.LE.NBINZ
+                THEN
+N                 HISTOGRAM INTERSEPT
+                  HIST(IZV) = HIST(IZV) + 1
+                CIF
+              CIF
+            CIF
+          CFOR
+        CIF
+      CFOR
+C
+N     FIND PEAK IN HISTOGRAM
+      PERFORM HEVAL
+N     Z(VERTEX)
+      ZVTX = ZPEAK
+C
+N     DETERMINE SLOPE OF TRACK
+C
+C
+N     CHECK IF VERTEX FOUND
+      IF INDLB.GT.0
+      THEN
+N       ZERO HISTOGRAM
+        FOR I = 1,NBINZ
+          HIST(I) = 0
+        CFOR
+N       AVERAGE RADIUS
+        IF(NAVRAD.GT.0) AVRAD = AVRAD / NAVRAD
+N       PARAMETERS OF HISTOGRAM
+        Z0HIST = -3000.
+        DZHIST = 30.
+N       LOOP OVER ALL HITS
+        FOR IPHIT = IP0,IP9,IDP
+          IF IWRK(IPHIT+7).LE.4
+          THEN
+            IWRK(IPHIT+7) = 0
+N           PROJECTION ON LINE OF AVER. RADIUS
+            ZCON = (WRK(IPHIT+5) - ZVTX) * AVRAD/WRK(IPHIT+6)
+            IZV  = (ZCON - Z0HIST) / DZHIST + 1
+            IF IZV.GT.0 .AND. IZV.LE.NBINZ
+            THEN
+N             HISTOGRAM Z-PROJECTION
+              HIST(IZV) = HIST(IZV) + 1
+            CIF
+          CIF
+        CFOR
+C
+N       FIND PEAK IN HISTOGRAM
+        PERFORM HEVAL
+N       CHECK IF PEAK FOUND
+        IF INDLB.GT.0
+        THEN
+N         SLOPE OF TRACK
+          ZPRO = ZPEAK
+          SLOPE = ZPRO / AVRAD
+C
+N         MARK HITS OUTSIDE 4 SIGMA
+          SIG0 = ZFITLM(2)*4.
+          NHIT = 0
+          NBAD = 0
+          FOR IPHIT = IP0,IP9,IDP
+            IF IWRK(IPHIT+7).LE.0
+            THEN
+              NHIT = NHIT + 1
+              DZ = WRK(IPHIT+6)*SLOPE + ZVTX - WRK(IPHIT+5)
+              IF ABS(DZ).GT.SIG0
+              THEN
+                NBAD = NBAD + 1
+                IWRK(IPHIT+7) = LOR(IWRK(IPHIT+7),4)
+              CIF
+            CIF
+          CFOR
+C
+N         DELETE BAD HIT LABELS IF NOT ENOUGH HITS LEFT
+          NHIT = NHIT - NBAD
+          IF NHIT.LT.LMZFIT(3)
+          THEN
+            FOR IPHIT = IP0,IP9,IDP
+              IWRK(IPHIT+7) = LAND(IWRK(IPHIT+7),11)
+C             WRK(IPHIT+7) = BITOFF(WRK(IPHIT+7),29)
+            CFOR
+          CIF
+C
+        CIF
+      CIF
+      CPROC
+C
+N     ***************************
+N     *      H E V A L          *
+N     ***************************
+C
+N     FIND BIN WITH MAX.CONTENT
+      PROC HEVAL
+C
+N       FIND PEAK
+        NPEAK = 0
+        IH9 = NBINZ-11
+        FOR IH=7,IH9
+          IHSUM = HIST(IH  )+HIST(IH+1)+HIST(IH+2)+HIST(IH+3)+HIST(IH+4)
+          IF IHSUM.GT.NPEAK
+          THEN
+N           MEMORIZE PEAK
+            NPEAK = IHSUM
+            HPEAK = IH
+          CIF
+        CFOR
+        PEAK = NPEAK
+        INDLB =-1
+        IF NPEAK.GE.NPKMIN
+        THEN
+N       PEAK OK ... CALC. BACKGROUND
+          INDLB = 1
+          H1 = HPEAK - 7
+          H2 = HPEAK + 7
+          NBACK = HIST(H1  )+HIST(H1+1)+HIST(H1+2)+HIST(H1+3)+HIST(H1+4)
+     +          + HIST(H2  )+HIST(H2+1)+HIST(H2+2)+HIST(H2+3)+HIST(H2+4)
+          BACK = .5 * NBACK
+N         BACKGROUND LOW ENOUGH ... SET IZRSLT(6) = 1
+          IF(BACK*SBRAT.GT.PEAK) INDLB = 0
+C
+N         CALC. ACCURATE PEAK POS.
+          ZV = HIST(HPEAK+1)   + HIST(HPEAK+2)*2
+     +        + HIST(HPEAK+3)*3 + HIST(HPEAK+4)*4
+          ZV = ZV / PEAK
+          DZ = HIST(HPEAK  )*(ZV   )**2 + HIST(HPEAK+1)*(ZV-1.)**2
+     +       + HIST(HPEAK+2)*(ZV-2.)**2 + HIST(HPEAK+3)*(ZV-3.)**2
+     +       + HIST(HPEAK+4)*(ZV-4.)**2
+          DZ = DZ * DZHIST**2 / PEAK
+          DZ = SQRT(DZ)
+          ZPEAK     = Z0HIST + (HPEAK+ZV-.5)*DZHIST
+C     PRINT 2004, HIST
+C     PRINT 2005, INDLB,HPEAK,H1,H2,ZPEAK,DZ,PEAK,BACK
+C2004 FORMAT(1H0,40I3)
+C2005 FORMAT(1H0,4I6,4F8.1)
+        CIF
+      CPROC
+C
+N     ***************************
+N     *      P R I N T          *
+N     ***************************
+C
+N     PRINTOUT OF HIT-ARRAY
+C     PROC PRINT
+C
+C       DATA NPR /0/
+C       IF NPR.LE. 30
+C       THEN
+C       NPR = NPR + 1
+C         WRITE(6,2992) HHEADR(17),HHEADR(18),HHEADR(19)
+C         PRINT 2000, NHIT,ZW1,ZW2,B1,A1,RMS,CHSQ
+C         PRINT 2000, NDEG,SUM(1),SUM(2),SUM(3),SUM(4),SUM(5)
+C         FOR IPHT=HPHT0,HPHT9,HLDHT
+C         I0 = IPHT
+C         I9 = IPHT - 1 + HLDHT
+C         PRINT 2001,(WRK(I1),I1=I0,I9)
+C2992 FORMAT('0MESSAGE FOR P.STEFFEN: ERROR IN ZRFIT; EVENT:',3I6)
+C2000 FORMAT(1H ,I4,9E13.5)
+C2001 FORMAT(1H ,3I4,4F8.2,5I6,5F8.2,2I2)
+C         CFOR
+C       CIF
+C     CPROC
+C
+      END

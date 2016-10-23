@@ -1,0 +1,373 @@
+C   13/01/82            MEMBER NAME  PATRCO   (PATRECSR)    SHELTRAN
+C   09/07/80 201111008  MEMBER NAME  ORPATRCO (JADESR)      SHELTRAN
+      SUBROUTINE PATRCO(IND)
+C
+C     MAIN SUBROUTINE FOR PATREC IN JET CHAMBERS
+C     SELECTING ONLY TRACKS FROM ORIGIN (P>200MEV)
+C     PETER STEFFEN  9/07/80
+C
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cheadr.for"
+#include "cdata.for"
+#include "ccycp.for"
+C
+#include "cjdrch.for"
+#include "cdsmax.for"
+#include "cpatlm.for"
+C
+#include "cworkpr.for"
+#include "cworkeq.for"
+C
+      EQUIVALENCE
+     ,           (ICELL ,IDWRK(1)),(NHIT  ,IDWRK(2)),(IRING ,IDWRK(3))
+     ,         , (IERRCD,IDWRK(4)),(NTRKEL,IDWRK(5))
+     ,         , (ITR   ,IDWRK(7)),(ITRNG ,IDWRK(8))
+C
+C
+      COMMON /CLBPGM/ LBPGM(30)
+      INTEGER MSKHIT(16) /1,2,4,8,16,32,64,128,Z100,Z200,Z400,Z800,
+     ,                    Z1000,Z2000,Z4000,Z8000/
+C
+      DATA HPS /2HPS/
+      DATA PATR /'PATR'/, LHEAD,LTRBK /8,48/
+      DATA JHTL /'JHTL'/
+C
+ 2991 FORMAT('0/BCS/ TOO SHORT FOR TRACK BANK; EVENT:',3I6,
+     ,       ', IRET=',I2,',NTR,LENGTH=',I3,1X,I4)
+ 2992 FORMAT('0/CWORK/ TOO SHORT FOR PATREC; EVENT:',3I6)
+ 2993 FORMAT('0/BCS/ TOO SHORT FOR PATREC; EVENT:',3I6,' ,IERR=',I2)
+ 2994 FORMAT('0WRONG POINTER IN JETC-BANK; EVENT:',3I6,' ,POINTER:',
+     ,        /,(1X,24I5))
+C
+N     CHECK INDEX
+      IF IND.EQ.2
+      THEN
+        CALL PATREC(0)
+        RETURN
+      CIF
+C
+C
+N     INITIALIZE POINTERS
+      DATA LBINIT /0/
+      IF LBINIT .EQ. 0
+      THEN
+        LBINIT = 0
+        IQPATR = IBLN('PATR')
+        IQJHTL = IBLN('JHTL')
+        IQJETC = IBLN('JETC')
+C       CONST. FOR VAR. OF DRIFT VEL.
+        DSD0   =-.63
+        DSD1   = 1.8
+        DSD2   = 4.0
+        DRV0   = 0.8
+        DRV1   = (DSD2 - (DSD1-DSD0)*DRV0) / (DSD2-DSD1)
+      CIF
+C
+N     INITIALIZE # OF TRACKS
+      NTR = 0
+C
+N     SET UP PATR-ARRAY IF NO HITS
+      IPJETC = IDATA(IQJETC)
+      IF IPJETC.LE.0
+      THEN
+        IPPATR = IDATA(IQPATR)
+        IF IPPATR.LE.0
+        THEN
+          NBNK = 10
+          IZW = LHEAD
+          CALL CCRE(IPPATR,PATR,NBNK,IZW,IERR)
+N         CHECK IF IERR = 0
+          IF(IERR.NE.0) RETURN
+          CALL BSAW(1,PATR)
+N         PRESET # OF TRACKS + LENGTH OF TRACK-VECTOR
+          IDATA(IPPATR+1) = LHEAD
+          IDATA(IPPATR+3) = LTRBK
+        CIF
+        RETURN
+      CIF
+C
+N     # OF HITS IN JETC
+      NHITJC = HDATA(IPJETC*2+99) / 4
+C
+N     INITIALIZE ARRAYS IN OUTPUT AREA
+      PERFORM INAROU
+C
+N     POINTER TO 1. FREE LOC. IN /CWORK/
+      HPFREE = 1
+      HPLAST = LMPATR(5)
+C
+      PERFORM PRCYCP
+N     CHECK IF POINTERS OK
+      IF IERRFL.NE.0
+      THEN
+        I1 = IPJCA2 + 1
+        I9 = I1 + 97
+        WRITE(6,2994) HHEADR(17),HHEADR(18),HHEADR(19),
+     ,                (HDATA(I),I=I1,I9)
+        CALL BDLS(PATR,NBNK)
+        CALL BDLS(JHTL,NBNK)
+        RETURN
+      CIF
+C
+N     CHECK IF ENOUGH SPACE IN /CWORK/
+      IF (HPFREE+NHITJC+96*12+10*17 - 1).LT.LMPATR(5)
+      THEN
+N       ZERO HIT LABEL ARRAY OF TRACK ELEMENTS
+        PERFORM ZRHTLB
+      ELSE
+        WRITE(6,2992) HHEADR(17),HHEADR(18),HHEADR(19)
+        CALL BDLS(PATR,NBNK)
+        CALL BDLS(JHTL,NBNK)
+        RETURN
+      CIF
+N     MEMORIZE 1. FREE LOCATION IN CWORK
+      HPFRE0 = HPFREE
+C
+N     INITIALISE TRKEL ARRAY FOR TRACING
+      HPRO = HPS
+      ITR = 1
+      IRINGO = 0
+C
+N     LOOP OVER ALL CELLS
+      JCELL=97
+      REPEAT
+        JCELL = JCELL - 1
+N       NUMBER OF HITS IN CELL
+        MHIT = (HPTSEC(JCELL+1)-HPTSEC(JCELL)) / 4
+N       CHECK IF AT LEAST NHMIN HITS IN CELL
+        IF MHIT.GE.5
+        THEN
+N         SET RING + CELL NUMBER
+          IRING = 3
+          IF(JCELL.LE.48) IRING = 2
+          IF(JCELL.LE.24) IRING = 1
+          ICELL = JCELL
+C
+N         INITIALIZE ERR.CODE
+          IERRCD = 0
+C
+N         SEARCH FOR TRACK ELEMENTS
+          HPFREE = HPFRE0
+          PERFORM SRTREL
+C
+        CIF
+      UNTIL JCELL.EQ.25
+      HPFREE = HPFRE0
+C
+N     READJUST RECORD LENGTH + # OF TRACKS
+      LENG  = IDATA(IPPATR+2)*IDATA(IPPATR+3) + IDATA(IPPATR+1)
+      NDIFF = LENG - IDATA(IPPATR)
+      CALL BCHM(IPPATR,NDIFF,IRET)
+C
+N     CHECK IF REMAINING TRACKS WANTED
+N     CALL PATREC(1) TO OBTAIN REMAINING TRACKS
+      IF(IND.NE.0) CALL PATREC(1)
+C
+N     ELIMINATE COVERED TRACKS (ALREADY CALLED IN PATREC)
+C     CALL TRHTCK(IDATA(IQPATR),IDATA(IQJHTL))
+C
+      RETURN
+C
+N     ***************************
+N     *      S R T R E L        *
+N     ***************************
+C
+N     SEARCH FOR TREL IN CELL + CALL TRACING
+      PROC SRTREL
+C
+N       PREPAR HIT ARRAY OF CELL FOR PATREC
+N       SET DRIFT SPACE BIN
+        DSBIN1 = TIMDEL(1,IRING)
+        DSBIN2 = TIMDEL(2,IRING)
+N       START POINTER OF CELL
+        IP0 = HPTSEC(ICELL)
+N       END POINTER OF CELL
+        IP9 = HPTSEC(ICELL+1) - 1
+N       START POINTER TO HIT LABEL ARRAY -1
+        IPHL = (HPTSEC(ICELL)-HPTSEC(1))/4 + IDATA(IQJHTL) + 1
+N       POINTER OF NEW HIT ARRAY
+        HPHT0 = HPFREE
+        HLDHT = 12
+        IPHT  = HPHT0
+N       COUNTER FOR NUMBER OF HITS IN HIT ARRAY
+        LBHITW = 0
+        NWRD2 = NWORD*2
+C
+N       LOOP OVER ALL HITS OF CELL
+        ILAY0 = -10
+        MLAY  = 0
+        JHIT  = 0
+        FOR IP=IP0,IP9,4
+          IPHL = IPHL + 1
+          IF IDATA(IPHL).EQ.0
+          THEN
+          IF HDATA(IP+1).GT.0 .AND. HDATA(IP+2).GT.0
+          THEN
+            IWIR = HDATA(IP)
+            IWIR = SHFTR(IWIR,3)
+N           LAYER NUMBER WITHIN RING 3
+            ILAYR = LAND(IWIR,15)
+            LBHITW = LOR(LBHITW,MSKHIT(ILAYR+1))
+N           CHANGE DRIFT SPACE BIN FOR 8 HIGHER LAYERS
+            IF(ILAYR.GE.8) DSBIN1 = DSBIN2
+N           DRIFT SPACE
+            DS =(HDATA(IP+3)) * DSBIN1
+            DS = DS
+            IF DS.LT.4.0
+            THEN
+              IF DS.GT.DSD1
+              THEN
+                DS = (DSD1-DSD0)*DRV0 + (DS-DSD1)*DRV1
+              ELSE
+                DS = (DS-DSD0)*DRV0
+              CIF
+              IF(DS.LT.0.1) DS = 0.1
+            CIF
+N           SET ARRAY
+            WRK(IPHT+ 2)  = DS
+            IWRK(IPHT  ) = ILAYR
+N           BACK POINTER
+            IWRK(IPHT+ 1) = IP
+            IWRK(IPHT+ 3) = 0
+            IWRK(IPHT+ 4) = 0
+            IWRK(IPHT+ 5) = 0
+            IWRK(IPHT+ 6) = 0
+            IWRK(IPHT+ 7) = 0
+            IWRK(IPHT+ 8) = 0
+            IWRK(IPHT+ 9) = 0
+            IWRK(IPHT+10) = 0
+            IWRK(IPHT+11) = 0
+N           INCREASE POINTERS
+            IPHT = IPHT + HLDHT
+N           INCREASE HIT COUNTER
+            JHIT = JHIT + 1
+            IF(ILAYR.NE.ILAY0) MLAY = MLAY + 1
+            ILAY0 = ILAYR
+          CIF
+          CIF
+        CFOR
+C
+N       NUMBER OF HITS
+        NHIT = JHIT
+N       SET START + END POINTER IN ARRAY
+        HPHT9 = IPHT - 1
+        HPFREE= IPHT
+        IF MLAY.GE.5
+        THEN
+C
+N         CHECK IF AT LEAST 3 ADJACENT HITS
+          LBHT = LBHITW
+          LBAD = 0
+          FOR I=1,14
+            IF LAND(LBHT,7).EQ.7
+            THEN
+              LBAD = 1
+              XFOR
+            CIF
+            LBHT = SHFTR(LBHT,1)
+          CFOR
+          IF LBAD.NE.0
+          THEN
+C
+N           FIND TRACKELEMENT FROM ORIGIN IN CELL
+N           AND CALL TRACE
+            NTRKEL = 0
+            CALL FTRELO
+          CIF
+        CIF
+C
+N       FREE AREA IN CWORK
+        HPFREE = HPFRE0
+      CPROC
+C
+N     ***************************
+N     *      I N A R O U        *
+N     ***************************
+C
+N     INITIALIZE ARRAYS IN OUTPUT AREA
+      PROC INAROU
+C
+N       POINTER TO 'JHTL' + 'PATR'
+        IPJHTL = IDATA(IQJHTL)
+        IPPATR = IDATA(IQPATR)
+N       GET BANK #
+        NBKPAT = 10
+        IF(IPPATR.GT.0) NBKPAT = IDATA(IPPATR-2) - 1
+        NBKHTL = 10
+        IF(IPJHTL.GT.0) NBKHTL = IDATA(IPJHTL-2) - 1
+        NBNK = MIN0(10,NBKPAT,NBKHTL)
+C
+          IZW = NHITJC + 1
+          CALL CCRE(IPJHTL,JHTL,NBNK,IZW,IERR)
+          LBRHTL = 0
+          IF(IERR.NE.0) LBRHTL = 1
+C
+N         INITIALIZE BOS BANK OF 30 TRACKS
+          IZW = LTRBK*30 + LHEAD
+          CALL CCRE(IPPATR,PATR,NBNK,IZW,IERR)
+N         CHECK IF IERR = 0
+          IF IERR.NE.0 .OR. LBRHTL.NE.0
+          THEN
+N           NOT ENOUGH SPACE FOR 'PATR' BANK
+            WRITE(6,2993) HHEADR(17),HHEADR(18),HHEADR(19),IERR
+            CALL BDLS(PATR,NBNK)
+            CALL BDLS(JHTL,NBNK)
+            RETURN
+          CIF
+          CALL BSAW(1,PATR)
+          CALL BSAW(1,JHTL)
+N         PRESET # OF TRACKS + LENGTH OF TRACK-VECTOR
+          IDATA(IPPATR+1) = LHEAD
+          IDATA(IPPATR+2) = 0
+          IDATA(IPPATR+3) = LTRBK
+          IDATA(IPPATR+4) = IDATA(IPJHTL-2)
+          IDATA(IPPATR+5) = NHITJC
+          IDATA(IPPATR+6) = NHITJC
+          IDATA(IPPATR+7) = NHITJC
+          IDATA(IPPATR+8) = 0
+C
+      CPROC
+C
+N     ***************************
+N     *      P R C Y C P        *
+N     ***************************
+C
+N     PREPARE CYCLIC POINTER ARRAY
+      PROC PRCYCP
+C
+N     ADDRESS OF POINTERS TO CELLS (-1)
+      IPJCA2 = IPJETC*2 + 2
+N     COPY CELL POINTERS + CALC. LENGTH
+      IP0 = IPJCA2 + 98
+      IERRFL = 0
+      IPCLL = IPJCA2
+      FOR ICLL=1,96
+        IPCLL = IPCLL + 1
+        HPTSEC(ICLL) = HDATA(IPCLL) + IP0
+        IF(HDATA(IPCLL+1).LT.HDATA(IPCLL)) IERRFL = 1
+      CFOR
+      HPTSEC(97) = HDATA(IPCLL+1) + IP0
+      HPTSEC(98) = 0
+C
+      CPROC
+C
+N     ***************************
+N     *      Z R H T L B        *
+N     ***************************
+C
+N     ZERO HIT LABEL ARRAY OF TRACK ELEMENTS
+      PROC ZRHTLB
+C
+      HPHL0 = HPFREE*2 - 1
+      HLDHL = NHITJC*2
+      HPHL9 = HPHL0 + HLDHL - 1
+      NBYTHT = HLDHL*2
+      ZERO = 0
+      CALL SETSL(HWRK(HPHL0),0,NBYTHT,ZERO)
+N     SET POINTER TO 1. FREE LOCATION IN /CWORK/
+      HPFREE = HPFREE + NHITJC
+C
+      CPROC
+C
+      END

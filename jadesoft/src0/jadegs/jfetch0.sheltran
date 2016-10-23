@@ -1,0 +1,685 @@
+C   09/06/83 707281320  MEMBER NAME  JFETCH0  (ZS)          SHELTRAN
+      SUBROUTINE JFETCH(IPTR,IPJHTL,WRK,LHIT,IPRES,INDEX,/XO/,/YO/)
+C
+C        P. STEFFEN                         83/03/28
+C
+C        MODIFIED TO CALL NEW JFETCH WHEN APPLICABLE   J.SPITZER
+C                                                       86/04/30
+C    Z-CHAMBER COORDINATES ARE FETCHED IN CASE OF
+C    ZS-FIT (INDEX=4)
+C                                            15/7/87  J.S.
+C        FETCH HITS FOR TRACK 'IPTR' IN PATR-BANK
+C        CALCULATE COORDINATE INCLUDING ALL CORRECTIONS
+C        USE SPECIAL LAYER DEPENDENT POS. + VD   ***************
+C        STORE COORDINATES IN WRK(I1),I1=1,LHIT*NHIT
+C
+C        INDEX = 1 : COORDINATES IN REAL SPACE
+C        INDEX = 2 : X-AXIS THROUGH 1. + LAST POINT
+C        INDEX = 3 : X-AXIS THROUGH (XO,YO) + LAST POINT
+C
+C        INDEX = 4 : NEW FOR S-Z FITS    J. SPITZER 22/4/87
+C                    COORDINATES IN REAL SPACE
+C
+      IMPLICIT INTEGER*2 (H)
+C
+      DIMENSION WRK(200)
+      EQUIVALENCE (ZWZ,IZW)
+C---------------------------------
+      COMMON/JSCALD/ JESCAL,JESKEY
+C---------------------------------
+#include "cdata.for"
+C
+#include "calibr.for"
+C
+C
+#include "cjdrch.for"
+#include "cdsmax.for"
+C
+      COMMON/CCMZCT/ DIMPCT, ZCUTV, ZCUTVV, IZVCST(5), ZCHWW
+C ONLY ZCHWW WHICH IS THE WEIGHT FOR Z-CHAMBER HITS IS USED HERE
+C  ARRAYS FOR Z-CHAMBER INFORMATION
+      DIMENSION IZCHMB(3,2),AZCHMB(3,2)
+C
+      DIMENSION IRESAR(13),RESAR(13),HRESAR(26)
+      EQUIVALENCE (IRESAR(1),RESAR(1),HRESAR(1))
+C
+N     CONSTANTS FOR ANGULAR CORRECTION
+      DATA NCOAR / 15/, DTGB / .15/
+      REAL TGCOAR(15) /-99.,-.45, 12*0., 99./
+      REAL T0COAR(60) / .000, .000, .000, .000, .000,
+     ,     .000, .000,-.020,-.060,-.130,-.030, .100, .200, .200, .200,
+     ,                  .000, .000, .010, .110, .100,
+     ,     .075, .050, .025, .005, .015, .065, .060, .060, .060, .060,
+     ,                  .190, .190, .180, .165, .140,
+     ,     .120, .100, .075, .050, .010,-.050,-.075,-.035, .000, .000,
+     ,                  .110, .110, .115, .140, .135,
+     ,     .085, .045, .030, .040, .050, .055, .055, .055, .055, .055/
+      REAL SLCOAR(60) / 60*0./
+C
+N     MASK FOR L/R BIT IN HIT LABEL
+      INTEGER MKLRT1 /Z1000000/, MKLRT2 /Z100/
+C
+C-----------------------------------------------------------------------
+C      --- NEW CALIBRATION WHEN AVAILABLE AND IF REQUESTED   J.S. ---
+      IF JESCAL .GT. 0   .AND.   JESKEY .EQ. 54321
+      THEN
+         IP8=ICALIB(13)+6
+         IP9=ICALIB(13)+2598
+         CALL JFTNEW(IPTR,IPJHTL,WRK,LHIT,IPRES,INDEX,XO,YO,
+     +   ACALIB(IP8),ACALIB(IP9))
+         RETURN
+      CIF
+C
+      INDX=INDEX
+      IF(INDX.EQ.4) INDX=1
+C-----------------------------------------------------------------------
+C
+C     IF(IDATA(IPTR+1).LT. 4) RETURN
+C     I0 = IPTR + 1
+C     I9 = IPTR + 48
+C     PRINT 2001, (IDATA(I1),I1=I0,I9)
+C     I0 = IPJHTL*2 + 1
+C     I9 = I0 + IDATA(IPJHTL)*2 - 1
+C     IPJETC = IDATA(IBLN('JETC'))
+C     I0 = IPJETC*2 + 1
+C     I9 = I0 + 109
+C2001 FORMAT(1H0,2I3,I8,2(I4,3F6.1,3F6.3),
+C    ,     /,14X,I3,4E13.5,F6.2,I3,4E13.5,
+C    ,     /,14X,I3,2F8.3,F6.1,I3,10X,6I3,8I6,2X,Z4)
+C2002 FORMAT('0FETCH:',2I3,2I5,12F9.5)
+C2003 FORMAT('0ROTATION:',12F10.5)
+C2004 FORMAT('0CIRC.CENTRE:',2I3, F10.5,2F10.0,F8.1,2F8.1)
+C2005 FORMAT('0TRACK:',I6,/,(1X,3I6,4F9.3,I4,F9.3,2I4,F8.3,I6,3F8.2))
+C2007 FORMAT(' FETCH:',I3,8F8.5,F10.7,F6.3)
+C2009 FORMAT(' JHTL:',I8,1X,Z8,3I5,I8)
+C2010 FORMAT(' HIT:',I6,12F8.2)
+C2011 FORMAT('0ABERR:',10F10.6)
+C2016 FORMAT('0ITRCLL =',6I8,/,(9X,6F8.3))
+C
+C2901 FORMAT('0JFETCH(PST) CALLED WITH WRONG INDEX:',I6)
+C
+C
+N     INITIALIZATION
+      DATA LBINIT /0/
+      IF LBINIT .EQ. 0
+      THEN
+        LBINIT = 1
+        NCALL = 0
+        PERFORM INIT
+      CIF
+      NCALL = NCALL + 1
+C
+CCC   RESERVE SPACE IN CWORK
+CCC   HPCO0  = 1
+CCCCC LHIT   = MAX0(LHIT,14)
+      LHBIT  = LHIT*4
+CCC   HPFREE = LHIT*100 + HPCO0
+CCC   HPCO9  = 0
+      IPCO = 1
+C
+N     GET RUN #
+      IPHEAD = IDATA(IQHEAD)*2
+      NRUN = HDATA(IPHEAD+10)
+      NEVT = HDATA(IPHEAD+11)
+C
+N     TRACK #
+      ITRK = IDATA(IPTR+1)
+C
+N     CENTRE OF CIRCLE (USED FOR ANGULAR CORRECTION)
+      IF IDATA(IPTR+18).EQ.1
+      THEN
+N       CIRCLE PARAMETERS
+        ALFA  = ADATA(IPTR+21)
+        CRV   = ADATA(IPTR+19)
+        IF(ABS(CRV).LT.1.E-8) CRV = SIGN(1.E-8,CRV)
+        RAD   =  1./ABS(CRV) + ADATA(IPTR+20)
+        XCIRC = COS(ALFA) * RAD
+        YCIRC = SIN(ALFA) * RAD
+        CHARGE = SIGN(1.,ADATA(IPTR+25))
+      ELSE
+N       PARABOLA PARAMETERS
+        CRV   = ADATA(IPTR+22)*2.
+        IF(ABS(CRV).LT.1.E-8) CRV = SIGN(1.E-8,CRV)
+        ALFA  = ADATA(IPTR+19)
+        XCIRC =-SIN(ALFA)/CRV + ADATA(IPTR+20)
+        YCIRC = COS(ALFA)/CRV + ADATA(IPTR+21)
+        CHARGE =-SIGN(1.,ADATA(IPTR+22))
+      CIF
+C
+N     ZVERT, THETA + DIR. COSINES
+      ZVERT = ADATA(IPTR+31)
+      TGTH = ADATA(IPTR+30)
+      CSTHI = SQRT(TGTH**2 + 1.)
+      CSTH  = 1. / CSTHI
+      SNTH  = CSTH * TGTH
+C     PRINT 2004,ITRK,IDATA(IPTR+18),ALFA,XCIRC,YCIRC,ZVERT,TGTH,CSTHI
+C
+C     PRINT 2011,ABERR
+C
+N     ROTATION ANGLE (USING LAST POINT OF TRACK)
+      SELECT INDX
+      CASE 1
+        XT = 0.
+        YT = 0.
+        CSROT = 1.
+        SNROT = 0.
+        XOT   = 0.
+        YOT   = 0.
+      CASE 2
+        XT    = (ADATA(IPTR+12) + ADATA(IPTR+5)) * .5
+        YT    = (ADATA(IPTR+13) + ADATA(IPTR+6)) * .5
+        XX    =  ADATA(IPTR+12) - ADATA(IPTR+5)
+        YY    =  ADATA(IPTR+13) - ADATA(IPTR+6)
+        RR    = SQRT(XX**2+YY**2)
+        IF RR.LT.10.
+        THEN
+           IPRES=IPCO
+           RETURN
+        CIF
+        CSROT = XX / RR
+        SNROT = YY / RR
+        XX    = XO - XT
+        YY    = YO - YT
+        XOT   = 0.
+        YOT   = 0.
+      CASE 3
+        XT    = (ADATA(IPTR+12) + XO) * .5
+        YT    = (ADATA(IPTR+13) + YO) * .5
+        XX    =  ADATA(IPTR+12) - XO
+        YY    =  ADATA(IPTR+13) - YO
+        RR    = SQRT(XX**2+YY**2)
+        CSROT = XX / RR
+        SNROT = YY / RR
+        XX    = XO - XT
+        YY    = YO - YT
+        XOT   = XX*CSROT + YY*SNROT
+        YOT   =-XX*SNROT + YY*CSROT
+      OTHER
+C
+N       ILLEGAL INDEX
+C       PRINT 2901,INDEX
+        RETURN
+C
+      CSELECT
+C
+C
+N     SELECT CELLS CONTAINING TRACK
+C
+      IPC0 = IPTR + 34
+      IPC9 = IPC0 +  5
+      FOR IPC = IPC0,IPC9
+         JCELL = IDATA(IPC)
+         IF JCELL.GT. 0 .AND. JCELL.LE.96
+         THEN
+            JRING = 1
+            IF(JCELL.GT.24) JRING = 2
+            IF(JCELL.GT.48) JRING = 3
+            PERFORM FETCH
+         CIF
+      CFOR
+C
+CCC   HPCO9 = IPCO - 1
+CCC   PRINT 2005, LBCELL,(WRK(I),I=1,HPCO9)
+C
+C
+C FETCH Z-CHAMBER HITS IN CASE Z-S FITS (INDEX=4)
+      IF INDEX.EQ.4 .AND. ZCHWW.GT..1 .AND. ZCHWW.LT.2000.
+      THEN
+         CALL ZCFTNW(NRUN,NEVT,ITRK,TGTH,ZVERT,NZHIT,IZCHMB,AZCHMB)
+         IF NZHIT.GT.0
+         THEN
+            FOR J=1,NZHIT
+               HRESAR( 1) = 100+IZCHMB(1,J)
+               HRESAR( 2) = IZCHMB(2,J)
+               HRESAR( 3) = 0
+               HRESAR( 4) = 0
+               HRESAR( 5) = 1
+C              HRESAR( 6) = IP-2*IPJETC
+               HRESAR( 6) = 101
+               XX=AZCHMB(1,J)
+               YY=AZCHMB(2,J)
+               ZZ=AZCHMB(3,J)
+               RESAR ( 4) = XX
+               RESAR ( 5) = YY
+               RESAR ( 6) = ZZ
+C CALCULATE TRACK LENGTH IN R-PHI FROM FIRST POINT ON TRACK
+               UX=XX-ADATA(IPTR+5)
+               UY=YY-ADATA(IPTR+6)
+               UU=SQRT(UX**2+UY**2)
+            IF(ABS(CURVXY*UU).GT.1.E-5) UU=2.*SIN(.5*CURVXY*UU)/CURVXY
+               IF(UX*ADATA(IPTR+8)+UY*ADATA(IPTR+9).LT.0.) UU=-UU
+               RESAR ( 7) = UU
+C              RESAR ( 8) = WW
+               RESAR ( 8) = ZCHWW
+               IF(NRUN.LT.24200) RESAR(8)=RESAR(8)*.6
+               CALL MVC(WRK(IPCO),0,RESAR(1),0,LHBIT)
+               IPCO = IPCO + LHIT
+            CFOR
+         CIF
+      CIF
+C
+C
+N     STORE RESULTS
+      IPRES = IPCO
+      IF INDEX.NE.4
+      THEN
+         WRK (IPRES   ) = XT
+         WRK (IPRES+ 1) = YT
+         WRK (IPRES+ 2) = CSROT
+         WRK (IPRES+ 3) = SNROT
+         WRK (IPRES+ 9) = XOT
+         WRK (IPRES+10) = YOT
+         WRK (IPRES+11) = CSTH
+         WRK (IPRES+12) = SNTH
+      CIF
+C
+C     PRINT 2003, CSROT,SNROT,XT,YT
+C
+C
+      RETURN
+C
+C
+N     *************************
+N     *      F E T C H        *
+N     *************************
+C
+C
+N     FETCH HITS IN CELL
+      PROC FETCH
+C
+N       DIR. OF SENSEW. + DRIFTSP.
+        IF JRING.NE.3
+        THEN
+          IC1 = JCELL
+          IF(IC1.GT.24) IC1 = IC1 - 24
+          CSROT0 = DIRWR1(IC1,1)
+          SNROT0 = DIRWR1(IC1,2)
+        ELSE
+          IC1 = JCELL - 48
+          CSROT0 = DIRWR3(IC1,1)
+          SNROT0 = DIRWR3(IC1,2)
+        CIF
+        DRICS  = TRMATC(JCELL,2)
+        DRISN  = TRMATS(JCELL,2)
+        DRITG  = DRISN/DRICS
+        DRISNF = DRISN * .05
+C
+N       LOAD RADIUS AND WIRE SPACING
+        R0 = FSENSW(JRING)
+        DR = RINCR (JRING)
+C
+N       ANGLE OF TRACK IN RING
+        R1   = DR*7.5 + R0
+        DX   = R1 * CSROT0 - XCIRC
+        DY   = R1 * SNROT0 - YCIRC
+        RR   = SQRT(DX**2 + DY**2) * CHARGE
+        CSB  = DX / RR
+        SNB  = DY / RR
+        TGB  = CSB/SNB
+C
+N       SET DRIFT SPACE BIN
+        DSBIN1 = DRIVEL(JCELL,1)
+C
+N       ANGLE(TRACK,DRIFT DIRECT.)
+        TANBET = (DRITG - TGB) / (TGB*DRITG + 1.)
+C
+N       DIFFERENT CORRECTION CONST. FOR MC + DATA
+        IF NRUN.LE.100
+        THEN
+N         MC
+          DS0 = DSBIN1*.5
+          T0CORR = 0.
+        ELSE
+N         DATA
+          DS0 = T0FIX(JRING)*DSBIN1*64.
+          FOR I1=1,NCOAR
+            IDX = I1
+            IF(TANBET.LT.TGCOAR(IDX)) XFOR
+          CFOR
+          KRNG = JRING
+          IF(KRNG.EQ.3 .AND. AND(JCELL,1).EQ.0) KRNG = 4
+          IBIN = (KRNG-1)*NCOAR  + IDX
+          T0CORR = (TANBET-TGCOAR(IDX)) * SLCOAR(IBIN) + T0COAR(IBIN)
+        CIF
+C     IF(NCALL.LE.2)
+C    ,PRINT 2007, JCELL,CSROT0,SNROT0,DRICS,DRISN,CSB,SNB,CHARGE,TANBET,
+C    ,            DSBIN1,DS0
+C     IF(NCALL.LE.8)
+C    ,PRINT 2093, JCELL,KRNG,IDX,IBIN,T0CORR,TGCOAR(IDX),T0COAR(IBIN),
+C    ,            SLCOAR(IBIN),TANBET
+C2093 FORMAT('0ANG.CORR.:',4I4,8F8.3)
+N       CORRECTION CONSTANTS FOR JCELL
+C
+        IPJCOR = ICALIB(5) + JCELL
+        CCST01 = ACALIB(IPJCOR     ) * ABS(TANBET)
+        CCST02 = ACALIB(IPJCOR+  96) * ABS(TANBET)
+        CCST11 = ACALIB(IPJCOR+ 192)
+        CCST12 = ACALIB(IPJCOR+ 288)
+        CCST21 = ACALIB(IPJCOR+ 384)
+        CCST22 = ACALIB(IPJCOR+ 480)
+        CCST51 = ACALIB(IPJCOR+ 576) * 10.
+        CCST52 = ACALIB(IPJCOR+ 672) / 121.15
+        CCST61 = ACALIB(IPJCOR+ 768) * 10.
+        CCST62 = ACALIB(IPJCOR+ 864) / 121.15
+        CCST81 = ACALIB(IPJCOR+1152)
+C     IF(NCALL.LE.2)
+C    ,PRINT 2002, JRING,JCELL,IP,IPCLLC,CCST01,CCST02,CCST11,CCST12,
+C    ,  CCST21,CCST22,CCST51,CCST52,CCST61,CCST62,ACALIB(IPDY),CCST81
+N       COUNTER FOR NUMBER OF HITS FOUND
+        JHIT = 0
+        NHIT   = 0
+        NHGOOD = 0
+N       PRESET LAST LAYER
+        ILAYL =-99
+N       LOOP OVER ALL HITS OF CELL
+        IPCO = IPCO - LHIT
+        IPJET4 = IDATA(IQJETC)
+        IPJETC = IDATA(IQJETC)*2
+        IP0    = IPJETC + 100
+        IPCLL  = IPJETC + 2 + JCELL
+        IP     = HDATA(IPCLL  ) + IP0
+        IP9    = HDATA(IPCLL+1) + IP0
+        IPHL   = IPJHTL + 2 + HDATA(IPCLL)/4
+C     PRINT 2002, JRING,JCELL,IP,IP9,TGB,SNB,CSB,DRISN,DRICS
+        WHILE IP.LT.IP9
+C
+N         CHECK TRACK # OF HIT LABEL
+          LB   = IDATA(IPHL)
+          ITR1 = LAND(SHFTR(LB,17),127)
+          ITR2 = LAND(SHFTR(LB, 1),127)
+C     PRINT 2009, IPHL,LB,ITR1,ITR2,ITRK,IP
+          IF ITR1.EQ.ITRK .OR. ITR2.EQ.ITRK
+          THEN
+C
+N           SET LBGOOD = 2 IF HIT ASSOCIATED WITH 2 TRACKS
+            L0GOOD = 0
+            IF(ITR1.NE.0 .AND. ITR2.NE.0) L0GOOD = 2
+C
+N           L/R FROM HIT LABEL
+            LBLR = 0
+            IF(ITR1.EQ.ITRK) LBLR = LAND(LB,MKLRT1)
+            IF(ITR2.EQ.ITRK) LBLR = LAND(LB,MKLRT2)
+            LBSIDE =-1
+            IF(LBLR.NE.0) LBSIDE = 1
+            LBLR = LBSIDE
+C
+            IWIR = HDATA(IP)
+            IWIR = SHFTR(IWIR,3)
+N           LAYER NUMBER WITHIN RING 3
+            ILAY = LAND(IWIR,15)
+N           AMPLITUDES
+            IAMPL = HDATA(IP+1)
+            IAMPR = HDATA(IP+2)
+N           DRIFT SPACE
+            DS =(HDATA(IP+3)) * DSBIN1
+            X1   = ILAY * DR + R0
+            Z1   = X1*TGTH + ZVERT
+N           CORRECTION FOR TOF + PROPAG. ALONG WIRE
+            DDS = (1222.9-ABS(Z1))*ABERR(1) + ABERR(6)*R1*CSTHI
+N           CORRECTION FOR GRAVITATION
+            DGR = ((Z1/1222.9)**2 - 1.) * .075
+            DSC =  DS - DDS + DS0
+C     DATA NPRHT /0/
+C     NPRHT = NPRHT + 1
+C     IF(NPRHT.LE.50) PRINT 2019, IWIR,ILAY,JCELL,HDATA(IP+3),DS,DSBIN1,
+C    ,                DSC,DDS,DS0,ACALIB(IPVD+ILAY)
+C2019 FORMAT(' HIT ',4I6,F7.3,5E13.5)
+            Y1   = SWDEPL
+            IF(LAND(ILAY,1).NE.0) Y1 =-Y1
+            Y1   = (7.5-ILAY)*(CCST52*Z1+CCST51) - CCST62*Z1-CCST61 + Y100038200
+            X    = X1*CSROT0 - Y1*SNROT0
+            Y    = X1*SNROT0 + Y1*CSROT0 - DGR
+            IF DSC.LE.DRC
+            THEN
+              IF DSC.LT.DSD2
+              THEN
+                IF DSC.LT.DSD1
+                THEN
+                  DSC = DSC + DDS1 + (DSC-DSD1)*DRV1
+                ELSE
+                  DSC = DSC + DDS2 + (DSC-DSD2)*DRV2
+                CIF
+N               ANGULAR CORRECTION
+C               DSC = DSC/DSD2 * T0CORR + DSC
+                IF(DSC.LT.0.1) DSC = 0.1
+              ELSE
+C
+N               ANGULAR CORRECTION
+C               DSC = DSC + T0CORR
+                DSC = (DSC-DSD2)/(DRC-DSD2) * T0CORR + DSC
+              CIF
+C             DSC = DSC + DSOFF
+              DXR  = DSC * CSB
+              DYR  = DSC * SNB
+              DXL =-DXR
+              DYL =-DYR
+            ELSE
+C
+N             ANGULAR CORRECTION
+              DSC = DSC + T0CORR
+C             DSC = DSC + DSOFF
+C
+N             EDGE WIRE FIELD DISTORTION
+              IF ILAY.LT. 3
+              THEN
+                DILAY =-(ILAY- 3)**2
+                DSCL  = (DILAY*CCST11 + 1.) * DSC * (1. - CCST81)
+                DSCR  = (DILAY*CCST12 + 1.) * DSC * (1. + CCST81)
+              ELSE
+              IF ILAY.GT.12
+              THEN
+                DILAY =-(ILAY-12)**2
+                DSCL  = (DILAY*CCST21 + 1.) * DSC * (1. - CCST81)
+                DSCR  = (DILAY*CCST22 + 1.) * DSC * (1. + CCST81)
+              ELSE
+                DSCL = DSC * (1. - CCST81)
+                DSCR = DSC * (1. + CCST81)
+              CIF
+              CIF
+C
+N             FIELD DISTORTIONS AT LARGE DRIFT TIMES
+              IF DSC.GT.ABERR(7)
+              THEN
+                DWIR  = ILAY - 7.5
+                DWIRC = DSC*DRISNF
+                DWIRL = DWIR + DWIRC
+                DWIRR = DWIR - DWIRC
+                DSCL  = (DSCL-ABERR(7))*DWIRL*CCST01 + DSCL
+                DSCR  =-(DSCR-ABERR(7))*DWIRR*CCST02 + DSCR
+              CIF
+              DXR  = (DSCR-DRC)*DRISN + DRC*CSB
+              DYR  = (DSCR-DRC)*DRICS + DRC*SNB
+              DXL  =-(DSCL-DRC)*DRISN - DRC*CSB
+              DYL  =-(DSCL-DRC)*DRICS - DRC*SNB
+            CIF
+C     PRINT 2010, ILAY,DS,DSC,DSCL,DSCR,XL,XR,X,Y,DXL,DXR,DYL,DYR
+            XL   = DXL + X - XT
+            YL   = DYL + Y - YT
+            XXL  = XL*CSROT + YL*SNROT
+            YYL  =-XL*SNROT + YL*CSROT
+            XR   = DXR + X - XT
+            YR   = DYR + Y - YT
+            XXR  = XR*CSROT + YR*SNROT
+            YYR  =-XR*SNROT + YR*CSROT
+C
+N           CALCULATE Z COORDINATE
+C           IF IAMPR.LE.0.OR.IAMPL.LE.0
+C           THEN
+C             ZZ     = 0.
+C             LZGOOD = 16
+C           ELSE
+C             ZZ = IAMPR + IAMPL
+C             ZZ = FLOAT(IAMPR-IAMPL) * ZAL*.5 / ZZ
+C             LZGOOD = 0
+C             IF(ABS(ZZ).GT.1250.) LZGOOD = 16
+C           CIF
+            CALL AMPS2Z( IP,IPJET4,ZZ,WW,LZGOOD)
+C
+N           SET ARRAY
+C     PRINT 2010, ILAY,DS,XXL,YYL,X1,Z1,XXR,YYR,Y1
+C
+N           CHECK IF LEFT + RIGHT SOLUTION POSSIBLE
+            NLRSOL = 1
+            IF(DSC.LT.2.0) NLRSOL = 2
+C
+N           LOOP OVER LEFT +/OR RIGHT SOLUTION
+            ILRSOL = 0
+            REPEAT
+            ILRSOL = ILRSOL + 1
+            LBGOOD = L0GOOD
+C
+N             SELECT SIDE
+              IF NLRSOL.EQ.1 .AND. LBSIDE.LT.0  .OR.
+     ?           NLRSOL.EQ.2 .AND. ILRSOL.EQ.1
+              THEN
+N               LEFT SIDE
+                LBSIDE =-1
+                XX  = XXL
+                YY  = YYL
+              ELSE
+N               RIGHT SIDE
+                LBSIDE = 1
+                XX  = XXR
+                YY  = YYR
+              CIF
+C
+N             HIT QUALITY:
+              IF(LBSIDE.NE.LBLR) LBGOOD = LBGOOD + 1
+N             NEW LAYER?
+              IF ILAY.NE.ILAYL .OR. LBGDL.LE.1.AND.LBGOOD.LE.2
+              THEN
+                LBREG = 1
+N               INCREASE HIT COUNTER
+                JHIT = JHIT + 1
+                IPCO = IPCO + LHIT
+              ELSE
+N               2 HITS IN SAME LAYER, SELECT CLOSEST
+                LBREG = 0
+                ZWZ = WRK(IPCO+10)
+                IF(LBGOOD.LT.IZW) LBREG = 1
+              CIF
+N             REGISTER NEW HIT?
+              IF LBREG.NE.0
+              THEN
+                NHIT   = NHIT   + 1
+                IF(LBGOOD.LE.2) NHGOOD = NHGOOD + 1
+                IF INDEX.NE.4
+                THEN
+                   IRESAR( 1) = ILAY
+                   IRESAR( 2) = IP
+                   IRESAR( 3) = LBSIDE
+                   RESAR ( 4) = XX
+                   RESAR ( 5) = YY
+                   RESAR ( 6) = ZZ
+                   RESAR ( 7) = XX - XOT
+                   IF(INDX.EQ.1) RESAR ( 7) = SQRT(XX**2 + YY**2)
+                   IRESAR( 8) = LZGOOD
+                   RESAR ( 9) = DSC
+                   IRESAR(10) = JCELL
+                   IRESAR(11) = LBGOOD
+                   RESAR (12) = TANBET
+                   IRESAR(13) = JRING
+                   RESAR (14) = 0.
+                ELSE
+                   HRESAR( 1) = JCELL
+                   HRESAR( 2) = ILAY
+                   HRESAR( 3) = LZGOOD
+                   HRESAR( 4) = LBGOOD
+                   HRESAR( 5) = 1
+                   HRESAR( 6) = IP-IPJETC
+                   RESAR ( 4) = XX
+                   RESAR ( 5) = YY
+                   RESAR ( 6) = ZZ
+C CALCULATE TRACK LENGTH IN R-PHI FROM FIRST POINT ON TRACK
+                   UX=XX-ADATA(IPTR+5)
+                   UY=YY-ADATA(IPTR+6)
+                   UU=SQRT(UX**2+UY**2)
+                   CURVXY=ADATA(IPTR+25)
+                   IF(ABS(CURVXY).LT.1.E-8) CURVXY = SIGN(1.E-8,CURVXY)
+            IF(ABS(CURVXY*UU).GT.1.E-5) UU=2.*SIN(.5*CURVXY*UU)/CURVXY
+                   IF(UX*ADATA(IPTR+8)+UY*ADATA(IPTR+9).LT.0.) UU=-UU
+                   RESAR ( 7) = UU
+                   RESAR ( 8) = WW
+                CIF
+C     PRINT 2005, LHIT,(RESAR(I1),I1=1,13)
+                CALL MVC(WRK(IPCO),0,RESAR(1),0,LHBIT)
+CCCCC           IF LHIT.GT.14
+CCCCC           THEN
+CCCCC             I0 = IPCO+14
+CCCCC             I9 = IPCO+LHIT - 1
+CCCCC             FOR I1=I0,I9
+CCCCC               WRK(I1) = 0.
+CCCCC             CFOR
+CCCCC           CIF
+                ILAYL = ILAY
+                LBGDL = LBGOOD
+              CIF
+C
+            UNTIL ILRSOL.GE.NLRSOL
+C
+          CIF
+C
+        IPHL = IPHL + 1
+        IP   = IP   + 4
+        CWHILE
+N       SET IPCO TO 1. FREE LOCATION
+        IPCO = IPCO + LHIT
+C
+C
+      CPROC
+C
+C
+N     *************************
+N     *      I N I T          *
+N     *************************
+C
+C
+N     INITIALIZE CONSTANTS
+      PROC INIT
+C
+        IQJETC = IBLN('JETC')
+        IQHEAD = IBLN('HEAD')
+C
+N       RADIUS AROUND WIRE FOR CORR. OF DRIFTSPACE
+        DRC = RINCR(1)*.5 * DRICOS
+C       CONST. FOR VAR. OF DRIFT VEL.
+N     GET RUN #
+        IPHEAD = IDATA(IQHEAD)*2
+        NRUN = HDATA(IPHEAD+10)
+        IF NRUN.LE.100
+        THEN
+          DSD0   = .0
+          DSD1   = .0
+          DSD2   = .0
+          DDS0   = .0
+          DDS1   = .0
+          DDS2   = .0
+          DRV1   = .0
+          DRV2   = .0
+        ELSE
+          DSD0   =-0.400
+          DSD1   = 0.300
+          DSD2   = 2.500
+          DDS0   = 0.720
+          DDS1   = 0.330
+          DDS2   = 0.0
+          DRV1   = (DDS0-DDS1) / (DSD0-DSD1)
+          DRV2   = (DDS1-DDS2) / (DSD1-DSD2)
+        CIF
+C     PRINT 2091, DSD0,DDS0,DSD1,DDS1,DSD2,DDS2,DRV1,DRV2,DRC
+C2091 FORMAT(' DSD,DDS=',3(F9.3,F7.3),F11.5,F9.5,F9.3,F8.3)
+C
+N       INITIALIZE ANGULAR CORRECTION CONSTANTS
+        I9 = NCOAR - 1
+        FOR I1=2,I9
+          IF(I1.GT.2) TGCOAR(I1   ) = TGCOAR(I1- 1) + DTGB
+          SLCOAR(I1   ) = (T0COAR(I1   )-T0COAR(I1- 1)) / DTGB
+          SLCOAR(I1+15) = (T0COAR(I1+15)-T0COAR(I1+14)) / DTGB
+          SLCOAR(I1+30) = (T0COAR(I1+30)-T0COAR(I1+29)) / DTGB
+          SLCOAR(I1+45) = (T0COAR(I1+45)-T0COAR(I1+44)) / DTGB
+        CFOR
+C     PRINT 2092, TGCOAR,T0COAR,SLCOAR
+C2092 FORMAT('0ANG.CORR.:',15F8.3,/,(11X,15F8.3))
+      CPROC
+C
+      END

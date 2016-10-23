@@ -1,0 +1,218 @@
+C   25/07/80 102191159  MEMBER NAME  LBHTRO   (PATRECSR)    SHELTRAN
+      SUBROUTINE LBHTRO(ITRK,PAR1,PAR2,PAR3,INDPAR)
+C
+C        LABEL GOOD HITS OF TRACK TROUGH ORIGIN
+C                   HISTOGRAM METHOD USING INTERACTION POINT
+C                   OR        DIRECTION AT CONVERSION IN PIPE OR TANK
+C
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cworkpr.for"
+#include "cworkeq.for"
+C
+      EQUIVALENCE
+     ,          (HPCO0 ,HPWRK(17)),(HPCO9 ,HPWRK(18)),(HLDCO ,HPWRK(19))
+     ,         ,(ICELL ,IDWRK( 1)),(MHIT  ,IDWRK( 2)),(IRING ,IDWRK( 3))
+     ,         ,(IERRCD,IDWRK( 4)),(NTRKEL,IDWRK( 5))
+C
+#include "cpatlm.for"
+C
+#include "cjdrch.for"
+#include "cdsmax.for"
+C
+      DIMENSION HST( 80)
+C
+N     AVERAGE RADIUS FOR PAIR CONVERSION IN BEAM PIPE OR TANK
+      DATA XCV /152.7/
+C
+C2101 FORMAT('0HISTOGRAM:',20I2,2X,20I2,/,(11X,20I2,2X,20I2))
+C2102 FORMAT(' PEAK =',10I6,6F10.5)
+C2103 FORMAT(' SAMPL.:',3F6.1,3F10.5,I5,  5X,F10.1,2F10.5,I5)
+C
+C
+N     ZERO HISTOGRAM
+      CALL SETS(HST(1),0,160,0)
+      DCRV =  .000010
+      CRV1 = -DCRV*20.
+      X0   = FSENSW(IRING) + RINCR(IRING)*7.5
+      Y0   = (PAR1*X0 + PAR2)*X0 + PAR3
+      S0   = PAR1*X0*2. + PAR2
+      CRV0 = (S0*X0 - Y0) / X0**2
+      CRV0 = CRV0 + CRV1
+      CVP0 = (S0*X0 - Y0) / (X0**2 - XCV**2)
+      CVP0 = CVP0 + CRV1
+      ZW1  = X0
+      ZW2  = Y0 / X0
+      ZW3  = XCV**2
+C
+N     LOOP OVER ALL HITS
+        FOR IP = HPCO0,HPCO9,HLDCO
+          X   = WRK(IP+3)
+          Y   = WRK(IP+4)
+          IF ABS(X-X0) .GT. 25.
+          THEN
+            CV1 = ZW2*X - Y
+            CV2 = (ZW1-X)*X
+            CRV = CV1 / CV2
+            IBN = (CRV-CRV0) / DCRV + 1
+            IF(IBN.GT.0 .AND. IBN.LE.40) HST(IBN   ) = HST(IBN   ) + 1
+            CVP = CV1 / ((X/ZW1-1.)*ZW3 + CV2)
+            IBM = (CVP-CVP0) / DCRV + 1
+            IF(IBM.GT.0 .AND. IBM.LE.40) HST(IBM+40) = HST(IBM+40) + 1
+C     PRINT 2103, X,Y,ZW1,ZW2,CRV0,CRV,IBN,ZW3,CVP0,CVP,IBM
+          CIF
+        CFOR
+C
+C     PRINT 2101, HST
+C
+N     FIND PEAK IN HISTOGRAMS
+C
+C
+N     HISTOGRAM (TRACKS THROUGH ORIGIN)
+      MHST = 0
+      IMAX = 0
+      FOR I=19,22
+        NHST = HST(I-1) + HST(I  ) + HST(I+1)
+        IF NHST.GE.MHST
+        THEN
+          MHST = NHST
+          IMAX = I
+        CIF
+      CFOR
+C
+N     HISTOGRAM (TRACKS FROM PAIR CONV.IN PIPE OR TANK)
+      MHSTP = 0
+      IMAXP = 0
+      FOR I=59,62
+        NHST = HST(I-1) + HST(I  ) + HST(I+1)
+        IF NHST.GE.MHSTP
+        THEN
+          MHSTP = NHST
+          IMAXP = I
+        CIF
+      CFOR
+C     PRINT 2102, IMAX,MHST,IMAXP,MHSTP
+C
+N     SELECT HISTOGRAM
+      IF MHSTP.LT.IRING*8 .OR. MHSTP-5.LT.MHST
+      THEN
+N       TRACK THROUGH ORIGIN
+        INDPAR = 0
+      ELSE
+N       TRACK FROM PAIR CONVERSION
+        INDPAR = 1
+        MHST = MHSTP
+        IMAX = IMAXP - 40
+        CALL MVC(HST(1),0,HST(2),0,80)
+        CRV0 = CVP0
+        PAR1 = CVP0 - CRV1
+        PAR3 = PAR1 * ZW3
+      CIF
+C
+N     EVALUATE PEAK
+      NH0 = HST(IMAX-2)
+      NH1 = HST(IMAX-1)
+      NH2 = HST(IMAX  )
+      NH3 = HST(IMAX+1)
+      NH4 = HST(IMAX+2)
+C
+N     CORRECT FOR DOUBLE PEAK
+      IF IMAX.EQ.19 .AND.
+     ?   NH0.GT.0 .AND. NH0.GT.NH1 .AND. NH4.NE.0
+      THEN
+        IMAX = IMAX + 1
+      CIF
+      IF IMAX.EQ.22 .AND.
+     ?   NH4.GT.0 .AND. NH4.GT.NH3 .AND. NH0.NE.0
+      THEN
+        IMAX = IMAX - 1
+      CIF
+      IM1 = IMAX - 1
+      IM3 = IMAX + 1
+      IF(NH1.LE.2 .AND. NH3-NH1.GT.2) IM1 = IM1 + 1
+      IF(NH3.LE.2 .AND. NH1-NH3.GT.2) IM3 = IM3 - 1
+      NHST  = NH1 + NH2 + NH3
+      NHTTR = 0
+      IF NHST.GE.3
+      THEN
+C     PRINT 2102,IMAX,MHST,LBLR,NH1,NH2,NH3,IM1,IM3,MHSTL,MHSTR,ZW1,ZW2
+C
+N       FETCH HITS OF PEAK IN HISTOGRAM
+        IHIT = 0
+        IPHT = HPHT0
+        FOR IP = HPCO0,HPCO9,HLDCO
+          X   = WRK(IP+3)
+          Y   = WRK(IP+4)
+          IF ABS(X-X0) .GT. 25.
+          THEN
+            CV1 = ZW2*X - Y
+            CV2 = (ZW1-X)*X
+            IF INDPAR.EQ.0
+            THEN
+              CRV = CV1 / CV2
+            ELSE
+              CRV = CV1 / ((X/ZW1-1.)*ZW3 + CV2)
+            CIF
+            IBN = (CRV-CRV0) / DCRV + 1
+C     PRINT 2103, X,Y,ZW1,ZW2,CRV0,CRV,IBN
+            IF IBN.GE.IM1 .AND. IBN.LE.IM3
+            THEN
+N             CHECK IF HIT OF TREL
+              IF IWRK(IP+ 9).EQ.ICELL
+              THEN
+                LBGOOD = 4
+                PERFORM CKORHT
+              ELSE
+                LBGOOD = 0
+              CIF
+            ELSE
+              LBGOOD = 8
+N             CHECK IF NO ORIGINAL HIT OF TRACK
+              PERFORM CKORHT
+            CIF
+          ELSE
+            LBGOOD = 1
+N           CHECK IF NO ORIGINAL HIT OF TRACK
+            PERFORM CKORHT
+          CIF
+          IWRK(IP+7) = LBGOOD
+          IF(LBGOOD.EQ.0) IHIT = IHIT + 1
+        CFOR
+        NHTTR = IHIT
+      CIF
+C
+      RETURN
+C
+C
+N     *************************
+N     *      C K O R H T      *
+N     *************************
+C
+C
+N     CHECK IF NO ORIGINAL HIT OF TREL
+      PROC CKORHT
+C
+N     CHECK IF ANY TREL
+      IF ITRK.GT.0
+      THEN
+C
+        JCELL = IWRK(IP+ 9)
+N       CHECK IF SAME CELL
+        IF JCELL.EQ.ICELL
+        THEN
+          IPBACK = IWRK(IP+ 1)
+          WHILE IPHT.LT.HPHT9
+            IF IWRK(IPHT+1).EQ.IPBACK
+            THEN
+              IF(IWRK(IPHT+9).EQ.ITRK .OR. IWRK(IPHT+10).EQ.ITRK)
+     ?          LBGOOD = 0
+              XWHILE
+            CIF
+            IF(IWRK(IPHT+1).GT.IPBACK) XWHILE
+          IPHT = IPHT + HLDHT
+          CWHILE
+        CIF
+      CIF
+      CPROC
+C
+      END

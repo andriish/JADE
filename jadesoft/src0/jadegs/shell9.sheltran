@@ -1,0 +1,28 @@
+C   09/06/83 703131345  MEMBER NAME  SHELL9   (S)           SHELTRAN
+      SUBROUTINE SHELL9(IVAL,IIND,N)
+C                                   J. SPITZER
+C     SORT INDICES IN THE ARRAY IIND(.) ACCORDING TO
+C     THE CORRESPONDING VALUES IN IVAL(IIND(.))
+C
+      DIMENSION IVAL(N),IIND(N)
+      INTEGER*2 I,J,K,M
+C
+      M=N/2
+      WHILE M.GT.0
+         K=N-M
+         FOR J=1,K
+            I=J
+            WHILE I.GE.1
+               IVI=IVAL(IIND(I))
+               IVIPM=IVAL(IIND(I+M))
+               IF(IVIPM.GE.IVI) XWHILE
+               I1=IIND(I+M)
+               IIND(I+M)=IIND(I)
+               IIND(I)=I1
+               I=I-M
+            CWHILE
+         CFOR
+         M=M/2
+      CWHILE
+      RETURN
+      END

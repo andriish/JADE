@@ -1,0 +1,461 @@
+C   27/11/80 309201618  MEMBER NAME  ORZRFITO (FITSR)       SHELTRAN
+      SUBROUTINE ZRFITO(INDEX,/IARG1/,/X0/,/Y0/,/Z0/)
+C
+C
+C     INDEX =-1: INITIALIZE FOR NEW EVENT
+C
+C     INDEX = 0: STORES Z-R-KOORDINATES OF TRACKS FROM ORIGIN
+C                TRACK#, Z, R
+C     INDEX = 1: FIT ALL TRACKS SIMULTANEOUSLY
+C
+C
+C
+C     P. STEFFEN 27/11/80
+C
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cdata.for"
+C
+#include "cjdrch.for"
+C
+#include "cworkpr.for"
+#include "cworkeq.for"
+C
+      EQUIVALENCE
+     ,          (HPCO0 ,HPWRK(17)),(HPCO9 ,HPWRK(18)),(HLDCO ,HPWRK(19))
+     ,         ,(HPZR0 ,HPWRK(20)),(HPZR9 ,HPWRK(21)),(HLDZR ,HPWRK(22))
+     ,         ,(ICELL ,IDWRK( 1)),(MHIT  ,IDWRK( 2)),(IRING ,IDWRK( 3))
+     ,         ,(IERRCD,IDWRK( 4)),(NTRKEL,IDWRK( 5))
+C
+      DIMENSION HST(200),IPTRZ(40,2),JPTRBK(40)
+      DIMENSION SUMF(40,5),JTRZF(40),SLTRZ(40)
+C
+      EQUIVALENCE (ZWZ,IZW)
+C
+C 2000 FORMAT('0CALL ZRFITO(',I2,1X,I6,')')
+C2999 FORMAT(' RETURN FROM ZRFITO(',I2,')')
+C2001 FORMAT(' NTRZ =',I6,/,(1X,7(I6,I5,I6)))
+C2002 FORMAT(' R/Z(',I2,')',/,(1X, 6(I6,2F6.0)))
+C2004 FORMAT(' HST(',I2,')',/(1X,50I2))
+ 2005 FORMAT(' ZRFITO(PST): TRACK',I6,I3,' NOT ACCEPTED')
+C2006 FORMAT('0HST-LOOP',3I6)
+C2008 FORMAT(' PEAK =',3I6,F10.3)
+C2010 FORMAT(' ZRFIT:',I6,2F12.0,/,(I6,5F12.0))
+C2011 FORMAT(' ZRFIT:',I6,4F12.0,2F8.1)
+C2012 FORMAT(' SOPES(FIT):',10F8.3)
+C2013 FORMAT(' R/Z(',I2,') :',I6,2F10.1,/,(1X, 6(F6.1,2F6.0)))
+C
+C     PRINT 2000, INDEX,IARG1
+C
+      DATA LBINIT /0/
+      IF LBINIT.EQ.0
+      THEN
+C
+N       INITIALIZATION: SET BOS-POINTER
+        LBINIT = 1
+        IQPATR = IBLN('PATR')
+        IQJHTL = IBLN('JHTL')
+      CIF
+C
+C
+C
+N     SELECT DIFFERENT PARTS OF PROGRAM
+      REPEAT
+      IF INDEX.LT.0
+      THEN
+N       INDEX =-1 : INITIALIZATION FOR NEW EVENT
+N       ----------------------------------------
+C
+C
+        HPZR0 = IARG1
+        HPZR9 = IARG1 - 1
+        HLDZR = 3
+N       # OF ACCEPTED Z-R TRACKS
+        NTRZ  = 0
+        XREPEAT
+      CIF
+C
+C
+      IF INDEX.EQ.0
+      THEN
+N       INDEX = 0 : STORE Z-R COORDINATES TRACK
+N       ---------------------------------------
+C
+C
+        IPZR = HPZR9
+C
+N       PREPARE GOODNESS LABELS FOR ZRFIT
+        NHIT3 = 0
+        FOR IP=HPCO0,HPCO9,HLDCO
+N         SET ERROR LABEL FOR Z-R FIT
+          IF(IWRK(IP+10).GT.1) IWRK(IP+7) = 16
+          IF IWRK(IP+7).LT.8
+          THEN
+            IWRK(IPZR+1) = 0
+            WRK (IPZR+2) = WRK(IP+6)
+            WRK (IPZR+3) = WRK(IP+5)
+             NHIT3 = NHIT3 + 1
+            IPZR  = IPZR + HLDZR
+          CIF
+        CFOR
+C
+N       ACCEPT TRACK IF >7 HITS
+        IF NHIT3.GE.8
+        THEN
+          NTRZ = NTRZ + 1
+N         POINTER TO 1. HIT OF TRACK
+          IPTRZ(NTRZ,1) = HPZR9 + 1
+N         POINTER TO LAST HIT OF TRACK
+          IPTRZ(NTRZ,2) = IPZR
+          JPTRBK(NTRZ)  = IARG1
+          HPZR9 = IPZR
+        ELSE
+N         TRACK NOT ACCEPTED,
+N         RESTORE 1. + LAST POINT + DIRECRECTION
+          IPTR1 = IARG1
+      PRINT 2005,IPTR1, IDATA(IPTR1+1)
+          INDEX =-2
+        CIF
+C
+C
+        XREPEAT
+      CIF
+C
+C
+      IF INDEX.GT.0
+      THEN
+N       INDEX = 1 : START FITTING OF TRACKS
+N       ----------------------------------------
+C
+C
+C       PRINT 2001, NTRZ,(IPTRZ(I1,1),IPTRZ(I1,2),JPTRBK(I1),I1=1,NTRZ)
+C       PERFORM PRINT
+C
+N       CHECK IF >1 TRACK
+        IF(NTRZ.LE.0) XREPEAT
+C
+N       GET START VALUE FOR VERTEX
+        IZW = IARG1
+        ZVTX0 = ZWZ
+C
+N       LOOP OVER ALL TRACKS + HSTOGRAM HITS
+        ITRZ = 0
+        WHILE ITRZ.LT.NTRZ
+        ITRZ = ITRZ + 1
+C
+          IP0 = IPTRZ(ITRZ,1)
+          IP9 = IPTRZ(ITRZ,2)
+C
+N         HSTOGRAM SLOPES
+N         AND SELECT HITS CONTRIBUTING TO PEAK
+          PERFORM HSTSEL
+        CWHILE
+C
+C       PERFORM PRINT
+C
+N       DO SUPERFIT
+        PERFORM SUPFIT
+C
+N       LABEL BAD HITS
+        PERFORM LABEL
+C       PERFORM PRINT
+C
+N       DO SUPERFIT
+        PERFORM SUPFIT
+C
+N       LABEL BAD HITS
+        PERFORM RESBNK
+C
+        XREPEAT
+      CIF
+C
+C
+      UNTIL .TRUE.
+C
+C     PRINT 2999, INDEX
+      RETURN
+C
+C
+N     *************************
+N     *      H S T S E L      *
+N     *************************
+C
+C
+N     HSTOGRAM SLOPES
+N     AND SELECT HITS CONTRIBUTING TO PEAK
+      PROC HSTSEL
+C
+        CALL SETSL(HST(1),0,400,0)
+        SL0   =-7.5
+        BINSL = .075
+        BINIV = 1. / BINSL
+C       PRINT 2006, ITRZ,IP0,IP9
+        FOR IP1=IP0,IP9,3
+          R1 = WRK(IP1+1)
+          Z1 = WRK(IP1+2)
+          SL = (Z1 - ZVTX0) / R1
+          IBIN = (SL - SL0) * BINIV
+          IF(IBIN.GT.0 .AND. IBIN.LT.200) HST(IBIN) = HST(IBIN) + 1
+        CFOR
+C       PRINT 2004, ITRZ,HST
+C
+C
+N       FIND PEAK IN HSTOGRAMS
+C
+C
+N       HSTOGRAM SLOPES OF TRACKS
+        IMAX = 1
+        MHST = HST(1) + HST(2) + HST(3) + HST(4) + HST(5)
+        NHST = MHST
+        FOR I= 2,196
+          NHST = NHST + HST(I+4) - HST(I-1)
+          IF NHST.GT.MHST
+          THEN
+            IMAX = I
+            MHST = NHST
+          CIF
+        CFOR
+C       PRINT 2008, MHST,IMAX
+C
+N       DETEMIN AV. SLOPE
+        IF MHST.LT.5
+        THEN
+          SLP = 1000.
+        ELSE
+          ISL = HST(IMAX+1) + HST(IMAX+2)*2 + HST(IMAX+3)*3
+     +        + HST(IMAX+4)*4
+          SLP = (FLOAT(ISL) / MHST + IMAX + .5) * BINSL + SL0
+        CIF
+C       PRINT 2008, MHST,IMAX,ISL,SLP
+C
+N       LABEL GOOD + BAD HITS
+        FOR IP1=IP0,IP9,3
+          R1 = WRK(IP1+1)
+          Z1 = WRK(IP1+2)
+          F1 = R1*SLP + ZVTX0
+          DF = F1 - Z1
+          IF ABS(DF).LT.80.
+          THEN
+            IWRK(IP1) = 0
+          ELSE
+            IWRK(IP1) = 16
+          CIF
+        CFOR
+C
+      CPROC
+C
+N     *************************
+N     *      S U P F I T      *
+N     *************************
+C
+C
+N     FIT ALL TRACKS FROM VERTEX SIMULTANEOUSLY
+      PROC SUPFIT
+C
+N       LOOP OVER ALL TRACKS + HSTOGRAM HITS
+        ITRZ = 0
+        MTRZ = 0
+        SUM0 = 0.
+        SUM4 = 0.
+        WHILE ITRZ.LT.NTRZ
+        ITRZ = ITRZ + 1
+C
+N         LOOP OVER ALL HITS
+N         POINTER OF TRACK HITS
+          IP0 = IPTRZ(ITRZ,1)
+          IP9 = IPTRZ(ITRZ,2)
+N         ZERO SUMS
+          S1 = 0.
+          S2 = 0.
+          S3 = 0.
+          S4 = 0.
+          S5 = 0.
+          FOR IP1=IP0,IP9,3
+            IF IWRK(IP1).EQ.0
+            THEN
+              R1 = WRK(IP1+1)
+              Z1 = WRK(IP1+2)
+              S1 = 1.    + S1
+              S2 = R1    + S2
+              S3 = R1*R1 + S3
+              S4 = Z1    + S4
+              S5 = Z1*R1 + S5
+            CIF
+          CFOR
+C
+N         CHECK IF >7 HITS ACCEPTED
+          IF S1.LT.7.5
+          THEN
+N           BAD TRACK, IGNAORE
+            JTRZF(ITRZ) = 0
+          ELSE
+N           REGISTER SUMS
+            MTRZ = MTRZ + 1
+            JTRZF(ITRZ) = MTRZ
+            SUM0 = SUM0 + S1
+            SUM4 = SUM4 + S4
+            SUMF(MTRZ,1) = S1
+            SUMF(MTRZ,2) = S2
+            SUMF(MTRZ,3) = S3
+            SUMF(MTRZ,4) = S4
+            SUMF(MTRZ,5) = S5
+          CIF
+        CWHILE
+C     PRINT 2010,MTRZ,SUM0,SUM4,(I,(SUMF(I,J),J=1,5),I=1,MTRZ)
+C
+N       CHECK IF ANY TRACKS
+        IF MTRZ.GT.0
+        THEN
+C
+N         GENERAL VERTEX
+          S0 = 0.
+          S4 = 0.
+          FOR I=1,MTRZ
+            S0 = SUMF(I,2)**2 / SUMF(I,3)        + S0
+            S4 = SUMF(I,5)*SUMF(I,2) / SUMF(I,3) + S4
+          CFOR
+          S0 = SUM0 - S0
+          S4 = SUM4 - S4
+          ZVFIT = S4 / S0
+C         PRINT 2011,MTRZ,SUM0,SUM4,S0,S4,ZVFIT,ZVTX0
+C
+N         SLOPES OF TRACKS
+          FOR I=1,MTRZ
+            SLTRZ(I) = (-SUMF(I,2)*ZVFIT + SUMF(I,5)) / SUMF(I,3)
+          CFOR
+C         PRINT 2012, (SLTRZ(I),I=1,MTRZ)
+C
+        CIF
+C
+      CPROC
+C
+N     *************************
+N     *      L A B E L        *
+N     *************************
+C
+C
+N     LABEL HITS NOT BELONGING TO TRACK
+      PROC LABEL
+C
+        ITRZ = 0
+        WHILE ITRZ.LT.NTRZ
+        ITRZ = ITRZ + 1
+          JTRZ = JTRZF(ITRZ)
+N         CHECK IF ACC. TRACK
+          IF JTRZ.GT.0
+          THEN
+            SLP  = SLTRZ(JTRZ)
+N           POINTER OF TRACK HITS
+            IP0 = IPTRZ(ITRZ,1)
+            IP9 = IPTRZ(ITRZ,2)
+C
+N           LABEL GOOD + BAD HITS
+            FOR IP1=IP0,IP9,3
+              R1 = WRK(IP1+1)
+              Z1 = WRK(IP1+2)
+              F1 = R1*SLP + ZVFIT
+              DF = F1 - Z1
+              IF ABS(DF).LT.80.
+              THEN
+                IWRK(IP1) = 0
+              ELSE
+                IWRK(IP1) = 16
+              CIF
+            CFOR
+C
+          CIF
+C
+        CWHILE
+C
+      CPROC
+C
+N     *************************
+N     *      R E S B N K      *
+N     *************************
+C
+C
+N     FILL RESULT BANK
+      PROC RESBNK
+C
+        ITRZ = 0
+        WHILE ITRZ.LT.NTRZ
+        ITRZ = ITRZ + 1
+          JTRZ = JTRZF(ITRZ)
+N         CHECK IF ACCEPTED TRACK
+          IF JTRZ.LE.0
+          THEN
+N           RESTORE 1. + LAST POINT + DIRECTION
+            IPTR1 = JPTRBK(ITRZ)
+C     PRINT 2007,IPTR1, IDATA(IPTR1+1)
+C2007 FORMAT(' TRACK',I6,I3,' NOT FITTED')
+            TGTH = ADATA(IPTR1+30)
+            Z0TR = ADATA(IPTR1+31)
+            CSTH = 1./SQRT(TGTH**2+1.)
+            SNTH = CSTH * TGTH
+            ADATA(IPTR1+ 8) = ADATA(IPTR1+ 8) * CSTH
+            ADATA(IPTR1+ 9) = ADATA(IPTR1+ 9) * CSTH
+            ADATA(IPTR1+15) = ADATA(IPTR1+15) * CSTH
+            ADATA(IPTR1+16) = ADATA(IPTR1+16) * CSTH
+            ADATA(IPTR1+17) = SNTH
+            ADATA(IPTR1+ 7) = ADATA(IPTR1+ 7) * TGTH + Z0TR
+            ADATA(IPTR1+14) = ADATA(IPTR1+14) * TGTH + Z0TR
+          ELSE
+            SLP  = SLTRZ(JTRZ)
+N           POINTER TO TRACK ARRAY IN 'PATR'
+            IPTR1 = JPTRBK(ITRZ)
+N           POINTER OF TRACK HITS
+            IP0 = IPTRZ(ITRZ,1)
+            IP9 = IPTRZ(ITRZ,2)
+C
+N           CALC. RESIDUA + SUM CHISQ.
+            S1 = 0.
+            FOR IP1=IP0,IP9,3
+              R1 = WRK(IP1+1)
+              Z1 = WRK(IP1+2)
+              F1 = R1*SLP + ZVFIT
+              DF = F1 - Z1
+N             SUM CHISQ
+              IF(IWRK(IP1).EQ.0) S1 = DF**2 + S1
+              WRK(IP1) = DF
+            CFOR
+N           SIGMA
+            MHT = SUMF(JTRZ,1)
+            SIG = SQRT(S1 / (MHT-1))
+C           PRINT 2013, ITRZ,MHT,SIG,S1,(WRK(I1),I1=IP0,IP9)
+C
+N           SET NEW PARAMETERS IN 'PATR'-BANK
+            CSTH = 1./SQRT(SLP**2+1.)
+            SNTH = CSTH * SLP
+            RVTX = ADATA(IPTR1+17)
+            ADATA(IPTR1+ 7) = ADATA(IPTR1+ 7)*SLP + ZVFIT
+            ADATA(IPTR1+14) = ADATA(IPTR1+14)*SLP + ZVFIT
+            ADATA(IPTR1+ 8) = ADATA(IPTR1+ 8)*CSTH
+            ADATA(IPTR1+ 9) = ADATA(IPTR1+ 9)*CSTH
+            ADATA(IPTR1+10) = SNTH
+            ADATA(IPTR1+15) = ADATA(IPTR1+15)*CSTH
+            ADATA(IPTR1+16) = ADATA(IPTR1+16)*CSTH
+            ADATA(IPTR1+17) = SNTH
+            IDATA(IPTR1+29) = 1
+            ADATA(IPTR1+30) = SLP
+            ADATA(IPTR1+31) = RVTX*SLP + ZVFIT
+            ADATA(IPTR1+32) = SIG
+            IDATA(IPTR1+33) = MHT
+            IDATA(IPTR1+ 2) = LOR(IDATA(IPTR1+ 2),64)
+            IDATA(IPTR1+ 4) = LOR(IDATA(IPTR1+ 4),64)
+C
+          CIF
+C
+        CWHILE
+C
+      CPROC
+C
+C
+C     PROC PRINT
+C       FOR ITRZ = 1,NTRZ
+C         IP0 = IPTRZ(ITRZ,1)
+C         IP9 = IPTRZ(ITRZ,2)
+C         PRINT 2002, ITRZ,(WRK(I1),I1=IP0,IP9)
+C       CFOR
+C     CPROC
+C
+      END

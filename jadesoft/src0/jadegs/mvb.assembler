@@ -1,0 +1,42 @@
+*   15/04/83 304151447  MEMBER NAME  MVB      (S)           ASSEMBLER
+*  FORMERLY DESYLIB
+MVB      START
+*  CALL MVB(A,NA,B,NB,L)
+         USING *,15
+         B     *+12
+         DC    CL8'MVB'
+         STM   14,8,12(13)
+         LA    3,SA
+         ST    3,8(13)
+         ST    13,4(3)
+         LR    13,3
+*
+         LM    2,6,0(1)
+         L     6,0(6)        L
+         LTR   6,6
+         BZ    RET
+         BCTR  6,0
+         L     3,0(3)        NA
+         L     5,0(5)        NB
+         L     7,BIT0
+         SRA   7,0(6)        L BITS LEFT JUSTIFIED
+*  CLEAR FIELD IN A
+         LR    8,7
+         SRL   8,0(3)        NA
+         X     8,=F'-1'
+         N     8,0(2)        A
+*  GET BITS FROM B
+         SRL   7,0(5)        NB
+         N     7,0(4)        B
+*  PUT BITS INTO A
+         SLL   7,0(5)        NB
+         SRL   7,0(3)        NA
+         OR    7,8
+         ST    7,0(2)        A
+*
+RET      L     13,4(13)
+         LM    14,8,12(13)
+         BR    14
+SA       DS    18F
+BIT0     DC    X'80000000'
+         END

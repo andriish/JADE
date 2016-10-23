@@ -1,0 +1,435 @@
+#!/usr/bin/ksh
+set +v
+
+cmd=`basename $0`
+usage="usage: $cmd [-nco1] [-m] [-gh] [-y symb...][-u symb...] dir|mainpr.{oa} [lib/memb ...] [lib ...]"
+reloc=''
+graphics='0'
+debug='0'
+map='0'
+newflg=''
+usymbs=''
+ysymbs=''
+#ysymbs='-yqnext_ -ykidisk_ -ycjltrk_ -ycjdgks_'
+allopt=''
+
+if [ -z "$HARDWARE" ]; then HARDWARE="`machine`"; fi
+
+#sofiles='/u/ws/opal/pro/cern_fix/ucopy2.o /u/ws/opal/pro/cern_fix/time.o /u/ws/opal/pro/cern_fix/errset.o' 
+#fmfiles='/u/ws/panzer/fatmen/fmint.o /u/cp/jamie/fatmen/fmhstc.o /u/cp/jamie/fatmen/fmactc.o'
+ofiles=''
+opalload=''                     # do not load opal standard libs by default
+cernload=''                     # extra cern libraries
+lastlibs=''                     # dummy libraries
+
+
+if [ $HARDWARE = 'decs' ]; then
+
+	cernlstd="-lgraflib -lgrafX11 -lpacklib -lmathlib -lkernlib"
+	graflibs="-L$OPAL/lib -lgphigsf2c -lgphigsc -lddif -ldwt -lcursesX -lX11"  
+	graflibs="-L$OPAL/lib -lgphigsf2c -lgphigsc -ldwt -lcursesX -lX11"  
+	linkpath="-L$CERN_ROOT/lib"
+	fortlibs="-nocount -lUfor -lfor -lutil -lF77 -lI77 -lU77 -lI77 -lF77 -li -lots -lm -nocount -lc"
+
+elif [ $HARDWARE = 'alpha' ]; then
+
+	cernlstd='-lgraflib -lgrafX11 -lpacklib -lmathlib -lkernlib'
+	graflibs='-lPHIGSFORBND -lPHIGS -lddif -lcurses -lc -lX11'
+	graflibs='-lcurses -lc -lX11'
+	linkpath="-L$CERN_ROOT/lib -L/usr/kits/PHO240/usr/shlib"
+	linkpath="-L$CERN_ROOT/lib"
+	fortlibs="-nocount -lUfor -lfor -lFutil -lm -lots -nocount -lc"
+	fortlibs="-nocount -lUfor -lfor -lFutil -lF77 -lI77 -lF77 -lm_4sqrt -lm -lPW -lots -nocount -lc"
+
+elif [ $HARDWARE = 'pentium' ]; then
+
+	cernlstd='-lgraflib -lgrafX11 -lpacklib -lmathlib -lkernlib'
+#	graflibs='-lPHIGSFORBND -lPHIGS -lddif -lcurses -lc -lX11'
+	graflibs='-lcurses -lc -lX11'
+#	linkpath="-L$CERN_ROOT/lib -L/usr/kits/PHO240/usr/shlib"
+	linkpath="-L$CERN_ROOT/lib -L/usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66 -L/usr/i386-redhat-linux/lib"
+	linkpath="-L$CERN_ROOT/lib"
+	fortlibs="-nocount -lUfor -lfor -lFutil -lm -lots -nocount -lc"
+	fortlibs="-lg2c -lm -lgcc -lc -lgcc /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/crtend.o /usr/lib/crtn.o"
+        fortlibs="/lib/libnsl-2.1.1.so -lc"
+        fortlibs="/lib/libnsl.so.1 -lc"
+
+elif [ $HARDWARE = 'RS6000' ]; then
+
+	cernlstd='-lgraflib -lgrafX11 -lpacklib -lmathlib -lkernlib'
+	graflibs=" "
+	linkpath="-L$CERN_ROOT/lib"
+        fortlibs="-lxlf90 -lxlf -lxlfutil -lm -lc"
+
+fi
+
+#misclibs='-lshift -lulsock -lsun -lfpe'
+#misclibs='-lF77 -ll77 -lU77 -lm '#shift -lulsock -lsun -lfpe'
+
+while getopts fmrghu:y:DncoO xopt ; do
+
+	  allopt=$allopt' -'$xopt;
+    case $xopt in
+    h) # help message:
+	 echo 'the program looks for object files (.o) and archive files (.a) in'
+	 echo the directories specified on the command line and in 
+	 echo the directories specified by the environment variable propath.
+	 echo
+	 echo switches:
+	 echo '-m  create a link map '
+	 echo '-n  use the development version instead of the production version'
+	 echo '-O  use the old version instead of the production version'
+         echo '-c  use the development version of CERN libraries'
+         echo '-o  use the old version of CERN libraries'
+	 echo '-g  use the graphics libraries.'
+	 echo '-f  fast version without linking cern libraries'
+	 echo '-r  retain relocation entries in the output file for subsequent ld run.'
+	 echo '-h  this help'
+	 echo '-y symb  traces the definition and the reference of the specified'
+	 echo '        symbol through the libraries. The -y symb switch can be repeated.'
+	 echo '-u symb  declares symb for undefined to force its load from a library.'
+	 echo '        the -u symb switch can be repeated.'
+	 echo '(Note, that the symbols have a _ appended to them by the f77 compiler).'
+	 echo 
+	 echo symbolic names matching only part of the library can be specified.
+	 echo Construction ROPE/func.o extracts func.o from the specified library.
+	 echo The symbolic library names are case insensitive, but exact match is
+	 echo attempted first.
+	 echo
+	 echo 'The executable is named after the first argument (e.g. xx.o): xx.run'
+	 echo The load map is in the file xx.map.
+	 echo 
+	 echo Examples:
+	 echo link rohadacc.o OD PX OU ROPE jetset72 DUMMY
+	 echo makes rohadacc.run rohadacc.map from the specified libraries .o and libs.
+	 echo 
+       echo link ../src/rgopal GOPAL geant313 OU OD TR ROPE DUMMY
+	 echo makes rgopal.run rgopal.map using the .o and .a files in ../src/rgopal dir.
+	 echo
+	 echo link ../src/rrope jc/cjcfsz.o jc/cjcfti.o rope ce od dd ct cv jc cj op '\'
+	 echo      cz cx tb pb pe em eb ee hb hp mb me mm fd oc ou px gopal dummy geant
+	 echo
+	 echo makes a rope executable rrope.run, load map rrope.map by taking all
+	 echo the .o routines from the ../src/rrope directory, the cjcfsz.o and 
+	 echo cjcfti.o from the jc library and searching all the other libraries.
+	 echo -------------------------------------------------------------------
+	 exit 9;;
+    f)  # fast linking without cern libraries
+	 linkpath=''
+	 cernlstd=''
+	 graflibs=''
+	  ;;
+    r)  # retain relocation entries for subsequent ld runs
+         reloc='-r'
+	 fortlibs=''
+         ;;
+    g)  # native graphics libraries
+	# if [ $HARDWARE = 'mips' ]; then
+	#	graflibs='-lgrafGL -lgl -lfgl -lgl_s -lm -lbsd'
+	# fi
+	  graphics='1'
+	 ;;
+    y) # symbols to follow up: only on SGI
+	 if [ $HARDWARE = 'mips' ]; then 
+		ysymbs=${ysymbs}' -y'$OPTARG 
+	 fi
+	 ;;
+    u) usymbs=${usymbs}' -Wl,-u'$OPTARG ;;
+    n) newflg='-n' ;;
+    O) newflg='-o' ;;
+    c) linkpath="-L$CERN/new/lib";;
+#    o) linkpath="-L$CERN/old/lib";;
+    o) linkpath="-L$CERN/97a/lib";;
+    D) debug=1 ;;
+    m) map=1 ;;
+    \?) echo unknown option $xopt; echo $usage; exit 9;;
+    esac
+done
+shift `expr $OPTIND - 1 `
+if [ $# -le 0 ]; then
+    echo $usage
+    exit 9
+fi
+
+if [ $HARDWARE = 'decs' ]; then
+   main=`basename $1 '\.f'`
+   main=`basename $main '\.o'`
+   main=`basename $main '\.a'`
+elif [ $HARDWARE = 'alpha' ]; then
+   main=`basename $1 '.f'`
+   main=`basename $main '.o'`
+   main=`basename $main '.a'`
+elif [ $HARDWARE = 'pentium' ]; then
+   main=`basename $1 '.f'`
+   main=`basename $main '.o'`
+   main=`basename $main '.a'`
+elif [ $HARDWARE = 'RS6000' ]; then
+   main=`basename $1 '.f'`
+   main=`basename $main '.o'`
+   main=`basename $main '.a'`
+fi
+
+#log=`date`" $USER $cmd $allopt $main" ;  echo $log | tee -a '/tmp/.'$cmd'.log'
+
+curdir=`pwd`
+tmpdir=${TMPDIR:-/tmp}/link$$
+mkdir $tmpdir
+
+trap '/bin/rm -r -f $tmpdir 2>/dev/null; echo $cmd Interrupt\! ; stat=1; exit 1' 1 2 15
+if [ $debug = 0 ]; then
+trap '/bin/rm -r -f $tmpdir 2>/dev/null; echo $cmd end ; exit "$stat"' 0
+fi
+
+if [ $graphics = 0 ]; then graflibs=' ' ; fi
+if [ $debug = 1 ]; then echo curdir = $curdir tmpdir = $tmpdir; fi
+
+for xarg do
+	found=0
+	cd $curdir
+	if [ $debug = 1 ]; then echo arg = $xarg; fi
+
+	if [ -f $xarg ]; then 
+		if [ $debug = 1 ]; then echo "      found file $xarg"; fi
+		xarg=`ls -l $xarg`
+		xarg=${xarg##* }
+		file $xarg | fgrep "archive" >/dev/null
+		if [ $? = 1 ]; then  #true if not archive file
+			ofiles=${ofiles}' '$xarg
+		else
+			opalload=${opalload}' '$xarg
+		fi
+		found=1
+		continue; #next argument
+	fi
+
+	if [ -d $xarg ]; then
+		cd $xarg; curspath=`pwd`;
+		dirofiles=`/bin/ls $curspath/*.o 2>/dev/null`
+		if [ $? = 0 ]; then     # true if .o files exist in this directory
+			if [ $debug = 1 ]; then echo "      in $xarg found files $dirofiles"; fi
+			found=1
+			ofiles=${ofiles}' '${dirofiles}
+		fi
+		dirafiles=`/bin/ls $curspath/*.a 2>/dev/null`
+		if [ $? = 0 ]; then     # true if .a files exist in this directory
+			if [ $debug = 1 ]; then echo "      in $xarg found files $dirafiles"; fi
+			found=1
+			opalload=${opalload}' '${dirafiles}
+		fi
+		if [ $found = 0 ]; then
+			echo "no .o or .a files found in $curspath/$xarg directory. Compile first."
+		fi
+		continue; #next argument
+	fi
+           # it is a symbol
+	symb=`dirname $xarg`
+	if [ $symb = '.' ]; then 
+		symb=$xarg;   #the LIB/member syntax is not used
+		xmemb=''
+	else 
+		xsymb=`dirname $symb`;
+		if [ $xsymb != '.' ]; then
+			echo "path $xarg not found. Only arguments files/dirs or LIB/member allowed."
+			continue
+		else
+			xmemb=`basename $xarg`
+		fi
+	fi
+	if [ $debug = 1 ]; then echo "      xoplib=whicho $newflg -i -s .o $symb"; fi
+	xoplib=`whicho $newflg -i -s .o $symb`
+	if [ $? = 0 ]; then
+		xoplib=`ls -l $xoplib`
+		xoplib=${xoplib##* }
+		file $xoplib | fgrep "archive" >/dev/null
+		if [ $? = 0 ]; then  #true if archive file
+			echo argument $symb found als $xoplib is not an archive file
+			continue;
+		fi
+		if [ $debug = 1 ]; then echo "      for $xarg found object $xoplib"; fi
+		opalload=${opalload}' '${xoplib}
+                continue;
+	fi
+
+	if [ $debug = 1 ]; then echo "      xoplib=whicho $newflg -i -s .a $symb"; fi
+	xoplib=`whicho $newflg -i -s .a $symb`
+	if [ $? != 0 ]; then
+		echo symbol/path $xarg not found.
+		continue
+	fi
+	xoplib=`ls -l $xoplib`
+	xoplib=${xoplib##* }
+	file $xoplib | fgrep "archive" >/dev/null
+	if [ $? = 1 ]; then  #true if not archive file
+		echo argument $symb found als $xoplib is not an archive file
+		continue;
+	fi
+	if [ $debug = 1 ]; then echo "      for $xarg found library $xoplib"; fi
+	if [ ${xmemb:-0} != 0 ]; then #extract member from the library
+		if [ $debug = 1 ]; then echo "         sym-arch = $symb member = $xmemb"; fi
+		cd $tmpdir
+		tmemb=`ar -t $xoplib | fgrep -i $xmemb`
+	   if [ $debug = 1 ]; then echo extract from $xoplib symbols: $tmemb; fi
+		if [ -z "$tmemb" ]; then 
+			echo symbol $xmemb not found in lib $xoplib; 
+			continue; 
+		fi
+		xtmemb=`echo $tmemb | cut -f1 -d" "`
+		if [ "$xtmemb" != "$tmemb" ]; then
+			echo symbols $tmemb match the argument $xmemb in the $xoplib library
+			echo only $xtmemb is taken
+		fi
+		ar -xv $xoplib $xtmemb
+		if [ $? = 0 ]; then
+			if [ $HARDWARE = 'decs' ]; then
+				nxmemb=`basename $xoplib '\.a'`_$xmemb
+			elif [ $HARDWARE = 'alpha' ]; then
+				nxmemb=`basename $xoplib '.a'`_$xmemb
+                        fi
+			mv $xtmemb $nxmemb
+			if [ $debug = 1 ]; then echo "         extracted member = $nxmemb"; fi
+			ofiles=${ofiles}' '$tmpdir/$nxmemb
+		fi
+		continue
+	fi
+
+	if [ $HARDWARE = 'decs' ]; then
+		oplib=`basename $xoplib '\.a'`
+	elif [ $HARDWARE = 'alpha' ]; then
+		oplib=`basename $xoplib '.a'`
+	elif [ $HARDWARE = 'pentium' ]; then
+		oplib=`basename $xoplib '.a'`
+	elif [ $HARDWARE = 'RS6000' ]; then
+		oplib=`basename $xoplib '.a'`
+	fi
+	echo $oplib | fgrep -i 'dummy' >/dev/null
+	if [ $? = 0 ]; then #dummy library at the end
+		lastlibs=${lastlibs}' '${xoplib}
+	else
+		opalload=${opalload}' '${xoplib}
+	fi
+done
+cd $curdir
+if [ $debug = 1 ]; then echo ofiles: $ofiles; fi
+if [ -z "$ofiles" -a -z "$usymbs" ]; then 
+	echo no .o files and no undefined symbols to link. Exit.
+	exit 9; 
+fi
+ofiles=$ofiles' '$sofiles' '$fmfiles
+tnm=$tmpdir/$main$$.pass
+
+echo main: $main.run
+echo trace symbols: $ysymbs
+echo load  symbols: $usymbs
+echo files.o: $ofiles | awk '{for(i=1;i<=NF;i+=2)print $i, $(i+1)}'
+echo opal libs: $opalload | awk '{for(i=1;i<=NF;i+=2)print $i, $(i+1)}'
+echo dummy lib: $lastlibs
+echo cern libs: $cernload $linkpath $cernlstd
+echo
+echo now beginning final pass
+
+if [ $map = 1 ]; then
+   mapflag='-m'
+   mapfile="${main}.map"
+   if [ -f ${mapfile} ]; then
+      rm -f ${mapfile}
+   fi
+   touch ${mapfile}
+   teecmd="tee -a ${mapfile}"
+   if [ "$HARDWARE" = 'pentium' ]; then
+      mapflag='-M'
+      mapflag="-Wl,-Map ${mapfile}"
+      mapfile='/dev/null'
+      teecmd="cat -"
+   fi
+else
+   mapflag=' '
+   mapfile='/dev/null'
+   teecmd="cat -"
+fi
+if [ "x$reloc" = 'x' ]; then
+   outfile="${main}.run"
+else
+   outfile="${main}-reloc.o"
+fi
+if [ $HARDWARE = 'decs' ]; then
+
+	if [ $debug = 1 ]; then
+		echo ld  $mapflag $reloc -o $outfile -G 8 $linkpath -g2 -nocount /usr/lib/cmplrs/cc/crt0.o -count $usymbs $ysymbs $ofiles $opalload $lastlibs $cernlstd $graflibs $fortlibs 
+	fi
+
+(	ld  $mapflag $reloc -o $outfile -G 8 $linkpath -g2 -nocount /usr/lib/cmplrs/cc/crt0.o -count $usymbs $ysymbs $ofiles $opalload $lastlibs $cernlstd $graflibs $fortlibs | fgrep -v '.rdata
+.data
+.sdata
+.lit4
+.lit8
+.bss
+.sbss' >> ${mapfile} ) 2>&1 | $teecmd
+  	stat=$?
+
+elif [ $HARDWARE = 'alpha' ]; then
+
+	if [ $debug = 1 ]; then
+		echo /usr/lib/cmplrs/cc/ld $mapflag $reloc -o $outfile -G 8 $linkpath -g0 -O3 -call_shared -nocount /usr/lib/cmplrs/cc/crt0.o -count /usr/lib/cmplrs/fort/for_main.o $usymbs $ysymbs $ofiles $opalload $lastlibs $cernlstd $graflibs $fortlibs 
+	fi
+
+(	/usr/lib/cmplrs/cc/ld $mapflag $reloc -o $outfile -G 8 $linkpath -g0 -O3 -call_shared -nocount /usr/lib/cmplrs/cc/crt0.o -count /usr/lib/cmplrs/fort/for_main.o $usymbs $ysymbs $ofiles $opalload $lastlibs $cernlstd $graflibs $fortlibs | fgrep -v '.rdata
+.data
+.lit4
+.lit8
+.bss
+.sbss
+.xdata
+.pdata' >> ${mapfile} ) 2>&1 | $teecmd
+#
+#	/usr/lib/cmplrs/cc/ld -v -m -o $main.run -G 8 $linkpath -g0 -O3 -call_shared -nocount /usr/lib/cmplrs/cc/crt0.o -count /usr/lib/cmplrs/fort/for_main.o $usymbs $ysymbs $ofiles $opalload $lastlibs $cernlstd $graflibs $fortlibs 
+  stat=$?
+
+elif [ $HARDWARE = 'pentium' ]; then
+
+	if [ $debug = 1 ]; then
+		echo /usr/bin/g77 $mapflag -o $outfile $linkpath $usymbs $ysymbs $ofiles $opalload $lastlibs $cernlstd $graflibs $fortlibs
+####		echo /usr/bin/ld $mapflag -o $outfile -G 8 $linkpath -m  elf_i386 -dynamic-linker /lib/ld-linux.so.1 /usr/lib/crt1.o /usr/lib/crti.o /usr/lib/gcc-lib/i486-linux/2.7.2.2/crtbegin.o $usymbs $ysymbs $ofiles $opalload $lastlibs $cernlstd $graflibs $fortlibs 
+	fi
+#####(	/usr/bin/ld $mapflag -o $outfile $linkpath /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/collect2 -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 /usr/lib/crt1.o /usr/lib/crti.o /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/crtbegin.o $usymbs $ysymbs $ofiles $opalload $lastlibs $cernlstd $graflibs $fortlibs | fgrep -v '.rdata
+(	/usr/bin/g77 $mapflag -o $outfile $linkpath $usymbs $ysymbs $ofiles $opalload $lastlibs $cernlstd $graflibs $fortlibs | fgrep -v '.rdata
+.data
+.lit4
+.bss
+\*fill\*
+size before relaxing
+.stab
+.comment
+.debug
+.note' >> ${mapfile} ) 2>&1 | $teecmd
+#
+  stat=$?
+
+elif [ $HARDWARE = 'RS6000' ]; then
+
+	if [ $debug = 1 ]; then
+		echo /usr/bin/g77 $mapflag -o $outfile $linkpath $usymbs $ysymbs $ofiles $opalload $lastlibs $cernlstd $graflibs $fortlibs
+	fi
+(	ld -b32 /lib/crt0.o -bh:4 -T512 -H512 -bloadmap:$mapfile -o $outfile $linkpath $usymbs $ysymbs $mapflg $ofiles $opalload $lastlibs $cernlstd $graflibs $fortlibs | fgrep -v '.rdata
+.data
+.lit4
+.bss
+\*fill\*
+size before relaxing
+.stab
+.comment
+.debug
+.note' >> ${mapfile} ) 2>&1 | $teecmd
+#
+  stat=$?
+
+fi
+
+echo link completed with status $stat
+#if [ $debug = 1 ]; then
+#	echo
+#	echo after last pass, dir $tmpdir:
+#	( cd $tmpdir; /bin/ls -l )
+	#/bin/df /tmp
+#fi
+/bin/rm -r $tmpdir
+exit $stat 

@@ -1,0 +1,337 @@
+C   09/06/83 606061334  MEMBER NAME  JFXYRZ   (S)           SHELTRAN
+      SUBROUTINE JFXYRZ(IPTR,NH1,LRFLAG,NSAME,ICJ,XYRZ)
+C     TAKEN FROM 'F11LHO.JADEGS(JFETCH)'
+C     SUBROUTINE JFETCH(IPTR,IPJHTL,WRK,LHIT,IPRES,INDEX,/XO/,/YO/)
+C
+C        P. STEFFEN                         83/03/28
+C        K.-H. HELLENBRAND                  20/09/84
+C        CALCULATE COORDINATE OF A SINGLE HIT INCLUDING ALL CORRECTIONS
+C        USE SPECIAL LAYER DEPENDENT POS. + VD   ***************
+C
+C        COORDINATES IN REAL SPACE
+C        XYRZ(1,2) = X,Y OF HIT
+C        XYRZ(3,4) = X,Y OF MIRROR HIT
+C        XYRZ(6,5) = R AND FITTED Z OF HIT
+C
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cdata.for"
+#include "calibr.for"
+#include "cjdrch.for"
+#include "cdsmax.for"
+C
+      DIMENSION XYRZ(6)
+C
+N     CONSTANTS FOR ANGULAR CORRECTION
+      DATA NCOAR / 15/, DTGB / .15/
+      REAL TGCOAR(15) /-99.,-.45, 12*0., 99./
+      REAL T0COAR(60) / .000, .000, .000, .000, .000,
+     ,     .000, .000,-.020,-.060,-.130,-.030, .100, .200, .200, .200,
+     ,                  .000, .000, .010, .110, .100,
+     ,     .075, .050, .025, .005, .015, .065, .060, .060, .060, .060,
+     ,                  .190, .190, .180, .165, .140,
+     ,     .120, .100, .075, .050, .010,-.050,-.075,-.035, .000, .000,
+     ,                  .110, .110, .115, .140, .135,
+     ,     .085, .045, .030, .040, .050, .055, .055, .055, .055, .055/
+      REAL SLCOAR(60) / 60*0./
+C
+N     INITIALIZATION
+      DATA LBINIT /0/
+      IF LBINIT .EQ. 0
+      THEN
+        LBINIT = 1
+        PERFORM INIT
+      CIF
+C
+N     GET RUN #
+      IPHEAD = IDATA(IQHEAD)*2
+      NRUN = HDATA(IPHEAD+10)
+C
+N     TRACK #
+      ITRK = IDATA(IPTR+1)
+C
+      IF NSAME.EQ.0
+      THEN
+C
+N       CENTRE OF CIRCLE (USED FOR ANGULAR CORRECTION)
+        IF IDATA(IPTR+18).EQ.1
+        THEN
+N         CIRCLE PARAMETERS
+          ALFA  = ADATA(IPTR+21)
+          CRV   = ADATA(IPTR+19)
+          IF(ABS(CRV).LT.1.E-8) CRV = SIGN(1.E-8,CRV)
+          RAD   =  1./CRV + ADATA(IPTR+20)
+          XCIRC = COS(ALFA) * RAD
+          YCIRC = SIN(ALFA) * RAD
+          CHARGE = SIGN(1.,ADATA(IPTR+25))
+        ELSE
+N         PARABOLA PARAMETERS
+          CRV   = ADATA(IPTR+22)*2.
+          IF(ABS(CRV).LT.1.E-8) CRV = SIGN(1.E-8,CRV)
+          ALFA  = ADATA(IPTR+19)
+          XCIRC =-SIN(ALFA)/CRV + ADATA(IPTR+20)
+          YCIRC = COS(ALFA)/CRV + ADATA(IPTR+21)
+          CHARGE =-SIGN(1.,ADATA(IPTR+22))
+        CIF
+C
+N       ZVERT, THETA + DIR. COSINES
+        ZVERT = ADATA(IPTR+31)
+        TGTH = ADATA(IPTR+30)
+        CSTHI = SQRT(TGTH**2 + 1.)
+        CSTH  = 1. / CSTHI
+        SNTH  = CSTH * TGTH
+      CIF
+C
+C
+N     *************************
+N     *      F E T C H        *
+N     *************************
+C
+N                          CELL DEPENDENT CONSTANTS
+                 JCELL=ICJ
+                 IF JCELL.NE.JCOLD
+                 THEN
+                    JCOLD=JCELL
+                    JRING=1
+                    IF(JCELL.GT.24) JRING=2
+                    IF(JCELL.GT.48) JRING=3
+C
+N       DIR. OF SENSEW. + DRIFTSP.
+        IF JRING.NE.3
+        THEN
+          IC1 = JCELL
+          IF(IC1.GT.24) IC1 = IC1 - 24
+          CSROT0 = DIRWR1(IC1,1)
+          SNROT0 = DIRWR1(IC1,2)
+        ELSE
+          IC1 = JCELL - 48
+          CSROT0 = DIRWR3(IC1,1)
+          SNROT0 = DIRWR3(IC1,2)
+        CIF
+        DRICS  = TRMATC(JCELL,2)
+        DRISN  = TRMATS(JCELL,2)
+        DRITG  = DRISN/DRICS
+        DRISNF = DRISN * .05
+C
+N       LOAD RADIUS AND WIRE SPACING
+        R0 = FSENSW(JRING)
+        DR = RINCR (JRING)
+C
+N       ANGLE OF TRACK IN RING
+        R1   = DR*7.5 + R0
+        DX   = R1 * CSROT0 - XCIRC
+        DY   = R1 * SNROT0 - YCIRC
+        RR   = SQRT(DX**2 + DY**2) * CHARGE
+        CSB  = DX / RR
+        SNB  = DY / RR
+        TGB  = CSB/SNB
+C
+N       SET DRIFT SPACE BIN
+        DSBIN1 = DRIVEL(JCELL,1)
+C
+N       ANGLE(TRACK,DRIFT DIRECT.)
+        TANBET = (DRITG - TGB) / (TGB*DRITG + 1.)
+C
+N       DIFFERENT CORRECTION CONST. FOR MC + DATA
+        IF NRUN.LE.100
+        THEN
+N         MC
+          DS0 = DSBIN1*.5
+          T0CORR = 0.
+        ELSE
+N         DATA
+          DS0 = T0FIX(JRING)*DSBIN1*64.
+          FOR I1=1,NCOAR
+            IDX = I1
+            IF(TANBET.LT.TGCOAR(IDX)) XFOR
+          CFOR
+          KRNG = JRING
+          IF(KRNG.EQ.3 .AND. AND(JCELL,1).EQ.0) KRNG = 4
+          IBIN = (KRNG-1)*NCOAR  + IDX
+          T0CORR = (TANBET-TGCOAR(IDX)) * SLCOAR(IBIN) + T0COAR(IBIN)
+        CIF
+N       CORRECTION CONSTANTS FOR JCELL
+C
+        IPJCOR = ICALIB(5) + JCELL
+        CCST01 = ACALIB(IPJCOR     ) * ABS(TANBET)
+        CCST02 = ACALIB(IPJCOR+  96) * ABS(TANBET)
+        CCST11 = ACALIB(IPJCOR+ 192)
+        CCST12 = ACALIB(IPJCOR+ 288)
+        CCST21 = ACALIB(IPJCOR+ 384)
+        CCST22 = ACALIB(IPJCOR+ 480)
+        CCST51 = ACALIB(IPJCOR+ 576) * 10.
+        CCST52 = ACALIB(IPJCOR+ 672) / 121.15
+        CCST61 = ACALIB(IPJCOR+ 768) * 10.
+        CCST62 = ACALIB(IPJCOR+ 864) / 121.15
+        CCST81 = ACALIB(IPJCOR+1152)
+C
+N       END OF CELL DEPENDENT CONSTANTS
+C
+                 CIF
+C
+        IP=NH1
+C
+            IWIR = HDATA(IP)
+            IWIR = SHFTR(IWIR,3)
+N           LAYER NUMBER WITHIN RING 3
+            ILAY = IAND(IWIR,15)
+N           AMPLITUDES
+            IAMPL = HDATA(IP+1)
+            IAMPR = HDATA(IP+2)
+N           DRIFT SPACE
+            DS =(HDATA(IP+3)) * DSBIN1
+            X1   = ILAY * DR + R0
+            Z1   = X1*TGTH + ZVERT
+N           CORRECTION FOR TOF + PROPAG. ALONG WIRE
+            DDS = (1222.9-ABS(Z1))*ABERR(1) + ABERR(6)*R1*CSTHI
+N           CORRECTION FOR GRAVITATION
+C           DGR=0.
+C           IF(NRUN.GT.100) DGR = ((Z1/1222.9)**2 - 1.) * .075
+            DGR = ((Z1/1222.9)**2 - 1.) * .075
+            DSC =  DS - DDS + DS0
+C
+            Y1   = SWDEPL
+            IF(IAND(ILAY,1).NE.0) Y1 =-Y1
+            Y1   = (7.5-ILAY)*(CCST52*Z1+CCST51) - CCST62*Z1-CCST61 + Y100039200
+            X    = X1*CSROT0 - Y1*SNROT0
+            Y    = X1*SNROT0 + Y1*CSROT0 - DGR
+            IF DSC.LE.DRC
+            THEN
+              IF DSC.LT.DSD2
+              THEN
+                IF DSC.LT.DSD1
+                THEN
+                  DSC = DSC + DDS1 + (DSC-DSD1)*DRV1
+                ELSE
+                  DSC = DSC + DDS2 + (DSC-DSD2)*DRV2
+                CIF
+N               ANGULAR CORRECTION
+C               DSC = DSC/DSD2 * T0CORR + DSC
+                IF(DSC.LT.0.1) DSC = 0.1
+              ELSE
+C
+N               ANGULAR CORRECTION
+C               DSC = DSC + T0CORR
+                DSC = (DSC-DSD2)/(DRC-DSD2) * T0CORR + DSC
+              CIF
+C             DSC = DSC + DSOFF
+              DXR  = DSC * CSB
+              DYR  = DSC * SNB
+              DXL =-DXR
+              DYL =-DYR
+            ELSE
+C
+N             ANGULAR CORRECTION
+              DSC = DSC + T0CORR
+C             DSC = DSC + DSOFF
+C
+N             EDGE WIRE FIELD DISTORTION
+              IF ILAY.LT. 3
+              THEN
+                DILAY =-(ILAY- 3)**2
+                DSCL  = (DILAY*CCST11 + 1.) * DSC * (1. - CCST81)
+                DSCR  = (DILAY*CCST12 + 1.) * DSC * (1. + CCST81)
+              ELSE
+              IF ILAY.GT.12
+              THEN
+                DILAY =-(ILAY-12)**2
+                DSCL  = (DILAY*CCST21 + 1.) * DSC * (1. - CCST81)
+                DSCR  = (DILAY*CCST22 + 1.) * DSC * (1. + CCST81)
+              ELSE
+                DSCL = DSC * (1. - CCST81)
+                DSCR = DSC * (1. + CCST81)
+              CIF
+              CIF
+C
+N             FIELD DISTORTIONS AT LARGE DRIFT TIMES
+              IF DSC.GT.ABERR(7)
+              THEN
+                DWIR  = ILAY - 7.5
+                DWIRC = DSC*DRISNF
+                DWIRL = DWIR + DWIRC
+                DWIRR = DWIR - DWIRC
+                DSCL  = (DSCL-ABERR(7))*DWIRL*CCST01 + DSCL
+                DSCR  =-(DSCR-ABERR(7))*DWIRR*CCST02 + DSCR
+              CIF
+              DXR  = (DSCR-DRC)*DRISN + DRC*CSB
+              DYR  = (DSCR-DRC)*DRICS + DRC*SNB
+              DXL  =-(DSCL-DRC)*DRISN - DRC*CSB
+              DYL  =-(DSCL-DRC)*DRICS - DRC*SNB
+            CIF
+C     PRINT 2010, ILAY,DS,DSC,DSCL,DSCR,XL,XR,X,Y,DXL,DXR,DYL,DYR
+            XXL  = DXL + X
+            YYL  = DYL + Y
+            XXR  = DXR + X
+            YYR  = DYR + Y
+C
+      IF LRFLAG.EQ.1
+      THEN
+         XYRZ(1)=XXR
+         XYRZ(2)=YYR
+         XYRZ(3)=XXL
+         XYRZ(4)=YYL
+      ELSE
+         XYRZ(1)=XXL
+         XYRZ(2)=YYL
+         XYRZ(3)=XXR
+         XYRZ(4)=YYR
+      CIF
+      XYRZ(5)=SQRT(XYRZ(1)**2+XYRZ(2)**2)
+      XYRZ(6)=ZVERT+TGTH*XYRZ(5)
+C
+      RETURN
+C
+N     *************************
+N     *      I N I T          *
+N     *************************
+C
+C
+N     INITIALIZE CONSTANTS
+      PROC INIT
+C
+        IQJETC = IBLN('JETC')
+        IQHEAD = IBLN('HEAD')
+C
+N       RADIUS AROUND WIRE FOR CORR. OF DRIFTSPACE
+        DRC = RINCR(1)*.5 * DRICOS
+C       CONST. FOR VAR. OF DRIFT VEL.
+N     GET RUN #
+        IPHEAD = IDATA(IQHEAD)*2
+        NRUN = HDATA(IPHEAD+10)
+        IF NRUN.LE.100
+        THEN
+          DSD0   = .0
+          DSD1   = .0
+          DSD2   = .0
+          DDS0   = .0
+          DDS1   = .0
+          DDS2   = .0
+          DRV1   = .0
+          DRV2   = .0
+        ELSE
+          DSD0   =-0.400
+          DSD1   = 0.300
+          DSD2   = 2.500
+          DDS0   = 0.720
+          DDS1   = 0.330
+          DDS2   = 0.0
+          DRV1   = (DDS0-DDS1) / (DSD0-DSD1)
+          DRV2   = (DDS1-DDS2) / (DSD1-DSD2)
+        CIF
+C     PRINT 2091, DSD0,DDS0,DSD1,DDS1,DSD2,DDS2,DRV1,DRV2,DRC
+C2091 FORMAT(' DSD,DDS=',3(F9.3,F7.3),F11.5,F9.5,F9.3,F8.3)
+C
+N       INITIALIZE ANGULAR CORRECTION CONSTANTS
+        I9 = NCOAR - 1
+        FOR I1=2,I9
+          IF(I1.GT.2) TGCOAR(I1   ) = TGCOAR(I1- 1) + DTGB
+          SLCOAR(I1   ) = (T0COAR(I1   )-T0COAR(I1- 1)) / DTGB
+          SLCOAR(I1+15) = (T0COAR(I1+15)-T0COAR(I1+14)) / DTGB
+          SLCOAR(I1+30) = (T0COAR(I1+30)-T0COAR(I1+29)) / DTGB
+          SLCOAR(I1+45) = (T0COAR(I1+45)-T0COAR(I1+44)) / DTGB
+        CFOR
+C     PRINT 2092, TGCOAR,T0COAR,SLCOAR
+C2092 FORMAT('0ANG.CORR.:',15F8.3,/,(11X,15F8.3))
+      CPROC
+C
+      END

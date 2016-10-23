@@ -1,0 +1,71 @@
+1Nypatchy executing with files / options
+
+   1  PAM      -
+   2  FORT      /home/pcl2483/pedro/tmp/ytofort14768/pythia5722.f
+   3  read      /home/pcl2483/pedro/tmp/ytofort14768/pythia5722.cra
+   4  print     /home/pcl2483/pedro/tmp/ytofort14768/pythia5722.lis
+   5  CC       -    ...
+
+ Version: PATCHY  5.05 /3  1996/06/29 17.00     .RJP, today: 03/09/22  7.09
+
+     1  + +EXE.
+     2  - ########+USE,PCLINUX,UNIX.
+     3  + +USE,P=LUCMMN.
+     4  + +USE,P=PYCMMN,PYKERN,P57UTL.
+
+     5  + +PAM,11,T=ATTACH,CARDS,T=CARDS.   jt74opal
+
+ ---> start reading file  jt74opal.car
+
+ Read Pam file: JETSET VERSION 7.4 TUNED TO OPAL DATA
+
+     1  + +PAM,11,T=ATTACH,CARDS,T=CARDS.   pythia5722
+
+ ---> start reading file  pythia5722.car
+
+ Read Pam file: unknown
+
+     1  + +QUIT.
+
+ --------------------------------------
+ Summary of patches in processing order
+
+ Processing mode selections                        Other status bits for P=X
+
+ U - use                                           F - skipped by +PATCH,X,IF=...
+ L - list                                           M - skipped by +IMITATE,X
+ E - exe                                             X - not +EXE but deck to ASM
+ D - divert                                           P - partial +USE,X,D=...
+ X - xdivert                Self +         Self        R - P=X,T=REPEAT
+                    Inhibit Foreign  Trans   only       Q - quoted in IF=X
+                    ------- ------- ------ ------
+        Patch        ULEDX   ULEDX   LEDX   LEDX   FMXPRQ  Used from P=
+
+      0 CRA*               . U E   .      .  E   .     R   CRA*
+
+ JETSET VERSION 7.4 TUNED TO OPAL DATA
+      0 @JETSET            .   E   .      .  E   .
+      2 LUCMMN             . U E   .      .  E   .         CRA*
+     29 CRA*               . U E   .      .  E   .     R   CRA*
+
+ unknown
+    101 PYCMMN             . U E   .      .  E   .         CRA*
+    116 P57UTL             . U E   .      .  E   .         CRA*
+    118 PYKERN             . U E   .      .  E   .         CRA*
+    119 CRA*               . U E   .      .  E   .     R   CRA*
+
+ Name stack:       significant name length is 32 characters
+                1% used of   6000 name slots available
+                1% used of  48000 bytes of text available
+
+ Read:           7 lines from the cradle
+             42559 lines from   2 PAM files for  2 lines +PAM
+
+ Written:
+
+   physical FORT:0          2 units  20812 lines to file  /home/pcl2483/pedro/tmp/ytofort14768/pythia5722.f
+
+    logical FORT:1          2 decks written via FORT:0
+
+ No errors, no warnings.
+

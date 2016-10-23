@@ -1,0 +1,57 @@
+*   24/10/80 102191205  MEMBER NAME  SPREAD   (PATRECSR)    ASSEMBLER
+*
+*
+*     SUBROUTINE SPREAD(A,B,C)
+*
+*     INSTALLED BY G.F.PEARCE
+*
+*     FORTRAN CALLABLE ROUTINE TO UNPACK A BIT PATTERN
+*
+*    A = I*2 BIT PATTERN
+*    B = 16 DIMENSIONED I*4 ARRAY RETURNED WITH SET BIT NUMBERS
+*        (I.E. B(1)=NUMBER OF 1ST BIT SET ETC.....)
+*         BEWARE OF NOTATION .. BIT 1 IS LOWEST ORDER BIT
+*    C = RETURNS WITH TOTAL NUMBER OF BITS SET (I*4)
+*
+*
+SPREAD   CSECT
+      USING *,15
+      B START
+      DC X'7'
+      DC CL7'SPREAD '
+*
+START STM 14,12,12(13)                      SAVE THE REGISTERS
+*
+      LM 2,4,0(1)                           LOAD ARGUMENT ADDRESSES
+*
+* SCAN LOOP
+*
+      LA 9,16                               COMPARISON REGISTER
+      LA 6,0                                CURRENT INDEX COUNT
+      LA 8,1                                INCREMENT OF LOOP
+      LA 11,0                               WORK REGISTER
+      LA 12,1                               SHIFTING MASK REGISTER
+      LA 7,0                                BIT COUNTER (=3RD ARGUMENT)
+      L 5,0(2)                              BIT PATTERN
+      SRL 5,16                              RIGHT ADJUST IT
+      L 10,=F'-4'                           SUBSCRIPT COUNTER
+*
+PLUS  BXH  6,8,NEND                         TEST IF END OF LOOP
+      LR  11,12                             LOAD AND TEST BIT PATTERN
+      NR 11,5                               "AND" OF BIT PATTERN + MASK
+      BC 4,MINUS                            GOTO BIT SET CODING
+      SLL 12,1                              SHIFT LEFT OF MASK REGISTER
+      B PLUS                                GOTO PLUS
+*
+MINUS A 7,=F'1'                             INCREMENT BIT THE COUNTER
+      A 10,=F'4'                            INCREMENT SUBSCRIPT COUNTER
+      ST 6,0(10,3)                          STORE BIT NUMBER
+*
+      SLL 12,1                              SHIFT LEFT ONE BIT
+      B PLUS                                GOTO PLUS
+*
+NEND  ST 7,0(4)                             COPY ACROSS BIT COUNT
+      LM 2,12,28(13)                        RESTORE REGISTERS
+      MVI 12(13),X'FF'                      INDICATE RETURN OF CONTROL
+      BR 14                                 RETURN
+      END

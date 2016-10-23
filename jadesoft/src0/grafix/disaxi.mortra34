@@ -1,0 +1,467 @@
+"   10/06/87 703231938  MEMBER NAME  DISAXI   (GRAFIX.S) M  MORTRA34 "
+#include "mortmac.for"
+"----------------------------------------------------------------------"
+      SUBROUTINE DISAXI;
+"-----------------------------------------------------------------------
+
+    AUTHOR:  J. HAGEMANN   06/03/87 : DISPLAY SPECIAL AXIS
+
+                JMODE = 1 : DISPLAY MEAN TAU FLIGHT DIRECTION
+                        2 : DISPLAY SPHERICITY AXIS
+                        3 : DISPLAY THRUST AXIS
+                        4 : CALCULATE IMPACT-PARAMETER FOR A SELECTED
+                            TRACK VERSUS GIVEN AXIS
+                        5 : DISPLAY C- OR B-HADRON FLIGHT DIRECTION
+
+ -----------------------------------------------------------------------
+-"
+      IMPLICIT INTEGER*2 (H);
+""
+      LOGICAL FLVCDO;
+      LOGICAL LSETAX;
+""
+;
+%F
+#include "cdata.for"
+#include "cgraph.for"
+#include "cgeo1.for"
+#include "mvertex0.for"
+#include "mvertex2.for"
+#include "mtrinf.for"
+%M
+""
+      COMMON / CGVCDO / FLVCDO(20);
+      COMMON / CHEADR / HEAD(108);
+      COMMON / CVX    / NNPATR, NDUMM, NNJETC, NNVTXC;
+""
+      DIMENSION IDUM(20),PSAVE(4,60);
+      DIMENSION HDM(5,6),HDL(5,2),HB1(5,8),HB2(5,8),HB3(5,12),HB4(5,10);
+      DIMENSION HC(5);
+""
+      DATA HDM / 'D0','  ','  ','  ','  ',
+                 'D0',' b','ar','  ','  ',
+                 'D+','  ','  ','  ','  ',
+                 'D-','  ','  ','  ','  ',
+                 'Ds','+ ','  ','  ','  ',
+                 'Ds','- ','  ','  ','  ' /;
+      DATA HDL / 'La','mc','  ','  ',' +',
+                 'La','mc',' b','ar',' -' /;
+      DATA HB1 / 'bu','(b','ar',') ','- ',
+                 'b(','ba','r)','u ','+ ',
+                 'bd','(b','ar',') ','0 ',
+                 'b(','ba','r)','d ','0 ',
+                 'bs','(b','ar',') ','0 ',
+                 'b(','ba','r)','s ','0 ',
+                 'bc','(b','ar',') ','- ',
+                 'b(','ba','r)','c ','+ ' /;
+      DATA HB2 / 'bu','u1','  ','  ',' +',
+                 'bu','u1',' b','ar',' -',
+                 'bd','u1','  ','  ',' 0',
+                 'bd','u1',' b','ar',' 0',
+                 'bd','d1','  ','  ',' -',
+                 'bd','d1',' b','ar',' +',
+                 'bs','u1','  ','  ',' 0',
+                 'bs','u1',' b','ar',' 0' /;
+      DATA HB3 / 'bd','u0','  ','  ',' 0',
+                 'bd','u0',' b','ar',' 0',
+                 'bs','u0','  ','  ',' 0',
+                 'bs','u0',' b','ar',' 0',
+                 'bs','d0','  ','  ',' -',
+                 'bs','d0',' b','ar',' +',
+                 'bc','u0','  ','  ',' +',
+                 'bc','u0',' b','ar',' -',
+                 'bc','d0','  ','  ',' 0',
+                 'bc','d0',' b','ar',' 0',
+                 'bc','s0','  ','  ',' 0',
+                 'bc','s0',' b','ar',' 0' /;
+      DATA HB4 / 'bu','u*','  ','  ',' +',
+                 'bu','u*',' b','ar',' -',
+                 'bd','u*','  ','  ',' 0',
+                 'bd','u*',' b','ar',' 0',
+                 'bd','d*','  ','  ',' -',
+                 'bd','d*',' b','ar',' +',
+                 'bs','u*','  ','  ',' 0',
+                 'bs','u*',' b','ar',' 0',
+                 'bs','d*','  ','  ',' -',
+                 'bs','d*',' b','ar',' +' /;
+""
+"------------------  C O D E  -----------------------------------------"
+""
+      IF LASTVW.LE.4 .OR. LASTVW.EQ.17 .OR. LASTVW.EQ.20
+      <*
+         N = IFIX(ACMD);
+         JMODE = N;
+         IF( N .GT. 0 .AND. N .LT. 6 )  GOTO :NOK:;
+:AGAIN:;
+         CALL TRMOUT(80,'ENTER MODE :^');
+         CALL TRMOUT(80,'1 = Tau-fligth-direction^');
+         CALL TRMOUT(80,'2 = Sphericity axis^');
+         CALL TRMOUT(80,'3 = Thrust axis^');
+         CALL TRMOUT(80,'4 = Calculate impact-parameter^');
+         CALL TRMOUT(80,'5 = Display C- or- B-hadron flight direction^')
+;
+         CALL FYRINT(JMODE,ID2,ID3,ID4);
+:NOK:;
+         IF( JMODE .LT. 1 .OR. JMODE .GT. 5 ) GOTO :AGAIN:;
+""
+         IF JMODE .EQ. 1
+         <*
+            LSETAX = .FALSE.;
+            IPTTOP = IDATA(IBLN('TTOP'));
+            IF IPTTOP .LE. 0
+            <*
+               CALL TRMOUT(80,' TTOP-bank not existing^');
+               GOTO :ENDE:;
+            *>
+            LSETAX = .TRUE.;
+            XF3 = 0.5*(ADATA(IPTTOP+1) - ADATA(IPTTOP+16));
+            YF3 = 0.5*(ADATA(IPTTOP+2) - ADATA(IPTTOP+17));
+            ZF3 = 0.5*(ADATA(IPTTOP+3) - ADATA(IPTTOP+18));
+            RF2 = SQRT(XF3**2 + YF3**2);
+            XRV = 0.0;
+            YRV = 0.0;
+            DXR = 0.0;
+            DYR = 0.0;
+            IF FLVCDO(12)
+            <*
+               CALL VTXCRV( XRV, YRV, DXR, DYR );
+            *>
+            CALL SETTAX( XRV, YRV, DXR, DYR, XF3, YF3, ZF3 );
+            IF RF2 .GT. 0.0
+            <*
+               GOTO :DRAWAXIS:;
+            *>
+         *>
+         ELSEIF JMODE .EQ. 2
+         <*
+            LSETAX = .FALSE.;
+            CALL CLOC(IPPATR,'PATR',NNPATR);
+            IPHWDS = IDATA(IBLN('HWDS'));
+            IF( FLVCDO(15) .AND. IPHWDS .GT. 0 ) IPPATR = IPHWDS;
+            CALL TRN4V(0,IPPATR,1,20,NCONT,IDUM,IERR);
+            IF IERR .NE. 0
+            <*
+               CALL TRMOUT(80,'Select PATR-bank first !^');
+               GOTO :ENDE:;
+            *>
+            NTRK = IDATA(IPPATR+2);
+            LSETAX = .TRUE.;
+            OUTPUT;
+            (' Enter number of track which should be omitted in SPHERIC'
+             ,'ITY calculation : (or press only )');
+:AGAIN2:;
+            CALL TRMIN( 4, ICD );
+            CALL GETINT( ICD, ITRK );
+            IF( ITRK .GE. 0 .AND. ITRK .LE. NTRK ) GOTO :NOK2:;
+""
+            CALL TRMOUT(80,' Track number invalid!  Enter new number!^')
+;
+            GOTO :AGAIN2:;
+:NOK2:;
+            IF ITRK .GT. 0
+            <*
+               IPOSAR = INDTRK(ITRK);
+               IF IPOSAR .GT. 0 .AND. IPOSAR .LE. 60
+               <*
+                  DO J = 1, 4
+                  <*
+                     PSAVE(J,IPOSAR) = P(J,IPOSAR);
+                     P(J,IPOSAR) = 0.0;
+                  *>
+               *>
+            *>
+            NH = NTALL;
+            NSPH = NTALL + 1;
+            CALL SPTHAK(1,NH,0,THR,NSPH,SPHR,0,AKO,IER );
+            IF ITRK .GT. 0
+            <*
+               DO J = 1, 4
+               <*
+                  P(J,IPOSAR) = PSAVE(J,IPOSAR);
+               *>
+            *>
+            XF3 = P(1,NSPH);
+            YF3 = P(2,NSPH);
+            ZF3 = P(3,NSPH);
+            OUTPUT XF3,YF3,ZF3;
+            (' SPHERICITY : ',3F8.3);
+            RF2 = SQRT(XF3**2 + YF3**2);
+            XRV = 0.0;
+            YRV = 0.0;
+            DXR = 0.0;
+            DYR = 0.0;
+            IF FLVCDO(12)
+            <*
+               CALL VTXCRV( XRV, YRV, DXR, DYR );
+            *>
+            MODE      = 1;
+            TAXIS(1)  = XRV;
+            TAXIS(2)  = YRV;
+            TAXIS(3)  = 0.0;
+            TAXIS(4)  = DXR;
+            TAXIS(5)  = DYR;
+            TAXIS(6)  = 10000.0;
+            TAXIS(7)  = XF3;
+            TAXIS(8)  = YF3;
+            TAXIS(9)  = ZF3;
+            TAXIS(10) = 0.0;
+            TAXIS(11) = 0.0;
+            TAXIS(12) = 0.0;
+            IDC = 23;
+            IF RF2 .GT. 0.0
+            <*
+               GOTO :DRAWAXIS:;
+            *>
+         *>
+         ELSEIF JMODE .EQ. 3
+         <*
+            LSETAX = .FALSE.;
+            CALL CLOC(IPPATR,'PATR',NNPATR);
+            IPHWDS = IDATA(IBLN('HWDS'));
+            IF( FLVCDO(15) .AND. IPHWDS .GT. 0 ) IPPATR = IPHWDS;
+            CALL TRN4V(0,IPPATR,1,20,NCONT,IDUM,IERR);
+            IF IERR .NE. 0
+            <*
+               CALL TRMOUT(80,'Select PATR-bank first !^');
+               GOTO :ENDE:;
+            *>
+            NTRK = IDATA(IPPATR+2);
+            LSETAX = .TRUE.;
+            OUTPUT;
+            (' Enter number of track which should be omitted in THRUST '
+             ,'calculation : (or press only )');
+:AGAIN3:;
+            CALL TRMIN( 4, ICD );
+            CALL GETINT( ICD, ITRK );
+            IF( ITRK .GE. 0 .AND. ITRK .LE. NTRK ) GOTO :NOK3:;
+""
+            CALL TRMOUT(80,' Track number invalid!  Enter new number!^')
+;
+            GOTO :AGAIN3:;
+""
+:NOK3:;
+            IF ITRK .GT. 0
+            <*
+               IPOSAR = INDTRK(ITRK);
+               IF IPOSAR .GT. 0 .AND. IPOSAR .LE. 60
+               <*
+                  DO J = 1, 4
+                  <*
+                      PSAVE(J,IPOSAR) = P(J,IPOSAR);
+                      P(J,IPOSAR) = 0.0;
+                  *>
+               *>
+            *>
+            NH = NTALL;
+            NH4 = NH+4;
+            CALL SPTHAK(1,NH,NH4,THR,0,SPHR,0,AKO,IER );
+            IF ITRK .GT. 0
+            <*
+               DO J = 1, 4
+               <*
+                   P(J,IPOSAR) = PSAVE(J,IPOSAR);
+               *>
+            *>
+            XF3 = P(1,NH4);
+            YF3 = P(2,NH4);
+            ZF3 = P(3,NH4);
+            OUTPUT XF3,YF3,ZF3;
+            (' THRUST : ',3F8.3);
+            RF2 = SQRT(XF3**2 + YF3**2);
+            XRV = 0.0;
+            YRV = 0.0;
+            DXR = 0.0;
+            DYR = 0.0;
+            IF FLVCDO(12)
+            <*
+               CALL VTXCRV( XRV, YRV, DXR, DYR );
+            *>
+            MODE      = 1;
+            TAXIS(1)  = XRV;
+            TAXIS(2)  = YRV;
+            TAXIS(3)  = 0.0;
+            TAXIS(4)  = DXR;
+            TAXIS(5)  = DYR;
+            TAXIS(6)  = 10000.0;
+            TAXIS(7)  = XF3;
+            TAXIS(8)  = YF3;
+            TAXIS(9)  = ZF3;
+            TAXIS(10) = 0.0;
+            TAXIS(11) = 0.0;
+            TAXIS(12) = 0.0;
+            IDC = 1234;
+            IF RF2 .GT. 0.0
+            <*
+               GOTO :DRAWAXIS:;
+            *>
+         *>
+         ELSEIF JMODE .EQ. 4
+         <*
+            IF .NOT. LSETAX
+            <*
+               CALL TRMOUT(80,
+                     ' Axis is NOT set! Type DAX without argument.^');
+               GOTO :ENDE:;
+            *>
+            CALL VTXINI;
+            IH = IDATA(IBLN('HEAD'));
+            CALL CLOC(IPO,'PATR',NNPATR);
+            IPHWDS = IDATA(IBLN('HWDS'));
+            IF( FLVCDO(15) .AND. IPHWDS .GT. 0 ) IPO = IPHWDS;
+            IF( IPO .LE. 0 ) GOTO :ENDE:;
+            NTRK = IDATA(IPO+2);
+            CALL VTXPRE(IH,IPO);
+            CALL TRMOUT(80,
+            ' Enter track number for impact-parameter calculation :^');
+:AGAIN4:;
+            CALL TRMIN( 4, ICD );
+            CALL GETINT( ICD, ITRK );
+            IF( ITRK .GT. 0 .AND. ITRK .LE. NTRK ) GOTO :NOK4:;
+""
+            CALL TRMOUT(80,' Track number invalid!  Enter new number!^')
+;
+            GOTO :AGAIN4:;
+""
+:NOK4:;
+            CALL VTXCRV( XRV, YRV, DXR, DYR );
+            J = (ITRK-1)*ITDLEN;
+            CALL VTXIMP(J,XRV,YRV,XT,YT,ZT,DXT2,DYT2,DZT2,PHIT,DPHIT,ST,
+                        TAXIS(7),TAXIS(8),AIMP);
+            CALL MOVEA( -XRV, YRV );
+            CALL DRAWA( -XT , YT  );
+            IPOSAR = INDTRK(ITRK);
+            IF IPOSAR .GT. 0
+            <*
+               RNORM = SQRT((TAXIS(7)**2 + TAXIS(8)**2)*
+                       (P(1,IPOSAR)**2 + P(2,IPOSAR)**2));
+               IF RNORM .GT. 0.0
+               <*
+                  COSTRK =
+                  (P(1,IPOSAR)*TAXIS(7) + P(2,IPOSAR)*TAXIS(8))/RNORM;
+               *>
+               IF( COSTRK .LT. 0.0 ) AIMP = -AIMP;
+            *>
+            OUTPUT ITRK,AIMP;
+            (' Impact-parameter for track',I3,' is :',F9.3);
+         *>
+         ELSEIF JMODE .EQ. 5
+         <*
+            IF HEAD(18) .GT. 100
+            <*
+               CALL TRMOUT(80,' DAX 5 not available for real data!^');
+               GOTO :ENDE:;
+            *>
+""
+            IPPALL = IDATA(IBLN('PALL'));
+            IF( IPPALL .LE. 0 ) GOTO :ENDE:;
+            IFL = IDATA(IPPALL+9);
+            IF( IFL .NE. 4 .AND. IFL .NE. 5 ) GOTO :ENDE:;
+            LPHEAD = IDATA(IPPALL+1);
+            LPINF  = IDATA(IPPALL+2);
+            NPPAR  = IDATA(IPPALL+4);
+""
+            DO J = 1, NPPAR
+            <*
+               IPPL = IPPALL + LPHEAD + (J-1)*LPINF;
+               ITYS = IDATA(IPPL+7);
+               ITYP = IABS(ITYS);
+               IF(((ITYP.LT.1101 .OR. ITYP.GT.1104) .AND.
+                   (ITYP.LT.1145 .OR. ITYP.GT.1148) .AND.
+                   (ITYP.LT.1241 .OR. ITYP.GT.1246) .AND.
+                   (ITYP.LT.1293 .OR. ITYP.GT.1297))
+                   .AND. IFL.EQ.5 ) NEXT;
+               IF( (ITYP.LT.1020 .OR. ITYP.GT.1022) .AND. ITYP.NE.1058
+                   .AND. IFL.EQ.4 ) NEXT;
+                  PX = ADATA(IPPL+1);
+                  PY = ADATA(IPPL+2);
+                  P2 = SQRT(PX**2+PY**2);
+                  EX = PX/P2;
+                  EY = PY/P2;
+                  CALL MOVEA(0.0,0.0);
+                  XE = -EX*5.50;
+                  YE =  EY*5.50;
+                  CALL DRAWA(XE,YE);
+                  CALL MOVEA(XE+0.02,YE+0.02);
+                  CALL CHRSIZ(4);
+                  IF IFL .EQ. 4
+                  <*
+                     IF ITYP .EQ. 1058
+                     <*
+                        IA = 1;
+                        IF( ITYS .LT. 0 ) IA = 2;
+                        DO K = 1, 5
+                        <*
+                            HC(K) = HDL(K,IA);
+                        *>
+                     *>
+                     ELSE
+                     <*
+                        IA = 2*(ITYP-1020) + 1;
+                        IF( ITYS .LT. 0 ) IA = IA + 1;
+                        DO K = 1, 5
+                        <*
+                            HC(K) = HDM(K,IA);
+                        *>
+                     *>
+                  *>
+                  ELSE
+                  <*
+                     IF ITYP.GE.1101 .AND. ITYP.LE.1104
+                     <*
+                        IA = 2*(ITYP-1101) + 1;
+                        IF( ITYS .LT. 0 ) IA = IA + 1;
+                        DO K = 1, 5
+                        <*
+                            HC(K) = HB1(K,IA);
+                        *>
+                     *>
+                     ELSEIF ITYP.GE.1145 .AND. ITYP.LE.1148
+                     <*
+                        IA = 2*(ITYP-1145) + 1;
+                        IF( ITYS .LT. 0 ) IA = IA + 1;
+                        DO K = 1, 5
+                        <*
+                            HC(K) = HB2(K,IA);
+                        *>
+                     *>
+                     ELSEIF ITYP.GE.1241 .AND. ITYP.LE.1246
+                     <*
+                        IA = 2*(ITYP-1241) + 1;
+                        IF( ITYS .LT. 0 ) IA = IA + 1;
+                        DO K = 1, 5
+                        <*
+                            HC(K) = HB3(K,IA);
+                        *>
+                     *>
+                     ELSEIF ITYP.GE.1293 .AND. ITYP.LE.1297
+                     <*
+                        IA = 2*(ITYP-1293) + 1;
+                        IF( ITYS .LT. 0 ) IA = IA + 1;
+                        DO K = 1, 5
+                        <*
+                            HC(K) = HB4(K,IA);
+                        *>
+                     *>
+                  *>
+                  CALL EOUTST(10,HC);
+            *>
+         *>
+         GOTO :ENDE:;
+""
+:DRAWAXIS:;
+         XF2 = XF3/RF2;
+         YF2 = YF3/RF2;
+""
+         RAB = RTOF - 50.0;
+         IF( LASTVW .EQ. 17 ) RAB = 6.0;
+         IF( LASTVW .EQ. 20 ) RAB = RITNK + 110.0;
+         XX  = RAB*XF2;
+         YY  = RAB*YF2;
+         CALL MOVEA( -XX-XRV,  YY+YRV );
+         CALL DASHA(  XX-XRV, -YY+YRV, IDC );
+""
+      *>
+:ENDE:;
+      RETURN;
+      END;
+%%

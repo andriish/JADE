@@ -1,0 +1,307 @@
+C   18/01/80 102270037  MEMBER NAME  PRXYTR   (PATRECSR)    SHELTRAN
+      SUBROUTINE PRXYTR
+C
+      IMPLICIT INTEGER*2 (H)
+      LOGICAL TBIT
+C
+C     SUBROUTINE TO CALCULATE COORDINATES (X,Y) OF ALL TRKEL'S
+C     AUTHOR: P. STEFFEN(78/11/21)
+C
+C     RESULTS ARE PLACED IN COMMON/CWORK/ VIZ.
+C     IHIT = TOTAL NUMBER OF HITS ON TRACK
+C     FIRST HIT STARTS IN LOCATION WRK(HPTE0) WHERE IPTR0 IS DEFINED
+C     BY THE CALLING ROUTINE.
+C
+C     FOR EACH TRKEL THESE WORDS CONTAIN THE FOLLOWING INFORMATION
+C
+C     IWRK(IPTR   )  = CELL #
+C     IWRK(IPTR+ 1)  = TRKEL #
+C     IWRK(IPTR+ 2)  = # OF HITS OF TRKEL
+C     WRK (IPTR+ 3)  = X COORD. AT START (L)
+C     WRK (IPTR+ 4)  = Y COORD. AT START (L)
+C     WRK (IPTR+ 5)  = X-DIR. AT START   (L)
+C     WRK (IPTR+ 6)  = Y-DIR. AT START   (L)
+C     WRK (IPTR+ 7)  = X COORD. AT START (R)
+C     WRK (IPTR+ 8)  = Y COORD. AT START (R)
+C     WRK (IPTR+ 9)  = X-DIR. AT START   (R)
+C     WRK (IPTR+10)  = Y-DIR. AT START   (R)
+C     WRK (IPTR+11)  = X COORD. AT END   (L)
+C     WRK (IPTR+12)  = Y COORD. AT END   (L)
+C     WRK (IPTR+13)  = X-DIR. AT END     (L)
+C     WRK (IPTR+14)  = Y-DIR. AT END     (L)
+C     WRK (IPTR+15)  = X COORD. AT END   (R)
+C     WRK (IPTR+16)  = Y COORD. AT END   (R)
+C     WRK (IPTR+17)  = X-DIR. AT END     (R)
+C     WRK (IPTR+18)  = Y-DIR. AT END     (R)
+C     WRK (IPTR+19)  = LABEL
+C     WRK (IPTR+20)  = # OF DOWN-CONNECT.
+C     WRK (IPTR+21)  = # OF UP-CONNECT.
+C     WRK (IPTR+22)  = POINTER TO DOWN-CONNECT.
+C     WRK (IPTR+23)  = ...
+C     WRK (IPTR+24)  = ...
+C     WRK (IPTR+25)  = ...
+C     WRK (IPTR+26)  = POINTER TO UP-CONNECT.
+C     WRK (IPTR+27)  = ...
+C     WRK (IPTR+28)  = ...
+C     WRK (IPTR+29)  = ...
+C
+C-----------------------------------------------------------------------
+C
+#include "cjdrch.for"
+C
+#include "cworkpr.for"
+#include "cworkeq.for"
+C
+#include "cdsmax.for"
+C
+C
+N     POINTER TO TREL + LENGTH OF VECTOR
+      IPTR  = HPFREE
+      HPTE0 = HPFREE
+C     HLDTE = 38
+N     INITIALIZE ARRAY TO ZERO
+      NBYTE = HLDTE*HNTR*4
+      CALL SETSL(IWRK(IPTR),0,NBYTE,0)
+C     PRINT 2902, TRMATS,TRMATL
+C2902 FORMAT(' LORANG:',24F5.2)
+C
+N     LOOP OVER ALL TREL'S
+      FOR ITREL=1,HNTR
+N       CELL #
+        JCELL = ITRKAR(ITREL,1)
+        IWRK(IPTR   ) = JCELL
+        IWRK(IPTR+ 1) = ITREL
+        IWRK(IPTR+ 2) = ITRKAR(ITREL, 2)
+        IWRK(IPTR+19) = ITRKAR(ITREL, 9)
+C
+N       DIRECTIONS OF WIRE PLANE + DRIFT SPACE
+C
+        IF JCELL.LE.24
+N       RING 1
+        THEN
+          JRING = 1
+          DXWR=DIRWR1(JCELL  ,1)
+          DYWR=DIRWR1(JCELL  ,2)
+          TRLOXL=TRMATS(JCELL  ,1)
+          TRLOYL=TRMATC(JCELL  ,1)
+          TRLOXR=TRMATS(JCELL  ,2)
+          TRLOYR=TRMATC(JCELL  ,2)
+        ELSE
+        IF JCELL.LE.48
+N       RING2
+        THEN
+          JRING = 2
+          DXWR=DIRWR1(JCELL-24,1)
+          DYWR=DIRWR1(JCELL-24,2)
+          TRLOXL=TRMATS(JCELL  ,1)
+          TRLOYL=TRMATC(JCELL  ,1)
+          TRLOXR=TRMATS(JCELL  ,2)
+          TRLOYR=TRMATC(JCELL  ,2)
+N       RING3
+        ELSE
+          JRING = 3
+          DXWR=DIRWR3(JCELL-48,1)
+          DYWR=DIRWR3(JCELL-48,2)
+          TRLOXL=TRMATS(JCELL  ,1)
+          TRLOYL=TRMATC(JCELL  ,1)
+          TRLOXR=TRMATS(JCELL  ,2)
+          TRLOYR=TRMATC(JCELL  ,2)
+        CIF
+        CIF
+C
+N       LOAD RADIUS AND WIRE SPACING
+        R0 = FSENSW(JRING)
+        DR0= RINCR (JRING)
+N       RADIUS AROUND WIRE FOR CORR. OF DRIFTSPACE
+        DRC = DR0*.5
+C
+N       START OF TREL
+C
+N       LAYER #
+        ILAYR = ITRKAR(ITREL,3)
+N       DRIFT SPACE
+        DRSP1 = TRKAR(ITREL,4)
+        DRSP2 = DRSP1 + TRKAR(ITREL,5)
+N       CHECK IF SLOPE > 1. CLOSE TO ZERO
+        IF DRSP1.LT.DRC .AND. ABS(DRSP2-DRSP1).GE.DRC
+        THEN
+N         MOVE 1. POINT 1 LAYER UP
+          DWIR = ITRKAR(ITREL,6)-ILAYR
+          CRV  = 0.
+          IF(DWIR.GT.0.) CRV = (TRKAR(ITREL,8)-TRKAR(ITREL,5))/DWIR
+          SLOPE = CRV*.5 + DRSP2-DRSP1
+          DRSP1 = DRSP1 + SLOPE
+          DRSP2 = CRV*.5 + SLOPE + DRSP1
+          ILAYR = ILAYR + 1
+        CIF
+C
+N       POSITION OF SENSE WIRE
+        R1 = R0 + DR0*ILAYR
+        R2 = R1 + DR0
+        X1 = R1*DXWR
+        X2 = R2*DXWR
+        Y1 = R1*DYWR
+        Y2 = R2*DYWR
+C
+N       COORDINATES
+C
+N       CHECK IF HIT CLOSE TO WIRE
+        IF DRSP1.LT.DRC
+        THEN
+          SNFI = (DRSP2 - DRSP1) / DR0
+          CSFI = SQRT(1.-SNFI**2)
+          DRSPC = DRSP1/CSFI
+          XL  = X1 + DYWR*DRSPC
+          YL  = Y1 - DXWR*DRSPC
+          DXL =-DXWR*CSFI - DYWR*SNFI
+          DYL = DXWR*SNFI - DYWR*CSFI
+          XR  = X1 - DYWR*DRSPC
+          YR  = Y1 + DXWR*DRSPC
+          DXR =-DXWR*CSFI + DYWR*SNFI
+          DYR =-DXWR*SNFI - DYWR*CSFI
+        ELSE
+          YL  = Y1 - TRLOYL*DRSP1
+          DYL = Y2 - TRLOYL*DRSP2 - YL
+          XL  = X1 - TRLOXL*DRSP1
+          DXL = X2 - TRLOXL*DRSP2 - XL
+          DISTL = SQRT(DXL**2+DYL**2)
+          DXL =-DXL / DISTL
+          DYL =-DYL / DISTL
+N         ANGULAR CORRECTION
+          COSGL = -DXL*TRLOYL + DYL*TRLOXL
+          DDRSP = (1./COSGL - 1.) * DRC
+C     PRINT 2901, ITREL,IPTR,XL,YL,DXL,DYL,COSGL,DDRSP,TRLOXL,TRLOYL
+C2901 FORMAT(' PRXYTR:',I3,I6,2F8.2,6F8.3)
+          XL =-DDRSP*TRLOXL + XL
+          YL =-DDRSP*TRLOYL + YL
+C
+          YR  = Y1 + TRLOYR*DRSP1
+          DYR = Y2 + TRLOYR*DRSP2 - YR
+          XR  = X1 + TRLOXR*DRSP1
+          DXR = X2 + TRLOXR*DRSP2 - XR
+          DISTR = SQRT(DXR**2+DYR**2)
+          DXR =-DXR / DISTR
+          DYR =-DYR / DISTR
+N         ANGULAR CORRECTION
+          COSGR = -DXR*TRLOYR + DYR*TRLOXR
+          DDRSP = (1./COSGR - 1.) * DRC
+C     PRINT 2901, ITREL,IPTR,XR,YR,DXR,DYR,COSGR,DDRSP,TRLOXR,TRLOYR
+          XR = DDRSP*TRLOXR + XR
+          YR = DDRSP*TRLOYR + YR
+        CIF
+C
+        WRK(IPTR+ 3) = XL
+        WRK(IPTR+ 4) = YL
+        WRK(IPTR+ 5) = DXL
+        WRK(IPTR+ 6) = DYL
+        WRK(IPTR+ 7) = XR
+        WRK(IPTR+ 8) = YR
+        WRK(IPTR+ 9) = DXR
+        WRK(IPTR+10) = DYR
+C
+N       END OF TREL
+C
+N       LAYER #
+        ILAYR = ITRKAR(ITREL,6)
+N       DRIFT SPACE
+        DRSP1 = TRKAR(ITREL,7)
+        DRSP2 = DRSP1 - TRKAR(ITREL,8)
+N       CHECK IF SLOPE > 1. CLOSE TO ZERO
+        IF DRSP1.LT.DRC .AND. ABS(DRSP2-DRSP1).GE.DRC
+        THEN
+N         MOVE LAST POINT 1 LAYER DOWN
+          DWIR = ILAYR - ITRKAR(ITREL,3)
+          CRV  = 0.
+          IF(DWIR.GT.0.) CRV = (TRKAR(ITREL,8)-TRKAR(ITREL,5))/DWIR
+          SLOPE =-CRV*.5 + DRSP1-DRSP2
+          DRSP1 = DRSP1 - SLOPE
+          DRSP2 = CRV*.5 - SLOPE + DRSP1
+          ILAYR = ILAYR - 1
+        CIF
+C
+N       POSITION OF SENSE WIRE
+        R1 = R0 + DR0*ILAYR
+        R2 = R1 - DR0
+          X1 = R1*DXWR
+          X2 = R2*DXWR
+          Y1 = R1*DYWR
+          Y2 = R2*DYWR
+C
+N       COORDINATES
+C
+N       CHECK IF HIT CLOSE TO WIRE
+        IF DRSP1.LT.DRC
+        THEN
+          SNFI = (DRSP2 - DRSP1) / DR0
+          CSFI = SQRT(1.-SNFI**2)
+          DRSPC = DRSP1/CSFI
+          XL  = X1 + DYWR*DRSPC
+          YL  = Y1 - DXWR*DRSPC
+          DXL =-DXWR*CSFI + DYWR*SNFI
+          DYL =-DXWR*SNFI - DYWR*CSFI
+          XR  = X1 - DYWR*DRSPC
+          YR  = Y1 + DXWR*DRSPC
+          DXR =-DXWR*CSFI - DYWR*SNFI
+          DYR = DXWR*SNFI - DYWR*CSFI
+        ELSE
+          YL  = Y1 - TRLOYL*DRSP1
+          DYL = Y2 - TRLOYL*DRSP2 - YL
+          XL  = X1 - TRLOXL*DRSP1
+          DXL = X2 - TRLOXL*DRSP2 - XL
+          DISTL = SQRT(DXL**2+DYL**2)
+          DXL = DXL / DISTL
+          DYL = DYL / DISTL
+N         ANGULAR CORRECTION
+          COSGL = -DXL*TRLOYL + DYL*TRLOXL
+          DDRSP = (1./COSGL - 1.) * DRC
+C     PRINT 2901, ITREL,IPTR,XL,YL,DXL,DYL,COSGL,DDRSP,TRLOXL,TRLOYL
+          XL =-DDRSP*TRLOXL + XL
+          YL =-DDRSP*TRLOYL + YL
+C
+          YR  = Y1 + TRLOYR*DRSP1
+          DYR = Y2 + TRLOYR*DRSP2 - YR
+          XR  = X1 + TRLOXR*DRSP1
+          DXR = X2 + TRLOXR*DRSP2 - XR
+          DISTR = SQRT(DXR**2+DYR**2)
+          DXR = DXR / DISTR
+          DYR = DYR / DISTR
+N         ANGULAR CORRECTION
+          COSGR = -DXR*TRLOYR + DYR*TRLOXR
+          DDRSP = (1./COSGR - 1.) * DRC
+C     PRINT 2901, ITREL,IPTR,XR,YR,DXR,DYR,COSGR,DDRSP,TRLOXR,TRLOYR
+          XR = DDRSP*TRLOXR + XR
+          YR = DDRSP*TRLOYR + YR
+        CIF
+C
+        IF TBIT(ITRKAR(ITREL,9),23)
+N       ZERO CROSSING
+        THEN
+          WRK(IPTR+15) = XL
+          WRK(IPTR+16) = YL
+          WRK(IPTR+17) = DXL
+          WRK(IPTR+18) = DYL
+          WRK(IPTR+11) = XR
+          WRK(IPTR+12) = YR
+          WRK(IPTR+13) = DXR
+          WRK(IPTR+14) = DYR
+N       NOT ZERO CROSSING
+        ELSE
+          WRK(IPTR+11) = XL
+          WRK(IPTR+12) = YL
+          WRK(IPTR+13) = DXL
+          WRK(IPTR+14) = DYL
+          WRK(IPTR+15) = XR
+          WRK(IPTR+16) = YR
+          WRK(IPTR+17) = DXR
+          WRK(IPTR+18) = DYR
+        CIF
+C
+N       INCREASE POINTER
+        IPTR = IPTR + HLDTE
+      CFOR
+C
+N     SET POINTER TO LAST LOCATION
+      HPFREE = IPTR
+      HPTE9  = IPTR - 1
+      RETURN
+      END

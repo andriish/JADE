@@ -1,0 +1,5 @@
+C   03/12/82            MEMBER NAME  DBASEDUM (JADESR)      FORTRAN
+      SUBROUTINE DBASE(IENT,ICHOP)
+      ICHOP = 0
+      RETURN
+      END

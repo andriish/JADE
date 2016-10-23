@@ -1,0 +1,99 @@
+"   08/01/87 703231936  MEMBER NAME  ELLIPS   (GRAFIX.S)    MORTRA34 "
+" %MACRO 'F22KLE.JVTXC.GS(MORTMAC)' "
+#include "mortmac.for"
+"
+ -----------------------------------------------------------------------
+"
+      SUBROUTINE ELLIPS( MODE, INDEX, IDSHE, X, Y, DX, DY, PHIW );
+"-----------------------------------------------------------------------
+
+    AUTHOR:   J. HAGEMANN 12/02/86 :  DRAW ELLIPSE AND CROSS FOR RUN
+                                      VERTEX
+
+    LAST MOD: J. HAGEMANN 08/01/87 :  MORE GENERAL USAGE
+
+      MODE: 0  DRAW ELLIPS IN SPACE (XR,YR,DX,DY,PHIW)
+            1  DRAW ELLIPS FOR RUN VERTEX
+
+ -----------------------------------------------------------------------
+"
+      LOGICAL FLVCDO;
+      COMMON / CGVCDO / FLVCDO(20);
+"
+ ------------------  C O D E  ------------------------------------------
+"
+      IF MODE .EQ. 1
+      <*
+         IF INDEX .EQ. 20
+         <*
+            CALL DRAMOV( -X-8.0, Y    , -X+8.0, Y    , 0 );
+            CALL DRAMOV( -X    , Y-8.0, -X    , Y+8.0, 0 );
+         *>
+         ELSEIF INDEX .EQ. 17
+         <*
+            SNPHW = 0.0;
+            CSPHW = 1.0;
+            XDEV = DX;
+            YDEV = DY;
+            CALL DRAMOV( -X-XDEV, Y     , -X+XDEV, Y     , 0 );
+            CALL DRAMOV( -X     , Y-YDEV, -X     , Y+YDEV, 0 );
+         *>
+      *>
+      ELSE
+      <*
+         XDEV = DX;
+         YDEV = DY;
+         IF PHIW .EQ. 0.0
+         <*
+            SNPHW = 0.0;
+            CSPHW = 1.0;
+            CALL DRAMOV( -X-DX, Y   , -X+DX, Y   , 0 );
+            CALL DRAMOV( -X   , Y-YD, -X   , Y+DY, 0 );
+         *>
+         ELSE
+         <*
+            SNPHW = SIN(PHIW);
+            CSPHW = COS(PHIW);
+            XN1 = -DX*CSPHW + X;
+            XN2 =  DX*CSPHW + X;
+            YN1 =  DX*SNPHW + Y;
+            YN2 = -DX*SNPHW + Y;
+            XN3 = -DY*SNPHW + X;
+            XN4 =  DY*SNPHW + X;
+            YN3 = -DY*CSPHW + Y;
+            YN4 =  DY*CSPHW + Y;
+            CALL DRAMOV( -XN1, YN1, -XN2, YN2, 0 );
+            CALL DRAMOV( -XN3, YN3, -XN4, YN4, 0 );
+         *>
+      *>
+      IF (MODE.EQ.1 .AND. INDEX.EQ.17) .OR. (MODE.EQ.0 .AND. FLVCDO(17))
+      <*
+         NPRE = 25;
+         DTWI = 6.28318/FLOAT(NPRE);
+         TWI  = 0.0;
+         XNS  =  XDEV*CSPHW + X;
+         YNS  = -XDEV*SNPHW + Y;
+         CALL MOVEA( -XNS, YNS );
+""
+         DO I = 1, NPRE
+         <*
+            TWI = TWI + DTWI;
+            XE  = XDEV*COS(TWI);
+            YE  = YDEV*SIN(TWI);
+            XN  =  XE*CSPHW + YE*SNPHW + X;
+            YN  = -XE*SNPHW + YE*CSPHW + Y;
+""
+            IF IDSHE .EQ. 0
+            <*
+               CALL DRAWA( -XN, YN );
+            *>
+            ELSE
+            <*
+               CALL DASHA( -XN, YN, IDSHE );
+            *>
+         *>
+      *>
+""
+      RETURN;
+      END;
+%%

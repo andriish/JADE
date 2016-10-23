@@ -1,0 +1,114 @@
+C   19/08/82 601231124  MEMBER NAME  FITEVF   (JADEGS)      SHELTRAN
+      SUBROUTINE FITEVF(MODE)
+C---
+C---     GENERAL REFIT OF ALL TRACKS IN R-PHI
+C---     INPUT :
+C---     MODE   = 0 : OVERWRITE OLD PATR-BANK WITH NEW RESULTS
+C---     MODE   = 1 : CREATE NEW PATR-BANK WITH NEW RESULTS
+C---                                           P. STEFFEN 82/08/19
+C---
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cdata.for"
+C
+#include "cworkpr.for"
+#include "cworkeq.for"
+C
+      EQUIVALENCE
+     ,          (HPCO0 ,HPWRK(17)),(HPCO9 ,HPWRK(18)),(HLDCO ,HPWRK(19))
+     ,         ,(HPZR0 ,HPWRK(20)),(HPZR9 ,HPWRK(21)),(HLDZR ,HPWRK(22))
+     ,         ,(ICELL ,IDWRK( 1)),(MHIT  ,IDWRK( 2)),(IRING ,IDWRK( 3))
+     ,         ,(IERRCD,IDWRK( 4)),(NTRKEL,IDWRK( 5))
+C
+C2000 FORMAT('0CALL FITEVF(',2I6,1X,I4,' )')
+C2001 FORMAT(1H0,2I3,I8,2(I4,3F6.1,3F6.3),
+C    ,     /,14X,I3,4E13.5,F6.2,I3,4E13.5,
+C    ,     /,14X,I3,2F8.3,F6.1,I3,10X,6I3,8I6,2X,Z4)
+C2003 FORMAT(' FRFITO RESULT:',F6.0,F6.3,F6.0,F6.3)
+C
+C
+N     INITIALIZE POINTER
+      DATA LBINIT /0/
+      IF LBINIT.EQ.0
+      THEN
+        LBINIT = 1
+        IQPATR = IBLN('PATR')
+        IQJHTL = IBLN('JHTL')
+      CIF
+C
+C
+N       CHECK IF PATR-BANK
+        IF(IDATA(IQPATR).LE.0) RETURN
+C
+N       CREATE NEW PATR BANK FOR MODE=1
+        IF LAND(MODE,1) .NE. 0
+        THEN
+          IPPAT0 = IDATA(IQPATR)
+          NBNK1  = IDATA(IPPAT0-2) - 1
+          NWRD   = IDATA(IPPAT0)
+          NBYTE  = NWRD*4
+          CALL CCRE(IPPATR,'PATR',NBNK1,NWRD,IERR)
+          IF IERR.NE.0
+          THEN
+C           PRINT 2900, IERR
+ 2900 FORMAT(' FITEVF(PS): CREATION OF NEW PATR-BANK RESULTED',
+     ,       ' IN ERROR',I3)
+            INDEX = 1
+            RETURN
+          CIF
+C
+N         COPY CONTENTS OF 'PATR'-BANK
+          CALL MVCL(IDATA(IPPATR+1),0,IDATA(IPPAT0+1),0,NBYTE)
+C
+        CIF
+C
+      IPPATR = IDATA(IQPATR)
+      IPTR1  = IDATA(IPPATR+1) + IPPATR
+      LDTR   = IDATA(IPPATR+3)
+      NTR    = IDATA(IPPATR+2)
+      IPJHTL = IDATA(IQJHTL)
+C     PRINT 2000,IPPATR,IPJHTL,MODE
+C     CALL PRPATR
+      IF NTR.GT.0
+      THEN
+C
+        FOR ITR=1,NTR
+C
+N         CHECK IF PT > 20 MEV
+          IF ABS(ADATA(IPTR1+25)) .LT. .007
+          THEN
+C
+N           REFIT TRACK WITH VERTEX CONSTRAINT
+            CALL REFIT(IPTR1,IPJHTL)
+C           I0 = HPTR0
+C           I9 = I0 + 47
+C           PRINT 2001, (WRK(I1),I1=I0,I9)
+C
+N           REPLACE BANK IF GOOD RESULT
+            IP    = HPTR0 - 1
+            IF LAND(IWRK(IP+ 2),16).EQ.0
+            THEN
+              SIG   = 1000.
+              SIG0  =    0.
+            ELSE
+              SIG   =  WRK(IP+23)
+              SIG0  = ADATA(IPTR1+23)
+              ANHT  = IWRK(IP+24)
+              ANHT0 = IDATA(IPTR1+24)
+C             PRINT 2003, ANHT,SIG,ANHT0,SIG0
+              IF(ANHT/ANHT0.LT..8) SIG = SIG + .5
+            CIF
+            IF SIG0.GT.SIG .OR. SIG.LT..35
+            THEN
+C
+              CALL MVC(IDATA(IPTR1+1),0,IWRK(HPTR0),0,112)
+C
+            CIF
+          CIF
+        IPTR1 = IPTR1 + LDTR
+        CFOR
+C
+      CIF
+      RETURN
+C
+      END

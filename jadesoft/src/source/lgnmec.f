@@ -1,0 +1,53 @@
+C   08/01/79 C9010801   MEMBER NAME  LGNMEC   (JADELGS)     FORTRAN
+      SUBROUTINE LGNMEC(X0,Y0,NO)
+C
+C     S.YAMADA  24-03-78          (COPIED FROM LGSOURCE 08-01-79)
+C     LAST MODIFICATION   15-05-78  12:15
+C
+C---- OBTAIN THE END CAP COUNTER NUMBER CORRESPONDING TO
+C     THE POSITION (X0,Y0)
+C
+C---- INPUT   X0,Y0 IN RAD.LNG.
+C---- OUTPUT   NO=COUNTER NUMBER
+C
+      DIMENSION NUMLST(36)
+      DATA NUMLST/0,0,1,5,10,16,0,0,2,6,11,17, 4,3,7,12,18,0,
+     1     9,8,13,20,19,0, 15,14,22,21,0,0, 24,23,4*0/
+C
+      N = 0
+C
+      IF(X0) 20,10,10
+   10 IF(Y0) 12,11,11
+   11 X = X0
+      Y = Y0
+      GO TO 30
+   12 X = -Y0
+      Y = X0
+      GO TO 30
+   20 IF(Y0) 22,21,21
+   21 X = Y0
+      Y = -X0
+      GO TO 30
+   22 X = -X0
+      Y = -Y0
+C
+   30 IF(X.LT.6.2533) Y = Y-2.2333
+      IF(Y.LT.6.2533) X = X-2.2333
+      IX = X/6.2533+1.
+      IF(IX.LT.1.OR.IX.GT.6) GO TO 100
+      IY = Y/6.2533
+      IF(IY.LT.0.OR.IY.GT.5) GO TO 100
+      INDX = IX+6*IY
+      N = NUMLST(INDX)
+      IF(N.EQ.0) GO TO 100
+C
+C---- MODIFY N FOR THE QUADRUNTS 2,3 AND 4.
+      IF(X0) 2,1,1
+    1 IF(Y0.LT.0.) N = N+72
+      GO TO 100
+    2 N = N+24
+      IF(Y0.LT.0.) N = N+24
+C
+  100 NO = N
+      RETURN
+      END

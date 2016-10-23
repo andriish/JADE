@@ -1,0 +1,280 @@
+
+Start at:Mon Sep 22 07:10:40 CEST 2003
+
+
+The MC code version number is: 105j
+
+found jt74opal.car as /home/pcl2483/pedro/jadesoft/util/mcgen/src/jt74opal.car
+found jt63jade.car as /home/pcl2483/pedro/jadesoft/util/mcgen/src/jt63jade.car
+found mc105j.car as /mnt/home/pcl2483/pedro/jadesoft/util/mcgen/mc/mc105j.car
+
+ Nypatchy executing with files / options
+
+   1  PAM      -
+   2  FORT      /home/pcl2483/pedro/tmp/ytofort18364/mc105j.f
+   3  read      /home/pcl2483/pedro/tmp/ytofort18364/mc105j.cra
+   4  print     /home/pcl2483/pedro/tmp/ytofort18364/mc105j.lis
+   5  CC       -    ...
+
+ ---> start reading file  jt74opal.car
+
+ Read Pam file: JETSET VERSION 7.4 TUNED TO OPAL DATA
+
+ ---> start reading file  jt63jade.car
+
+ Read Pam file: JETSET VERSION 6.3 TUNED TO JADE DATA
+
+ ---> start reading file  mc105j.car
+
+ Read Pam file: MC105J/01 24.09.96 11:15 Code to generate 4-vector MC. Stefa
+
+
+ Written:
+   physical FORT:0         20 units   1908 lines to file  /home/pcl2483/pedro/tmp/ytofort18364/mc105j.f
+
+      0 TYPE               . U E   .      .  E   .         CRA*
+
+ Name stack:       significant name length is 32 characters
+                1% used of   6000 name slots available
+                1% used of  48000 bytes of text available
+
+ Read:          14 lines from the cradle
+             32903 lines from   3 PAM files for  3 lines +PAM
+
+ Written:
+
+   physical FORT:0         20 units   1908 lines to file  /home/pcl2483/pedro/tmp/ytofort18364/mc105j.f
+
+    logical FORT:1         20 decks written via FORT:0
+
+ No errors, no warnings.
+
+Mon Sep 22 07:10:40 CEST 2003 pedro ftolib mc105j.f
+found mc105j.f as mc105j.f
+creating directory /home/pcl2483/pedro/jadesoft/util/mcgen/mc/mc105j
+ FCASPLIT executing.
+             Input file : mc105j.for
+           Shell script : mc105j.shfca
+              Make file : mc105j.mkfca
+        Fortran    name : g77  
+        Fortran options : -c -O -fno-automatic  
+             CC    name : gcc  
+             CC options : -c -O2 -m486  
+      Assembler    name : as  
+      Assembler options :   
+   1905 lines written for    20 decks
+      3 trailing comment lines ignored.
+evwrtj.f
+incprd.f
+jadeco.f
+jatune.f
+jtconv.f
+mcgetf.f
+mcgeth.f
+mcgetp.f
+mcinit.f
+mcrnst.f
+mcst63.f
+mcstbl.f
+mcusff.f
+mcwrit.f
+mytype.f
+ntcprd.f
+prcprd.f
+pxeecb.f
+pxjpd2.f
+wrcprd.f
+   ...compiling evwrtj.f:
+   ...compiling incprd.f:
+incprd.f: In subroutine `incprd':
+incprd.f:29: warning:
+         CALL VZERO(PP,4*500)
+              1
+incprd.f:31: (continued):
+         CALL VZERO(JCH,500)
+              2
+Argument #1 of `vzero' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+incprd.f:29: warning:
+         CALL VZERO(PP,4*500)
+              1
+incprd.f:32: (continued):
+         CALL VZERO(JTP,500)
+              2
+Argument #1 of `vzero' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+incprd.f:29: warning:
+         CALL VZERO(PP,4*500)
+              1
+incprd.f:33: (continued):
+         CALL VZERO(JP,2*500)
+              2
+Argument #1 of `vzero' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+incprd.f:29: warning:
+         CALL VZERO(PP,4*500)
+              1
+incprd.f:36: (continued):
+         CALL VZERO(ICF,300)
+              2
+Argument #1 of `vzero' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+incprd.f:29: warning:
+         CALL VZERO(PP,4*500)
+              1
+incprd.f:37: (continued):
+         CALL VZERO(ITF,300)
+              2
+Argument #1 of `vzero' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+   ...compiling jadeco.f:
+   ...compiling jatune.f:
+   ...compiling jtconv.f:
+   ...compiling mcgetf.f:
+   ...compiling mcgeth.f:
+   ...compiling mcgetp.f:
+   ...compiling mcinit.f:
+mcinit.f: In subroutine `mcinit':
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:42: (continued):
+         CALL FFKEY('MCECMS',ECMASS,1,'REAL')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:49: (continued):
+         CALL FFKEY('MCTAB',LTAB,1,'LOGI')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:52: (continued):
+         CALL FFKEY('MCSTBL',LSTBL,1,'LOGI')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:54: (continued):
+         CALL FFKEY('MCUDSC',LUDSC,1,'LOGI')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:56: (continued):
+         CALL FFKEY('MCBQRK',LBQRK,1,'LOGI')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:60: (continued):
+         CALL FFKEY('MCISR',LISR,1,'LOGI')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:62: (continued):
+         CALL FFKEY('MCFSR',LFSR,1,'LOGI')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:64: (continued):
+         CALL FFKEY('MCSTART',LSTART,1,'LOGI')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:66: (continued):
+         CALL FFKEY('MC4VEC',L4VEC,1,'LOGI')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:72: (continued):
+         CALL FFKEY('JTPB',JTB,1,'REAL')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:74: (continued):
+         CALL FFKEY('JTPSQ',JTSQ,1,'REAL')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:76: (continued):
+         CALL FFKEY('JTPQ0',JTQ0,1,'REAL')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:79: (continued):
+         CALL FFKEY('JTPEC',JTEC,1,'REAL')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:81: (continued):
+         CALL FFKEY('JTPEB',JTEB,1,'REAL')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:84: (continued):
+         CALL FFKEY('JTPA',JTA,1,'REAL')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+mcinit.f:38: warning:
+         CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+              1
+mcinit.f:86: (continued):
+         CALL FFKEY('JTPLAMB',JTLAMB,1,'REAL')
+              2
+Argument #2 of `ffkey' is one type at (2) but is some other type at (1) [info -f g77 M GLOBALS]
+   ...compiling mcrnst.f:
+   ...compiling mcst63.f:
+   ...compiling mcstbl.f:
+   ...compiling mcusff.f:
+   ...compiling mcwrit.f:
+   ...compiling mytype.f:
+   ...compiling ntcprd.f:
+   ...compiling prcprd.f:
+   ...compiling pxeecb.f:
+   ...compiling pxjpd2.f:
+   ...compiling wrcprd.f:
+   ...compiling *.c:
+cc: *.c: No such file or directory
+cc: No input files
+a - evwrtj.o
+a - incprd.o
+a - jadeco.o
+a - jatune.o
+a - jtconv.o
+a - mcgetf.o
+a - mcgeth.o
+a - mcgetp.o
+a - mcinit.o
+a - mcrnst.o
+a - mcst63.o
+a - mcstbl.o
+a - mcusff.o
+a - mcwrit.o
+a - mytype.o
+a - ntcprd.o
+a - prcprd.o
+a - pxeecb.o
+a - pxjpd2.o
+a - wrcprd.o
+library is installed in directory /home/pcl2483/pedro/jadesoft/util/mcgen/mc
+library /home/pcl2483/pedro/jadesoft/util/mcgen/Plib/libmc105j.a created

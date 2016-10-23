@@ -1,0 +1,80 @@
+C   25/11/83 402061213  MEMBER NAME  JGETEV   (S)           FORTRAN
+C
+C----------------------------------------------------------------------
+      SUBROUTINE JGETEV( * )
+C----------------------------------------------------------------------
+C
+C   AUTHOR    E. ELSEN    02/11/81 :  GET NEXT EVENT
+C
+C        MOD  J. OLSSON   30/08/83 :  TRACK A SUBSET OF THE DATASET
+C        MOD  C. BOWDERY  17/11/83 :  CHANGE ERROR MESSAGE FROM BRVECT
+C        MOD  W. BARTEL   29/11/83 :  CHANGE /CIEV/ DEFAULT IN BLDAT
+C        MOD  C. BOWDERY   2/12/83 :  ALTER COMMON /CVERR/
+C   LAST MOD  C. BOWDERY   6/02/84 :  IEV --> KIEV IN FORTRAN LINE 7000
+C
+C   GET NEXT EVENT BY CALLING BRVECT.
+C
+C   TO ALLOW FOR TRACKING ONLY A SELECTED PART OF THE
+C   INPUT 4-VECTOR FILE. EVENT COUNT IS PASSED TO MCJADE VIA /CIEV/IEV
+C
+C   RETURN 1 IF END OF INPUT SEQUENCE (EOF)   OR
+C            IF READING PASSES MAXIMUM EVENT NR ALLOWED
+C
+C----------------------------------------------------------------------
+C
+      IMPLICIT INTEGER*2 (H)
+C
+      COMMON / CIEVS  / KIEV,IEVMIN,IEVMAX
+C
+      COMMON / CVERR / MESSAG(20)
+C
+      DATA IRUNIT / 3 / , ICALL/ 0 /
+C
+C------------------  C O D E  -----------------------------------------
+C
+      ICALL = ICALL + 1
+      IF(ICALL.NE.1) GO TO 95
+      IEV = 0
+      KIEV = 0
+95    IEV = IEV + 1
+1001  IF(IEV.GE.IEVMIN) GO TO 2001
+C
+C             READ EVENTS, UNTIL EVENT IEVMIN REACHED, THEN CALL BRVECT
+C
+      IEV = IEV + 1
+      READ(IRUNIT,ERR=1100,END=8100) NR
+      GO TO 1001
+C
+2001  IF(IEV.GT.IEVMAX) GO TO 90
+C
+      KIEV = KIEV + 1
+      CALL BRVECT( IRUNIT, &1000, &8100 )
+      RETURN
+C
+C             MESSAGES
+C
+ 1000 MESSAG(20) = MESSAG(20) + 1
+      IF( MESSAG(20) .GT. 100 ) GO TO 95
+      WRITE(6,8002) IEV
+ 8002 FORMAT(' *** WARNING ***   ERROR DETECTED IN JGETEV FOR EVENT ',
+     +        'ON FILE AT POSITION ',I6,'.    EVENT SKIPPED     ***'/)
+      IF( MESSAG(20) .EQ. 100 ) WRITE(6,8003)
+ 8003 FORMAT(/' *** WARNING ***   NO FURTHER ERROR MESSAGES FROM JGETEV'
+     +       ,' WILL BE PRINTED.  SEE ERROR SUMMARY AT END    ***'/)
+      GO TO 95
+C
+ 1100 WRITE(6,1102) IEV
+ 1102 FORMAT(/' *** READ ERROR  *** DETECTED IN JGETEV FOR EVENT ON ',
+     +       'FILE AT POSITION ',I8,'. EVENT SKIPPED     ***'/)
+      GO TO 95
+C
+ 90   WRITE(6,8012)
+ 8012 FORMAT(/' -----   MAX NR OF EVENTS READ   -----')
+      GO TO 7000
+C
+ 8100 WRITE(6,8101)
+ 8101 FORMAT(/' -----   E O F   E O F   E O F   E O F   ----- ')
+C
+ 7000 KIEV = KIEV - 1
+      RETURN 1
+      END

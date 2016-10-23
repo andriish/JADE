@@ -1,0 +1,584 @@
+C   22/03/97 703221950  MEMBER NAME  JEOSUM1  (TAGG.S)      FORTRAN
+C   22/03/97 703221949  MEMBER NAME  $INFO    (TAGG.S)      FORTRAN
+   LIBRARY STARTED 03.10.83.   LATER CHANGES FOLLOW BELOW
+     ROUTINES WERE ORIGINALLY COPIED FROM F22FIN.MAIN.S
+ ***********************************************************
+  COPIED AND CHANGED TAGAN,AFTP82,AFTP83
+  FROM THE BIG MEMBER AFTP82 FOLLOWING SUBROUTINES WERE REMOVED
+  INTO SINGLE MEMBERS: TPUNPA,QSQ,TAGDMP.  THEY ARE NOT CALLED
+  FROM AFTP82 AND ARE NOT NEEDED IN STANDARD ANALYSIS
+  FROM THE BIG MEMBER AFTP83 FOLLOWING SUBROUTINES WERE REMOVED
+  INTO SINGLE MEMBERS: TAGDM3, PREV. TAGDMP. IT IS NOT CALLED
+  FROM AFTP83 AND IS NOT NEEDED IN STANDARD ANALYSIS
+  MEMBERS CALAD,COMFIL,PEDFIX,CALA3,COMFI3,PEDFX3 WERE TAKEN
+  OUT OF AFTP82,83. THEY ARE NEEDED AS SEPARATE ROUTINES FOR
+  ENERGY CALIBRATION IN GRAPHICS..      J.O.  5.10.83
+
+  CHANGES MADE BY A.J.FINCH _ 20.3.84
+    New versions of all routines installed and ,commons
+  changed see members tagnote and #TAGDOC for details.
+
+  Also following routines changed in graphics to use
+  new versions - TAGCHK,FWDCHEV,BLNUMB .
+
+  +MESSAGES TURNED OFF IN ALL ROUTINES CALLED IN
+   GRAPHICS
+
+  Also attempted to install Hennings routines in final
+  form.(INCLUDING RENAMING GCLEAR -> GSCRUB)
+
+  SLIGHT MODIFICATION TO FHTOS 21/3/84
+
+  REMOVED HENNINGS ROUTINES FROM STANDARD PACKAGE
+  AS IT TOOK TP JOB REGION OVER 1MBYTE
+    WARNING MESSAGE IS ISSUED  22/3/84
+
+  JCN 74 ISSUED 23/3/94
+    ADDITIONAL DOCUMENTATION ON #TAGDOC
+
+
+  24/3/84 DISCOVERED PEDFIX AHD BEEN LOADED WITH
+       WRONG VERSION OF CWKTAG ,ALSO CORRECT
+       VALUE FOR OVERFLOW CHECK INSERTED IN
+       COMFIL - MESSAGES TURNED OFF FOR GRAPHICS
+
+  14/05/84   J. NYE   Corrected  FHTOS to stop swapping of 38 and 40
+                      for all runs !
+
+  24/05/84   J. NYE   Changed TAGMRK to use smearing date for MC data
+                      if no ATAG bank present.
+
+  22/06/84   J. NYE   Changed all routines to comply with new common
+                      CWORK  plus minor cosmetic changes. CWKTAG now
+                      contains IFLMRK and has been restructured.
+
+  23/06/84   C. B.    TAGCHK moved here as it's name has TAG in it.
+
+  13/09/84   J. NYE   Changed TAGAN to print 'real' mark of detector.
+
+  16/03/85   J. NYE   Renamed all routines to begin with TAG.
+                      TAGPS2 is new routine.
+                      Old routines kept for the time being.
+
+  17/04/85   C. B.    Installed new TAGPS2 for Alex
+
+  22/04/85   J. NYE   TAGAN and TAGMRK changed (6332->6000)
+
+  23/04/85   J. NYE   TAGCOL CHANGED TO INCLUDE ERROR PROTECTION
+
+  16/08/85   A.J.F    TAGINT CHANGED TO HELP GRAPHICS PROGRAM
+
+  30/08/85   A.J.F    GGFAC2 CHANGED - NOW HAS ALL OF BLOCK DATA FROM
+                      GGBLCK, AS NOT CALLING ANAL79 STOPS THIS GETTING
+                      PICKED UP. ANALYSIS OF 79/80 MC DATA SHOULD
+                      NOW WORK.
+
+  16/10/85   A.J.F    SMALL CHANGE TO TAGPS2 - SHOULD PRODUCE BETTER
+                      ENERGY RESOLUTION AT SMALL ANGLES( CORRECTS
+                       FOR SHOWER LOSS AT INNER EDGE )
+  23/10/85   J.O.     IRUN VALUE IN TAGCHK NOW 3 FOR MC DATA, IN ORDER
+                      TO SUBTRACT ZERO PEDESTAL AND USE CORRECT GAIN
+  21/05/87   J.O.     INTEGER*2 HDATA INTRODUCED IN FHTOS AND TAGH2S
+                      THE VARIABLE NRUN IN THESE ROUTINES IS MEANINGLESS
+                      BUT HARMLESS, NO DAMAGE DONE...
+  11/09/87   A.J.F.   FURTHER IMPROVEMENTS TO TAGPS2
+  17/09/87   A.J.F.   TAGAN INTRODUCTORY MESSAGE CHANGED
+  16/03/88   A.J.F.   FURTHER IMPROVEMENTS TO TAGPS2
+                      THE OLD TAGPS2 WAS KEPT AS TAGPS287
+  14/04/88     J.O.   NEW TAGPS2 FROM AJF INSTALLED AS STANDARD, AFTER
+                      TESTING TOGETHER WITH NEW NYE CONSTANTS FOR 1986.
+                      THESE CAL.CONSTANTS WERE ALSO MADE DEFAULT ON
+                      BUPDAT1 AND AUPDAT1 TODAY, BY E. ELSEN
+                      OLD TAGPS2 (FROM 16.3.88) KEPT AS TAGPS20
+$   30/06/83 804141504  MEMBER NAME  #START0  (S)           NEWLIB
+SET PF1='BACK'
+SET PF2='LC'
+SET PF3='KONT'
+SET PF4='TSO'
+SET PF5='DIR'
+SET PF6='RETURN'
+SET PF7='    '
+SET PF9='STATUS'
+SET PF10='TOP'
+SET PF11='B'
+SET PF12='T'
+SET PF13='? VTOC'
+SET PF14='RUN'
+SET PF15='FET * FT06F001'
+SET PF16='FET * ALL'
+SET PF17='ALLOC OLD'
+SET PF18='((COMPRESS))'
+SET PF20='SDM'
+SET PF23='RESHOW'
+SET PF23='SHOW RESHOW'
+SET PF24='SHOW PF'
+SET TEST_REQ =' BACK'
+SET BOT='1:BACK 2:LC 3:KONT '
+SET BOT=SUBSTR(BOT,1,21)||'4:TSO 5:DIR 6:RETURN '
+SET BOT=SUBSTR(BOT,1,42)||'7:SUBH 8:? 9:STATUS '
+SET BOT=SUBSTR(BOT,1,63)||'10:TOP 11:B 12:T '
+$
+$---ALLOCATE CLISTS
+$
+IF DSN('CLIST') ^= '' FREE FILE(CLIST)
+IF DSN('MACRO') ^= '' FREE FILE(MACRO)
+ALLOC FILE(MACRO) DA('F11GOD.PATRECSR') SHR
+$LLOC FILE(CLIST) DA('F22BOW.JADE.CLISTS','F11PEA.JDCLIST') SHR
+ALLOC FILE(CLIST) DA('F22BOW.JADE.CLISTS','F22NYE.CLIST') SHR
+SHOW '      ---->   NOTE NOTE NOTE NOTE  <----- '
+SHOW '   ALL CHANGES ON THIS LIBRARY MUST BE NOTED IN  '
+SHOW '      >>>>>>        $INFO         <<<<<<<       '
+SHOW '      ---->         =====          <----- '
+LIST $INFO
+    18/03/84 403222224  MEMBER NAME  #TAGDOC  (S)           FORTRAN
+
+THIS IS SOME RATHER HAPHAZARD DOCUMENTATION FOR THE ROUTINES USED
+FOR ANALYSING TAGGING INFORMATION FROM 1981 ONWARDS AS WRITTEN BY
+A.J.FINCH 21/3/84
+
+ADDITIONAL NOTES CONCERNING 'TAGAN'-
+====================================
+
+ SOME DEBUGGING INFO CAN BE TURNED ON BY THE FOLLOWING PROCEDURE
+
+      COMMON/CONTRL/JWRITE
+      JWRITE=1      -> TURNS  ON INFO
+      JWRITE=0      -> TURNS  OFF INFO
+
+
+      SUBROUTINE TAGINT(*)
+      ====================
+
+
+
+  THIS IS THE INITIALISATION ROUTINE THAT SHOULD BE CALLED ONCE,BEFORE
+  ANALYSING ANY EVENTS  USING  THE  ROUTINES  IN  THIS  PACKAGE.TO  BE
+  PRECISE IT MUST CALLED ONCE PER EVENT TO SET UP THE CWORK COMMON
+
+
+  IT DOES A RETURN 1 IF TAGMRK DOES A RETURN 1 ,WHICH IT DOES IF 'HEAD'
+   DOESNT EXIST
+
+
+
+
+      SUBROUTINE COMFIL(IWRITE,*)
+     ============================
+
+    THIS SUBROUTINE TAKES THE DATA FROM HDATA BLOCK
+    'ATAG' AND PUTS THE ADC CONTENTS IN THE ARRAY CATAG
+                         IN ORDER OF ADC ADDRESS
+
+     IWRITE IS A FLAG TO TELL WHETHER TO PRINT THE BANK 'CATAG' AFTER
+     IT HAS BEEN FILLED.
+
+    NOTE:- IT ALSO MULTIPLIES CHANNEL NUMBER TIMES A FACTOR TO MAKE IT
+    APPROXIMATELY EQUAL TO ENERGY IN MEV
+
+
+
+    SUBROUTINES PEDFIX,PEDFX2,PEDFX3
+    ================================
+
+ PEDFIX IS CONTROL ROUTINE WHICH CALLS ONE OF THE OTHER TWO TO DO THE
+        WORK - ALTHOUGH THEY ARE SIMILAR IN CONCEPT IT AS TOO MUCH
+            WORK TO COMBINE THEM INTO ONE ROUTINE
+
+  ROUTINES  TO DO PEDESTAL SUBTRACTION
+
+ PEDFX3   - 1983 ..ONLY
+ ======
+      ROUTINE TO ATTEMPT OFFLINE SUBTRACTION OF PEDESTALS
+      FOR EACH 'SUPERBLOCK' OF 3 LEAD SCINTILLATOR ELEMENTS IT
+    CHECKS THAT
+     NO ONE CHANNEL IS GREATER THAT 500 MEV,IF THIS IS THE CASE ALL
+   THREE BLOCKS ARE IGNORED , OTHERWISE THE VALUES IN THE BLOCKS ARE
+    USED TO ESTIMATE A MEAN ADC PEDESTAL , WHICH IS THEN SUBTRACTED
+   FROM ALL BLOCKS.
+
+
+ PEDFX2  - 1981/2 ONLY
+ ======
+        SAME PROCEDURE AS PEDFX3 BUT 'SUPERBLOCKS' REPLACE 'CAKESLICES'
+
+
+MEANING OF TERM 'SUPERBLOCK' USED IN COMMENTS OF THIS PROGRAM
+
+  1/4 OF A TAGGING SYSTEM =
+
+                                ___________
+                                I    I    I
+                      __________I    I    I
+                      I    I    L____L____I
+                      I    I    I    I    I
+                      L____L____I    I    I
+                      I    I    L____L____I
+                      I    I    I
+                   ___L____L____I
+                   I    I    I
+                   I    I    I
+                   L____L____I
+                   I    I    I
+                   I    I    I
+                   L____L____I__
+                      I    I    L
+                      I    I    I__________
+                      L____L____I    I    I
+                      I    I    L    I    I
+                      I    I    I____L____I
+                      L____L____I    I    I
+                                I    I    I
+                                L____L____I
+
+    'SUPERBLOCK' =
+
+                   ___________
+                   I    I    I
+                   I    I    I
+                   L____L____I
+                   I    I    I
+                   I    I    I
+                   L____L____I
+
+
+
+
+ SUBROUTINE SRSUM(JPART,SUM,*)
+ =============================
+
+
+     THIS SUBROUTINES SUMS ALL  ADC DATA IN ARRAY CATAG ONE END OR THE
+     OTHER TO GIVE THE VALUE OF SUM.
+
+  JPART - INPUT - SIGN DETERMINES WHICH END TAGGER IS ANALYSED
+                   JPART > 0 => +Z
+                   JPART < 0 => -Z
+
+   SUM - OUTPUT - SUM OF ENERGY
+
+  RETURN 1 IF SUM IS A  CRAZY VALUE
+
+
+
+ SUBROUTINE CALAD(IWRITE)
+ ========================
+
+    THIS SUBROUTINE   CALIBRATES ADC'S USING FACTORS IN
+   COMMON CALIBR
+
+  INPUT - IWRITE - IF THIS IS EQUAL TO ONE THE ROUTINE
+                   WRITES OUT SOME DEBUGGING INFORMATION
+
+
+ FUNCTION FSTOH(I)
+ =================
+
+  CONVERT SOFTWARE ADDRESS TO HARDWARE ADDRESS
+  SEE ALSO FHTOS  - INPUT I = SOFTWARE ADDRESS TO BE CONVERTED
+
+
+
+ SUBROUTINE FHTOS(ISAD,IHAD,*)
+ =============================
+
+
+  THIS ROUTINE CONVERTS HARDWARE ADDRESSES TO SOFTWARE ADDRESSES
+
+  ISAD - OUTPUT - SOFTWARE ADDRESS
+  IHAD - INPUT  - HARDWARE ADDRESS
+
+  RETURN 1 IF IT CAN'T DO IT ( ILLEGAL ADDRESS SUPPLIED )
+
+
+    THE PATTERN FOR 1983 ONWARDS IS -
+
+    HARDWARE ADDRESS                              SOFTWARE ADDRESS
+
+         0 - 3             NOT USED
+         4 - 7           INNER RING - Z               1 - 4
+         8 - 11            "      "                   5 - 8
+        12 - 15            NOT USED
+        16 - 19             "   "
+        20 - 23           MIDDLE RING - Z             9- 12
+        24 - 27              "  "                     13-16
+        28 - 31            NOT USED
+        32 - 35             "   '
+
+
+
+     FOR 1981/2 SOFTARE ADDRESS = HARDWARE ADDRESS + 1
+
+    18/03/84 503161535  MEMBER NAME  #TAGDOC2 (S)           FORTRAN
+
+THIS IS SOME RATHER HAPHAZARD DOCUMENTATION FOR THE ROUTINES USED
+FOR ANALYSING TAGGING INFORMATION FROM 1981 ONWARDS AS WRITTEN BY
+A.J.FINCH 21/3/84
+
+ADDITIONAL NOTES CONCERNING 'TAGAN'-
+====================================
+
+ SOME DEBUGGING INFO CAN BE TURNED ON BY THE FOLLOWING PROCEDURE
+
+      COMMON/CONTRL/JWRITE
+      JWRITE=1      -> TURNS  ON INFO
+      JWRITE=0      -> TURNS  OFF INFO
+
+
+      SUBROUTINE TAGINT(*)
+      ====================
+
+
+
+  THIS IS THE INITIALISATION ROUTINE THAT SHOULD BE CALLED ONCE,BEFORE
+  ANALYSING ANY EVENTS  USING  THE  ROUTINES  IN  THIS  PACKAGE.TO  BE   0000800
+  PRECISE IT MUST CALLED ONCE PER EVENT TO SET UP THE CWORK COMMON       0000900
+                                                                         0001000
+
+  IT DOES A RETURN 1 IF TAGMRK DOES A RETURN 1 ,WHICH IT DOES IF 'HEAD'
+   DOESNT EXIST
+
+
+
+
+      SUBROUTINE TAGADC(IWRITE,*)
+     ============================
+
+    THIS SUBROUTINE TAKES THE DATA FROM HDATA BLOCK
+    'ATAG' AND PUTS THE ADC CONTENTS IN THE ARRAY CATAG
+                         IN ORDER OF ADC ADDRESS
+
+     IWRITE IS A FLAG TO TELL WHETHER TO PRINT THE BANK 'CATAG' AFTER
+     IT HAS BEEN FILLED.
+
+    NOTE:- IT ALSO MULTIPLIES CHANNEL NUMBER TIMES A FACTOR TO MAKE IT
+    APPROXIMATELY EQUAL TO ENERGY IN MEV
+
+
+
+    SUBROUTINES TAGPED,TAGPD1,TAGPD2
+    ================================
+
+ TAGPED IS CONTROL ROUTINE WHICH CALLS ONE OF THE OTHER TWO TO DO THE
+        WORK - ALTHOUGH THEY ARE SIMILAR IN CONCEPT IT AS TOO MUCH
+            WORK TO COMBINE THEM INTO ONE ROUTINE
+
+  ROUTINES  TO DO PEDESTAL SUBTRACTION
+
+ TAGPD2   - 1983 ..ONLY
+ ======
+      ROUTINE TO ATTEMPT OFFLINE SUBTRACTION OF PEDESTALS
+      FOR EACH 'SUPERBLOCK' OF 3 LEAD SCINTILLATOR ELEMENTS IT
+    CHECKS THAT
+     NO ONE CHANNEL IS GREATER THAT 500 MEV,IF THIS IS THE CASE ALL
+   THREE BLOCKS ARE IGNORED , OTHERWISE THE VALUES IN THE BLOCKS ARE
+    USED TO ESTIMATE A MEAN ADC PEDESTAL , WHICH IS THEN SUBTRACTED
+   FROM ALL BLOCKS.
+
+
+ TAGPD1  - 1981/2 ONLY
+ ======
+        SAME PROCEDURE AS TAGPD2 BUT 'SUPERBLOCKS' REPLACE 'CAKESLICES'
+
+
+MEANING OF TERM 'SUPERBLOCK' USED IN COMMENTS OF THIS PROGRAM
+
+  1/4 OF A TAGGING SYSTEM =
+
+                                ___________
+                                I    I    I
+                      __________I    I    I
+                      I    I    L____L____I
+                      I    I    I    I    I
+                      L____L____I    I    I
+                      I    I    L____L____I
+                      I    I    I
+                   ___L____L____I
+                   I    I    I
+                   I    I    I
+                   L____L____I
+                   I    I    I
+                   I    I    I
+                   L____L____I__
+                      I    I    L
+                      I    I    I__________
+                      L____L____I    I    I
+                      I    I    L    I    I
+                      I    I    I____L____I
+                      L____L____I    I    I
+                                I    I    I
+                                L____L____I
+
+    'SUPERBLOCK' =
+
+                   ___________
+                   I    I    I
+                   I    I    I
+                   L____L____I
+                   I    I    I
+                   I    I    I
+                   L____L____I
+
+
+
+
+ SUBROUTINE TAGSUM(JPART,SUM,*)
+ =============================
+
+
+     THIS SUBROUTINES SUMS ALL  ADC DATA IN ARRAY CATAG ONE END OR THE
+     OTHER TO GIVE THE VALUE OF SUM.
+
+  JPART - INPUT - SIGN DETERMINES WHICH END TAGGER IS ANALYSED
+                   JPART > 0 => +Z
+                   JPART < 0 => -Z
+
+   SUM - OUTPUT - SUM OF ENERGY
+
+  RETURN 1 IF SUM IS A  CRAZY VALUE
+
+
+
+ SUBROUTINE TAGKAL(IWRITE)
+ ========================
+
+    THIS SUBROUTINE   CALIBRATES ADC'S USING FACTORS IN
+   COMMON CALIBR
+
+  INPUT - IWRITE - IF THIS IS EQUAL TO ONE THE ROUTINE
+                   WRITES OUT SOME DEBUGGING INFORMATION
+
+
+ FUNCTION TAGS2H(I)
+ =================
+
+  CONVERT SOFTWARE ADDRESS TO HARDWARE ADDRESS
+  SEE ALSO TAGH2S  - INPUT I = SOFTWARE ADDRESS TO BE CONVERTED
+
+
+
+ SUBROUTINE TAGH2S(ISAD,IHAD,*)
+ =============================
+
+
+  THIS ROUTINE CONVERTS HARDWARE ADDRESSES TO SOFTWARE ADDRESSES
+
+  ISAD - OUTPUT - SOFTWARE ADDRESS
+  IHAD - INPUT  - HARDWARE ADDRESS
+
+  RETURN 1 IF IT CAN'T DO IT ( ILLEGAL ADDRESS SUPPLIED )
+
+
+    THE PATTERN FOR 1983 ONWARDS IS -
+
+    HARDWARE ADDRESS                              SOFTWARE ADDRESS
+
+         0 - 3             NOT USED
+         4 - 7           INNER RING - Z               1 - 4
+         8 - 11            "      "                   5 - 8
+        12 - 15            NOT USED
+        16 - 19             "   "
+        20 - 23           MIDDLE RING - Z             9- 12
+        24 - 27              "  "                     13-16
+        28 - 31            NOT USED
+        32 - 35             "   '
+
+
+
+     FOR 1981/2 SOFTARE ADDRESS = HARDWARE ADDRESS + 1
+
+C   13/06/85 506131758  MEMBER NAME  TEMP     (S)           FORTRAN
+   1 $INFO
+   2 ##STATUS
+   3 #JOB
+   4 #START
+   5 #TAGDOC
+   6 #TAGDOC2
+   7 ACOL
+   8 AFTP83
+   9 AMCTAG
+  10 ANAL79
+ 110 CALAD
+ 111 CLSPS
+ 112 CLUSFN
+ 113 COMFIL
+ 114 CONVER
+ 115 CTAGGO
+ 116 CUTPED
+ 117 CUTP81
+ 118 CWKTAG2
+ 119 DATE
+ 120 FFITYP
+ 121 FHTOS
+ 122 FHTOS0
+ 123 FITAG
+ 124 FRTYPE
+ 125 FSTOH
+ 126 GGBLCK
+ 127 GGCCTL
+ 128 GGCLPC
+ 129 GGCLSD
+ 130 GGCLUS
+ 131 GGFAC1
+ 132 GGFAC2
+ 133 GGFAC3
+ 134 GGFAC4
+ 135 GGFAC5
+ 136 GGFAC6
+ 137 GGRESQ
+ 138 GGSORT
+ 139 GGSRTH
+ 140 GSCRUB
+ 141 HDDUMP
+ 142 INGAM1
+ 143 LISTGN
+ 144 LUCHEK
+ 145 LUMONS
+ 146 OUTGAW
+ 147 PEDFIX
+ 148 RCOORD
+ 149 REPACK
+ 150 SORT
+ 151 SORT1
+ 152 SORT2
+ 153 SRSUM
+ 154 SUBNEW
+ 155 SUBOLD
+ 156 TAGADC
+ 157 TAGALL
+ 158 TAGAN
+ 159 TAGCHK
+ 160 TAGCLS
+ 161 TAGCOL
+ 162 TAGDAT
+ 163 TAGDIR
+ 164 TAGFIT
+ 165 TAGFTY
+ 166 TAGF82
+ 167 TAGGTP
+ 168 TAGH2S
+ 169 TAGINT
+ 170 TAGKAL
+ 171 TAGMRK
+ 172 TAGNEB
+ 173 TAGNOTE
+ 174 TAGNOTE2
+ 175 TAGPD1
+ 176 TAGPD2
+ 177 TAGPED
+ 178 TAGPHI
+ 179 TAGPOS
+ 180 TAGPS1
+ 181 TAGPS2
+ 182 TAGRAW
+ 183 TAGRTY
+ 184 TAGSET
+ 185 TAGSR1
+ 186 TAGSR2
+ 187 TAGSTO
+ 188 TAGSUM
+ 189 TAGS2H
+ 190 TGDCOS
+ 191 TRACKS
+ 192 UMCPAK
+
+

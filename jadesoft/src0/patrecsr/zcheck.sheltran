@@ -1,0 +1,636 @@
+C   17/04/80 609102054  MEMBER NAME  ZCHECK   (PATRECSR)    SHELTRAN
+      SUBROUTINE ZCHECK(DHRLIM)
+      IMPLICIT INTEGER*2 (H)
+C---
+C---     AFTER COMPLETED FITS OF TRACKS IN RFI, LOOP OVER ALL TRACKS
+C---     AND CHECK PROXIMITY TO REMAINING TRACKS; MARK ALL HITS WHICH
+C---     ARE INSIDE A LIMIT (DHRLIM), AS BAD.
+C---                                             J.OLSSON 14.09.79
+C---                      LAST UPDATE    10.09.81
+C---   ERROR IN CELNEI CORRECTED  10.9.1986    J.OLSSON
+C---
+      LOGICAL TBIT
+#include "cgraph.for"
+      COMMON / CJCELL / NCELL(3),NWIRES(3)
+#include "cjdrch.for"
+#include "cdata.for"
+      COMMON /CHEADR/ HEAD(108)
+#include "cdsmax.for"
+      COMMON /CEE1/ EE1(96,2)
+#include "cpatlm.for"
+#include "cworkpr.for"
+      EQUIVALENCE
+     ,      (ADWRK(11),LAYER ),(ADWRK(12),NI    ),(ADWRK(13),NH    )
+     ,     ,(ADWRK(14),XHIT  ),(ADWRK(15),YHIT  ),(ADWRK(16),ZHIT  )
+     ,     ,(ADWRK(17),RHIT  ),(ADWRK(18),IERZRF),(ADWRK(19),LRFLAG)
+     ,     ,(ADWRK(20),INCELL),(ADWRK(21),IERFLG),(ADWRK(22),BETA  )
+      COMMON/CJTRIG/ PI,TWOPI
+      DIMENSION LCL(4,100),MASKY(4)
+      DIMENSION HELP1(2),HELP2(2),HCELLI(6),HELPX(2)
+      EQUIVALENCE (LABL1,HELP1(1)),(HELP2(1),LABL2),(LABLX,HELPX(1))
+      EQUIVALENCE (LCL(1,1),IWRK(1))
+      DATA HELP1/0,0/ ,HELP2/0,0/, LNRHIT/100/, MK1/Z7F/,MKZLAB /Z1/
+      DATA MKZ0LB /ZFFFE/
+      DATA HELPX/0,0/,ICALL /0/
+C
+N     POINTERS IN HDATA,IDATA
+      IPATR=IBLN('PATR')
+      IPPATR = IDATA(IPATR)
+N     CHECK IF PATR BANK EXISTS
+      IF(IPPATR.LE.0) RETURN
+      NTR = IDATA(IPPATR+2)
+N     IF NO TRACKS, RETURN
+      IF(NTR.LE.0) RETURN
+      IJETC=IBLN('JETC')
+      IJHTL=IBLN('JHTL')
+      DELPHI = TWOPI/24.
+      LO = IDATA(IPPATR+1)
+      LTRBK = IDATA(IPPATR+3)
+      IPJCA = IDATA(IJETC)
+      IPJ = 2*IPJCA + 2
+N     TOTAL NUMBER OF HITS
+      NHT = (HDATA(IPJ+97)-HDATA(IPJ+1))/4
+      HPFREE = 401
+N     LP1 = ARRAY RPHI (RADIUS OF HIT)
+      LP1 = HPFREE - 1
+N     LP2 = ARRAY PHI (PHI OF HIT)
+      LP2 = LP1 + LNRHIT
+N     LP3 = ARRAY XHT (X OF HIT)
+      LP3 = LP2 + LNRHIT
+N     LP4 = ARRAY YHT (Y OF HIT)
+      LP4 = LP3 + LNRHIT
+N     LP5 = ARRAY HSADR (HIT ADRESS IN JETC)
+      LP5 = LP4 + LNRHIT
+N     LP6 = ARRAY HSWIR (WIRE NUMBER)
+      LP6 = LP5 + LNRHIT
+N     LP7 = ARRAY HSCEL (CELL NUMBER)
+      LP7 = LP6 + LNRHIT
+N     LP8 = ARRAY HSLAB (HIT ADRESS IN JHTL)
+      LP8 = LP7 + LNRHIT
+N     LP9 = ARRAY HSLRF (LRFLAG IN JHTL)
+      LP9 = LP8 + LNRHIT
+N     LPA = ARRAY ZHIT  (Z OF HIT)
+      LPA = LP9 + LNRHIT
+N     LPB = ARRAY ZLABEL (ZFIT LABEL)
+      LPB = LPA + LNRHIT
+N     UPDATE HPFREE
+      HPFREE = LPB + LNRHIT + 1
+      IPJ = IPJ + 95
+      IPJHTL = IDATA(IJHTL)
+      IPJH = 2*IPJHTL + 2
+      IF ICALL.EQ.0
+      THEN
+         PERFORM ZCHINT
+         ICALL = 1
+      CIF
+N     SET ARRAY WITH CELL OCCUPANCY
+      PERFORM LCLMRK
+C
+N     LOOP OVER ALL TRACKS
+      FOR ITR = 1,NTR
+         IPPO1 = IPPATR + (ITR-1)*LTRBK + LO
+         IPPO = IPPO1
+         ITYPTR = IDATA(IPPO + 18)
+N     CHECK IF CIRCLE TYPE FIT
+         IF ITYPTR.EQ.1
+         THEN
+            PERFORM CIRPAR
+            IF IPRFL.EQ.0
+            THEN
+               RMIN1 = RMIN
+               RMAX1 = RMAX
+               XMIT1 = XMIT
+               YMIT1 = YMIT
+            CIF
+         CIF
+N     CHECK IF PARABOLA TYPE FIT
+         IF ITYPTR.EQ.2
+         THEN
+            PERFORM PARPAR
+            IF IPRFL.EQ.0
+            THEN
+               C1R = C1
+               C2R = C2
+               C3R = C3
+               C4R = C4
+               C5R = C5
+               C6R = C6
+            CIF
+         CIF
+         IPRFL1 = IPRFL
+         IF IPRFL1.EQ.0
+         THEN
+N     NR OF HITS / TRACK
+            NHIT = 0
+            NI = IPJ
+            IHITH = -1
+N     GET LIST OF CELL NUMBER FOR HIT CHECK
+            FOR I = 1,6
+               HCELLI(I) = IDATA(IPPO + 33 + I)
+            CFOR
+C > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >
+N     LOOP OVER ALL HITS, SELECT TRACK ITR
+            FOR  IHT = 1,NHT
+               NI = NI + 4
+               IHITH = IHITH + 2
+               IHITG = IHITH + 1
+               HELP1(2) = HDATA(IPJH + IHITH)
+               HELP2(2) = HDATA(IPJH + IHITG)
+               MTR = LAND(SHFTR(LABL1,1),MK1)
+               MTR2 = LAND(SHFTR(LABL2,1),MK1)
+               IAMB = 0
+               IF(MTR.EQ.ITR) IAMB = 1
+               IF(MTR2.EQ.ITR) IAMB = 2
+               IF IAMB.NE.0
+               THEN
+                  IF(IAMB.EQ.1) NH = IPJH + IHITH
+                  IF(IAMB.EQ.2) NH = IPJH + IHITG
+                  IF(IAMB.EQ.1) LABLX = LABL1
+                  IF(IAMB.EQ.2) LABLX = LABL2
+                  LRFLAG = -1
+                  IF(TBIT(LABLX,23)) LRFLAG = 1
+N     SET INPUT FOR JETXYZ
+                  BETA = 1.
+                  CALL JETXYZ
+                  ITST = 1
+                  FOR I = 1,6
+                     IF(INCELL.EQ.HCELLI(I)) ITST = 0
+                  CFOR
+                  IF ITST.EQ.0
+                  THEN
+                     NHIT = NHIT + 1
+N     STORE RESULTS IN WRK ARRAY
+                     WRK(LP1+NHIT) = RHIT
+                     FIHIT = ATAN2(YHIT,XHIT)
+                     IF(FIHIT.LT.0.) FIHIT = FIHIT + TWOPI
+                     WRK(LP2+NHIT) = FIHIT
+                     WRK(LP3+NHIT) = XHIT
+                     WRK(LP4+NHIT) = YHIT
+                     IWRK(LP5+NHIT) = NI
+N     RANGE (0 - 1535)
+                     IWRK(LP6+NHIT) = LAYER + (INCELL - 1)*16
+N     RANGE (1 - 96)
+                     IWRK(LP7+NHIT) = INCELL
+                     IWRK(LP8+NHIT) = NH
+                     IWRK(LP9+NHIT) = LRFLAG
+                     WRK(LPA+NHIT) = ZHIT
+N     MARK BAD Z-COORDINATE
+                     IWRK(LPB+NHIT) = LAND(LABLX,MKZLAB)
+                  CIF
+               CIF
+            CFOR
+C > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >
+C-------------- END OF COORDINATE LOOP
+N     CHECK IF ANY HITS
+            IF NHIT.GT.3
+            THEN
+N     LOOP OVER THE HITS
+               FOR IHT = 1,NHIT
+                  PERFORM LINEDS
+N     FIND CROSS POINT WITH DRIFTSPACE
+                  IF ITYPTR.EQ.1
+                  THEN
+                     RMIN = RMIN1
+                     RMAX = RMAX1
+                     XMIT = XMIT1
+                     YMIT = YMIT1
+                     PERFORM XYTS
+                  CIF
+                  IF ITYPTR.EQ.2
+                  THEN
+                     C1 = C1R
+                     C2 = C2R
+                     C3 = C3R
+                     C4 = C4R
+                     C5 = C5R
+                     C6 = C6R
+                     PERFORM XYTSPR
+                  CIF
+                  ICRFL1 = ICRFL
+                  IF ICRFL1.EQ.0
+                  THEN
+                     DISTA=(XTS-XW)**2+(YTS-YW)**2
+                     DISTA = SQRT(DISTA)
+                     XTS1 = XTS
+                     YTS1 = YTS
+                     RTS = SQRT(XTS**2 + YTS**2)
+                     INCL1 = IWRK(LP7+IHT)
+N     FILL ARRAY WITH NEIGHBOR CELL-NRS
+                     PERFORM CELNEI
+N     LOOP OVER REMAINING TRACKS
+                     FOR KTR = 1,NTR
+N     SELECT OTHER TRACKS
+                        IF KTR.NE.ITR
+                        THEN
+                           ICHKFL = LAND(MASKY(1),LCL(1,KTR))
+     $                            + LAND(MASKY(2),LCL(2,KTR))
+     $                            + LAND(MASKY(3),LCL(3,KTR))
+     $                            + LAND(MASKY(4),LCL(4,KTR))
+                           IF ICHKFL.GT.0
+                           THEN
+                              IPPO = IPPATR + (KTR-1)*LTRBK + LO
+                              PERFORM ZOK
+                              IF IOKZ.EQ.0
+                              THEN
+                                 ITYPTS = IDATA(IPPO+18)
+                                 IF ITYPTS.EQ.1
+                                 THEN
+                                    PERFORM CIRPAR
+                                    IF IPRFL.EQ.0
+                                    THEN
+                                       PERFORM XYTS
+                                    CIF
+                                 CIF
+                                 IF ITYPTS.EQ.2
+                                 THEN
+                                    PERFORM PARPAR
+                                    IF IPRFL.EQ.0
+                                    THEN
+                                       PERFORM XYTSPR
+                                    CIF
+                                 CIF
+N     FIND CROSSPOINT WITH SAME DRIFTSPACE
+                                 IF IPRFL.EQ.0.AND.ICRFL.EQ.0
+                                 THEN
+                                    PERFORM SAMCEL
+                                    IF ICLSAM.EQ.1
+                                    THEN
+                                       DISTB=(XTS-XW)**2+(YTS-YW)**2
+                                       DISTB = SQRT(DISTB)
+                                       DIST = ABS(DISTA-DISTB)
+N     CHECK DISTANCE BETWEEN CROSS POINTS
+                                       IF DIST.LT.DHRLIM
+                                       THEN
+N     MARK THE HIT ACCORDINGLY
+                                          NH = IWRK(LP8+IHT)
+                                          HELPX(2) = HDATA(NH)
+                                          LABLX = LAND(LABLX,MKZ0LB)
+                                          HDATA(NH) = HELPX(2)
+                                          XFOR
+                                       CIF
+                                    CIF
+                                 CIF
+                              CIF
+                           CIF
+                        CIF
+                     CFOR
+                  CIF
+               CFOR
+            CIF
+         CIF
+      CFOR
+      RETURN
+C---------
+      PROC LCLMRK
+C SET ARRAY LCL WITH BIT PATTERN FOR CELL OCCUPANCY FOR EACH TRACK
+      IPPO = IPPATR - LTRBK + LO
+      FOR ITR = 1,NTR
+         LCL(1,ITR) = 0
+         LCL(2,ITR) = 0
+         LCL(3,ITR) = 0
+         LCL(4,ITR) = 0
+         IPPO = IPPO + LTRBK
+         IPP = IPPO + 33
+         FOR I = 1,6
+            INCE = IDATA(IPP+I)
+            IF INCE.GT.0
+            THEN
+               IRNG = (INCE-1)/24 + 1
+               INCE = INCE - (IRNG-1)*24
+               MASK = 2**(INCE-1)
+               LCL(IRNG,ITR) = LOR(LCL(IRNG,ITR),MASK)
+            ELSE
+               XFOR
+            CIF
+         CFOR
+      CFOR
+      CPROC
+C---------
+      PROC ZCHINT
+CALCULATE ON FIRST CALL THE ARRAY WITH DRIFT DIRECTIONS FOR LINEDS
+         FOR INCELL = 1,96
+            IF INCELL.LT.49
+            THEN
+               II = INCELL
+               IF(II.GT.24) II = II - 24
+               FINC = FLOAT(II-1)*DELPHI + DELPHI*.5
+C              FINC = ARSIN(DIRWR1(II,2))
+            ELSE
+               II = INCELL - 48
+C              FINC = ARSIN(DIRWR3(II,2))
+               FINC = FLOAT(II-1)*DELPHI*.5 + DELPHI*.25
+            CIF
+            IF(FINC.LT.0.) FINC = FINC + TWOPI
+            EE1(INCELL,1) = TAN(FINC + .5*PI + DRIROT(INCELL,1))
+            EE1(INCELL,2) = TAN(FINC + .5*PI + DRIROT(INCELL,2))
+         CFOR
+      CPROC
+C-------------------
+      PROC LINEDS
+C GET EQUATION FOR STRAIGHT LINE THROUGH WIRE AND DRIFT SPACE
+         NI = IWRK(LP5 + IHT)
+         LRFLG = IWRK(LP9 + IHT)
+         IF(LRFLG.LT.0) LRFLG = 0
+         XHIT = WRK(LP3+IHT)
+         YHIT = WRK(LP4+IHT)
+         INCELL = IWRK(LP7+IHT)
+         E1 = EE1(INCELL,LRFLG+1)
+         NRING = INCELL - 1
+         NRING = NRING/24 + 1
+         IF(NRING.GT.3) NRING = 3
+         NCL = NCELL(NRING)
+         RADD = RINCR(NRING)
+         RW = FSENSW(NRING) - RADD
+         NIW = IWRK(LP6+IHT) + 1
+         NEW = NIW - (NRING-1)*384
+         SHIFI = PSIIN(NRING)
+         NCE = SHFTR(NEW-1,4)
+         NWE = NEW - NCE*16
+         RW = RW + NWE*RADD
+         NUMCLO = 2
+         IF(NWE.LT.9) NUMCLO = 1
+         FACT = -1.
+         IF(TBIT(NWE,31)) FACT = 1.
+         FIW = SHIFI + NCE*TWOPI/FLOAT(NCL)
+         IF(FIW.LT.0.) FIW = FIW + TWOPI
+         IF(FIW.GT.TWOPI) FIW = FIW - TWOPI
+         COSPH = COS(FIW)
+         SINPH = SIN(FIW)
+N     COORDINATES OF WIRE
+         XW = RW*COSPH  - FACT*SINPH*SWDEPL
+         YW = RW*SINPH  + FACT*COSPH*SWDEPL
+C--  STRAIGHT LINE EQUATION OF DRIFTSPACE THROUGH XW,YW
+C        Y = YW - TGA*XW  +  TGA*X         Y = E1*X + E2
+         E2 = YW - E1*XW
+      CPROC
+C---------
+      PROC XYTS
+C GET CROSS POINT CIRCLE - DRIFT SPACE
+         ICRFL = 0
+         CONST1 = RMAX*RMIN + E2*E2 - 2.*E2*YMIT
+         CONST1 = CONST1/(1.+E1*E1)
+         CONST2 = E1*E2 - E1*YMIT - XMIT
+         CONST2 = CONST2/(1.+E1*E1)
+         RADD = CONST2*CONST2 - CONST1
+         IF(RADD.LE.0.) ICRFL = -1
+         IF ICRFL.EQ.0
+         THEN
+            RADD = AMAX1(RADD,.000001)
+            RADD = SQRT(RADD)
+            X1 = -CONST2 + RADD
+            X2 = -CONST2 - RADD
+            XTS = X1
+            IF(ABS(XHIT-X2).LT.ABS(XHIT-X1)) XTS = X2
+            YTS = E2 + E1*XTS
+         CIF
+      CPROC
+C------------------------
+      PROC CIRPAR
+C-- FROM TRACK BANK CIRCLE PARAMETERS, GET THOSE USED IN PROC XYTS
+         IPRFL = 0
+         RAD = ADATA(IPPO+19)
+         RMIN = ADATA(IPPO+20)
+         PHIMIT = ADATA(IPPO+21)
+         IF ABS(RAD).GT.1.E-08
+         THEN
+            RAD = ABS(1./RAD)
+            RMIT= RAD + RMIN
+            RMAX = RMIT + RAD
+            XMIT = RMIT*COS(PHIMIT)
+            YMIT = RMIT*SIN(PHIMIT)
+         ELSE
+            IPRFL = -1
+         CIF
+      CPROC
+C--------------
+      PROC PARPAR
+C-- FROM TRACK BANK PARABOLA PARAMETERS, GET THOSE USED IN PROC XYTSPR
+         IPRFL = 0
+         A = ADATA(IPPO+19)
+         B = ADATA(IPPO+20)
+         C = ADATA(IPPO+21)
+         D = ADATA(IPPO+22)
+C--
+         COSA = COS(A)
+         SINA = SIN(A)
+C--             GET EQUATION FOR PARABOLA IN DETECTOR SYSTEM
+C--             C1*Y**2 + C2*Y + C3*X**2 + C4*X + C5*XY + C6 = 0
+C--
+         C1 = D*SINA*SINA
+         C2 = - 2.*D*(B*COSA*SINA + C*SINA*SINA) - COSA
+         C3 = D*COSA*COSA
+         C4 = - 2.*D*(B*COSA*COSA + C*COSA*SINA) + SINA
+         C5 = 2.*D*COSA*SINA
+         C6 = (B*COSA+C*SINA)
+         C6 = D*C6*C6 + C*COSA - B*SINA
+      CPROC
+C--------------
+      PROC XYTSPR
+C GET CROSS POINT PARABOLA - DRIFT SPACE
+         ICRFL = 0
+         C7 = C1*E1*E1 + C3 + C5*E1
+         C8 = 2.*C1*E1*E2 + C2*E1 + C4 + C5*E2
+         C9 = C1*E2*E2 + C2*E2 + C6
+         IF ABS(C7).GT..000001
+         THEN
+            DD = C8*C8 - 4.*C7*C9
+            IF DD.GT..000001
+            THEN
+               X1 = (-C8 + SQRT(DD))/(2.*C7)
+               X2 = (-C8 - SQRT(DD))/(2.*C7)
+               XTS = X1
+               IF(ABS(XHIT-X2).LT.ABS(XHIT-X1)) XTS = X2
+               YTS = E2 + E1*XTS
+            ELSE
+               ICRFL = -1
+            CIF
+         ELSE
+            ICRFL = -1
+         CIF
+      CPROC
+C------------------------
+      PROC CELNEI
+C     SET THE ARRAY MASKY WITH BIT PATTERN FOR NEIGHBOR CELLS
+      MASKY(1) = 0
+      MASKY(2) = 0
+      MASKY(3) = 0
+      MASKY(4) = 0
+      IF INCL1.LE.24
+      THEN
+N     CELL NR 1
+         IF INCL1.EQ.1
+         THEN
+            MASKY(1) = 8388611
+            MASKY(2) = MASKY(1)
+            MASKY(3) = 7
+            MASKY(4) = 8388608
+         ELSE
+N     CELL NR 2 - 23
+            IF INCL1.LT.24
+            THEN
+               MASKY(1) = LOR(MASKY(1),2**(INCL1-2))
+               MASKY(1) = LOR(MASKY(1),2**(INCL1-1))
+               MASKY(1) = LOR(MASKY(1),2**INCL1)
+               MASKY(2) = MASKY(1)
+               IF INCL1.LT.12
+               THEN
+                  MASKY(3) = LOR(MASKY(3),2**(2*INCL1-3))
+                  MASKY(3) = LOR(MASKY(3),2**(2*INCL1-2))
+                  MASKY(3) = LOR(MASKY(3),2**(2*INCL1-1))
+                  MASKY(3) = LOR(MASKY(3),2**(2*INCL1))
+               CIF
+               IF INCL1.GT.13
+               THEN
+                  INCK1 = INCL1 - 12
+                  MASKY(4) = LOR(MASKY(4),2**(2*INCK1-3))
+                  MASKY(4) = LOR(MASKY(4),2**(2*INCK1-2))
+                  MASKY(4) = LOR(MASKY(4),2**(2*INCK1-1))
+                  MASKY(4) = LOR(MASKY(4),2**(2*INCK1))
+               CIF
+               IF INCL1.EQ.12
+               THEN
+                  MASKY(3) = 14680064
+                  MASKY(4) = 1
+               CIF
+               IF INCL1.EQ.13
+               THEN
+                  MASKY(4) = 7
+                  MASKY(3) = 8388608
+               CIF
+N     CELL NR 24
+            ELSE
+               MASKY(1) = 12582913
+               MASKY(2) = MASKY(1)
+               MASKY(3) = 1
+               MASKY(4) = 14680064
+            CIF
+         CIF
+      ELSE
+         IF INCL1.LE.48
+         THEN
+N     CELL NR 25
+            IF INCL1.EQ.25
+            THEN
+               MASKY(1) = 8388611
+               MASKY(2) = MASKY(1)
+               MASKY(3) = 7
+               MASKY(4) = 8388608
+            ELSE
+N     CELL NR 26 - 47
+               IF INCL1.LT.48
+               THEN
+                  INCK1 = INCL1 - 24
+                  MASKY(1) = LOR(MASKY(1),2**(INCK1-2))
+                  MASKY(1) = LOR(MASKY(1),2**(INCK1-1))
+                  MASKY(1) = LOR(MASKY(1),2**INCK1)
+                  MASKY(2) = MASKY(1)
+                  IF INCK1.LT.12
+N     CELL NR 26 - 35
+                  THEN
+                     MASKY(3) = LOR(MASKY(3),2**(2*INCK1-3))
+                     MASKY(3) = LOR(MASKY(3),2**(2*INCK1-2))
+                     MASKY(3) = LOR(MASKY(3),2**(2*INCK1-1))
+                     MASKY(3) = LOR(MASKY(3),2**(2*INCK1))
+                  CIF
+                  IF INCK1.GT.13
+N     CELL NR 38 - 47
+                  THEN
+                     INCK2 = INCK1 - 12
+                     MASKY(4) = LOR(MASKY(4),2**(2*INCK2-3))
+                     MASKY(4) = LOR(MASKY(4),2**(2*INCK2-2))
+                     MASKY(4) = LOR(MASKY(4),2**(2*INCK2-1))
+                     MASKY(4) = LOR(MASKY(4),2**(2*INCK2))
+                  CIF
+                  IF INCK1.EQ.12
+N     CELL NR 36
+                  THEN
+                     MASKY(3) = 14680064
+                     MASKY(4) = 1
+                  CIF
+                  IF INCK1.EQ.13
+N     CELL NR 37
+                  THEN
+                     MASKY(4) = 7
+                     MASKY(3) = 8388608
+                  CIF
+N     CELL NR 48
+               ELSE
+                  MASKY(1) = 12582913
+                  MASKY(2) = MASKY(1)
+                  MASKY(3) = 1
+                  MASKY(4) = 14680064
+               CIF
+            CIF
+         ELSE
+N     CELL NR 49
+            IF INCL1.EQ.49
+            THEN
+               MASKY(1) = 8388609
+               MASKY(2) = MASKY(1)
+               MASKY(3) = 3
+               MASKY(4) = 8388608
+            ELSE
+N     CELL NR 50 - 95
+               IF INCL1.LT.96
+               THEN
+                  INCK1 = INCL1 - 48
+                  INCK2 = INCK1/2
+                  MASKY(1) = LOR(MASKY(1),2**(INCK2-1))
+                  MASKY(1) = LOR(MASKY(1),2**INCK2)
+                  MASKY(2) = MASKY(1)
+                  IF INCK2.LT.12
+N     CELL NR 50 - 71
+                  THEN
+                     MASKY(3) = LOR(MASKY(3),2**(INCK1-2))
+                     MASKY(3) = LOR(MASKY(3),2**(INCK1-1))
+                     MASKY(3) = LOR(MASKY(3),2**INCK1)
+                  CIF
+                  IF INCK2.EQ.12
+N     CELL NR 72 - 73
+                  THEN
+                     IF(INCK1.EQ.24) MASKY(3) = 12582912
+                     IF(INCK1.EQ.25) MASKY(3) = 8388608
+                     IF(INCK1.EQ.24) MASKY(4) = 1
+                     IF(INCK1.EQ.25) MASKY(4) = 3
+                  CIF
+                  IF INCK2.GT.12
+N     CELL NR 74 - 95
+                  THEN
+                     INCK1 = INCK1 - 24
+                     MASKY(4) = LOR(MASKY(4),2**(INCK1-2))
+                     MASKY(4) = LOR(MASKY(4),2**(INCK1-1))
+                     MASKY(4) = LOR(MASKY(4),2**INCK1)
+                  CIF
+N     CELL NR 96
+               ELSE
+                  MASKY(1) = 8388609
+                  MASKY(2) = MASKY(1)
+                  MASKY(3) = 1
+                  MASKY(4) = 12582912
+               CIF
+            CIF
+         CIF
+      CIF
+      CPROC
+C------------------------
+      PROC SAMCEL
+C CHECK IF CROSS POINT XTS,YTS  IN ACTUAL CELL (INCL1)
+      ICLSAM = 0
+      FII = ATAN2(YTS,XTS)
+      IF(FII.LT.0.) FII = FII + TWOPI
+      NFII = FII/DELPHI
+      IF(INCL1.GT.48) NFII = 2.*FII/DELPHI
+      NFII = NFII + 1
+      IF(INCL1.GT.24) NFII = NFII + 24
+      IF(INCL1.GT.48) NFII = NFII + 24
+      IF(INCL1.EQ.NFII) ICLSAM = 1
+      CPROC
+C------------------------
+      PROC ZOK
+C CHECK IF Z-COORDINATE OF FIT INSIDE DETECTOR FOR CHECK POINT
+         IOKZ = 0
+         ZTEST = ADATA(IPPO+30)*RTS + ADATA(IPPO+31)
+         IF(ABS(ZTEST).GT.ZMAX) IOKZ = 1
+      CPROC
+C------------------------
+      END

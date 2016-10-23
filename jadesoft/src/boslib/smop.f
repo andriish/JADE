@@ -1,0 +1,28 @@
+C   07/06/96 606071909  MEMBER NAME  SMOP     (S4)          FORTG1
+      SUBROUTINE SMOP(X,Y,DY,N,SY)
+      COMMON/FDST/LLA,LLB,LLC,NKA,NKB
+      REAL X(120),Y(120),DY(120),SY(120)
+      REAL YI(120),W(120)
+C
+      IP=-1
+      DO 10 I=1,N
+      IF(DY(I).NE.0.0) IP=0
+   10 YI(I)=Y(I)
+      IF(IP.NE.0) GOTO 30
+      IP=1
+      DO 20 I=1,N
+      IF(DY(I).LE.0.0) GOTO 20
+      IF(Y(I).LE.0.0)  GOTO 30
+      SE=SQRT(Y(I))
+      IF(ABS(SE-DY(I)).GT.1.E-4*SE) GOTO 30
+   20 CONTINUE
+      IP=0
+C
+C
+   30 CALL SMHIST(YI,SY,DY,N,IP)
+      CALL DEKB(NKB)
+      DO 40 I=1,N
+   40 CALL GEND(NKA,100,SY(I),X(I))
+      CALL PSAF(NKA)
+  100 RETURN
+      END

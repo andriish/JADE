@@ -1,0 +1,171 @@
+C   13/08/82 601231126  MEMBER NAME  FITEVR   (JADEGS)      SHELTRAN
+C
+C-----------------------------------------------------------------------
+      SUBROUTINE FITEVR( NTRVTX, MODE )
+C-----------------------------------------------------------------------
+C
+C        FIT TRACKS WITH CONSTRAINT TO RUN VERTEX
+C                   AND COMMON Z-VERTEX (MODE + 2)
+C        INPUT :
+C        MODE   = 0 : OVERWRITE OLD PATR-BANK WITH NEW RESULTS
+C        MODE   = 1 : CREATE NEW PATR-BANK WITH NEW RESULTS
+C        MODE   + 2 : DO ALSO COMMON Z-FIT
+C        MODE   + 4 : VERTEX WEAKLY CONSTRAINED (ERRFAC = 100.0)
+C        MODE   + 8 : RERUN PATREC IN CASE OF BAD JHTL-BANK
+C        MODE   +16 : NO VERTEX CONSTRAINT (ERRFAC = 1000.0 )
+C        OUTPUT:
+C        NTRVTX = NUMBER OF TRACKS FROM EVENT VERTEX
+C
+C-----------------------------------------------------------------------
+C
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cdata.for"
+C
+C
+#include "calibr.for"
+C
+#include "cworkpr.for"
+#include "cworkeq.for"
+C
+      EQUIVALENCE
+     ,          (HPCO0 ,HPWRK(17)),(HPCO9 ,HPWRK(18)),(HLDCO ,HPWRK(19))
+     ,         ,(HPZR0 ,HPWRK(20)),(HPZR9 ,HPWRK(21)),(HLDZR ,HPWRK(22))
+     ,         ,(ICELL ,IDWRK( 1)),(MHIT  ,IDWRK( 2)),(IRING ,IDWRK( 3))
+     ,         ,(IERRCD,IDWRK( 4)),(NTRKEL,IDWRK( 5))
+C
+        DATA LBINIT /0/
+        DATA NPRMES /0/
+C
+N       INITIALIZATION
+        IF LBINIT .LE.0
+        THEN
+C
+          LBINIT = 1
+          IQHEAD = IBLN('HEAD')
+          IQPATR = IBLN('PATR')
+          IQJHTL = IBLN('JHTL')
+          IQZVTX = IBLN('ZVTX')
+C
+        CIF
+C
+N       IF MODE=8, ITERATE WITH NEW PATREC
+        NITER = 0
+        REPEAT
+        NITER = NITER + 1
+C
+C
+C
+N         INITIALIZE NTRVTX
+          NTRVTX = 0
+C
+N         CHECK IF PATR-BANK
+          IF(IDATA(IQPATR).LE.0) RETURN
+C
+C
+N         CREATE NEW PATR BANK
+          IF LAND(MODE,1) .NE. 0
+          THEN
+            IPPAT0 = IDATA(IQPATR)
+            NBNK1  = IDATA(IPPAT0-2) - 1
+            NWRD   = IDATA(IPPAT0)
+            NBYTE  = NWRD*4
+            CALL CCRE(IPPATR,'PATR',NBNK1,NWRD,IERR)
+            IF IERR.NE.0
+            THEN
+              PRINT 2900, IERR
+ 2900   FORMAT(' USFITO3(PS): CREATION OF NEW PATR-BANK RESULTED',
+     ,         ' IN ERROR',I3)
+              INDEX = 1
+              RETURN
+            CIF
+C
+N           COPY CONTENTS OF 'PATR'-BANK
+            CALL MVCL(IDATA(IPPATR+1),0,IDATA(IPPAT0+1),0,NBYTE)
+C
+          CIF
+C
+          IPPATR = IDATA(IQPATR)
+          IPTR1  = IDATA(IPPATR+1) + IPPATR
+          LDTR   = IDATA(IPPATR+3)
+          NTR    = IDATA(IPPATR+2)
+C
+N         CHECK IF 1 TRACK
+          IF(NTR.LT.1) RETURN
+C
+N         SEARCH FOR TRACKS FROM MAIN VERTEX
+          MTRV = 0
+C
+N         RUN VERTEX
+          IPV  = ICALIB(10)
+          X0   = ACALIB(IPV+ 1)
+          Y0   = ACALIB(IPV+ 3)
+C
+          FOR ITR=1,NTR
+C
+N           CHECK IF MOMENTUM >100 MEV
+            IF ABS(ADATA(IPTR1+25)).LT..00143 .AND.IDATA(IPTR1+24).GT.1600001020
+            THEN
+C
+N             MARK + COUNT TRACKS FROM MAIN VERTEX
+              CALL DRTRCK(IPTR1,X0,Y0,DR0)
+              IF ABS(DR0).LT.25. .OR. IDATA(IPTR1+4).EQ.1
+              THEN
+                MTRV = MTRV + 1
+                IDATA(IPTR1+4) =-1
+              CIF
+            CIF
+          IPTR1 = IPTR1 + LDTR
+          CFOR
+C
+N         PERFORM SUPERFIT IF >1 TRACK
+          IF(MTRV.LE.0) XREPEAT
+            Z0 = 0.
+            IPZVTX = IDATA(IQZVTX)
+            IF(IPZVTX.GT.0.AND.IDATA(IPZVTX+6).EQ.3) Z0=ADATA(IPZVTX+1)
+            ERRFAC = 1.0
+            IF(LAND(MODE,4)  .NE. 0) ERRFAC =  100.0
+            IF(LAND(MODE,16) .NE. 0) ERRFAC = 1000.0
+            MODEF = MODE
+            CALL FZFITV(IPPATR,IDATA(IQJHTL),NTRVTX,Z0,ERRFAC,MODEF)
+C     DATA NPRPAT/0/
+C     NPRPAT = NPRPAT + 1
+C     IF(NPRPAT.LE.2) CALL PRPATR
+C
+C
+N           STOP IF NO BAD TRACK
+            IF(MODEF       .GE.0) XREPEAT
+N           ERROR IN JHTL-BANK, CHECK IF ITER. WITH NEW PATREC
+            IPHEAD = IDATA(IQHEAD) * 2
+            NPRMES = NPRMES + 1
+            IF(NPRMES.LE.10)
+     ,      PRINT 2009, HDATA(IPHEAD+10),HDATA(IPHEAD+11),MODEF
+ 2009 FORMAT(' FITEVR(PST): ERROR IN JHTL-BANK FOR EVENT',3I6)
+            IF(LAND(MODE,8).EQ.0) XREPEAT
+N           STOP AFTER 1. ITERATION
+            IF(NITER       .GE.2) XREPEAT
+C
+N           DELETE NEW CREATED PATR-BANK
+            IF LAND(MODE,1).NE.0
+            THEN
+              IPPATR = IDATA(IQPATR)
+              NBNK   = IDATA(IPPATR-2)
+              CALL BDLS('PATR',NBNK)
+            CIF
+C
+N           DELETE OLD PATR-BANK + JHTL-BANK
+            IPPATR = IDATA(IQPATR)
+            NBNK   = IDATA(IPPATR-2)
+            CALL BDLS('PATR',NBNK)
+            IPJHTL = IDATA(IQPATR)
+            CALL BDLS('JHTL',NBNK)
+C
+N           REPEAT PATREC
+            IND = 1
+            CALL PATRCO(IND)
+C
+        UNTIL NITER .GE.2
+C
+      RETURN
+C
+      END

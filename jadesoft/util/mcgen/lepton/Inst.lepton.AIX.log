@@ -1,0 +1,48 @@
+
+Start job at: Mon Sep 22 06:51:07 CEST 2003
+
+found lepton.car as /mnt/home/pcl2483/pedro/jadesoft/util/mcgen/lepton/lepton.car
+
+ YPATCHY  executing with Files / Options
+
+   1  PAM    11   -
+   2  ASM    21    /home/iwsatlas2/pedro/tmp/ytofort18780/lepton.f
+   3  READ    2    /home/iwsatlas2/pedro/tmp/ytofort18780/lepton.cra
+   4  PRINT   3    /home/iwsatlas2/pedro/tmp/ytofort18780/lepton.lis
+   5  ASMA   22   -    ...
+
+ NUMBER OF GARBAGE COLLECTIONS =   0
+ NUMBER OF WORDS UNUSED =154520
+
+ -----------------
+ LINES IN  /QMACH/
+ NQL-NOR  MAX  PTH
+     108  110    0
+
+ ----------------------
+ NO.OF WARNINGS PRINTED
+
+ BAD CONTROL CARDS    0
+ MISSING SEQUENCES    0
+ LOST ACTIVATIONS     0
+ UNSATISF/ REF'S      0
+ LEVEL 1 CLASHES      0
+ LEVEL 2 CLASHES      0
+ ----------------------
+** lepair   === End of Compilation 1 ===
+** wrcprd   === End of Compilation 2 ===
+** prcprd   === End of Compilation 3 ===
+** incprd   === End of Compilation 4 ===
+1501-510  Compilation successful for file lepton.f.
+main: lepton.run
+trace symbols:
+load symbols:
+files.o: lepton.o
+opal libs:
+dummy lib:
+cern libs: -L/cern/98/lib -lgraflib -lgrafX11 -lpacklib -lmathlib -lkernlib
+
+now beginning final pass
+link completed with status 0
+link end
+lepton.run moved to /home/pcl2483/pedro/jadesoft/util/mcgen/Rbin/.

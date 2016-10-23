@@ -1,0 +1,3581 @@
+C MC105/08 24.09.96 11:15 Code to generate 4-vector MC. Stefan Kluth
+C
+C contains the following patches:
+C HISTORY history
+C MCCDES  KEEP sequences for MC code
+C MCJT74  JETSET 7.4
+C MCPY57  PYTHIA 5.7 (Z/gamma only)
+C MCPYWW  PYTHIA 5.7 (WW)
+C MCHW58  HERWIG 5.8 (Z/gamma only)
+C MCHW59  HERWIG 5.8 (Z/gamma only)
+C MCJ623  COJETS 6.23 (Z/gamma only)
+C MCAR48P PYTHIA/ARIADNE 4.08 (Z/gamma only)
+C MCAR48J JETSET/ARIADNE 4.08 (Z/gamma only)
+C MCKERN  Package code
+C MCUSER  User analysis code
+C
++PATCH,HISTORY.
+C
+C 22.01.96, Stefan Kluth: Reorganise JETSET job to separate analysis from
+C                         generation of partons and hadrons, should allow
+C                         to use the same analysis routines with HERWIG
+C                         or ARIADNE. Use FFREAD to read in MC pars.
+C 10.07.96, STK: Name MC100.car
+C 16.07.96, STK: New parton selection and FSR treatment in MCUSEV,
+C                reorganised FFREAD common blocks
+C 17.07.96, STK: Replace VZERO by VBLANK for initialising hollerith arrays
+C 24.07.96, STK: Remove ISR from hadrons in MCUSEV,
+C                introduce private version of HWCONV for HERWIG
+C 25.07.96, STK: Change algorithms in MCUSEV,
+C                set up clean version of ARIADNE 4.08
+C 18.09.96, STK: New version 101, drop HWCONV, is in HERWIG59.CAR now,
+C                make removal of ISR from hadrons dependent on switch ISRRM
+C 19.09.96, STK: Introduce individual PATCHes for MC drivers, remove
+C                PROGRAM MCPROG 
+C 24.09.96, STK: Reorganise use of HP error trapping code, 
+C                new code for JETSET/ARIADNE in PATCH MCAR48J,
+C                SAVE statements for KEEPed COMMONs and where needed 
+C                (hopefully)
+C 20.10.97, SB:  Reorganise the Jetfinding option,
+C                Clean the code
++PATCH,MCCDES.
++KEEP,MCPAW.
+C  Stuff for HBOOK:
+      INTEGER LIMIT
+      PARAMETER( LIMIT=200000 )
+      REAL HMEM
+      COMMON /PAWC/ HMEM(LIMIT)
+      SAVE /PAWC/
++KEEP,MCFFR.
+C  Stuff for FFREAD:
+      INTEGER NAMLEN,NBYTEW,NWONAM
+      PARAMETER( NAMLEN=80, NBYTEW=4, NWONAM=NAMLEN/NBYTEW )
+      CHARACTER*(NAMLEN) CHMCTYP,CHEVFILE
+      LOGICAL LSTBL,LUDSC,LBQRK,LISR,LFSR,LSTART,L4VEC
+      INTEGER NEVNT,IMCRDM,NRTOPR,IRUN,SFLAV
+      REAL ECMASS,JTB,JTSQ,JTQ0
+      COMMON /MCFFR/ 
+     &               NEVNT,IMCRDM,NRTOPR,IRUN,SFLAV
+     &              ,ECMASS,JTB,JTSQ,JTQ0
+     &              ,LSTBL,LUDSC,LBQRK,LISR,LFSR,LSTART,L4VEC
+     &              ,CHMCTYP,CHEVFILE
+      SAVE /MCFFR/
++KEEP,HPERTP.
+C  Error trapping for HPUX:
+      ON REAL DIV 0     CALL ROTRAP
+      ON REAL UNDERFLOW CALL ROTRAU
+      ON DOUBLE PRECISION UNDERFLOW CALL ROTRAU
+      ON REAL OVERFLOW  CALL ROTRAO
+      ON REAL ILLEGAL   CALL ROTRAI
++PATCH,MCJT74.
++DECK,MCJT74.
+      PROGRAM MCJT74
+      IMPLICIT NONE
+*.********************************************************************
+*.
+*. Standalone example for Jetset74.
+*. This example writes 4-vectors to disk for Gopal interface
+*. via a card file, using the Opal production criteria for Jetset.
+*.
+*. AUTHOR    :  J.W.Gary
+*. CREATED   :  23-Jun-91
+*. LAST MOD  :  23-Jun-91
+*. Modified for JETSET 74 8.2.95 Stefan Kluth
+*. 03.07.96, STK: Very heavily modified for use with MC4VEC package
+*. 20.09.96, STK: Mods for version 101
+*.
+*.********************************************************************
++SEQ,GUJETS.
++SEQ,GUDAT1.
++SEQ,GUDAT3.
++SEQ,GUDAT4.
++SEQ,GUDATR.
++SEQ,MCFFR.
+      INTEGER IEVT,IFLAV,IERR
+      CHARACTER*8 CH8
+C
+C  Error trapping sequences:
++SEQ,HPERTP,IF=HPUX,IF=ERRTRP.
+C
+C  Read FFREAD cards:
+      CALL MCINIT
+C
+C  User initialisation:
+      CALL MCUSIN
+      CHMCTYP= 'JETSET'
+C
+C  Check array dimensions for LUJETS:
+      IF( NLUPDM.GT.MSTU(5) ) THEN
+        WRITE (6,FMT='('' L74LON: Warning, NLUPDM='',I6,
+     &     '' larger than MSTU(5)='',I6)') NLUPDM,MSTU (5)
+        MSTU(5)= NLUPDM
+      ENDIF
+      MSTU(4)= NLUPDM
+C
+C  Update JETSET parameters, switches and decay table from OPAL default:
+      PRINT*,' '
+      PRINT*,'OPAL JETSET 7.4 default:'
+      PRINT*,' '
+      CALL JT74OP
+      PRINT*,' '
+      PRINT*,'Changes from OPAL JETSET 7.4 default:'
+      PRINT*,' '
+      WRITE(CH8,FMT='(F8.5)') JTB
+      CALL LUGIVE('PARJ(42)='//CH8)
+      WRITE(CH8,FMT='(F8.5)') JTSQ
+      CALL LUGIVE('PARJ(21)='//CH8)
+      WRITE(CH8,FMT='(F8.5)') JTQ0
+      CALL LUGIVE('PARJ(82)='//CH8)
+      PRINT*,' '
+C
+C  Print JETSET welcome message:
+      MSTU(12)= 1
+C
+C  Initial and final-state photon radiation, 107=0 no isr; 1 for isr,
+C  41=2 for FSR on:
+      PRINT*,'Switches for ISR and FSR:'
+      IF( LISR ) THEN
+        CALL LUGIVE('MSTJ(107)=1')
+      ELSE
+        CALL LUGIVE('MSTJ(107)=0')
+      ENDIF
+      IF( LFSR ) THEN
+        CALL LUGIVE('MSTJ(41)=2')
+      ELSE
+        CALL LUGIVE('MSTJ(41)=1')
+      ENDIF
+C
+C  Set long-lived hadrons stable if desired:
+      PRINT*,' '
+      IF( LSTBL ) CALL MCSTBL
+C
+C  Random numbers and 4-vector writing:
+      IF( IMCRDM.GT.0 ) MRLU(1)= IMCRDM
+      IF( L4VEC ) CALL MCWRIT('I',IERR)
+C
+C  Other initialization:
+      IFLAV= 0
+C
+C  Event loop:
+      PRINT*,' '
+      PRINT*,'Start JETSET event generation now, NEVNT=',NEVNT
+      DO IEVT=1,NEVNT
+C
+C       Generate 1 event:
+   10   CALL LUEEVT(IFLAV,ECMASS)
+C
+C       Check for errors (mainly L=1 meson decays):
+        IF( MSTU(24).EQ.4 .OR. MSTU(24).EQ.5 ) THEN
+          PRINT*,'MCJT74: JETSET error: ',MSTU(24),' regenerate'
+          GOTO 10
+        ENDIF
+C
+C       Write 4-vectors if demanded:
+        IF( L4VEC ) CALL MCWRIT('W',IERR)
+C
+C       User event analysis:
+        CALL MCUSEV
+
+      ENDDO
+C
+C  Now call MCUSFI to to finish things off:
+      CALL MCUSFI
+      IF( L4VEC ) CALL MCWRIT('F',IERR)
+C
+C  The End:
+      STOP
+      END
++PATCH,MCPY57.
++DECK,MCPY57.
+      PROGRAM MCPY57
+      IMPLICIT NONE
+*.********************************************************************
+*.
+*. Standalone example for Pythia 5.7.
+*. This example writes 4-vectors to disk for Gopal interface
+*. via a card file.
+*.
+*. Based on JETSET example job J73LON from J.W.Gary
+*.
+*. AUTHOR    :  D.Charlton
+*. CREATED   :  8-Nov-94
+*. LAST MOD  : 21-Sep-95
+*.
+*. 21-Sep-95  D.Charlton   Small mods for JETSET 7.408
+*.  8-Jun-95  D.Charlton   The choices for a new generation
+*.  8-Nov-94  D.Charlton   Try to set up a clean version
+*. 25.07.96, STK: Lots of mods for use with MC package
+*.
+*.********************************************************************
+C  GUJETS, GUDAT1 only needed for NLUPDM checking...
++SEQ,GUJETS.
++SEQ,GUDAT1.
++SEQ,GUDATR.
+C  PYPARS is only needed for PARI, for the final cross-section!
++SEQ,PYPARS.
+C  DGC Attempt to debug cross-section calculation
++SEQ,PYINT5.
++SEQ,MCFFR.
+C  Other stuff:
+      INTEGER ITYPE,IEVT,IERR,I
+      CHARACTER*8 CH8
+C
+C  Error trapping sequences:
++SEQ,HPERTP,IF=HPUX,IF=ERRTRP.
+C
+C  Read FFREAD cards:
+      CALL MCINIT
+C
+C  User Initialisation:
+      CALL MCUSIN
+      CHMCTYP= 'PYTHIA'
+C
+C  Standard OPAL jetset parameters:
+      PRINT*,' '
+      PRINT*,'Standard OPAL JETSET/PYHTIA parameters:'
+      PRINT*,' '
+      CALL JT74OP
+      PRINT*,' '
+      PRINT*,'Changes from OPAL JETSET 7.4 default:'
+      PRINT*,' '
+      WRITE(CH8,FMT='(F8.5)') JTB
+      CALL LUGIVE('PARJ(42)='//CH8)
+      WRITE(CH8,FMT='(F8.5)') JTSQ
+      CALL LUGIVE('PARJ(21)='//CH8)
+      WRITE(CH8,FMT='(F8.5)') JTQ0
+      CALL LUGIVE('PARJ(82)='//CH8)
+      PRINT*,' '
+C
+C  Use our own W mass and width:
+      CALL LUGIVE ('PMAS(C24,1)=80.22')
+      CALL LUGIVE ('PMAS(C24,2)=2.085')
+C
+C  Special PYTHIA program options:
+C
+C  Initial state radiation if 1, none if 0:
+      IF( LISR ) THEN
+        CALL LUGIVE('MSTP(11)=1')
+      ELSE
+        CALL LUGIVE('MSTP(11)=0')
+      ENDIF
+C
+C  Final state radiation if 1, none if 0:
+      IF( LFSR ) THEN
+        CALL LUGIVE('MSTP(71)=1')
+      ELSE
+        CALL LUGIVE('MSTP(71)=0')
+      ENDIF
+C
+C  Turn off frag, decay (0) & QCD (-1):
+      CALL LUGIVE('MSTP(111)=1')
+C
+C  Protect against poor initialisation - use scale factor:
+      CALL LUGIVE('MSTP(121)=1')
+C
+C  Following scale factor for weights needs to be >2 if ISR:
+C  included for W+W- events, it seems.
+      CALL LUGIVE('PARP(121)=2.5')
+C
+C  Choose the process to be generated
+C  Here:   Process 25 =  f1f2 -> W+W-
+C                  22 =  Z0 Z0
+C                  35 =  Z0 e e
+C                  36 =  W e nu
+C          Process 1  =  f1f1 -> gamma*/Z0
+      CALL LUGIVE('MSEL=0;MSUB(1)=1')
+C
+C  Select Lambda-LLA for timelike showers (from Bill):
+      CALL LUGIVE('MSTP(3)=1')
+C
+C  Declare K0s, hyperons stable:
+      IF( LSTBL ) CALL MCSTBL
+C
+C  Pass random number seed from FFREAD card:
+      IF( IMCRDM.GT.0 ) MRLU(1)= IMCRDM
+      IF( L4VEC ) CALL MCWRIT('I',IERR)
+C
+C  PYINIT call tells Pythia f1f2 = e+e- (etc):
+      write(*,*) 'cm for Pythia: ',ECMASS
+      CALL PYINIT('CMS','E-','E+',ECMASS)
+      CALL LULIST(0)
+C
+C  Event loop:
+      DO IEVT=1,NEVNT
+C
+C       Generate event:
+   10   CALL PYEVNT
+C
+C       Protect against pathological cases:
+        IF( MSTU(24).EQ.4 .OR. MSTU(24).EQ.5 ) THEN
+          PRINT *,'MCPY57 PROBLEM: regenerate',MSTU(24),MSTU(25)
+          GOTO 10
+        ENDIF
+C
+C       Process event for qq_bar only:
+        CALL MYTYPE(ITYPE)
+        IF( ITYPE.NE.1 ) THEN
+          IF( IEVT.LE.NRTOPR*10 )
+     &      PRINT*,'MCPY57: Not a qqbar, regenerate'
+          GOTO 10
+        ENDIF
+C
+C       Fix up event record:
+        DO I=1,N
+          IF( K(I,1).EQ.21 ) THEN
+            IF( K(I,2).EQ.23 ) K(I,1)= 11
+            IF( ABS(K(I,2)).LE.6 ) K(I,1)= 15
+          ENDIF
+        ENDDO
+        CALL LUEDIT(15)
+C
+C       Write 4-vectors if demanded:
+        IF( L4VEC ) CALL MCWRIT('W',IERR)
+C
+C       User analysis:
+        CALL MCUSEV
+C
+C       Print some info once in a while:
+        IF( MOD(IEVT,1000).EQ.0 .OR. IEVT.EQ.NEVNT ) THEN
+          WRITE(*,'(1X,''Done '',I7,'' out of '',I7)') IEVT,NEVNT
+        ENDIF
+
+      ENDDO
+C
+C  Run termination:
+      CALL PYSTAT(4)
+c      WRITE(6,'('' Total cross-section:'',F10.5,''+/-'',F10.5,
+c     &      '' pb'')'),PARI(1)*1.E9,PARI(1)*1.E9/SQRT(FLOAT(NEVNT))
+      WRITE(6,*) PARI(1)*1.E9,PARI(1)*1.E9/SQRT(FLOAT(NEVNT))
+C
+C  Finsh off:
+      CALL MCUSFI
+      IF( L4VEC ) CALL MCWRIT('F',IERR)
+C
+C  The End:
+      STOP
+      END
++PATCH,MCPYWW.
++DECK,MCPYWW.
+      PROGRAM MCPYWW
+      IMPLICIT NONE
+*.********************************************************************
+*.
+*. Standalone example for Pythia 5.7.
+*. This example writes 4-vectors to disk for Gopal interface
+*. via a card file.
+*.
+*. Based on JETSET example job J73LON from J.W.Gary
+*.
+*. AUTHOR    :  D.Charlton
+*. CREATED   :  8-Nov-94
+*. LAST MOD  : 21-Sep-95
+*.
+*. 21-Sep-95  D.Charlton   Small mods for JETSET 7.408
+*.  8-Jun-95  D.Charlton   The choices for a new generation
+*.  8-Nov-94  D.Charlton   Try to set up a clean version
+*. 25.07.96, STK: Lots of mods for use with MC package
+*. 08.01.98, SB : COPY FROM MCPY57 TO GENERATE WW
+*.********************************************************************
+C  GUJETS, GUDAT1 only needed for NLUPDM checking...
++SEQ,GUJETS.
++SEQ,GUDAT1.
++SEQ,GUDATR.
+C  PYPARS is only needed for PARI, for the final cross-section!
++SEQ,PYPARS.
+C  DGC Attempt to debug cross-section calculation
++SEQ,PYINT5.
++SEQ,MCFFR.
+C  Other stuff:
+      INTEGER ITYPE,IEVT,IERR,I
+      CHARACTER*8 CH8
+C
+C  Error trapping sequences:
++SEQ,HPERTP,IF=HPUX,IF=ERRTRP.
+C
+C  Read FFREAD cards:
+      CALL MCINIT
+C
+C  User Initialisation:
+      CALL MCUSIN
+      CHMCTYP= 'PYTHIA'
+C
+C  Standard OPAL jetset parameters:
+      PRINT*,' '
+      PRINT*,'Standard OPAL JETSET/PYHTIA parameters:'
+      PRINT*,' '
+      CALL JT74OP
+      PRINT*,' '
+      PRINT*,'Changes from OPAL JETSET 7.4 default:'
+      PRINT*,' '
+      WRITE(CH8,FMT='(F8.5)') JTB
+      CALL LUGIVE('PARJ(42)='//CH8)
+      WRITE(CH8,FMT='(F8.5)') JTSQ
+      CALL LUGIVE('PARJ(21)='//CH8)
+      WRITE(CH8,FMT='(F8.5)') JTQ0
+      CALL LUGIVE('PARJ(82)='//CH8)
+      PRINT*,' '
+C
+C  Use our own W mass and width:
+      CALL LUGIVE ('PMAS(C24,1)=80.22')
+      CALL LUGIVE ('PMAS(C24,2)=2.085')
+C
+C  Special PYTHIA program options:
+C
+C  Initial state radiation if 1, none if 0:
+      IF( LISR ) THEN
+        CALL LUGIVE('MSTP(11)=1')
+      ELSE
+        CALL LUGIVE('MSTP(11)=0')
+      ENDIF
+C
+C  Final state radiation if 1, none if 0:
+      IF( LFSR ) THEN
+        CALL LUGIVE('MSTP(71)=1')
+      ELSE
+        CALL LUGIVE('MSTP(71)=0')
+      ENDIF
+C
+C  Turn off frag, decay (0) & QCD (-1):
+      CALL LUGIVE('MSTP(111)=1')
+C
+C  Protect against poor initialisation - use scale factor:
+      CALL LUGIVE('MSTP(121)=1')
+C
+C  Following scale factor for weights needs to be >2 if ISR:
+C  included for W+W- events, it seems.
+      CALL LUGIVE('PARP(121)=2.5')
+C
+C  Choose the process to be generated
+C  Here:   Process 25 =  f1f2 -> W+W-
+C                  22 =  Z0 Z0
+C                  35 =  Z0 e e
+C                  36 =  W e nu
+C          Process 1  =  f1f1 -> gamma*/Z0
+      CALL LUGIVE('MSEL=0;MSUB(25)=1')
+C
+C  Select Lambda-LLA for timelike showers (from Bill):
+      CALL LUGIVE('MSTP(3)=1')
+C
+C  Declare K0s, hyperons stable:
+      IF( LSTBL ) CALL MCSTBL
+C
+C  Pass random number seed from FFREAD card:
+      IF( IMCRDM.GT.0 ) MRLU(1)= IMCRDM
+      IF( L4VEC ) CALL MCWRIT('I',IERR)
+C
+C  PYINIT call tells Pythia f1f2 = e+e- (etc):
+      write(*,*) 'cm for Pythia: ',ECMASS
+      CALL PYINIT('CMS','E-','E+',ECMASS)
+      write(*,*) 'PYINIT done'
+      CALL LULIST(0)
+C
+C  Event loop:
+      DO IEVT=1,NEVNT
+C
+C       Generate event:
+   10   CALL PYEVNT
+        
+C
+C       Protect against pathological cases:
+        IF( MSTU(24).EQ.4 .OR. MSTU(24).EQ.5 ) THEN
+          PRINT *,'MCPY57 PROBLEM: regenerate',MSTU(24),MSTU(25)
+          GOTO 10
+        ENDIF
+C
+C       Process event for qq_bar only:
+        CALL MYTYPE(ITYPE)
+	itype = 3	
+        IF( ITYPE.NE.3 ) THEN
+          IF( IEVT.LE.NRTOPR*10 )
+     &      PRINT*,'MCPYWW: Not a WW->QQQQ, regenerate'
+          GOTO 10
+        ENDIF
+C
+C       Fix up event record:
+        DO I=1,N
+          IF( K(I,1).EQ.21 ) THEN
+            IF( K(I,2).EQ.23 ) K(I,1)= 11
+            IF( ABS(K(I,2)).LE.6 ) K(I,1)= 15
+          ENDIF
+        ENDDO
+        CALL LUEDIT(15)
+C
+C       Write 4-vectors if demanded:
+        IF( L4VEC ) CALL MCWRIT('W',IERR)
+C
+C       User analysis:
+        CALL MCUSEV
+C
+C       Print some info once in a while:
+        IF( MOD(IEVT,1000).EQ.0 .OR. IEVT.EQ.NEVNT ) THEN
+          WRITE(*,'(1X,''Done '',I7,'' out of '',I7)') IEVT,NEVNT
+        ENDIF
+
+      ENDDO
+C
+C  Run termination:
+      CALL PYSTAT(4)
+c      WRITE(6,'('' Total cross-section:'',F10.5,''+/-'',F10.5,
+c     &      '' pb'')'),PARI(1)*1.E9,PARI(1)*1.E9/SQRT(FLOAT(NEVNT))
+      WRITE(6,*) PARI(1)*1.E9,PARI(1)*1.E9/SQRT(FLOAT(NEVNT))
+C
+C  Finsh off:
+      CALL MCUSFI
+      IF( L4VEC ) CALL MCWRIT('F',IERR)
+C
+C  The End:
+      STOP
+      END
++PATCH,MCHW58.
++DECK,MCHW58.
+      PROGRAM MCHW58
+      IMPLICIT NONE
+*.********************************************************************
+*. ------
+*. H58DLO
+*. ------
+*. Standalone example program for Herwig58D.
+*.
+*. AUTHOR    :  J.W.Gary
+*. CREATED   :  15-Jun-95
+*. LAST MOD  :  15-Jun-95
+*.
+*. modification log:
+*. 03-04-96  :  S. Bentvelsen  HERWIG ISR by default.
+*. 16-04-96  :  S. Bentvelsen  Update Electro-Weak parameters
+*. 22-04-96  :  S. Bentvelsen  Complete new version of routine that
+*.                             uses HEPEVT common
+*. 03.07.96, STK: mods for use with MC4VEC package
+*.********************************************************************
++SEQ,HWPDEF.
++SEQ,HEPEVT.
++SEQ,GUDATR.
++SEQ,GUJETS.
++SEQ,GUDAT1.
++SEQ,MCFFR.
+      REAL PARVAL(NHWPAR)
+      INTEGER IFLAVR,NHWPRT,IERR,IEVT
+C
+C  Error trapping sequences:
++SEQ,HPERTP,IF=HPUX,IF=ERRTRP.
+C
+C  Read FFREAD cards:
+      CALL MCINIT
+C
+C  Initialisation of the analysis routine:
+      CALL MCUSIN
+      CHMCTYP= 'HERWIG58'
+C
+C  Electro-weak parameters:
+      PARVAL(IHZ0MS)= 91.1887
+      PARVAL(IHTMAS)= 178.
+      PARVAL(IHHMAS)= 800.
+      PARVAL(IHSIN2)= 0.2320
+      PARVAL(IHZ0WD)= 2.4973
+      PARVAL(IHWMAS)= 80.32
+C
+C  Fragmentation parameters:
+C  Lambda-LLA (QCDLAM):
+      PARVAL(IHQLAM)= 0.16
+C
+C  Maximum cluster mass (CLMAX):
+      PARVAL(IHCLMX)= 3.40
+C
+C  Extra cutoff for gluon (VGCUT):
+      PARVAL(IHGMAS)= 0.10
+C
+C  Extra cutoff for quark (VQCUT):
+      PARVAL(IHQMAS)= 0.48
+C
+C  Power in cluster mass relation (CLPOW):
+      PARVAL(IHCLPO)= 1.30
+C
+C  Cutoff for final-state photon emission (VPCUT):
+      PARVAL(IHVPCU)= 0.40
+C
+C  Cluster decay direction:
+      PARVAL(IHCLDI)= 1
+C
+C  Smearing of cluster decay direction:
+      PARVAL(IHCLSM)= 0.35
+C
+C  Initial-state radiation,
+C  in version 58d, HERWIG generates the ISR by default.
+C  PARVAL(IHIRAD)= 0:   HERWIG ISR Generated
+C  PARVAL(IHIRAD)= 1:   no ISR generated
+      IF( LISR ) THEN
+        PARVAL(IHIRAD)= 0
+      ELSE
+        PARVAL(IHIRAD)= 1
+      ENDIF
+C
+C  Amount of cluster collapse to 1 hadron (default=0.0):
+      PARVAL(IHC1DK)= 0.0
+C
+C  Number of flavors:
+      PARVAL(IHNFLA)= 5
+C
+C  JETSET welcome message:
+      MSTU(12)= 1
+C
+C  Use the JETSET masses:
+      CALL FXHLMS
+C
+C  Printout LUN:
+      PARVAL(IHWLUN)= 6
+C
+C  Declare some longlived hadrons stable if demanded:
+      IF( LSTBL ) CALL MCSTBL
+C
+C  Other initialization:
+      IFLAVR= 0
+      CALL H58DDRIV(ECMASS,IFLAVR,PARVAL,NHWPRT,IERR,'I')
+      PARVAL(IHZORI)= 0
+C
+C  Initialise 4-vector writing if demanded:
+      IF( IMCRDM.GT.0 ) MRLU(1)= IMCRDM
+      IF( L4VEC ) CALL MCWRIT('I',IERR)
+C
+C  Event loop:
+      DO IEVT=1,NEVNT
+C
+C       Generate event:
+        NHWPRT= 0
+        CALL H58DDRIV(ECMASS,IFLAVR,PARVAL,NHWPRT,IERR,'E')
+C
+C       HERWIG printout:
+        IF( IEVT.LE.NRTOPR ) CALL HWUEPR
+C
+C       Convert to JETSET common block and do the JETSET decays:
+        CALL HWCONV(IERR)
+        IF( IERR.NE.0 ) THEN
+          PRINT*,'MCHW58: conversion HEPEVT -> JETSET failed'
+          GOTO 180
+        ENDIF
+C
+C       Write 4-vectors if demanded:
+        IF( L4VEC ) CALL MCWRIT('W',IERR)
+C
+C       User event analysis:
+        CALL MCUSEV
+
+  180   CONTINUE
+
+      ENDDO
+C
+C  Run termination:
+      CALL MCUSFI
+      IF( L4VEC ) CALL MCWRIT('F',IERR)
+C
+C  The End:
+      STOP
+      END
++DECK,HWCONV.
+      SUBROUTINE HWCONV(IERR)
+**************************************************************************
+*     CONVERT HEPEVT TO JETSET COMMON BLOCKS FOR HERWIG EVENTS
+*
+*     Modify the HEP common block for HERWIG events in order to save
+*     the hard process and remove the clusters.
+*     Convert to JETSET common blocks and remove empty lines.
+*     Decay of primary hadrons using JETSET.
+*
+*     Stan Bentvelsen 18-04-96
+*
+*  Modifications:
+*  24.07.96, STK: Convert HEPEVT to JETSET first, then do all the editing,
+*                 this leaves the event history in one piece.
+*  08.08.96, SB : Set the CMSHOWER unstable, so that we get rid of it in 
+*                 the event record.
+*  19.08.96, SB : Secure to remain in bounds of array K
+*  24.08.96, SB : Adapt to WW production as well
+**************************************************************************
+      IMPLICIT NONE
++SEQ,HEPEVT.
++SEQ,GUJETS.
++SEQ,GUDAT1.
+      INTEGER NRTOPR
+
+      INTEGER IERR,I,IPA,INR,ICALL
+      DATA ICALL  / 0 /
+      SAVE ICALL
+      DATA NRTOPR / 3 /
+      SAVE NRTOPR
+      ICALL= ICALL+1
+      IERR= 0
+C
+C  Convert HEPEVT to JETSET event record:
+      CALL LUHEPC(2)
+C
+C  Set status codes for Z0, partons and clusters such that quarks
+C  from gluon splitting and clusters will be dropped during the next
+C  LUEDIT call. Also set all primary hadrons unstable so that JETSET
+C  can decay them:
+      DO I=1,N
+        IF( K(I,2).EQ.23 ) K(I,1)= 11
+        IF( K(I,2).EQ.24 ) K(I,1)= 11
+        IF( K(I,2).EQ.-24) K(I,1)= 11
+        IF( K(I,2).EQ.94 ) K(I,1)= 21
+        IF( K(I,2).GE.91 .AND. K(I,2).LE.93 ) K(I,1)= 21
+        IF( ABS(K(I,2)).GE.1 .AND. ABS(K(I,2)).LE.16 ) THEN
+          INR = K(I,3)
+          IF(INR.GT.0.AND.INR.LE.N) THEN
+            IF( (K(INR,2).EQ.23.OR.ABS(K(INR,2)).EQ.24) ) THEN
+              IF( ABS(K(I,2)).LE.6) then 
+                K(I,1)= 15
+              ELSE
+                K(I,1) = 1
+              ENDIF
+            ELSEIF( K(I,1).EQ.0 ) THEN
+              K(I,1)= 21
+            ENDIF
+          ENDIF
+        ENDIF
+        IF( ABS(K(I,2)).GT.100 .AND. K(I,1).EQ.0 ) K(I,1)= 1
+      ENDDO
+
+      IF( ICALL.LE.NRTOPR ) THEN
+        PRINT*,' '
+        PRINT*,'Before fixing event history'
+        CALL LULIST(2)
+      ENDIF
+C
+C  Fix event history, for entries whose parent is going to go during
+C  the next LUEDIT call put the grand- (or grand-grand- and so on) parent
+C  as the parent:
+      DO I=1,N
+        INR = K(I,3)
+        IF(INR.GT.0.AND.INR.LE.N) THEN
+          IF( K(INR,1).EQ.21 ) THEN
+            IPA= I
+   10       CONTINUE
+            IPA= K(IPA,3)
+            IF(IPA.GT.0.AND.IPA.LE.N) THEN
+              IF( K(IPA,1).NE.21 ) THEN
+                K(I,3)= IPA
+                GOTO 20
+              ELSE
+                GOTO 10
+              ENDIF
+            ENDIF
+   20       CONTINUE
+          ENDIF
+        ENDIF
+      ENDDO
+
+      IF( ICALL.LE.NRTOPR ) THEN
+        PRINT*,' '
+        PRINT*,'After fixing event history'
+        CALL LULIST(2)
+      ENDIF
+C
+C  Remove lines with K(I,1)=0 and K(I,1)>20:
+      CALL LUEDIT(12)
+      CALL LUEDIT(15)
+C
+C  Decay primary hadrons using JETSET decay tables:
+      CALL LUEXEC
+C
+C  Catch infinite loops in the JETSET decays:
+      IF( MSTU(24).EQ.4 .OR. MSTU(24).EQ.5 ) THEN
+        PRINT*,'HWCONV: Infinite loop in LUEXEC'
+        CALL HWUEPR
+        CALL LULIST(2)
+        IERR= MSTU(24)
+        RETURN
+      ENDIF
+C
+C  Final state photons set stable:
+      DO I=1,N
+        IF( K(I,2).EQ.22 .AND. K(I,1).NE.1 ) K(I,1)= 1
+      ENDDO
+C
+C  The End:
+      RETURN
+      END
++PATCH,MCHW59.
++DECK,MCHW59.
+      PROGRAM MCHW59
+      IMPLICIT NONE
+*.********************************************************************
+*. ------
+*. MCHW59
+*. ------
+*. Standalone program for Herwig59.
+*.
+*. AUTHOR    :  J.W.Gary
+*. CREATED   :  15-Jun-95
+*. LAST MOD  :  15-Jun-95
+*.
+*. modification log:
+*. 03-04-96  :  S. Bentvelsen  HERWIG ISR by default.
+*. 16-04-96  :  S. Bentvelsen  Update Electro-Weak parameters
+*. 22-04-96  :  S. Bentvelsen  Complete new version of routine that
+*.                             uses HEPEVT common
+*. 03.07.96, STK: mods for use with MC4VEC package
+*. 20.09.96, STK: Copy from MCHW58, replace 58 by 59 
+*.********************************************************************
++SEQ,HWPDEF.
++SEQ,HEPEVT.
++SEQ,GUDATR.
++SEQ,GUJETS.
++SEQ,GUDAT1.
++SEQ,MCFFR.
+      REAL PARVAL(NHWPAR)
+      INTEGER IPRCCR,NHWPRT,IERR,IEVT
+C
+C  Error trapping sequences:
++SEQ,HPERTP,IF=HPUX,IF=ERRTRP.
+C
+C  Read FFREAD cards:
+      CALL MCINIT
+      WRITE(*,*) 'HERWIG CM ENERGY: ',ECMASS
+C
+C  Initialisation of the analysis routine:
+      CALL MCUSIN
+      CHMCTYP= 'HERWIG59'
+      WRITE(*,*) 'HERWIG CM ENERGY: ',ECMASS
+
+C
+C  Electro-weak parameters:
+      PARVAL(IHZ0MS)= 91.1887
+      PARVAL(IHTMAS)= 178.
+      PARVAL(IHHMAS)= 800.
+      PARVAL(IHSIN2)= 0.2320
+      PARVAL(IHZ0WD)= 2.4973
+      PARVAL(IHWMAS)= 80.32
+C
+C  Fragmentation parameters:
+C  Lambda-LLA (QCDLAM):
+      PARVAL(IHQLAM)= 0.16
+*
+*     Gluon effective mass (RMASS(13))
+      PARVAL (IHRM13) =  0.75
+*
+C
+C  Maximum cluster mass (CLMAX):
+      PARVAL(IHCLMX)= 3.75
+C
+C  Extra cutoff for gluon (VGCUT):
+      PARVAL(IHGMAS)= 0.10
+C
+C  Extra cutoff for quark (VQCUT):
+      PARVAL(IHQMAS)= 0.48
+C
+C  Power in cluster mass relation (CLPOW):
+      PARVAL(IHCLPO)= 1.30
+C
+C  Cutoff for final-state photon emission (VPCUT):
+      PARVAL(IHVPCU)= 0.40
+C
+C  Cluster decay direction:
+      PARVAL(IHCLDI)= 1
+C
+C  Smearing of cluster decay direction:
+      PARVAL(IHCLSM)= 0.35
+C
+C  Initial-state radiation,
+C  in version 58d, HERWIG generates the ISR by default.
+C  PARVAL(IHIRAD)= 0:   HERWIG ISR Generated
+C  PARVAL(IHIRAD)= 1:   no ISR generated
+      IF( LISR ) THEN
+        PARVAL(IHIRAD)= 0
+      ELSE
+        PARVAL(IHIRAD)= 1
+      ENDIF
+C
+C  Amount of cluster collapse to 1 hadron (default=0.0):
+      PARVAL(IHC1DK)= 0.0
+C
+C  Number of flavors:
+      PARVAL(IHNFLA)= 5
+C
+C  JETSET welcome message:
+      MSTU(12)= 1
+C
+C  Use the JETSET masses:
+      CALL FXHLMS
+C
+C  Printout LUN:
+      PARVAL(IHWLUN)= 6
+C
+C  Declare some longlived hadrons stable if demanded:
+      IF( LSTBL ) CALL MCSTBL
+C
+C  Other initialization:
+      IPRCCR= 100
+      WRITE(*,*) 'HERWIG CM ENERGY: ',ECMASS
+      CALL H59DRIV(ECMASS,IPRCCR,PARVAL,NHWPRT,IERR,'I')
+      PARVAL(IHZORI)= 0
+C
+C  Initialise 4-vector writing if demanded:
+      IF( IMCRDM.GT.0 ) MRLU(1)= IMCRDM
+      IF( L4VEC ) CALL MCWRIT('I',IERR)
+C
+C  Event loop:
+      DO IEVT=1,NEVNT
+C
+C       Generate event:
+        NHWPRT= 0
+        CALL H59DRIV(ECMASS,IPRCCR,PARVAL,NHWPRT,IERR,'E')
+C
+C       HERWIG printout:
+        IF( IEVT.LE.NRTOPR ) CALL HWUEPR
+C
+C       Convert to JETSET common block and do the JETSET decays:
+        CALL HWCONV(IERR)
+        IF( IERR.NE.0 ) THEN
+          PRINT*,'MCHW59: conversion HEPEVT -> JETSET failed'
+          GOTO 180
+        ENDIF
+C
+C       Write 4-vectors if demanded:
+        IF( L4VEC ) CALL MCWRIT('W',IERR)
+C
+C       User event analysis:
+        CALL MCUSEV
+
+  180   CONTINUE
+
+      ENDDO
+C
+C  Run termination:
+      CALL MCUSFI
+      IF( L4VEC ) CALL MCWRIT('F',IERR)
+C
+C  The End:
+      STOP
+      END
++PATCH,MCJ623.
++KEEP,LOCAL.
+      INTEGER  ITKDM,MXTRK,MXJET
+      PARAMETER  (ITKDM=20,MXTRK=200,MXJET=10)
++DECK,MCJ623
+      PROGRAM MCJ623
+******************************************************************
+*
+*     ADAPTED THE COJET 6.23 PACKAGE FOR THE MC101 JOB
+*     STAN BENTVELSEN, 26-11-1996
+*
+******************************************************************
+C     **************
+C
+C-- Unit number 1 for file COJTABLE (ASMD or ASMD2 from YPATCHY)
+C-- Unit number 2 fake file, used for output in /HEPEVT/:  + all particles,
+C--               - stable particles only, unit number ignored
+C-- Unit number 5 for input cards (defaults to input stream is unassigned)
+C-- Unit number 6 for output list (defaults to output stream is unassigned)
+C
++SEQ,HPERTP,IF=HPUX,IF=ERRTRP.
+
+      OPEN (UNIT=55,FILE='cj623tab.dat',STATUS='OLD')
+      OPEN (UNIT=56,FILE='cj623inp.dat',STATUS='OLD')
+*
+*  event generation
+*  ----- ----------
+C      CALL COJETS(-55,2,-56,6)
+      CALL COJETS(-55,2,5,6)
+ 
+      STOP
+      END
++DECK,CJUSER
+      SUBROUTINE CJUSER (ACCEPT)
+C     *************************
+C...Shell of user's routine called:
+C...  i) Before starting generation of events, with NEVHEP=-1
+C... ii) After finishing generation of events, with NEVHEP=-2
+C...iii) After each event generation, with NEVHEP > 0 ; if ACCEPT = .FALSE.
+C...     is returned, the event is counted as rejected (the next event
+C...     will have the same NEVHEP)
+C
++SEQ,LOCAL.
++SEQ,HEPEVT.
++SEQ,CJCONT.
++SEQ,GUDATR.
++SEQ,GUJETS.
++SEQ,GUDAT1.
++SEQ,GUDAT2.
++SEQ,MCFFR.
+      INTEGER  LWRIT,LRAN,LRAN2
+      PARAMETER  (LWRIT=33,LRAN=34,LRAN2=35)
+      INTEGER  ITYPE, NTOPR,NREVT
+      PARAMETER  (NTOPR=2,NREVT=1500)
+      INTEGER  IHIST (NMXHEP),IRRLU (25)
+      INTEGER  IID,ICHG,NPART,IERR,IENUM,IZRN,IFLAV,IEVX
+
+      SAVE  ENDWR,IEVX,IENUM,ICNT,VTX,IZRN,FST,NWRITE
+
+
+
+      IF (NEVHEP.EQ.-1) THEN
+C
+C  Initialisation of the analysis routine:
+        CALL MCINIT
+        CALL MCUSIN
+        CHMCTYP= 'COJET623'
+*     
+*     initialization
+*     --------------
+         IF(L4VEC) THEN
+           CALL MCWRIT('I',IERR)
+         ENDIF
+C     
+C     INITIALISE NUMBERS
+C
+         IEVX = 0
+
+         GO TO 990
+      ELSE IF (NEVHEP.EQ.-2) THEN
+C     
+C     Run termination:
+        IF(L4VEC) THEN
+          CALL MCWRIT('F',IERR)
+        ENDIF
+        CALL MCUSFI
+        GO TO 990
+      END IF
+C     
+C     FILL THE JETSET COMMON BLOCKS
+C
+      CALL LUHEPC(2)
+C     
+C     PRINT THE FIRST FEW EVENTS
+C
+      IF(IEVX.LE.5) THEN
+        WRITE(*,*) 'PUT IN JETSET COMMON FORMAT'
+        CALL LULIST(2)
+      ENDIF
+C     
+C     THROW AWAY THE NON-HADRONIC DECAYS
+C
+      IF(ABS(K(1,2)).LE.6) THEN
+
+        IF (IEVX.LE.50.OR.MOD (IEVX,500).EQ.1)
+     +    WRITE (6,FMT='('' NEVHEP,IEVX,IENUM ='',4I6)')
+     +    NEVHEP,IEVX,IENUM
+        
+        IENUM  = IENUM + 1
+        IEVX   = IEVX + 1
+C     
+C     Write 4-vectors if demanded:
+        IF( L4VEC ) CALL MCWRIT('W',IERR)
+C     
+C     User event analysis:
+C     
+        CALL MCUSEV
+      ELSE
+        IF( ICNT.LE.50 )
+     &    PRINT*,'MCJ623: Not a qqbar, regenerate'
+      ENDIF
+
+
+
+ 990  RETURN
+      END
++PATCH,MCAR48P.
++DECK,MCAR48P.
+      PROGRAM MCAR48P
+      IMPLICIT NONE
+*.********************************************************************
+*.
+*. Stand-alone driver for ARIADNE with PYTHIA
+*.
+*. AUTHOR    :  J.W.Gary
+*. CREATED   :  06-Apr-95
+*. LAST MOD  :  06-Apr-95
+*.
+*. Modifications:
+*. 25.01.96, STK: Add some comments
+*. 25.07.96, STK: Thorough clean up
+*. 26.07.96, STK: Run with PYTHIA instead of JETSET
+*. 20.09.96, STK: Put in 4-vector writing routines
+*.
+*.********************************************************************
++SEQ,GUJETS.
++SEQ,GUDAT1.
++SEQ,GUDAT2.
++SEQ,GUDAT3.
++SEQ,GUDAT4.
++SEQ,GUDATR.
++SEQ,PYPARS.
++SEQ,MCFFR.
+      INTEGER MSTA
+      REAL PARA
+      COMMON /ARDAT1/ PARA(40),MSTA(40)
+      SAVE /ARDAT1/
+      INTEGER IEVT,IERR,ITYPE,I
+C
+C  Error trapping sequences:
++SEQ,HPERTP,IF=HPUX,IF=ERRTRP.
+C
+C  Read FFREAD cards:
+      CALL MCINIT
+C
+C  Initialize:
+      CALL MCUSIN
+      CHMCTYP= 'ARIADNEP'
+C
+C  Defaults for JETSET/PYTHIA:
+      PRINT*,' '
+      PRINT*,'Parameter changes from JETSET/PYTHIA defaults:'
+      CALL LUGIVE ('PMAS(C24,1)=80.22')
+C-----CALL LUGIVE ('PMAS(C24,1)=80.33')
+      CALL LUGIVE ('PMAS(C24,2)=2.085')
+C
+C  Initial and final-state photon radiation:
+      PRINT*,'Switches for ISR and FSR:'
+      IF( LISR ) THEN
+        CALL LUGIVE('MSTP(11)=1')
+      ELSE
+        CALL LUGIVE('MSTP(11)=0')
+      ENDIF
+      IF( LFSR ) THEN
+        PRINT*,'MCAR48P: FSR switched on'
+        MSTA(20)= 1
+      ELSE
+        PRINT*,'MCAR48P: FSR switched off'
+        MSTA(20)= 0
+      ENDIF
+C
+C  Special PYTHIA program options:
+C  Protect against poor initialisation - use scale factor:
+      CALL LUGIVE('MSTP(121)=1')
+C
+C  Following scale factor for weights needs to be >2 if ISR:
+C   included for W+W- events, it seems.
+      CALL LUGIVE('PARP(121)=2.5')
+C
+C  Long-lived hadrons (K0s, hyperons) stable if desired:
+      IF( LSTBL ) CALL MCSTBL
+C
+C  Choose the process to be generated:
+C  Here:    Process 25 =  f1f2 -> W+W-
+C                   22 =  Z0 Z0
+C                   35 =  Z0 e e
+C                   36 =  W e nu
+C           Process 1  =  f1f1 -> gamma*/Z0
+      CALL LUGIVE('MSEL=0;MSUB(1)=1')
+C
+C  Select lambda-LLA for timelike showers (from Bill):
+      CALL LUGIVE('MSTP(3)=1')
+C
+C  Call ARIADE initialisation routines:
+      CALL ARTUNE('OPAL')
+      CALL ARINIT('PYTHIA')
+      MSTP(61)= 1
+C
+C  PYINIT call tells PYTHIA that f1f2 = e+e-:
+      CALL PYINIT('CMS','E-','E+',ECMASS)
+C
+C  Random seed:
+      IF( IMCRDM.GT.0 ) MRLU(1)= IMCRDM
+      IF( L4VEC ) CALL MCWRIT('I',IERR)
+C
+C  Event loop:
+      DO IEVT=1,NEVNT
+C
+C       Generate PYTHIA intial state:
+   10   CALL PYEVNT
+C
+C       ARIADNE parton shower and JETSET hadronisation and decays:
+        CALL AREXEC
+C
+C       Protect against pathological cases in JETSET decays:
+        IF( MSTU(24).EQ.4 .OR. MSTU(24).EQ.5 ) THEN
+          PRINT *,'MCAR48P: Problem, regenerating',MSTU(24),MSTU(25)
+          GOTO 10
+        ENDIF
+C
+C       Is it an hadronic event? If not, regenerate:
+        CALL MYTYPE(ITYPE)
+        IF( ITYPE.NE.1 ) THEN
+          IF( IEVT.LE.NRTOPR*10 )
+     &      PRINT*,'MCAR48P: Not a qqbar, regenerate'
+          GOTO 10
+        ENDIF
+C
+C       Fix up event record:
+        DO I=1,N
+          IF( K(I,1).EQ.21 ) THEN
+            IF( K(I,2).EQ.23 ) K(I,1)= 11
+            IF( ABS(K(I,2)).LE.6 ) K(I,1)= 15
+          ENDIF
+        ENDDO
+        CALL LUEDIT(15)
+C
+C       Write 4-vectors if demanded:
+        IF( L4VEC ) CALL MCWRIT('W',IERR)
+C 
+C       Call event analysis routine:
+        CALL MCUSEV
+
+      ENDDO
+C
+C  Finish, output of histograms:
+      CALL MCUSFI
+      IF( L4VEC ) CALL MCWRIT('F',IERR)
+C
+C  The End:
+      STOP
+      END
++PATCH,MCAR48J.
++DECK,MCAR48J.
+      PROGRAM MCAR48J
+      IMPLICIT NONE
+*.********************************************************************
+*.
+*. Stand-alone driver for ARIADNE with JETSET
+*.
+*. AUTHOR    :  J.W.Gary
+*. CREATED   :  06-Apr-95
+*. LAST MOD  :  06-Apr-95
+*.
+*. Modifications:
+*. 25.01.96, STK: Add some comments
+*. 25.07.96, STK: Thorough clean up
+*. 26.07.96, STK: Run with PYTHIA instead of JETSET
+*. 20.09.96, STK: Put in 4-vector writing routines
+*. 24.09.96, STK: Copy from PATCH,MCAR48P, change for use with JETSET
+*.
+*.********************************************************************
++SEQ,GUJETS.
++SEQ,GUDAT1.
++SEQ,GUDAT2.
++SEQ,GUDAT3.
++SEQ,GUDAT4.
++SEQ,GUDATR.
++SEQ,MCFFR.
+      INTEGER MSTA
+      REAL PARA
+      COMMON /ARDAT1/ PARA(40),MSTA(40)
+      SAVE /ARDAT1/
+      INTEGER IEVT,IERR,I,IFLAV
+C
+C  Error trapping sequences:
++SEQ,HPERTP,IF=HPUX,IF=ERRTRP.
+C
+C  Read FFREAD cards:
+      CALL MCINIT
+C
+C  Initialize:
+      CALL MCUSIN
+      CHMCTYP= 'ARIADNEJ'
+C
+C  Print JETSET welcome message:
+      MSTU(12)= 1
+C
+C  Initial and final-state photon radiation:
+      PRINT*,'Switches for ISR and FSR:'
+      IF( LISR ) THEN
+        CALL LUGIVE('MSTJ(107)=1')
+      ELSE
+        CALL LUGIVE('MSTJ(107)=0')
+      ENDIF
+      IF( LFSR ) THEN
+        PRINT*,'MCAR48J: FSR switched on'
+        MSTA(20)= 1
+      ELSE
+        PRINT*,'MCAR48J: FSR switched off'
+        MSTA(20)= 0
+      ENDIF
+C
+C  Long-lived hadrons (K0s, hyperons) stable if desired:
+      IF( LSTBL ) CALL MCSTBL
+C
+C  Call ARIADE initialisation routines:
+      CALL ARTUNE('OPAL')
+      CALL ARINIT('JETSET')
+C
+C  Random seed and 4-vector writing:
+      IF( IMCRDM.GT.0 ) MRLU(1)= IMCRDM
+      IF( L4VEC ) CALL MCWRIT('I',IERR)
+C
+C  Other initialization:
+      IFLAV= 0
+C
+C  Event loop:
+      DO IEVT=1,NEVNT
+C
+C       Generate JETSET intial state:
+   10   CALL LUEEVT(IFLAV,ECMASS)
+C
+C       ARIADNE parton shower and JETSET hadronisation and decays:
+        CALL AREXEC
+C
+C       Protect against pathological cases in JETSET decays:
+        IF( MSTU(24).EQ.4 .OR. MSTU(24).EQ.5 ) THEN
+          PRINT *,'MCAR48J: Problem, regenerating',MSTU(24),MSTU(25)
+          GOTO 10
+        ENDIF
+C
+C       Write 4-vectors if demanded:
+        IF( L4VEC ) CALL MCWRIT('W',IERR)
+C 
+C       Call event analysis routine:
+        CALL MCUSEV
+
+      ENDDO
+C
+C  Finish, output of histograms:
+      CALL MCUSFI
+      IF( L4VEC ) CALL MCWRIT('F',IERR)
+C
+C  The End:
+      STOP
+      END
++PATCH,MCKERN.
++DECK,MYTYPE.
+      SUBROUTINE MYTYPE(ITYPE)
+      IMPLICIT NONE
+*. WWTYPE   Determines event type for WW or Z/gamma events.
+*.
+*. INPUT     :
+*. OUTPUT    :  ITYPE = 1  Z  --> hadrons
+*.                      2  Z  --> leptons
+*.                      3  WW --> jjjj
+*.                      4  WW --> jjll
+*.                      5  WW --> llll
+*.                      6  ZZ --> jjjj
+*.                      7  ZZ --> jjll
+*.                      8  ZZ --> llll
+*.                      0  anything else
+*.
+*.**********************************************************************
+*.
++SEQ,GUJETS.
+      INTEGER ITYPE,NW,NZ,NQQ,ITREE,IID,NPAR,IPAR(2)
+*
+      ITYPE = 0
+      NPAR  = 0
+      IPAR(1) = 0
+      IPAR(2) = 0
+*
+*--- Find number of Ws and Zs, and determine if they decay to quarks
+*--- or leptons..
+*
+      NW = 0
+      NZ = 0
+      NQQ = 0
+      DO 10 ITREE = 1,N
+        IID = ABS(K(ITREE,2))
+        IF(K(ITREE,3).NE.0) GO TO 10
+        IF(IID.LT.23 .OR. IID.GT.24) GO TO 10
+        NPAR = NPAR + 1
+        IPAR(NPAR) = ITREE
+        IF(IID.EQ.23) THEN
+          NZ = NZ + 1
+        ELSE
+          NW = NW + 1
+        ENDIF
+   10 CONTINUE
+      DO 20 ITREE = 1,N
+        IID = ABS(K(ITREE,2))
+        IF(K(ITREE,3).EQ.0) GO TO 20
+        IF(K(ITREE,3).NE.IPAR(1) .AND. K(ITREE,3).NE.IPAR(2)) GO TO 20
+        IF(IID.GE.1.AND.IID.LE.8) NQQ = NQQ + 1
+   20 CONTINUE
+      IF(NW.EQ.0 .AND. NZ.EQ.0) GO TO 999
+*
+*--- Classify event.
+*
+      IF(NW.EQ.2) THEN
+        IF(NQQ.EQ.4) THEN
+          ITYPE = 3
+        ELSEIF(NQQ.EQ.2) THEN
+          ITYPE = 4
+        ELSEIF(NQQ.EQ.0) THEN
+          ITYPE = 5
+        ELSE
+          ITYPE = 0
+        ENDIF
+      ELSEIF(NZ.EQ.2) THEN
+        IF(NQQ.EQ.4) THEN
+          ITYPE = 6
+        ELSEIF(NQQ.EQ.2) THEN
+          ITYPE = 7
+        ELSEIF(NQQ.EQ.0) THEN
+          ITYPE = 8
+        ELSE
+          ITYPE = 0
+        ENDIF
+      ELSEIF(NZ.EQ.1) THEN
+        IF(NQQ.EQ.2) THEN
+          ITYPE = 1
+        ELSEIF(NQQ.EQ.0) THEN
+          ITYPE = 2
+        ELSE
+          ITYPE = 0
+        ENDIF
+      ENDIF
+*
+  999 RETURN
+      END
++DECK,MCSTBL.
+      SUBROUTINE MCSTBL
+      IMPLICIT NONE
+C  Routine to set hadrons with PDG IDs in list IDSTBL stable within JETSET.
+C  Code taken from L74LON and moved into subroutine to allow consistent
+C  use with other MCs.
+C  Stefan Kluth, 26.1.96
+C  Modifications:
++SEQ,GUDAT1.
++SEQ,GUDAT2.
++SEQ,GUDAT3.
++SEQ,GUDAT4.
+      INTEGER IP,NSTBL,LUCOMP
+      PARAMETER( NSTBL=7 )
+      INTEGER IDSTBL(NSTBL)
+      CHARACTER*8 CNAMS(NSTBL)
+      CHARACTER*16 CHAU
+      DATA IDSTBL / 3112,3122,3222,3312,3322,3334,310 /
+      SAVE IDSTBL
+C
+C  Loop over list, get particle names and set stable:
+      DO IP=1,NSTBL
+        CALL LUNAME(IDSTBL(IP),CHAU)
+        CNAMS(IP)= CHAU
+        MDCY(LUCOMP(IDSTBL(IP)),1)= 0
+      ENDDO
+C
+C  Print information:
+      PRINT*,'+++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+      PRINT*,'MCSTBL:'
+      PRINT*,'The following particles (and their anti-particles) have'
+      PRINT*,'been declared stable for JETSET'
+      CALL PXPRCV('CNAMS',NSTBL,CNAMS)
+      PRINT*,'All other particles will decay by Jetset7.4'
+      PRINT*,'+++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+C
+C  The End:
+      RETURN
+      END
++DECK,MCINIT.
+      SUBROUTINE MCINIT
+      IMPLICIT NONE
+C  Routine reads MC FFREAD cards and calls user FFREAD routine:
+C  Stefan Kluth, 22.1.96
+C  Modifications:
+C  17.07.96, STK: Replace VZERO by VBLANK for hollerith arrays
++SEQ,MCFFR.
+      INTEGER HEVFILE(NWONAM)
+C
+C  Get FFREAD info:
+      PRINT*,'MCINIT: read FFREAD cards'
+      CALL FFINIT(0)
+      CALL FFSET('SIZE',8)
+C
+C  General:
+      IRUN= 6666
+      CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+      NEVNT= 1000
+      CALL FFKEY('MCNEVT',NEVNT,1,'INTEGER')
+      ECMASS= 91.173
+      CALL FFKEY('MCECMS',ECMASS,1,'REAL')
+      IMCRDM= 13121965
+      CALL FFKEY('MCRDM',IMCRDM,1,'INTEGER')
+      NRTOPR= 3
+      CALL FFKEY('MCNPRI',NRTOPR,1,'INTEGER')
+      LSTBL= .FALSE.
+      CALL FFKEY('MCSTBL',LSTBL,1,'LOGI')
+      LUDSC= .FALSE.
+      CALL FFKEY('MCUDSC',LUDSC,1,'LOGI')
+      LBQRK= .FALSE.
+      CALL FFKEY('MCBQRK',LBQRK,1,'LOGI')
+      SFLAV= 0
+      CALL FFKEY('MCFLAV',SFLAV,1,'INTEGER')
+      LISR= .FALSE.
+      CALL FFKEY('MCISR',LISR,1,'LOGI')
+      LFSR= .TRUE.
+      CALL FFKEY('MCFSR',LFSR,1,'LOGI')
+      LSTART= .FALSE.
+      CALL FFKEY('MCSTART',LSTART,1,'LOGI')
+      L4VEC= .FALSE.
+      CALL FFKEY('MC4VEC',L4VEC,1,'LOGI')
+      CALL VBLANK(HEVFILE,NWONAM)
+      CALL FFKEY('MCEVFILE',HEVFILE,NWONAM,'MIXED')
+C
+C  JETSET related:
+      JTB= 0.52
+      CALL FFKEY('JTPB',JTB,1,'REAL')
+      JTSQ= 0.40
+      CALL FFKEY('JTPSQ',JTSQ,1,'REAL')
+      JTQ0= 1.90
+      CALL FFKEY('JTPQ0',JTQ0,1,'REAL')
+C
+C  User cards:
+      CALL MCUSFF
+C
+C  Ok, lets go:
+      CALL FFGO
+C
+C  Convert hollerith to CHARACTER:
+      CALL UHTOC(HEVFILE,NBYTEW,CHEVFILE,NAMLEN)
+C
+C     The End:
+      write(*,*) 'event generation at ecm: ',ecmass
+      RETURN
+      END
++DECK,MCUSFF.
+      SUBROUTINE MCUSFF
+      IMPLICIT NONE
+C  Dummy routine
+      INTEGER ICALL
+      DATA ICALL /0/
+      SAVE ICALL
+      ICALL= ICALL+1
+      IF( ICALL.EQ.1 ) THEN
+        PRINT*,' '
+        PRINT*,'Dummy routine MCUSFF called'
+        PRINT*,' '
+      ENDIF
+      RETURN
+      END
++DECK,MCWRIT.
+      SUBROUTINE MCWRIT(CHMODE,IERR)
+*********************************************************************
+*.
+*...  MCWRIT Write a Monte Carlo event out
+*.
+*...  Pack the JETSET event record and write the event to disk    
+*...  Copy code from J74PAK 
+*.
+*.  Input:  CHMODE    Switch, I= initialise, F= finish, W= write
+*.  Output: IERR      Error flag
+*.  
+*.    Stan bentvelsen   17-04-96
+*.
+*. Modification log
+*. 03-Apr-90  J.W.Gary     Fix bug in parton history      
+*. 17-Jun-91  J.W.Gary     Update for Jetset73             
+*. 22-Apr-95  A.S.Turcot   Change KF codes for P-wave   
+*.                         baryons to standard PDG values  
+*.                         Affects LUND KF/KC codes 41-51 
+*. 06-Sep-95  A.S.Turcot   Fix Bug in PDG values for P-wave 
+*.                         anti-baryons (sigh...)
+*. 01-Mar-96  A.S.Turcot   Update for compatability with SUSYGEN 
+*.                         Avoid sparticle - P-wave confusion
+*. 19.09.96, STK: Copied from herwig59.car, renamed, 
+*.                routine handles random numbers and event counting
+*.
+*.********************************************************************
+      IMPLICIT NONE
++SEQ,GUJETS.
++SEQ,GUDAT2.
++SEQ,GUDATR.
++SEQ,MCFFR.
+      CHARACTER*1 CHMODE
+      INTEGER IERR,IFEVT,NEVT,IENUM
+      SAVE IFEVT,NEVT
+      INTEGER LWRIT,LRAN,LRAN2,LENOCC
+      PARAMETER( LWRIT=33, LRAN=34, LRAN2=35 )
+      REAL PLTRK(NPLBUF,NLUPDM)
+      REAL VTX(3)
+      SAVE VTX
+      INTEGER  IP,IX,IPA
+      LOGICAL  QPWAV, QFRST
+      INTEGER  KFPWAV(11)
+      DATA VTX /3*0.0/
+      DATA KFPWAV / 13122,  3124, 13114, 13214, 13224, 13314, 13324, 
+     &              12112, 12212,  1214,  2124 /
+      DATA QFRST /.TRUE./
+      DATA QPWAV /.FALSE./
+      SAVE QFRST, QPWAV
+C
+C  Check for P-wave baryons, key off mass in BDB decay table:
+      IF( QFRST ) THEN
+        QFRST= .FALSE.
+        IF( PMAS(41,1).EQ.1.407 ) QPWAV= .TRUE.
+      ENDIF    
+C
+C  Do special things for initialisation and finishing:
+      IF( CHMODE.EQ.'I' ) THEN
+C       Open 4-vector file:
+        PRINT*,'MCWRIT: Output of 4-vectors to: '
+     &        ,CHEVFILE(1:LENOCC(CHEVFILE))
+        OPEN(UNIT=LWRIT,STATUS='NEW',FILE=CHEVFILE)
+C       Random number stuff:
+        IF( LSTART ) THEN
+C         Initialise random number files:
+          IENUM= 0
+          CALL MCRNST(LRAN,LRAN2,IENUM,'I',IERR)
+          IF( IERR.NE.0 ) STOP
+        ENDIF
+C       Read initial random number sequence and event number from disk:
+        CALL MCRNST(LRAN,LRAN2,IENUM,'R',IERR)
+        IF( IERR.NE.0 ) STOP
+        PRINT*,'MCWRIT: Initial seeds'
+        WRITE(6,FMT='('' MRLU ='',6(I12))') MRLU
+        CALL PXPRRV('RRLU',100,RRLU)
+        IFEVT= IENUM
+        PRINT*,'MCWRIT: The run number will be ',IRUN
+        PRINT*,'MCWRIT: The first event number will be ',IFEVT+1
+C       Set event counter for this run to zero:
+        NEVT= 0
+        RETURN
+      ELSEIF( CHMODE.EQ.'F' ) THEN
+C       Give some summary info:
+        PRINT*,'MCWRIT: First and last event written in this run: '
+     &        ,IFEVT+1,IFEVT+NEVT
+        PRINT*,'MCWRIT: Final seeds'
+        WRITE(6,FMT='('' MRLU ='',6I12)') MRLU
+        CALL PXPRRV('RRLU',100,RRLU)
+        IENUM= IFEVT+NEVT
+C       Save random seeds on disk:
+        CALL MCRNST(LRAN,LRAN2,IENUM,'W',IERR)
+        CLOSE(UNIT=LWRIT)
+        RETURN
+      ENDIF
+C
+C  Make copy of event record:
+      CALL LUEDIT(21)
+C
+C  Modify event record a bit:
+      DO IP=1,N
+C       Convert P-wave baryon codes:
+        IF( QPWAV ) THEN
+          IPA= ABS(K(IP,2))
+          IF( IPA.GE.41 .AND. IPA.LE.51 ) THEN
+            IF( K(IP,2).LT.0 ) THEN
+              K(IP,2)= -KFPWAV(IPA-40)
+            ELSE
+              K(IP,2)= KFPWAV(IPA-40)
+            ENDIF
+          ENDIF
+        ENDIF
+C       Reverse order of P array:
+        DO IX=1,5
+          PLTRK(IX,IP)= P(IP,IX)
+        ENDDO
+      ENDDO
+C     
+C  Write event record to disk:
+      NEVT= NEVT+1
+      CALL EVWRIT(N,NPLBUF,NLUPDM,PLTRK,K(1,2),K(1,3)
+     &           ,VTX,IRUN,IFEVT+NEVT,0,LWRIT,'W',IERR)
+C
+C  Restore event record:
+      CALL LUEDIT(22)
+C
+C  The End:
+      RETURN
+      END
++DECK,MCRNST.
+      SUBROUTINE MCRNST(ILUN,ILCT,IENUM,MODE,IERR)
+*.********************************************************************
+*. Read or write random seeds for Herwig from or to disk
+*.                                                              
+*. INPUT     : ILUN     Logical unit number for random sequence
+*. INPUT     : ILCT     Logical unit number for pointer to last sequence
+*. INPUT     : IENUM    Event number corresponding to the random numbers
+*. INPUT     : MODE     = 'R' for read
+*.                      = 'W' for write
+*.                      = 'I' for initial call (to create file)
+*. OUTPUT    : IERR     = 0 if all is OK
+*. 
+*. AUTHOR    :  J.W.Gary                                                    
+*. CREATED   :  26-Apr-89
+*. LAST MOD  :  19.09.96
+*. Modifications:
+*. 19.09.96, STK: Copied from herwig59.car, renamed, cosmetic mods
+*.  
+********************************************************************          
++SEQ,GUDATR.
+      INTEGER IDUM(6),IRRLU(100),IRDUM(100)
+      INTEGER ILUN,IPOS,I1,I2,INXT,ISKIP,IENUM,IERR,ILCT,IEDUM
+      CHARACTER*1 MODE
+      CHARACTER*11 FILNAM,FILCNT              
+      EQUIVALENCE( IRRLU(1),RRLU(1) )
+      DATA FILNAM / 'mcrnset.dat' / 
+      DATA FILCNT / 'mcrncnt.dat' /
+      SAVE FILNAM,FILCNT
+C
+C  Check input sensibility:
+      IF ( .NOT.(MODE.EQ.'I'.OR.MODE.EQ.'R'.OR.MODE.EQ.'W') ) THEN
+         WRITE (6,FMT='('' MCRNST:  Error, MODE '',A5,
+     &     '' is unknown'')')
+         RETURN
+      ENDIF
+C
+C  Open files:
+      IF( MODE.EQ.'I' ) THEN
+C       Create new files and write initial entries: 
+        OPEN(UNIT=ILUN,STATUS='NEW',FILE=FILNAM)
+        OPEN(UNIT=ILCT,STATUS='NEW',FILE=FILCNT)
+        IPOS= 1                    
+        WRITE(ILCT,1060) IPOS
+        WRITE(ILUN,1080) (MRLU(I1),I1=1,6),IENUM,(IRRLU(I2),I2=1,100)
+        CLOSE(ILUN)
+        CLOSE(ILCT)
+      ELSE 
+C       Find last position, read in or write out:
+        OPEN(UNIT=ILCT,STATUS='OLD',FILE=FILCNT)
+        OPEN(UNIT=ILUN,STATUS='OLD',FILE=FILNAM)
+        READ(ILCT,1060) IPOS
+        IF( MODE.EQ.'W' ) THEN
+          INXT= IPOS + 1
+          REWIND(ILCT)
+          WRITE(ILCT,1060) INXT
+        ENDIF
+        CLOSE(ILCT)
+        DO ISKIP=1,IPOS
+          READ(ILUN,1080) (IDUM (I1),I1=1,6),IEDUM,(IRDUM (I2),I2=1,100)
+        ENDDO
+        IF( MODE.EQ.'W' ) THEN
+          WRITE(ILUN,1080) (MRLU(I1),I1=1,6),IENUM,(IRRLU(I2),I2=1,100)
+        ELSEIF( MODE.EQ.'R' ) THEN
+          IENUM= IEDUM
+          CALL PXCOPV(6,IDUM,MRLU)
+          CALL PXCOPV(100,IRDUM,IRRLU)
+        ENDIF
+        CLOSE(ILUN)
+      ENDIF
+      RETURN
+ 1060 FORMAT(I12)
+ 1080 FORMAT(7I11,20(/5I16))
+      END
++DECK,MCGETP.
+      SUBROUTINE MCGETP(IMODE,IDIM,NTRAK,PTRAK,ILIN,IID,IPAR)
+      IMPLICIT NONE
+C  Select "stable" QCD partons and optionally FSR photons from JETSET
+C  event record
+C  Input:  IMODE   =1 select FSR photons too, =0 don't 
+C          IDIM    1st dimension of array PTRAK
+C  Output: NTRAK   Number of selected partons
+C          PTRAK() Array of 5-momenta of selected partons (px,py,pz,E,P)
+C          ILIN()  Line numbers in JETSET record
+C          IID()   Particle IDs
+C          IPAR()  Parent line numbers
+C  Author: Stefan Kluth
+C  Created: 06.11.96
+C  Modifications:
++SEQ,GUJETS.
++SEQ,MCFFR.
+      LOGICAL LKEEP
+      INTEGER IDIM,IMODE,NTRAK,I,II,J
+      INTEGER ILIN(*),IID(*),IPAR(*)
+      REAL PTRAK(IDIM,*)
+C
+
+C         If it has no parent it can't come from a shower:
+C         except for COJETS
+
+
+
+      NTRAK= 0
+      DO I=1,N
+        II= ABS(K(I,2))
+        LKEEP= .FALSE.
+C       First see if there is a candidate worth looking at, we
+C       want a quark, gluon or photon with a parent:
+        IF( K(I,3).GT.0 .AND. K(I,3).LE.N ) THEN
+           IF( II.GE.1 .AND. II.LE.6 ) LKEEP= .TRUE.
+           IF( II.EQ.21 ) LKEEP= .TRUE.
+           IF( IMODE.EQ.1 .AND. II.EQ.22 .AND. 
+     &        ABS(K(K(I,3),2)).GE.1 .AND. 
+     &        ABS(K(K(I,3),2)).LE.6 ) LKEEP= .TRUE.
+        ELSEIF( K(I,3).EQ.0.AND.INDEX(CHMCTYP,'COJET').GT.0) THEN
+           LKEEP= .TRUE.
+        ENDIF
+        IF( LKEEP ) THEN
+C         Check if there are any parton or CMshower daughters in the record:
+          DO J=I+1,N
+            IF( K(J,3).EQ.I .AND. (ABS(K(J,2)).LE.6 .OR.
+     &          ABS(K(J,2)).EQ.21 .OR. ABS(K(J,2)).EQ.94) )
+     &        LKEEP= .FALSE.
+          ENDDO
+C         For ARIADNE check that selected quarks point to a string:
+          IF( INDEX(CHMCTYP,'ARIADNE').GT.0 .AND. II.LE.6 .AND.
+     &        K(I,4).GT.0 .AND. K(I,4).LE.N ) THEN
+            IF( K(K(I,4),2).NE.92 ) LKEEP= .FALSE.
+          ENDIF
+        ENDIF
+C       If all is ok we keep it:
+        IF( LKEEP ) THEN
+          NTRAK= NTRAK+1
+          ILIN(NTRAK)= I
+          IID(NTRAK)=  K(I,2)
+          IPAR(NTRAK)= K(I,3)
+          PTRAK(1,NTRAK)= P(I,1)
+          PTRAK(2,NTRAK)= P(I,2)
+          PTRAK(3,NTRAK)= P(I,3)
+          PTRAK(4,NTRAK)= P(I,4)
+          PTRAK(5,NTRAK)= SQRT(P(I,1)**2+P(I,2)**2+P(I,3)**2)
+        ENDIF
+      ENDDO
+C
+C  The End:
+      RETURN
+      END
++DECK,MCGETF.
+      SUBROUTINE MCGETF(JFLAV)
+      IMPLICIT NONE
+C  Get event flavour in Z/gamma events
+C  Output:  JFLAV  flavour code, 1,..,6 = u,d,s,c,b,t
+C                                =0: could not determine flavour
+C  Author: Stefan Kluth
+C  Created: 06.11.96
+C  Modifications:
++SEQ,GUJETS.
++SEQ,MCFFR.
+      INTEGER JFLAV,I
+C
+      JFLAV= 0
+      IF( INDEX(CHMCTYP,'PYTHIA').GT.0 .OR. 
+     &    INDEX(CHMCTYP,'HERWIG').GT.0 .OR. 
+     &    INDEX(CHMCTYP,'ARIADNEP').GT.0 ) THEN
+C       Try the obvious and trace partons back to Z/gamma:
+        DO I=1,N
+          IF( ABS(K(I,2)).GE.1 .AND. ABS(K(I,2)).LE.6 .AND.
+     &        K(K(I,3),2).EQ.23 ) THEN
+            JFLAV= ABS(K(I,2))
+            GOTO 10
+          ENDIF
+        ENDDO
+   10   CONTINUE
+      ELSE
+C       Try first quark with no parent:
+        DO I=1,N
+          IF( ABS(K(I,2)).GE.1 .AND. ABS(K(I,2)).LE.6 .AND.
+     &        K(I,3).EQ.0 ) THEN
+            JFLAV= ABS(K(I,2))
+            GOTO 20
+          ENDIF
+        ENDDO
+   20   CONTINUE
+      ENDIF
+C
+C  The End:
+      RETURN
+      END
++DECK,MCGETH.
+      SUBROUTINE MCGETH(IDIM,NTRAK,PTRAK)
+      IMPLICIT NONE
+C  Select "stable" hadrons from JETSET event record,
+C  fill some histograms
+C  Input:  IDIM    1st dimension of PTRAK array, if IDIM.gt.6 the
+C                  charge will returned in PTRAK(,6) 
+C  Output: NTRAK   Number of selected hadrons
+C          PTRAK() 5-vectors of selected hadrons, optionally charge
+C  Author: Stefan Kluth (based on code from David Ward)
+C  Created: 06.11.96
+C  Modifications:
++SEQ,GUJETS.
++SEQ,MCPAW.
+      INTEGER IDIM,NTRAK,I,II,III,LUCHGE,LUCOMP
+      REAL PTRAK(IDIM,*)
+C
+C  Edit JETSET event record to leave only "stable" particles:
+      CALL LUEDIT(5)
+C
+C  Get hadrons:
+      NTRAK= 0
+      DO I=1,N
+        II= ABS(K(I,2))
+        IF( II.GT.6 .AND. II.NE.21 ) THEN
+          CALL HFILL(36,REAL(LUCOMP(K(I,2))),0.0,1.0)
+          NTRAK= NTRAK+1
+          PTRAK(1,NTRAK)= P(I,1)
+          PTRAK(2,NTRAK)= P(I,2)
+          PTRAK(3,NTRAK)= P(I,3)
+          PTRAK(4,NTRAK)= P(I,4)
+          PTRAK(5,NTRAK)= SQRT(P(I,1)**2+P(I,2)**2+P(I,3)**2)
+          IF( IDIM.GE.6 ) PTRAK(6,NTRAK)= REAL(LUCHGE(K(I,2)))
+          III= 35
+          IF( II.EQ.22 )  III= 21
+          IF( II.EQ.12 .OR. II.EQ.14 .OR. II.EQ.16) III= 22
+          IF( II.EQ.11 )  III= 23
+          IF( II.EQ.13 )  III= 24
+          IF( II.EQ.211 ) III= 25
+          IF( II.EQ.111 ) III= 26
+          IF( II.EQ.321 ) III= 27
+          IF( II.EQ.130 ) III= 28
+          IF( II.EQ.2212 ) III= 29
+          IF( II.EQ.2112 ) III= 30
+          IF( II.EQ.15 )  III= 31
+          IF( II.EQ.310) III= 32
+          IF( II.EQ.311) III= 33
+          IF( II.EQ.3122 .OR. II.EQ.3222 .OR. II.EQ.3212 .OR.
+     &        II.EQ.3112 .OR. II.EQ.3312 .OR. II.EQ.3322 .OR.
+     &        II.EQ.3332 ) III= 34
+          IF( PTRAK(5,NTRAK).GT.0 )
+     &      CALL HFILL(III,LOG10(PTRAK(5,NTRAK)),0.0,1.0)
+          IF( PTRAK(5,NTRAK).LE.0 )
+     &      PRINT *,II,' mom =',PTRAK(5,NTRAK)
+C          IF( III.EQ.35 ) PRINT*, 'MCGETH: Mysterious particle code:',II
+        ENDIF
+      ENDDO
+C
+C  The End:
+      RETURN
+      END
++PATCH,MCUSER.
++KEEP,MCEVSH.
+C     Stuff for event shape analysis:
+C     nbmax: number of bins for the histograms
+C     ndimm: dimension of the XBINS array
+C
+      INTEGER NVAR,NBMAX,NDIMM
+      PARAMETER( NBMAX=100, NDIMM=50, NVAR=6 )
+      INTEGER NBIN(NVAR)
+      REAL XBINS(NDIMM,NVAR)
+      REAL TH,MH,BT,BW,CP,Y23
+      REAL TMA, TMI, OBL, SP, AC
+      CHARACTER*2 CHVAR(NVAR)
+      COMMON /MCEVSH/ NBIN
+     &               ,TH,MH,BT,BW,CP,Y23,XBINS
+     &               ,CHVAR
+      SAVE /MCEVSH/
++KEEP,MCEVDT.
+      DATA NBIN / 13, 12, 14, 13, 12, 15 /
+      DATA XBINS / 0.00, 0.01, 0.02, 0.03, 0.04, 0.05, 0.07, 0.09, 0.12
+     &            ,0.15, 0.22, 0.30, 0.40, 0.50, 36*0.0
+     &            ,0.00, 0.06 ,0.075,0.09, 0.11, 0.14, 0.17, 0.20, 0.25
+     &            ,0.30, 0.35, 0.45, 0.60, 37*0.0
+     &            ,0.00, 0.03, 0.04, 0.05, 0.06, 0.075,0.09, 0.11, 0.13
+     &            ,0.16, 0.20, 0.25, 0.30, 0.35, 0.40, 35*0.0
+     &            ,0.00, 0.02, 0.03, 0.04, 0.05, 0.065,0.08, 0.10, 0.15
+     &            ,0.20, 0.25, 0.30, 0.35, 0.40, 36*0.0
+     &            ,0.00, 0.05, 0.08, 0.11, 0.14, 0.18, 0.22, 0.30, 0.4
+     &            ,0.50, 0.60, 0.75, 1.00, 37*0.0
+     &            ,0.00, 0.3E-03, 0.75E-03, 0.13E-02, 0.23E-02, 0.4E-02
+     &            ,0.7E-02, 0.012, 0.0225, 0.04, 0.07, 0.13, 0.235
+     &  ,0.40, 0.70, 1.00, 34*0.0 /
+
+      DATA CHVAR / 'TH', 'MH', 'BT', 'BW', 'CP', 'D2' /
++KEEP,MCPOW.
+      INTEGER NPOW
+      PARAMETER (NPOW=12)
+      CHARACTER*3 CHSHAP(NPOW)
+      DOUBLE PRECISION DSHAP1(NPOW),DSHAP2(NPOW),DSHAP3(NPOW)
+      INTEGER  NSHAP
+      COMMON / NPOWER / CHSHAP,DSHAP1,DSHAP2,DSHAP3,NSHAP
+C
+C..   KEEP RUNNING SUM OF THE EVENT-SHAPES Y, FOR Y, Y**2, Y**3
+C..   WHERE Y IS DEFINED IN MCUSIN DATA STATEMENT
+C
++KEEP,MCUFFR.
+C  FFREAD user variables:
+      LOGICAL LFSRRM,LISRRM,LBOOS,LCONE,LDURH,LJDE0,LCAMJ,LCKRN
+      INTEGER HOUTFILE(NWONAM)
+      INTEGER NJTEV
+      COMMON /MCUFFR/ LFSRRM,LISRRM,LBOOS, LCONE,LDURH,LJDE0,LCAMJ
+     &                ,LCKRN,NJTEV,HOUTFILE
+      SAVE /MCUFFR/
++DECK,MCUSFF.
+      SUBROUTINE MCUSFF
+      IMPLICIT NONE
+C  Routine for user FFREAD cards:
+C  Stefan Kluth, 16.07.96
+C  Modifications:
+C  17.07.96, STK: Replace VZERO by VBLANK for hollerith array
+C  18.09.96, STK: Introduce switch for ISR removal, change default for FSRRM
+C  13.02.97, SB : Introduce the 'JETRATE' card, calculation jet rates with cone
++SEQ,MCFFR.
++SEQ,MCUFFR.
+      LFSRRM= .FALSE.
+      CALL FFKEY('FSRRM',LFSRRM,1,'LOGI')
+      LISRRM= .FALSE.
+      CALL FFKEY('ISRRM',LISRRM,1,'LOGI')
+      LBOOS= .FALSE.
+      CALL FFKEY('BOOST',LBOOS,1,'LOGI')
+      LCONE= .FALSE.
+      CALL FFKEY('MCCONE',LCONE,1,'LOGI')
+      LDURH= .FALSE.
+      CALL FFKEY('MCDURH',LDURH,1,'LOGI')
+      LJDE0= .FALSE.
+      CALL FFKEY('MCJDE0',LJDE0,1,'LOGI')
+      NJTEV= -1
+      CALL FFKEY('MCJTEV',NJTEV,1,'INTEGER')
+      LCAMJ = .FALSE.
+      CALL FFKEY('MCCAMJ',LCAMJ,1,'LOGI')
+      LCKRN = .FALSE.
+      CALL FFKEY('MCCKRN',LCKRN,1,'LOGI')
+      CALL VBLANK(HOUTFILE,NWONAM)
+      CALL FFKEY('OUTFILE',HOUTFILE,NWONAM,'MIXED')
+C
+C  The End:
+      RETURN
+      END
++DECK,MCUSIN.
+      SUBROUTINE MCUSIN
+      IMPLICIT NONE
+C  Routine for user initialisation:
+C  Stefan Kluth, 22.1.96
+C  Modifications:
+C  19.09.96, STK: Put bin edges into DATA statements
+C  13.02.97, SB : Put in jetrates histograms
+C  13.02.97, SB : Extend the jet-resolution to 10^-6
++SEQ,MCFFR.
++SEQ,MCUFFR.
++SEQ,MCPAW.
++SEQ,MCEVSH.
++SEQ,MCPOW.
+      INTEGER I,IVAR,NBE,IOFF,NBMM
+      REAL XLO,XHI,XD2(NBMAX+1)
+      CHARACTER*6 CNA(7)
+      CHARACTER*14 PH(2)
++SEQ,MCEVDT.
+
+      DATA CNA /' d',' u',' s',' c',' b','  ','(cum.)'/
+      SAVE CNA
+      
+      DATA CHSHAP /'TH ','TMA','MH ','TMI','BT ','OBL'
+     +     ,'BW ','SP ','CP ','AC ','Y23','1TH' /
+
+
+      NSHAP = 0
+      DO I=1,NPOW
+         DSHAP1(I) = 0D0
+         DSHAP2(I) = 0D0
+         DSHAP3(I) = 0D0
+      ENDDO
+C
+C  Logarithmic bins for D2 distribution:
+      XD2(1)= 0.0
+      XD2(2)= LOG10(1.0E-6)
+      XD2(NBMAX+1)= LOG10(1.0)
+      DO I=1,NBMAX-1
+        XD2(I+2)= XD2(2)+(XD2(NBMAX+1)-XD2(2))/REAL(NBMAX-1)*REAL(I)
+      ENDDO
+      DO I=2,NBMAX+1
+        XD2(I)= 10.0**XD2(I)
+      ENDDO
+C
+C  Initialise HBOOK and book histos:
+      CALL HLIMIT(LIMIT)
+      CALL HCDIR('//PAWC',' ')
+      CALL HSTAF('YES')
+      CALL HBOOK1(10,'Evis partons incl. FSR',195,5.,200.,0)
+      CALL HBOOK1(11,'Evis partons excl. FSR',195,5.,200.,0)
+      CALL HBOOK1(12,'Evis hadrons',195,5.,200.,0)
+      CALL HBOOK1(13,'Flavour',10,-0.5,9.5,0)
+      CALL HBOOK1(21,'log10(p) photons',100,-3.,2.,0)
+      CALL HBOOK1(22,'log10(p) neutrinos',100,-3.,2.,0)
+      CALL HBOOK1(23,'log10(p) electrons',100,-3.,2.,0)
+      CALL HBOOK1(24,'log10(p) muons',100,-3.,2.,0)
+      CALL HBOOK1(25,'log10(p) pi+-',100,-3.,2.,0)
+      CALL HBOOK1(26,'log10(p) pi0',100,-3.,2.,0)
+      CALL HBOOK1(27,'log10(p) K+-',100,-3.,2.,0)
+      CALL HBOOK1(28,'log10(p) K0L (130)',100,-3.,2.,0)
+      CALL HBOOK1(29,'log10(p) protons',100,-3.,2.,0)
+      CALL HBOOK1(30,'log10(p) neutrons',100,-3.,2.,0)
+      CALL HBOOK1(31,'log10(p) tau+-  ',100,-3.,2.,0)
+      CALL HBOOK1(32,'log10(p) K0S (310)',100,-3.,2.,0)
+      CALL HBOOK1(33,'log10(p) K0 (311)',100,-3.,2.,0)
+      CALL HBOOK1(34,'log10(p) Hyperon',100,-3.,2.,0)
+      CALL HBOOK1(35,'log10(p) Unknown',100,-3.,2.,0)
+      CALL HBOOK1(36,'KC particle codes',501,-0.5,500.5,0.0)
+      CALL HBOOK1(37,'c*tau of stable hadrons',100,0.0,20.0,0.0)
+
+      CALL HBOOK1(50,'PTin  partons',100,0.0,10.0,0.0)
+      CALL HBOOK1(60,'PTin  hadrons',100,0.0,10.0,0.0)
+      CALL HBOOK1(51,'PTout partons',100,0.0,5.0,0.0)
+      CALL HBOOK1(61,'PTout hadrons',100,0.0,5.0,0.0)
+      CALL HBOOK1(52,'xp    partons',100,0.0,1.0,0.0)
+      CALL HBOOK1(62,'xp    hadrons',100,0.0,1.0,0.0)
+      CALL HBOOK1(53,'yp    partons',100,0.0,8.0,0.0)
+      CALL HBOOK1(63,'yp    hadrons',100,0.0,8.0,0.0)
+      CALL HBOOK1(54,'xi    partons',100,0.0,10.0,0.0)
+      CALL HBOOK1(64,'xi    hadrons',100,0.0,10.0,0.0)
+      DO I=1,6
+        CALL HBOOK1(100+I,'N partons'//CNA(I),41,-0.5,40.5,0)
+        CALL HBOOK1(200+I,'N hadrons'//CNA(I),151,-0.5,150.5,0)
+        CALL HBOOK1(210+I,'N ch. hadrons'//CNA(I),101,-0.5,100.5,0)
+      ENDDO
+      CALL HBOOK1(220,'N CH HADRONS',50,1.0,101.,0)
+
+*     
+*     book nbmax bins
+*
+      Do I=1,7
+        CALL HBOOK1(I+300,'1-T parton level'//CNA(I),NBMAX,0.0,0.5,0)
+        CALL HBOOK1(I+310,'1-T hadron level'//CNA(I),NBMAX,0.0,0.5,0)
+        CALL HBOOK1(I+350,'TMA parton level'//CNA(I),NBMAX,0.0,0.6,0)
+        CALL HBOOK1(I+360,'TMA hadron level'//CNA(I),NBMAX,0.0,0.6,0)
+        CALL HBOOK1(I+400,'MH  parton level'//CNA(I),NBMAX,0.0,0.6,0)
+        CALL HBOOK1(I+410,'MH  hadron level'//CNA(I),NBMAX,0.0,0.6,0)
+        CALL HBOOK1(I+450,'TMI parton level'//CNA(I),NBMAX,0.0,1.0,0)
+        CALL HBOOK1(I+460,'TMI hadron level'//CNA(I),NBMAX,0.0,1.0,0)
+        CALL HBOOK1(I+500,'BT  parton level'//CNA(I),NBMAX,0.0,0.4,0)
+        CALL HBOOK1(I+510,'BT  hadron level'//CNA(I),NBMAX,0.0,0.4,0)
+        CALL HBOOK1(I+550,'OBL parton level'//CNA(I),NBMAX,0.0,1.0,0)
+        CALL HBOOK1(I+560,'OBL hadron level'//CNA(I),NBMAX,0.0,1.0,0)
+        CALL HBOOK1(I+600,'BW  parton level'//CNA(I),NBMAX,0.0,0.4,0)
+        CALL HBOOK1(I+610,'BW  hadron level'//CNA(I),NBMAX,0.0,0.4,0)
+        CALL HBOOK1(I+650,'SP  parton level'//CNA(I),NBMAX,0.0,1.0,0)
+        CALL HBOOK1(I+660,'SP  hadron level'//CNA(I),NBMAX,0.0,1.0,0)
+        CALL HBOOK1(I+700,'CP  parton level'//CNA(I),NBMAX,0.0,1.0,0)
+        CALL HBOOK1(I+710,'CP  hadron level'//CNA(I),NBMAX,0.0,1.0,0)
+        CALL HBOOK1(I+750,'AC  parton level'//CNA(I),NBMAX,0.0,0.3,0)
+        CALL HBOOK1(I+760,'AC  hadron level'//CNA(I),NBMAX,0.0,0.3,0)
+        CALL HBOOK1(I+850,'T   parton level'//CNA(I),NBMAX,0.5,1.0,0)
+        CALL HBOOK1(I+860,'T   hadron level'//CNA(I),NBMAX,0.5,1.0,0)
+        CALL HBOOK1(I+900,'y23 (D) parton level'//CNA(I),NBMAX,0.0,
+     +    1.0,0)
+        CALL HBOOK1(I+910,'y23 (D) hadron level'//CNA(I),NBMAX,0.0, 
+     +    1.0,0)
+        CALL HBOOK1(I+920,'mean jet rate (D) parton level'//CNA(I),     
+     +       NBMAX,0.0,1.0,0)
+        CALL HBOOK1(I+930,'mean jet rate (D) hadron level'//CNA(I),
+     +       NBMAX,0.0, 1.0,0)
+        CALL HBOOKB(I+800,'y23 (D) parton level'//CNA(I),NBMAX,XD2,0.0)
+        CALL HBOOKB(I+820,'mean jet rate (D) parton level'//CNA(I),
+     +       NBMAX,XD2,0.0)
+        CALL HIDOPT(I+800,'STAT')
+        CALL HIDOPT(I+820,'STAT')
+        CALL HBOOKB(I+810,'y23 (D) hadron level'//CNA(I),NBMAX,XD2,0.0)
+        CALL HBOOKB(I+830,'mean jet rate (D) hadron level'//CNA(I),
+     +       NBMAX,XD2,0.0)
+        CALL HIDOPT(I+810,'STAT')
+        CALL HIDOPT(I+830,'STAT')
+      ENDDO
+      DO IVAR=1,NVAR
+        CALL HBOOKB(1000+(IVAR-1)*10+1,CHVAR(IVAR)//' parton level'
+     &             ,NBIN(IVAR),XBINS(1,IVAR),0.0)
+        CALL HIDOPT(1000+(IVAR-1)*10+1,'STAT')
+        CALL HBOOKB(1000+(IVAR-1)*10+2,CHVAR(IVAR)//' hadron level'
+     &             ,NBIN(IVAR),XBINS(1,IVAR),0.0)
+        CALL HIDOPT(1000+(IVAR-1)*10+2,'STAT')
+        CALL HBOOK2(1100+(IVAR-1)*10
+     &             ,CHVAR(IVAR)//' hadronisation matrix'
+     &             ,NBIN(IVAR),0.5,REAL(NBIN(IVAR))+0.5
+     &             ,NBIN(IVAR),0.5,REAL(NBIN(IVAR))+0.5,0)
+      ENDDO
+C
+C..   JETRATES HISTOGRAMS
+C
+      PH(1) =' PARTON LEVEL'
+      PH(2) =' HADRON LEVEL'
+      DO IOFF=0,1
+         IF(LJDE0) THEN
+C
+C     E0 FINDING, LINEAR SCALE
+C 
+           CALL HBOOK1(1201+10*IOFF,'R1 E0'//PH(IOFF+1),NBMAX,0.,0.15,0)
+           CALL HBOOK1(1202+10*IOFF,'R2 E0'//PH(IOFF+1),NBMAX,0.,0.15,0)
+           CALL HBOOK1(1203+10*IOFF,'R3 E0'//PH(IOFF+1),NBMAX,0.,0.15,0)
+           CALL HBOOK1(1204+10*IOFF,'R4 E0'//PH(IOFF+1),NBMAX,0.,0.15,0)
+           CALL HBOOK1(1205+10*IOFF,'R5 E0'//PH(IOFF+1),NBMAX,0.,0.15,0)
+           CALL HBOOK1(1206+10*IOFF,'R6 E0'//PH(IOFF+1),NBMAX,0.,0.15,0)
+           CALL HBOOK1(1208+10*IOFF,'MN E0'//PH(IOFF+1),NBMAX,0.,0.15,0)
+
+          CALL HBOOK1(1221+10*IOFF,'Y12 E0'//PH(IOFF+1),NBMAX,0.,0.15,0)
+          CALL HBOOK1(1222+10*IOFF,'Y23 E0'//PH(IOFF+1),NBMAX,0.,0.15,0)
+          CALL HBOOK1(1223+10*IOFF,'Y34 E0'//PH(IOFF+1),NBMAX,0.,0.15,0)
+          CALL HBOOK1(1224+10*IOFF,'Y45 E0'//PH(IOFF+1),NBMAX,0.,0.15,0)
+          CALL HBOOK1(1225+10*IOFF,'Y56 E0'//PH(IOFF+1),NBMAX,0.,0.15,0)
+         ENDIF
+         IF(LDURH) THEN
+C
+C     DURHAM FINDING, LOG SCALE
+C 
+            NBMM = 48
+            CALL HBOOK1(1301+10*IOFF,'R1 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1302+10*IOFF,'R2 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1303+10*IOFF,'R3 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1304+10*IOFF,'R4 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1305+10*IOFF,'R5 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1306+10*IOFF,'R6 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1308+10*IOFF,'MN KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+
+            CALL HBOOK1(1321+10*IOFF,'Y12 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1322+10*IOFF,'Y23 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1323+10*IOFF,'Y34 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1324+10*IOFF,'Y45 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1325+10*IOFF,'Y56 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+         ENDIF
+	 IF(LCAMJ) THEN
+C
+C     CAMBRIDGE FINDING, LOG SCALE
+C 
+            NBMM = 24
+            CALL HBOOK1(1401+10*IOFF,'R1 CM'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1402+10*IOFF,'R2 CM'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1403+10*IOFF,'R3 CM'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1404+10*IOFF,'R4 CM'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1405+10*IOFF,'R5 CM'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1406+10*IOFF,'R6 CM'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1408+10*IOFF,'MN CM'//PH(IOFF+1),NBMM,-6.,0.,0)
+
+            CALL HBOOK1(1421+10*IOFF,'Y12 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1422+10*IOFF,'Y23 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1423+10*IOFF,'Y34 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1424+10*IOFF,'Y45 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+            CALL HBOOK1(1425+10*IOFF,'Y56 KT'//PH(IOFF+1),NBMM,-6.,0.,0)
+         ENDIF
+
+         IF(LCONE) THEN
+            CALL HBOOK1(1501+10*IOFF,'R1 CR'//PH(IOFF+1),13,0.25,1.55,0)
+            CALL HBOOK1(1502+10*IOFF,'R2 CR'//PH(IOFF+1),13,0.25,1.55,0)
+            CALL HBOOK1(1503+10*IOFF,'R3 CR'//PH(IOFF+1),13,0.25,1.55,0)
+            CALL HBOOK1(1504+10*IOFF,'R4 CR'//PH(IOFF+1),13,0.25,1.55,0)
+            CALL HBOOK1(1505+10*IOFF,'R5 CR'//PH(IOFF+1),13,0.25,1.55,0)
+            CALL HBOOK1(1506+10*IOFF,'R6 CR'//PH(IOFF+1),13,0.25,1.55,0)
+            
+            CALL HBOOK1(1521+10*IOFF,'R1 CE'//PH(IOFF+1),13,1.,27.,0)
+            CALL HBOOK1(1522+10*IOFF,'R2 CE'//PH(IOFF+1),13,1.,27.,0)
+            CALL HBOOK1(1523+10*IOFF,'R3 CE'//PH(IOFF+1),13,1.,27.,0)
+            CALL HBOOK1(1524+10*IOFF,'R4 CE'//PH(IOFF+1),13,1.,27.,0)
+            CALL HBOOK1(1525+10*IOFF,'R5 CE'//PH(IOFF+1),13,1.,27.,0)
+            CALL HBOOK1(1526+10*IOFF,'R6 CE'//PH(IOFF+1),13,1.,27.,0)
+         ENDIF
+      ENDDO
+C     
+C..   POWERS OF EVENT SHAPES
+C     
+      CALL HBOOK1(191,'MEAN',12,0.5,12.5,0)
+      CALL HBOOK1(192,'WIDT',12,0.5,12.5,0)
+      CALL HBOOK1(193,'SKEW',12,0.5,12.5,0)
+      CALL HBOOK1(194,'Y   ',12,0.5,12.5,0)
+      CALL HBOOK1(195,'Y**2',12,0.5,12.5,0)
+      CALL HBOOK1(196,'Y**3',12,0.5,12.5,0)
+
+
+C
+C  The End:
+      RETURN
+      END
++DECK,MCUSEV.
+      SUBROUTINE MCUSEV
+      IMPLICIT NONE
+C  Routine gets stable partons and hadrons from JETSET event record,
+C  packs momenta into arrays and calls analysis routine.
+C  Created: 03.07.96
+C  Author: Stefan Kluth (based on code from David Ward)
+C  Modifications:
+C  16.07.96, STK: New parton selection algorithm,
+C                 mods for user FFREAD cards
+C  25.07.96, STK: New (simpler) algorithms for ISR treatment
+C  18.09.96, STK: Switch ISRRM for ISR removal from event record
+C  30.10.96, STK: Fix flavour determination for JETSET
+C  06.11.96, STK: Reorganise, pack selections into subroutines
++SEQ,GUJETS.
+C +SEQ,GUDAT1.
+C +SEQ,GUDAT3.
+C +SEQ,GUDAT4.
+C +SEQ,GUDATR.
++SEQ,MCFFR.
++SEQ,MCUFFR.
++SEQ,MCPAW.
+      LOGICAL LKEEP
+      INTEGER I,J,L,II,III,NTRAKP,NTRAKH,JFLAV,LUCHGE,LUCOMP
+      INTEGER IDIM,MAXTRK,ICALL,IRM,IPA,NSTBL
+      PARAMETER( IDIM=6, MAXTRK=1000, NSTBL=7 )
+      REAL PTRAKP(IDIM,MAXTRK),PTRAKH(IDIM,MAXTRK),PSUM(4),ESUM
+      INTEGER IPAR(MAXTRK),IID(MAXTRK),ILIN(MAXTRK),IDSTBL(NSTBL)
+      DATA ICALL /0/
+      SAVE ICALL
+C  sigma-, Lambda, sigma+, xi-, xi0, omega-, K0s:
+      DATA IDSTBL / 3112,3122,3222,3312,3322,3334,310 /
+      SAVE IDSTBL
+C      DATA MASS / 1197.436, 1115.684, 1189.37, 1321.32, 1314.9, 1672.45
+C     &           ,497.672
+C      DATA CTAU / 4.434,    7.89,     2.396,   4.91,    8.71,   2.46
+C     &           ,2.676 /
+C
+C  Print the occasional progress message:
+      ICALL= ICALL+1
+      IF( MOD(ICALL,500).EQ.0 ) THEN
+        PRINT*,'MCUSEV: called this many times: ',ICALL
+      ENDIF
+C
+C  Print event record if requested:
+      IF( ICALL.LE.NRTOPR ) THEN
+        PRINT*,' '
+        PRINT*,'MCUSEV: Event record:'
+        CALL LULIST(2)
+        CALL LUEDIT(21)
+      ENDIF
+C
+C  Get stable QCD partons and FSR photons after termination of parton shower:
+      CALL MCGETP(1,IDIM,NTRAKP,PTRAKP,ILIN,IID,IPAR)
+C
+C  Get event flavour in Z0/gamma:
+      CALL MCGETF(JFLAV)
+C
+C  Print selected partons for first few events:
+      CALL VZERO(PSUM,4)
+      DO I=1,NTRAKP
+        DO J=1,4
+          PSUM(J)= PSUM(J)+PTRAKP(J,I)
+        ENDDO
+      ENDDO
+      CALL HFILL(10,PSUM(4),0.0,1.0)
+      IF( ICALL.LE.NRTOPR ) THEN
+        PRINT*,'MCUSEV: Event flavour: ',JFLAV
+        PRINT*,'MCUSEV: Selected partons:'
+        PRINT*,'#    ILIN  IID  IPAR   PX      PY      PZ      E'
+        DO I=1,NTRAKP
+          PRINT 30,I,ILIN(I),IID(I),IPAR(I)
+     &            ,PTRAKP(1,I),PTRAKP(2,I),PTRAKP(3,I),PTRAKP(4,I)
+        ENDDO
+        WRITE(*,'(1X,''sums:'',16X,4(F8.3))')
+     &    PSUM(1),PSUM(2),PSUM(3),PSUM(4)
+      ENDIF
+   30 FORMAT(1X,I3,1X,I4,1X,I5,1X,I4,2X,4(F8.3))
+C
+C  Get partons w/o FSR if demanded:
+      IF( LFSRRM ) THEN
+        CALL MCGETP(0,IDIM,NTRAKP,PTRAKP,ILIN,IID,IPAR)
+        ESUM= 0.0
+        DO I=1,NTRAKP
+          ESUM= ESUM+PTRAKP(4,I)
+        ENDDO
+        IF( PSUM(4).GT.ESUM ) CALL HFILL(15,PSUM(4)-ESUM,0.0,1.0)
+C       Print partons again:
+        IF( ICALL.LE.NRTOPR ) THEN
+          PRINT*,'MCUSEV: partons after FSR removal:'
+          PRINT*,'#    ILIN  IID  IPAR'
+          DO I=1,NTRAKP
+            PRINT 50, I,ILIN(I),IID(I),IPAR(I)
+          ENDDO
+        ENDIF
+      ENDIF
+   50 FORMAT(1X,I3,1X,I4,1X,I5,1X,I4)
+C
+C  Fill "decay length" of long-lived hadrons in histo:
+      DO I=1,N
+        DO J=1,NSTBL
+          IF( ABS(K(I,2)).EQ.IDSTBL(J) ) THEN
+            CALL HFILL(37,(V(I,4)+V(I,5))/1000.0,0.0,1.0)
+          ENDIF
+        ENDDO
+      ENDDO
+C
+C  Mark photons with no parents for removal if demanded, they are ISR:
+      IF( LISRRM ) THEN
+        IF( ICALL.LE.NRTOPR ) THEN
+          CALL LUEDIT(5)
+          PRINT*,' '
+          PRINT*,'MCUSEV: Event record before ISR removal:'
+          CALL LULIST(2)
+          CALL LUEDIT(22)
+        ENDIF
+        DO I=1,N
+          IF( K(I,2).EQ.22 .AND. K(I,3).EQ.0 ) THEN
+            K(I,1)= 21
+            CALL HFILL(14,P(I,4),0.0,1.0)
+          ENDIF
+        ENDDO
+      ENDIF
+C
+C  Get "stable" hadrons after hadronisation and decays:
+      CALL MCGETH(IDIM,NTRAKH,PTRAKH)
+      IF( ICALL.LE.NRTOPR ) THEN
+        PRINT*,' '
+        PRINT*,'MCUSEV: Stable particles in event record after MCGETH:'
+        CALL LULIST(2)
+      ENDIF
+
+C
+C  Call analysis routine:
+
+      IF(NTRAKH.GE.2) THEN
+         IF(ICALL.LE.15) THEN
+            WRITE(*,'(A,I4)') 'MCUSEV: FLAVOUR:           ',JFLAV
+            WRITE(*,'(A,I4)') 'MCUSEV: NUMBER OF PARTONS: ',NTRAKP
+            WRITE(*,'(A,I4)') 'MCUSEV: NUMBER OF HADRONS: ',NTRAKH
+            write(*,'(A,A)')  'MCUSEV: GENERATOR        : ',CHMCTYP
+         ENDIF
+         IF(LBQRK) THEN
+            IF(JFLAV.EQ.5) THEN
+               CALL MCANAL(JFLAV,NTRAKP,NTRAKH,IDIM,PTRAKP,PTRAKH)
+            ENDIF
+         ELSE
+            IF(SFLAV.EQ.0) THEN
+               CALL MCANAL(JFLAV,NTRAKP,NTRAKH,IDIM,PTRAKP,PTRAKH)
+            ELSEIF(SFLAV.EQ.JFLAV) THEN
+               CALL MCANAL(JFLAV,NTRAKP,NTRAKH,IDIM,PTRAKP,PTRAKH)
+            ENDIF
+         ENDIF
+      ELSE
+         WRITE(*,*) 'SELECTED HADRONS: ',NTRAKH
+      ENDIF
+C
+C  The End:
+      RETURN
+      END
++DECK,MCUSFI.
+      SUBROUTINE MCUSFI
+      IMPLICIT NONE
+C  User finish routine, writes histos filled with MC info to file:
+C  Stefan Kluth, 03.07.96
+C  Modifications:
+C  11.07.96, STK: fix filename problem on unix systems, use
+C                 external file definition now
+C  16.07.96, STK: mods for user FFREAD cards
+C  17.07.96, STK: back to FFREAD file defintion, works now on unix
++SEQ,MCPAW.
++SEQ,MCFFR.
++SEQ,MCUFFR.
++SEQ,MCPOW.
++SEQ,MCEVSH.
+      INTEGER I,LENOCC
+      INTEGER NENT, IFLAV, IOFF
+      REAL  RMEAN,RWIDTH,RSKEW
+      CHARACTER*(NAMLEN) CHOUTFILE
++SEQ,MCEVDT.
+C
+C..   PRINT THE POWERS
+C
+      DO I=1,12
+         CALL FIN3OUT(DSHAP1(I),DSHAP2(I),DSHAP3(I),NSHAP,
+     +        RMEAN,RWIDTH,RSKEW)
+         WRITE(*,'(3A,3F8.4,3F12.1)') 'SHAPES ',CHSHAP(I),
+     +        ' M W S X X2 X3: ',
+     +        RMEAN,RWIDTH,RSKEW,DSHAP1(I),DSHAP2(I),DSHAP3(I)
+         CALL HFILL(191,REAL(I),0.,RMEAN)
+         CALL HFILL(192,REAL(I),0.,RWIDTH)
+         CALL HFILL(193,REAL(I),0.,RSKEW)
+         CALL HFILL(194,REAL(I),0.,REAL(DSHAP1(I)))
+         CALL HFILL(195,REAL(I),0.,REAL(DSHAP2(I)))
+         CALL HFILL(196,REAL(I),0.,REAL(DSHAP3(I)))
+      ENDDO
+      WRITE(*,*) 'DONE WITH EVENTS: ',NSHAP
+
+      DO IFLAV=1,6
+         DO IOFF=0,10,10
+            CALL HNOENT(920+IFLAV+IOFF,NENT)
+            CALL HOPERA(920+IFLAV+IOFF,'+',920+IFLAV+IOFF,
+     +           920+IFLAV+IOFF,0.,REAL(NBMAX)/REAL(NENT))
+            CALL HNOENT(820+IFLAV+IOFF,NENT)
+            CALL HOPERA(820+IFLAV+IOFF,'+',820+IFLAV+IOFF,
+     +           820+IFLAV+IOFF,0.,REAL(NBMAX)/REAL(NENT))
+         ENDDO
+      ENDDO
+
+      CALL UHTOC(HOUTFILE,NBYTEW,CHOUTFILE,NAMLEN)
+      PRINT*,' '
+      PRINT*,'MCUSFI: Output histos to: ',
+     +     CHOUTFILE(1:LENOCC(CHOUTFILE))
+      CALL HCDIR('//PAWC',' ')
+      CALL HRPUT(0,CHOUTFILE(1:LENOCC(CHOUTFILE)),'N')
+
+
+
+
+      RETURN
+      END
++DECK,FIN3OUT.
+      subroutine fin3out(D1,D2,D3,N,rmean,rwidth,rskew)
+      double precision dmom(3),dmomn(3)
+      double precision d1,d2,d3
+      integer N,i
+      real rmean,rwidth,rskew
+* dmom is sum(x_i),sum((x_i)^2),sum((x_i)^3) for i=1..N
+* N is the number of events
+* rmean, rwidth, rskew are real mean, width and skewness.
+      RMEAN = 0.
+      RSKEW = 0.
+      RWIDTH = 0.
+      IF(N.NE.0) THEN
+         DMOMN(1) = D1/N
+         DMOMN(2) = D2/N
+         DMOMN(3) = D3/N
+      ELSE
+         RETURN
+      ENDIF
+
+      rmean=real(dmomn(1))
+      rwidth=real(sqrt(dmomn(2)-dmomn(1)**2))
+      IF(DMOMN(2).NE.DMOMN(1)**2) THEN
+      rskew=real((dmomn(3)-3*dmomn(1)*dmomn(2)+2*dmomn(1)**3)/
+     +               ((sqrt(dmomn(2)-dmomn(1)**2))**3))
+      ENDIF
+      end
+
++DECK,MCFILL.
+      SUBROUTINE MCFILL(NTRAK,IDIM,PTRAK,JFLAV,IOFF)
+      IMPLICIT NONE
+C  Routine to compute event shapes from PTRAK array and fill histos
+C  Input:   NTRAK   Number of entries in PTRAK
+C           PTRAK() Array with 5-momenta of particles
+C           IDIM    1st dimension of PTRAK array
+C           JFLAV   quark flavour identification, 1=u,...,5=b
+C           IOFF    Offset for histo ids
+C  Stefan Kluth, 19.1.96
+C  Modifications:
+C     22-10-96: include track based quantities SB
++SEQ,MCPAW.
++SEQ,MCEVSH.
++SEQ,MCPOW.
+
+      INTEGER NTRAK,JFLAV,IDIM,IOFF,IERR,ICALL,I,NFAIL
+      REAL PTRAK(IDIM,*)
+      REAL XP(1000),YP(1000),PTIN(1000),PTOUT(1000)
+      REAL XI
+      REAL THRUST,AMH,AML,Y34,Y12
+     &    ,THRUS0(3),EVAL(3),EVEC(3,3)
+      REAL TVEC0(3,3),TVEC(3)
+      REAL         YY
+      INTEGER      NJET
+      EQUIVALENCE (THRUST,THRUS0(3))
+      EQUIVALENCE (TVEC(1),TVEC0(1,3))
+      REAL VY(NBMAX),EX(NBMAX),EY(NBMAX)
+      REAL XTH(NBMAX),XMH(NBMAX),XBT(NBMAX),XBW(NBMAX),XCP(NBMAX)
+     &  ,XD2(NBMAX),XD2LOG(NBMAX),XTMA(NBMAX),XTMI(NBMAX),XOBL(NBMAX)
+     &  ,XSP(NBMAX),XAC(NBMAX)
+      SAVE XTH,XMH,XBT,XBW,XCP,XD2,XD2LOG
++SEQ,MCEVDT.
+      DATA ICALL /0/, NFAIL /0/
+      SAVE ICALL,NFAIL
+C
+C  Fix to fill cumulative distributions:
+      ICALL= ICALL+1
+      IF( ICALL.EQ.1 ) THEN
+        CALL HREBIN(307+IOFF,XTH,VY,EX,EY,NBMAX,1,NBMAX)
+        CALL HREBIN(357+IOFF,XTMA,VY,EX,EY,NBMAX,1,NBMAX)
+        CALL HREBIN(407+IOFF,XMH,VY,EX,EY,NBMAX,1,NBMAX)
+        CALL HREBIN(457+IOFF,XTMI,VY,EX,EY,NBMAX,1,NBMAX)
+        CALL HREBIN(507+IOFF,XBT,VY,EX,EY,NBMAX,1,NBMAX)
+        CALL HREBIN(557+IOFF,XOBL,VY,EX,EY,NBMAX,1,NBMAX)
+        CALL HREBIN(607+IOFF,XBW,VY,EX,EY,NBMAX,1,NBMAX)
+        CALL HREBIN(657+IOFF,XSP,VY,EX,EY,NBMAX,1,NBMAX)
+        CALL HREBIN(707+IOFF,XCP,VY,EX,EY,NBMAX,1,NBMAX)
+        CALL HREBIN(757+IOFF,XAC,VY,EX,EY,NBMAX,1,NBMAX)
+        CALL HREBIN(907+IOFF,XD2,VY,EX,EY,NBMAX,1,NBMAX)
+        CALL HREBIN(807+IOFF,XD2LOG,VY,EX,EY,NBMAX,1,NBMAX)
+      ENDIF
+C
+C  Compute event shapes:
+      CALL PXLTH4(NTRAK,IDIM,PTRAK,THRUS0,TVEC0,IERR)
+      CALL PXMMBB(NTRAK,IDIM,PTRAK,TVEC,AMH,AML,BT,BW,IERR)
+      CALL PXLSP3(NTRAK,IDIM,PTRAK,EVAL,EVEC,IERR)
+      CP   = 3.0*( EVAL(1)*EVAL(2) + EVAL(2)*EVAL(3) +
+     &          EVAL(3)*EVAL(1) )
+      TH   = 1.-THRUST
+      MH   = AMH
+      TMA = THRUS0(2)
+      TMI = THRUS0(1)
+      OBL = TMA - TMI
+      CALL PXJSP3(NTRAK,IDIM,PTRAK,EVAL,EVEC,IERR)
+      SP = (3./2.)*(EVAL(1)+EVAL(2))
+      AC = (3./2.)*EVAL(1)
+C
+C  Jet finding with Durham jet algorithm, IMODE=5. Set y23=0 when there
+C  are only two partons in the MC event:
+      CALL YKERN(5,NTRAK,IDIM,PTRAK,IERR)
+      IF( NTRAK.GE.3 ) THEN
+        CALL YYJET(2,Y23,Y12,IERR)
+      ELSE
+        Y23= 0.0
+      ENDIF
+C
+C..   SAVE POWERS OF EVENT SHAPES FOR HADRON LEVEL
+C
+      IF(IOFF.EQ.10) THEN
+         NSHAP     = NSHAP + 1
+         DSHAP1(1) = DSHAP1(1) + DBLE(TH)
+         DSHAP2(1) = DSHAP2(1) + DBLE(TH)**2
+         DSHAP3(1) = DSHAP3(1) + DBLE(TH)**3
+         
+         DSHAP1(2) = DSHAP1(2) + DBLE(TMA)
+         DSHAP2(2) = DSHAP2(2) + DBLE(TMA)**2
+         DSHAP3(2) = DSHAP3(2) + DBLE(TMA)**3
+         
+         DSHAP1(3) = DSHAP1(3) + DBLE(MH)
+         DSHAP2(3) = DSHAP2(3) + DBLE(MH)**2
+         DSHAP3(3) = DSHAP3(3) + DBLE(MH)**3
+         
+         DSHAP1(4) = DSHAP1(4) + DBLE(TMI)
+         DSHAP2(4) = DSHAP2(4) + DBLE(TMI)**2
+         DSHAP3(4) = DSHAP3(4) + DBLE(TMI)**3
+         
+         DSHAP1(5) = DSHAP1(5) + DBLE(BT)
+         DSHAP2(5) = DSHAP2(5) + DBLE(BT)**2
+         DSHAP3(5) = DSHAP3(5) + DBLE(BT)**3
+         
+         DSHAP1(6) = DSHAP1(6) + DBLE(OBL)
+         DSHAP2(6) = DSHAP2(6) + DBLE(OBL)**2
+         DSHAP3(6) = DSHAP3(6) + DBLE(OBL)**3
+         
+         DSHAP1(7) = DSHAP1(7) + DBLE(BW)
+         DSHAP2(7) = DSHAP2(7) + DBLE(BW)**2
+         DSHAP3(7) = DSHAP3(7) + DBLE(BW)**3
+         
+         DSHAP1(8) = DSHAP1(8) + DBLE(SP)
+         DSHAP2(8) = DSHAP2(8) + DBLE(SP)**2
+         DSHAP3(8) = DSHAP3(8) + DBLE(SP)**3
+         
+         DSHAP1(9) = DSHAP1(9) + DBLE(CP)
+         DSHAP2(9) = DSHAP2(9) + DBLE(CP)**2
+         DSHAP3(9) = DSHAP3(9) + DBLE(CP)**3
+         
+         DSHAP1(10) = DSHAP1(10) + DBLE(AC)
+         DSHAP2(10) = DSHAP2(10) + DBLE(AC)**2
+         DSHAP3(10) = DSHAP3(10) + DBLE(AC)**3
+         
+         DSHAP1(11) = DSHAP1(11) + DBLE(Y23)
+         DSHAP2(11) = DSHAP2(11) + DBLE(Y23)**2
+         DSHAP3(11) = DSHAP3(11) + DBLE(Y23)**3
+         
+         DSHAP1(12) = DSHAP1(12) +  1D0-DBLE(TH)
+         DSHAP2(12) = DSHAP2(12) + (1D0-DBLE(TH))**2
+         DSHAP3(12) = DSHAP3(12) + (1D0-DBLE(TH))**3
+      ENDIF
+C
+C  Fill histos:
+      CALL HFILL(300+IOFF+JFLAV,TH,0.,1.)
+      CALL HFILL(350+IOFF+JFLAV,TMA,0.,1.)
+      CALL HFILL(400+IOFF+JFLAV,MH,0.,1.)
+      CALL HFILL(450+IOFF+JFLAV,TMI,0.,1.)
+      CALL HFILL(500+IOFF+JFLAV,BT,0.,1.)
+      CALL HFILL(550+IOFF+JFLAV,OBL,0.,1.)
+      CALL HFILL(600+IOFF+JFLAV,BW,0.,1.)
+      CALL HFILL(650+IOFF+JFLAV,SP,0.,1.)
+      CALL HFILL(700+IOFF+JFLAV,CP,0.,1.)
+      CALL HFILL(750+IOFF+JFLAV,AC,0.,1.)
+      CALL HFILL(800+IOFF+JFLAV,Y23,0.,1.)
+      CALL HFILL(900+IOFF+JFLAV,Y23,0.,1.)
+      CALL HFILL(306+IOFF,TH,0.,1.)
+      CALL HFILL(356+IOFF,TMA,0.,1.)
+      CALL HFILL(406+IOFF,MH,0.,1.)
+      CALL HFILL(456+IOFF,TMI,0.,1.)
+      CALL HFILL(506+IOFF,BT,0.,1.)
+      CALL HFILL(556+IOFF,OBL,0.,1.)
+      CALL HFILL(606+IOFF,BW,0.,1.)
+      CALL HFILL(656+IOFF,SP,0.,1.)
+      CALL HFILL(706+IOFF,CP,0.,1.)
+      CALL HFILL(756+IOFF,AC,0.,1.)
+      CALL HFILL(806+IOFF,Y23,0.,1.)
+      CALL HFILL(856+IOFF,1.-TH,0.,1.)
+      CALL HFILL(906+IOFF,Y23,0.,1.)
+C
+C     FILL THE MEAN JET RATE HISTOGRAMS
+C
+      DO I=1,NBMAX
+         YY = XD2LOG(I)
+         CALL YNJET(YY,NJET,IERR)
+         CALL HFILL(820+IOFF+JFLAV,YY,0.,REAL(NJET))
+         CALL HFILL(826+IOFF,YY,0.,REAL(NJET))
+      ENDDO
+      DO I=1,NBMAX
+         YY = XD2(I)
+         CALL YNJET(YY,NJET,IERR)
+         CALL HFILL(920+IOFF+JFLAV,YY,0.,REAL(NJET))
+         CALL HFILL(926+IOFF,YY,0.,REAL(NJET))
+      ENDDO
+
+
+
+C     Fill cumulative distributions:
+c      write(*,'(2I4,7F10.3)') ntrak,jflav,th,tma,mh,tmi,bt,obl,bw
+      DO I=1,NBMAX
+        IF( TH.LE.XTH(I)   ) CALL HFILL(307+IOFF,XTH(I)  ,0.,1.)
+        IF( TMA.LE.XTMA(I) ) CALL HFILL(357+IOFF,XTMA(I),0.,1.)
+        IF( MH.LE.XMH(I)   ) CALL HFILL(407+IOFF,XMH(I)  ,0.,1.)
+        IF( TMI.LE.XTMI(I) ) CALL HFILL(457+IOFF,XTMI(I),0.,1.)
+        IF( BT.LE.XBT(I)   ) CALL HFILL(507+IOFF,XBT(I)  ,0.,1.)
+        IF( OBL.LE.XOBL(I) ) CALL HFILL(557+IOFF,XOBL(I),0.,1.)
+        IF( BW.LE.XBW(I)   ) CALL HFILL(607+IOFF,XBW(I)  ,0.,1.)
+        IF( SP.LE.XSP(I)   ) CALL HFILL(657+IOFF,XOBL(I),0.,1.)
+        IF( CP.LE.XCP(I)   ) CALL HFILL(707+IOFF,XCP(I)  ,0.,1.)
+        IF( AC.LE.XAC(I)   ) CALL HFILL(757+IOFF,XOBL(I),0.,1.)
+        IF( Y23.LE.XD2(I)  ) CALL HFILL(907+IOFF,XD2(I)  ,0.,1.)
+        IF( Y23.LE.XD2LOG(I)) CALL HFILL(807+IOFF,XD2LOG(I),0.,1.)
+      ENDDO
+C
+C..   COMPUTE TRACK BASED QUANTITIES
+C
+      CALL QQCTRK(IDIM,NTRAK,PTRAK,XP,YP,PTIN,PTOUT)
+      DO I=1,NTRAK
+        IF(PTRAK(6,I).NE.0.) THEN
+          CALL HFILL(50+IOFF,ABS(PTIN(I)) ,0.,1.)
+          CALL HFILL(51+IOFF,ABS(PTOUT(I)),0.,1.)
+          CALL HFILL(52+IOFF,ABS(XP(I))   ,0.,1.)
+          CALL HFILL(53+IOFF,ABS(YP(I))   ,0.,1.)
+          IF(XP(I).NE.0.) THEN
+            XI = LOG(1/ABS(XP(I)))
+          ELSE
+            XI = 0.
+          ENDIF
+          CALL HFILL(54+IOFF,XI      ,0.,1.)
+        ENDIF
+      ENDDO
+C
+C  The End:
+      RETURN
+      END
++DECK,QQBOOS.
+      SUBROUTINE QQBOOS(PVEC,IDIM,NTRAK,PTRAK)
+      IMPLICIT NONE
+C  Boost PTRAK array into restframe of 5-vector PVEC.
+C  Input:  PVEC()   5-vector defining restframe, PVEC(5)= MASS
+C          IDIM     1st dimension of PTRAK array
+C          NTRAK    Number of entries in PTRAK array
+C          PTRAK()  Array of 5-vectors to be boosted
+C  Output: PTRAK()        "            after boost
+C  Author: Stefan Kluth
+C  Date: 28.11.95
+C  Modifications:
+C  13.3.96: Introduce variable first dimension for PTRAK array
+      INTEGER I,J,IDIM,NTRAK
+      REAL PTRAK(IDIM,*),PVEC(5),PTMP(5)
+      DO I=1,NTRAK
+        CALL PXLZF5(PVEC,PTRAK(1,I),PTMP)
+        DO J=1,5
+          PTRAK(J,I)= PTMP(J)
+        ENDDO
+      ENDDO
+      RETURN
+      END
+
++DECK,QQCTRK.
+      SUBROUTINE QQCTRK(IDIM,NTRAK,PTRAK,XP,YP,PTIN,PTOUT)
+      IMPLICIT NONE
+C  Routine to compute particle based quantities.
+C  Input:  IDIM    1st dimension of array PTRAK
+C          NTRAK   number of entries in PTRAK
+C          PTRAK() array of 5-momenta (px,py,pz,E,m)
+C  Output: XP()    array with xp= p/E_beam
+C          YP()    array with rapidity w.r.t. thrust axis
+C          PTIN()  array with momentum components in event plane
+C          PTOUT() array with momentum components out of event plane
+C  Author: Stefan Kluth
+C  Date: 28.3.96
+C  Modifications:
+C  Trap NTRAK.LE.1, 12.6.96, Stefan Kluth
++SEQ,MCFFR.
+      INTEGER IDIM, NTRAK
+      REAL PTRAK(IDIM,*),XP(*),YP(*),PTIN(*),PTOUT(*)
+      INTEGER I,IERR
+      REAL XDUMMY(10),TVEC(3,3),SVEC(3,3)
+      IF( NTRAK.GT.1 ) THEN
+        CALL PXLTH4(NTRAK,IDIM,PTRAK,XDUMMY,TVEC,IERR)
+        CALL PXJSP3(NTRAK,IDIM,PTRAK,XDUMMY,SVEC,IERR)
+        DO I=1,NTRAK
+          XP(I)= SQRT(PTRAK(1,I)**2+PTRAK(2,I)**2+PTRAK(3,I)**2)/
+     +      (ECMASS/2)
+          CALL PXRAP4(PTRAK(1,I),TVEC(1,3),YP(I),IERR)
+          CALL PXPLT3(PTRAK(1,I),SVEC(1,2),PTIN(I),XDUMMY,IERR)
+          CALL PXPLT3(PTRAK(1,I),SVEC(1,1),PTOUT(I),XDUMMY,IERR)
+        ENDDO
+      ELSE
+        XP(1)= 0.0
+        YP(1)= 0.0
+        PTIN(1)= 0.0
+        PTOUT(1)= 0.0
+      ENDIF
+C
+C  The End:
+      RETURN
+      END
+
++DECK,MCFIMA
+      SUBROUTINE MCFIMA(VP,VH)
+      IMPLICIT NONE
+C  Routine to fill hadronisation matrices.
+C  Input:   VP()    Array with observables at parton-level
+C           VH()    Array with observables at hadron-level
+C  Stefan Kluth, 19.1.96
+C  Modifications:
+      INTEGER IP,IH,IVAR,I
+      REAL VP(*),VH(*)
++SEQ,MCPAW.
++SEQ,MCEVSH.
++SEQ,MCEVDT.
+C
+C  Fill hadronisation matrices:
+      DO IVAR=1,NVAR
+        IP= 0
+        IH= 0
+        DO I=1,NBIN(IVAR)
+          IF( VP(IVAR).GE.XBINS(I,IVAR) .AND.
+     &        VP(IVAR).LT.XBINS(I+1,IVAR) ) IP= I
+          IF( VH(IVAR).GE.XBINS(I,IVAR) .AND.
+     &        VH(IVAR).LT.XBINS(I+1,IVAR) ) IH= I
+        ENDDO
+        IF( IP.GT.0 .AND.          IH.GT.0 .AND.
+     &      IP.LE.NBIN(IVAR) .AND. IH.LE.NBIN(IVAR)  ) THEN
+          CALL HFILL(1000+(IVAR-1)*10+1,VP(IVAR),0.0,1.0)
+          CALL HFILL(1000+(IVAR-1)*10+2,VH(IVAR),0.0,1.0)
+          CALL HFILL(1100+(IVAR-1)*10,REAL(IP),REAL(IH),1.0)
+        ENDIF
+      ENDDO
+C
+C  The End:
+      RETURN
+      END
++DECK,MCANAL.
+      SUBROUTINE MCANAL(JFLAV,NTRAKP,NTRAKH,IDIM,PTRAKP,PTRAKH)
+      IMPLICIT NONE
+C  Routine to do analysis of MC 4-vectors:
+C  Input: JFLAV    Quark flavour code
+C         NTRAKP   Number of entries in array PTRAKP
+C         NTRAKH   Number of entries in array PTRAKPH
+C         IDIM     1st dimension of arrays PTRAKP,PTRAKH
+C         PTRAKP() Array with parton 4-momenta
+C         PTRAKH() Array with hadron 4-momenta
+C  Stefan Kluth, 22.1.96
+C  Modifications:
+C     INTRODUCE BOOST OF THE HADRONIC SYSTEM 25.10.96  SB
+
++SEQ,MCPAW.
++SEQ,MCFFR.
++SEQ,MCUFFR.
++SEQ,MCEVSH.
+      LOGICAL FIRST
+      INTEGER JFLAV,NTRAKP,NTRAKH,IDIM
+      REAL PTRAKP(IDIM,*),PTRAKH(IDIM,*)
+      INTEGER I,IVAR,ITRAK,NTRKCH
+      REAL EVIS,VP(NVAR),VH(NVAR)
+      REAL PEV(5)
++SEQ,MCEVDT.
+      DATA FIRST /.TRUE. /
+C
+C  Fill general histos:
+      CALL HFILL(13,REAL(JFLAV),0.0,1.0)
+      CALL HFILL(100+JFLAV,REAL(NTRAKP),0.0,1.0)
+      CALL HFILL(200+JFLAV,REAL(NTRAKH),0.0,1.0)
+      CALL HFILL(106,REAL(NTRAKP),0.0,1.0)
+      CALL HFILL(206,REAL(NTRAKH),0.0,1.0)
+C
+C  Get number of charged hadrons if charge info supplied in PTRAK(6,):
+      IF( IDIM.GE.6 ) THEN
+        NTRKCH= 0
+        DO I=1,NTRAKH
+          IF( PTRAKH(6,I).NE.0.0 ) NTRKCH= NTRKCH+1
+        ENDDO
+        CALL HFILL(210+JFLAV,REAL(NTRKCH),0.0,1.0)
+        CALL HFILL(216,REAL(NTRKCH),0.0,1.0)
+        CALL HFILL(220,REAL(NTRKCH),0.0,1.0)
+      ENDIF
+C
+C  Fill histos and store event shape results in array for partons,
+C  optionally only for "light" partons:
+      IF( LUDSC .AND. JFLAV.EQ.5 ) THEN
+        CALL VZERO(VP,6)
+      ELSE
+        EVIS= 0.0
+        DO ITRAK=1,NTRAKP
+          EVIS= EVIS+PTRAKP(4,ITRAK)
+        ENDDO
+        CALL HFILL(11,EVIS,0.,1.)
+        CALL MCFILL(NTRAKP,IDIM,PTRAKP,JFLAV,0)
+        CALL JTFILL(0,NTRAKP,IDIM,PTRAKP)
+c        CALL CTEST (0,NTRAKP,IDIM,PTRAKP)
+c        CALL YTEST (0,NTRAKP,IDIM,PTRAKP)
+        VP(1)= TH
+        VP(2)= MH
+        VP(3)= BT
+        VP(4)= BW
+        VP(5)= CP
+        VP(6)= Y23
+      ENDIF
+C
+C  Fill histos and store event shape results for hadrons:
+      EVIS= 0.0
+      DO ITRAK=1,NTRAKH
+        EVIS= EVIS+PTRAKH(4,ITRAK)
+      ENDDO
+C     
+C     BOOST TO THE CMS OF THE HADRONS
+C
+      IF(LBOOS) THEN
+        IF(FIRST) THEN
+          WRITE(*,*) '********************************'
+          WRITE(*,*) '*** BOOST OF HADRONIC SYSTEM ***'
+          WRITE(*,*) '********************************'
+        ENDIF
+        CALL VZERO(PEV,5)
+        DO ITRAK=1,NTRAKH
+          PEV(1)=PEV(1)+PTRAKH(1,ITRAK)
+          PEV(2)=PEV(2)+PTRAKH(2,ITRAK)
+          PEV(3)=PEV(3)+PTRAKH(3,ITRAK)
+          PEV(4)=PEV(4)+PTRAKH(4,ITRAK)
+        ENDDO
+        PEV(5) = PEV(4)**2-(PEV(1)**2+PEV(2)**2+PEV(3)**2)
+        IF(PEV(5).GT.0.) THEN
+          PEV(5) = SQRT(PEV(5))
+          CALL QQBOOS(PEV,IDIM,NTRAKH,PTRAKH)
+        ELSE
+          PEV(5) = 0.
+          WRITE(*,*) 'NOT BOOSTED, MASS<= 0.'
+        ENDIF
+      ENDIF
+      CALL HFILL(12,EVIS,0.0,1.0)
+      CALL MCFILL(NTRAKH,IDIM,PTRAKH,JFLAV,10)
+      CALL JTFILL(10,NTRAKH,IDIM,PTRAKH)
+c      CALL CTEST(10,NTRAKH,IDIM,PTRAKH)
+c      CALL YTEST(10,NTRAKH,IDIM,PTRAKH)
+      VH(1)= TH
+      VH(2)= MH
+      VH(3)= BT
+      VH(4)= BW
+      VH(5)= CP
+      VH(6)= Y23
+
+C
+C  Fill hadronisation matrices:
+      CALL MCFIMA(VP,VH)
+C
+C     The End:
+      FIRST = .FALSE.
+      RETURN
+      END
+*-------------------------------------------------------------------
++DECK,JTFILL.
+      SUBROUTINE JTFILL(IOFF,NTRAK,IDIM,PTRAK)
+*
+*     Routine to fill histograms with Jet information
+*     Jet finding included for JADE E0, Durham, Cambridge
+*     and Cone(R) and Cone(e)
+*
+*     S Bentvelsen, oct 1997
+*
+      IMPLICIT NONE
++SEQ,MCFFR.
++SEQ,MCUFFR.
+      INTEGER MAXBIN
+      PARAMETER (MAXBIN=200)
+
+      INTEGER IOFF,NTRAK,IDIM,NWT,K,ID,LOC
+      INTEGER NJTOT
+      REAL PTRAK(IDIM,*)
+      REAL HXMI,HXMA,HYMI,HYMA
+      INTEGER NNY,NBIN,IERR,NJET
+      INTEGER NPRINT
+      CHARACTER*80 CHTOT
+      REAL HX(MAXBIN),HY(MAXBIN),HEX(MAXBIN),
+     &     HEY(MAXBIN)
+C      REAL PJET(5,10)
+      INTEGER IPASS(250),IJMUL(10)
+      LOGICAL FIRST
+      INTEGER IANAL
+
+      REAL Y12,Y23,Y34,Y45,Y56
+      INTEGER IJ(500)
+      REAL    PJ(4,500)
+
+      REAL PJET(10,10,10)
+c      REAL YREC(10),
+c	REAL YARR(20)
+c      INTEGER HISTOR(2,250)
+c      COMMON /YCL/YREC,PJET,HISTOR
+
+      DATA IANAL  / 0 /
+      DATA FIRST  / .TRUE. /
+      DATA NPRINT / 0 /
+      SAVE IANAL
+      SAVE NPRINT
+      SAVE FIRST
+
+      IANAL = IANAL + 1
+      IF(NJTEV.NE.-1.AND.IANAL.GT.NJTEV) RETURN
+
+      IF(FIRST) THEN
+         WRITE(*,*) '**********************************'
+         WRITE(*,*) '*****    JTFILL              *****'
+         WRITE(*,*) '**********************************'
+         IF(NJTEV.EQ.-1) THEN
+            WRITE(*,*) 'JETFINDING FOR ALL EVENTS'
+         ELSE
+            WRITE(*,*) 'JETFINDING FOR ',NJTEV,' EVENTS'
+         ENDIF
+         WRITE(*,*) 
+      ENDIF
+
+
+
+      IF(LJDE0) THEN
+         ID = 1200
+         CALL HGIVE(ID+1,CHTOT,NBIN,HXMI,HXMA,NNY,
+     &        HYMI,HYMA,NWT,LOC)
+         CALL HREBIN(ID+1,HX,HY,HEX,HEY,NBIN,1,NBIN)
+
+         CALL YKERN(1,NTRAK,IDIM,PTRAK,IERR)
+         IF(IERR.NE.0) THEN
+            WRITE(*,*) 'ERROR IN JADE E0 FINDING: ',IERR
+            RETURN
+         ENDIF
+         CALL MEANJET(IOFF,1)
+         DO K=1,NBIN
+            CALL YNJET(HX(K),NJET,IERR)
+            IF(FIRST) WRITE(*,'(A,F10.6,I4)')
+     &           'BINNING E0: ',hx(k),njet
+            IF (NJET.EQ.1) NJET=2
+            CALL HFILL(ID+8+IOFF,HX(K),0.,FLOAT(NJET))
+            IF (NJET.GT.6) NJET=6
+            IF (IERR.EQ.0) THEN
+               CALL HFILL(ID+IOFF+NJET,HX(K),0.,1.)
+            ELSE
+               WRITE(6,*) 'ERROR IN HNJET!'
+            ENDIF
+            Y56 = 0.
+            Y45 = 0.
+            Y34 = 0.
+            Y23 = 0.
+            Y12 = 0.
+            IF(NTRAK.GE.2) CALL YYJET(2,Y23,Y12,IERR)
+            IF(NTRAK.GE.3) CALL YYJET(3,Y34,Y23,IERR)
+            IF(NTRAK.GE.4) CALL YYJET(4,Y45,Y34,IERR)
+            IF(NTRAK.GE.5) CALL YYJET(5,Y56,Y45,IERR)
+            CALL HFILL(ID+IOFF+21,Y12,0.,1.)
+            CALL HFILL(ID+IOFF+22,Y23,0.,1.)
+            CALL HFILL(ID+IOFF+23,Y34,0.,1.)
+            CALL HFILL(ID+IOFF+24,Y45,0.,1.)
+            CALL HFILL(ID+IOFF+25,Y56,0.,1.)
+         ENDDO
+      ENDIF
+      IF(LDURH) THEN
+         ID = 1300
+         CALL HGIVE(ID+1,CHTOT,NBIN,HXMI,HXMA,NNY,
+     &        HYMI,HYMA,NWT,LOC)
+         CALL HREBIN(ID+1,HX,HY,HEX,HEY,NBIN,1,NBIN)
+
+         CALL YKERN(5,NTRAK,IDIM,PTRAK,IERR)
+         IF(IERR.NE.0) THEN
+            WRITE(*,*) 'ERROR IN JADE E0 FINDING: ',IERR
+            RETURN
+         ENDIF
+         CALL MEANJET(IOFF,5)
+         DO K=1,NBIN
+            CALL YNJET(10**HX(K),NJET,IERR)
+            IF(FIRST) WRITE(*,'(A,F10.6,I4)')
+     &           'BINNING KT: ',hx(k),njet
+            IF (NJET.EQ.1) NJET=2
+            CALL HFILL(ID+8+IOFF,HX(K),0.,FLOAT(NJET))
+            IF (NJET.GT.6) NJET=6
+            IF (IERR.EQ.0) THEN
+               CALL HFILL(ID+IOFF+NJET,HX(K),0.,1.)
+            ELSE
+               WRITE(6,*) 'ERROR IN HNJET!'
+            ENDIF
+            Y56 = 0.
+            Y45 = 0.
+            Y34 = 0.
+            Y23 = 0.
+            Y12 = 0.
+            IF(NTRAK.GE.2) CALL YYJET(2,Y23,Y12,IERR)
+            IF(NTRAK.GE.3) CALL YYJET(3,Y34,Y23,IERR)
+            IF(NTRAK.GE.4) CALL YYJET(4,Y45,Y34,IERR)
+            IF(NTRAK.GE.5) CALL YYJET(5,Y56,Y45,IERR)
+            CALL HFILL(ID+IOFF+21,Y12,0.,1.)
+            CALL HFILL(ID+IOFF+22,Y23,0.,1.)
+            CALL HFILL(ID+IOFF+23,Y34,0.,1.)
+            CALL HFILL(ID+IOFF+24,Y45,0.,1.)
+            CALL HFILL(ID+IOFF+25,Y56,0.,1.)
+         ENDDO
+      ENDIF
+      IF(LCAMJ) THEN
+         ID = 1400
+         CALL HGIVE(ID+1,CHTOT,NBIN,HXMI,HXMA,NNY,
+     &        HYMI,HYMA,NWT,LOC)
+         CALL HREBIN(ID+1,HX,HY,HEX,HEY,NBIN,1,NBIN)
+
+         NJTOT = MIN(NTRAK,30)
+         CALL CKERN(IDIM,NTRAK,PTRAK,NJTOT,IERR)
+         IF(IERR.NE.0) THEN
+            WRITE(*,*) 'ERROR IN CAMBRIDGE CLUSTERING: ',IERR
+            RETURN
+         ENDIF
+
+         CALL MEANJET(IOFF,7)
+         DO K=1,NBIN
+            IF(10**HX(K).GT.1E-4) THEN
+               
+               CALL CNJET(10**HX(K),NJET,IERR)
+C--   CALL PXCAMJ(IDIM,NTRAK,PTRAK,10**HX(K),NJET,IJ,PJ,IERR)
+               IF(FIRST) WRITE(*,'(A,F10.6,I4)')
+     &              'BINNING CAMJ: ',hx(k),njet
+               IF(IERR.NE.0) THEN
+                  IF(NPRINT.LE.50) THEN
+                     WRITE(*,*) 'ERROR IN CAMBRIDGE CNJET: '
+     &                    ,IERR,10**HX(K)
+                     NPRINT = NPRINT + 1
+                  ENDIF
+                  RETURN
+               ENDIF
+               IF (NJET.EQ.1) NJET=2
+               CALL HFILL(ID+8+IOFF,HX(K),0.,FLOAT(NJET))
+               IF (NJET.GT.6) NJET=6
+               IF (IERR.EQ.0) THEN
+                  CALL HFILL(ID+IOFF+NJET,HX(K),0.,1.)
+               ELSE
+                  WRITE(6,*) 'ERROR IN HNJET!'
+               ENDIF
+               Y56 = 0.
+               Y45 = 0.
+               Y34 = 0.
+               Y23 = 0.
+               Y12 = 0.
+               CALL HFILL(ID+IOFF+21,Y12,0.,1.)
+               CALL HFILL(ID+IOFF+22,Y23,0.,1.)
+               CALL HFILL(ID+IOFF+23,Y34,0.,1.)
+               CALL HFILL(ID+IOFF+24,Y45,0.,1.)
+               CALL HFILL(ID+IOFF+25,Y56,0.,1.)
+            ENDIF
+         ENDDO
+      ENDIF
+      IF(LCONE) THEN
+         ID = 1500
+         CALL HGIVE(ID+1,CHTOT,NBIN,HXMI,HXMA,NNY,
+     &        HYMI,HYMA,NWT,LOC)
+         CALL HREBIN(ID+1,HX,HY,HEX,HEY,NBIN,1,NBIN)
+
+         DO K=1,NBIN
+            CALL PXCONE(NTRAK,IDIM,PTRAK,HX(K),7.,10,
+     &              NJET,PJET,IPASS,IJMUL,IERR)
+            IF(FIRST) WRITE(*,'(A,F10.6,I4)')
+     &           'BINNING CONE(R): ',hx(k),njet
+            IF(IERR.NE.0) THEN
+               WRITE(*,*) 'ERROR IN CONE FINDING: ',IERR
+               RETURN
+            ENDIF
+            IF (NJET.EQ.1) NJET=2
+            CALL HFILL(ID+8+IOFF,HX(K),0.,FLOAT(NJET))
+            IF (NJET.GT.6) NJET=6
+            IF (IERR.EQ.0) THEN
+               CALL HFILL(ID+IOFF+NJET,HX(K),0.,1.)
+            ELSE
+               WRITE(6,*) 'ERROR IN HNJET!'
+            ENDIF
+         ENDDO
+
+         ID = 1520
+         CALL HGIVE(ID+1,CHTOT,NBIN,HXMI,HXMA,NNY,
+     &        HYMI,HYMA,NWT,LOC)
+         CALL HREBIN(ID+1,HX,HY,HEX,HEY,NBIN,1,NBIN)
+         DO K=1,NBIN
+            CALL PXCONE(NTRAK,IDIM,PTRAK,0.7,HX(K),10,
+     &           NJET,PJET,IPASS,IJMUL,IERR)
+            IF(FIRST) WRITE(*,'(A,F10.6,I4)') 
+     &           'BINNING CONE(E): ',hx(k),njet
+            IF(IERR.NE.0) THEN
+               WRITE(*,*) 'ERROR IN CONE FINDING: ',IERR
+               RETURN
+            ENDIF
+            IF (NJET.EQ.1) NJET=2
+            CALL HFILL(ID+8+IOFF,HX(K),0.,FLOAT(NJET))
+            IF (NJET.GT.6) NJET=6
+            IF (IERR.EQ.0) THEN
+               CALL HFILL(ID+IOFF+NJET,HX(K),0.,1.)
+            ELSE
+               WRITE(6,*) 'ERROR IN HNJET!'
+            ENDIF
+         ENDDO
+      ENDIF
+
+
+      FIRST = .FALSE.
+      END
+
++DECK, CTEST,IF=NEVER.
+      SUBROUTINE CTEST(IOFF,NTRAK,IDIM,PTRAK)
+*
+*     TESTING OF THE CKERN LIBRARY
+*
+*     S Bentvelsen, oct 1997
+*
+      IMPLICIT NONE
++SEQ,MCFFR.
++SEQ,MCUFFR.
+      INTEGER MAXBIN
+      PARAMETER (MAXBIN=200)
+
+      INTEGER IOFF,NTRAK,IDIM,IERR,NJET
+      REAL PTRAK(IDIM,*)
+      REAL PSAVE(IDIM,300)
+      REAL   ETOT, PXT, PYT, PZT
+      INTEGER IJ(100), N1,N2, NTOT, NSAVE
+      INTEGER MATC(10,10), MATY(10,10)
+
+      REAL    YCUT, PJET(4,300)
+      INTEGER    NJTOT, I,II,J
+      INTEGER    K,NJ(20),NT(20)
+      INTEGER    KJET,BL(250),CNCNT
+      REAL       YL,YH, YDL, YDH
+
+      INTEGER   NCH
+      DATA      NCH / 0 /
+      SAVE      NCH
+      SAVE      PSAVE, NSAVE
+
+
+      IF(NCH.EQ.0) THEN
+         DO I=0,1
+            CALL HBOOK1(2021+I*10,'NJET YCUT=0.01 ',50,0.5,50.5,0)
+            CALL HBOOK1(2001+I*10,'NJET IMPOSSIBLE',50,0.5,50.5,0)
+            CALL HBOOK1(2002+I*10,'NJET DOUBLE    ',50,0.5,50.5,0)
+            CALL HBOOK1(2003+I*10,'NJET TRIPLE    ',50,0.5,50.5,0)
+            CALL HBOOK1(2004+I*10,'NJET QUATTRO   ',50,0.5,50.5,0)
+            CALL HBOOK1(2010+I*10,'NJET TOTAL     ',50,0.5,50.5,0)
+
+            CALL HBOOK2(2100+I*10,'MATY',5,0.5,5.5,5,0.5,5.5,0)
+            CALL HBOOK2(2200+I*10,'MATC',5,0.5,5.5,5,0.5,5.5,0)
+            DO J=0,5
+               CALL HBOOK1(2120+I*10+J,'MATY',5,0.5,5.5,0)
+               CALL HBOOK1(2220+I*10+J,'MATC',5,0.5,5.5,0)
+            ENDDO
+         ENDDO
+      ENDIF
+
+      IF(IOFF.EQ.0) THEN
+         NSAVE = NTRAK
+         DO I=1,NSAVE
+            DO II=1,IDIM
+               PSAVE(II,I) = PTRAK(II,I)
+            ENDDO
+         ENDDO
+      ELSE
+c         CALL CWRIT(IDIM,NSAVE,PSAVE,-1,IERR)
+c         CALL CWRIT(IDIM,NTRAK,PTRAK,-1,IERR)
+      ENDIF
+
+      NCH = NCH + 1
+      IF(MOD(NCH,10).EQ.0) WRITE(*,*) 'NCH EQUALS: ',NCH
+      NJTOT = MIN(NTRAK,50)
+      CALL CKERN(IDIM,NTRAK,PTRAK,NJTOT,IERR)
+      IF(NCH.LT.20) CALL CINFO
+
+      do kjet = 4,8
+         if(cncnt(kjet).ge.2) then
+            call cnass(kjet,1,pjet,bl,yl,yh,ierr)
+            call cnass(kjet,2,pjet,bl,ydl,ydh,ierr)
+            if(yl.ne.ydh) then 
+c               CALL CWRIT(IDIM,NSAVE,PSAVE,1,IERR)
+c               CALL CWRIT(IDIM,NTRAK,PTRAK,1,IERR)
+               goto 876
+            endif
+         endif
+      enddo
+ 876  continue
+      if(cncnt(4).eq.0) then
+         CALL CWRIT(IDIM,NSAVE,PSAVE,1,IERR)
+         CALL CWRIT(IDIM,NTRAK,PTRAK,1,IERR)
+      endif
+
+      CALL CDBLE(K,NJ,NT,IERR)
+      DO I=1,K
+         CALL HFILL(2000+NT(I)+IOFF,1.*NJ(I),0.,1.)
+      ENDDO
+      CALL CNONE(K,NJ,IERR)
+      DO I=1,K
+         CALL HFILL(2001+IOFF,1.*NJ(I),0.,1.)
+      ENDDO
+      CALL YNJET(0.01,NJET,IERR)
+      CALL HFILL(2021+IOFF,1.*NJET,0.,1.)
+      DO I=1,NTRAK
+         CALL HFILL(2010+IOFF,1.*I,0.,1.)
+      ENDDO
+
+      IF(NCH.LT.3) THEN
+         WRITE(*,*) ' '
+         WRITE(*,*) ' '
+         WRITE(*,*) 'JETFINDER FINDS YFLIP VALUES: '
+         DO I=1,NJTOT
+            CALL CYJET(I,YL,YH,IERR)
+            WRITE(*,'(I6,2E16.8)') I,YL,YH
+         ENDDO
+         
+C     
+C..   PRINT OUT JET-AXES 
+C     
+         WRITE(*,*) ' '
+         DO NJET=1,NJTOT
+            CALL CAXES(NJET,PJET,IERR)
+            WRITE(*,*) 'NUMBER OF JETS: ',NJET
+            ETOT = 0.
+            PXT = 0.
+            PYT = 0.
+            PZT = 0.
+            DO I=1,NJET
+               WRITE(*,'(10X,4F10.4)') PJET(1,I),
+     +              PJET(2,I),PJET(3,I),PJET(4,I)
+               ETOT = ETOT + PJET(4,I)
+               PXT  = PXT  + PJET(1,I)
+               PYT  = PYT  + PJET(2,I)
+               PZT  = PZT  + PJET(3,I)
+            ENDDO
+            WRITE(*,'(A,4F10.4)') '  TOTAL:  ',PXT,PYT,PZT,ETOT
+            WRITE(*,*) ' '
+         ENDDO
+      ENDIF
+
+
+      CALL CMIGR(0,4,MATY,IERR)
+      CALL CMIGR(1,4,MATC,IERR)
+      DO I=1,5
+         DO J=1,5
+            CALL HFILL(2100+IOFF,1.*I,1.*J,1.*MATY(I,J))
+            CALL HFILL(2200+IOFF,1.*I,1.*J,1.*MATC(I,J))
+
+            CALL HFILL(2120+IOFF+J,1.*I,0.,1.*MATY(I,J))
+            CALL HFILL(2220+IOFF+J,1.*I,0.,1.*MATC(I,J))
+
+            CALL HFILL(2120+IOFF,1.*I,0.,1.*MATY(I,J))
+            CALL HFILL(2220+IOFF,1.*I,0.,1.*MATC(I,J))
+
+         ENDDO
+      ENDDO
+      
+
+ 999  continue
+
+      RETURN
+      END
+
+
++DECK, YTEST.
+      SUBROUTINE YTEST(IOFF,NTRAK,IDIM,PTRAK)
+*
+*     TESTING OF THE YKERN LIBRARY,
+*	IN PARTICULAR THE PROBLEM OF NON-EXISTING JET MULTIPLICITIES IN THE
+*	DURHAM FINDER
+*
+*     S Bentvelsen, apr 1998
+*
+      IMPLICIT NONE
++SEQ,MCFFR.
++SEQ,MCUFFR.
+      INTEGER MAXBIN
+      PARAMETER (MAXBIN=200)
+
+      INTEGER IOFF,NTRAK,IDIM,IERR,NJET
+      REAL PTRAK(IDIM,*)
+      REAL YL, YH
+      INTEGER K,KRET
+
+      INTEGER   NCH
+
+      DATA      NCH / 0 /
+      SAVE      NCH
+
+      IF(NCH.EQ.0) THEN
+         CALL HBOOK1(3000,'kt ALL' ,50,0.,50.,0)
+         CALL HBOOK1(3001,'kt ER1' ,50,0.,50.,0)
+         CALL HBOOK1(3002,'kt ER2' ,50,0.,50.,0)
+         CALL HBOOK1(3003,'kt NE ' ,50,0.,50.,0)
+
+         CALL HBOOK1(4000,'jd ALL' ,50,0.,50.,0)
+         CALL HBOOK1(4001,'jd ER1' ,50,0.,50.,0)
+         CALL HBOOK1(4002,'jd ER2' ,50,0.,50.,0)
+         CALL HBOOK1(4003,'jd NE ' ,50,0.,50.,0)
+      ENDIF
+
+      if(ioff.eq.10) then
+c
+c..   durham
+c
+         CALL YKERN(5,NTRAK,IDIM,PTRAK,IERR)
+         DO K=2,MIN(NTRAK,10)
+            CALL HFILL(3000,K*1.,0.,1.)
+            IERR = 0
+            CALL YYJET(K,YL,YH,IERR)
+            IF(IERR.NE.0) CALL HFILL(3001,K*1.,0.,1.)
+            IERR = 0
+            CALL YNJET(YL,KRET,IERR)
+            IF(IERR.NE.0) CALL HFILL(3002,KRET*1.,0.,1.)
+            IF(K.NE.KRET) then
+               WRITE(*,*) 'K AND KRET: ',K,KRET
+               CALL HFILL(3003,K*1.,0.,1.)
+            ENDIF
+         ENDDO
+c
+c..   jade
+c
+         CALL YKERN(2,NTRAK,IDIM,PTRAK,IERR)
+         DO K=2,MIN(NTRAK,10)
+            CALL HFILL(4000,K*1.,0.,1.)
+            IERR = 0
+            CALL YYJET(K,YL,YH,IERR)
+            IF(IERR.NE.0) CALL HFILL(4001,K*1.,0.,1.)
+            IERR = 0
+            CALL YNJET(YL,KRET,IERR)
+            IF(IERR.NE.0) CALL HFILL(4002,KRET*1.,0.,1.)
+            IF(K.NE.KRET) CALL HFILL(4003,K*1.,0.,1.)
+         ENDDO
+      endif
+      NCH = NCH + 1
+      RETURN
+      END
+
+
+C--------------------------------------------------------------------------
++DECK,MEANJET.
+      SUBROUTINE MEANJET(IOFF,JETFINDER)
+C--------------------------------------------------------------------------
+C
+C     MEANJET: STORE THE MEANJET VALUES FOR A LIMITED NUMBER OF EVENTS
+C              IN ORDER TO DETERMINE THE STATISTICAL UNCERTAINTY ON ALPHA_S
+C              FOR FITTING ALPHA_S OVER A RANGE IN MEANJET.
+C              IN THIS WAY THE CORRELATIONS BETWEEN THE POINTS OF <NJET>
+C              ARE TAKEN INTO ACCOUNT.
+C
+C     THE ROUTINE ASSUMES THAT THE JETFINDER HAS BEEN CALLED.
+C
+C     JETFINDER: VERSION OF THE JETFINDER
+C     JETALG   : ARRAY WITH TOTAL NUMBER OF EVENTS FOR THE JETFINDER
+C
+C     AUGUST 10, 1998, STAN BENTVELSEN
+C
+C--------------------------------------------------------------------------
+      IMPLICIT NONE
+      INTEGER  IOFF, JETFINDER
+
+      CHARACTER  TIT*31
+      INTEGER    NSAMPLE
+      PARAMETER (NSAMPLE = 2000)
+      INTEGER    JETALG(10)
+      DATA       JETALG / 10*0 /
+      INTEGER    HBID
+      DATA       HBID   / 60000 /
+      LOGICAL    FIRST
+      DATA       FIRST / .TRUE. /
+
+      INTEGER    NBIN
+      INTEGER    LBIN(20)
+      DATA       NBIN / 19 /
+      INTEGER    I, J, ID, ID1, IERR, NJET
+
+      REAL       XX(20),XM(19)
+
+      INTEGER    ICURR
+      DATA       ICURR / 0 /
+
+
+      SAVE       HBID, ICURR, FIRST
+
+      IF(FIRST) THEN
+         FIRST = .FALSE.
+         XX( 1) = .7000000E-05   
+         XX( 2) = .1300000E-04   
+         XX( 3) = .2256600E-04   
+         XX( 4) = .4068000E-04   
+         XX( 5) = .7178800E-04   
+         XX( 6) = .1282120E-03   
+         XX( 7) = .2274480E-03   
+         XX( 8) = .4050120E-03   
+         XX( 9) = .7196681E-03   
+         XX(10) = .1280330E-02   
+         XX(11) = .2276270E-02   
+         XX(12) = .4048330E-02   
+         XX(13) = .7198470E-02   
+         XX(14) = .1280150E-01   
+         XX(15) = .2276450E-01   
+         XX(16) = .4048150E-01   
+         XX(17) = .7198650E-01   
+         XX(18) = .1280140       
+         XX(19) = .2276460       
+         XX(20) = .4048140       
+         
+         XM( 1) = .1000000E-04 
+         XM( 2) = .1778300E-04 
+         XM( 3) = .3162300E-04 
+         XM( 4) = .5623400E-04 
+         XM( 5) = .1000000E-03 
+         XM( 6) = .1778300E-03 
+         XM( 7) = .3162300E-03 
+         XM( 8) = .5623400E-03 
+         XM( 9) = .9999990E-03 
+         XM(10) = .1778300E-02 
+         XM(11) = .3162300E-02 
+         XM(12) = .5623400E-02 
+         XM(13) = .9999985E-02 
+         XM(14) = .1778300E-01 
+         XM(15) = .3162300E-01 
+         XM(16) = .5623400E-01 
+         XM(17) = .1000002     
+         XM(18) = .1778300     
+         XM(19) = .3162300     
+      ENDIF
+
+      IF(JETFINDER.LE.9.AND.JETFINDER.GT.0) THEN
+C
+C..   THIS ROUTINE IS CALLED FOR THE PARTON AND HADRON LEVEL
+C..   CONSEQUETIVELY; ONLY COUNT THE 'PARTON LEVEL' EVENTS
+C
+         IF(IOFF.EQ.0) JETALG(JETFINDER) = JETALG(JETFINDER) + 1
+
+         ID1 = HBID-10000+JETFINDER
+         IF(JETALG(JETFINDER).EQ.1) THEN
+C
+C..   BOOK THE GLOBAL HISTOGRAMS
+C
+            TIT = 'TOTSAMPLE FOR JETFINDER XX'
+            WRITE(TIT(25:26),'(I2)') JETFINDER+IOFF
+            CALL HBOOKB(ID1   ,TIT//'PARTON NJET',NBIN,XX,0)
+            CALL HBOOKB(ID1+10,TIT//'PARTON NORM',NBIN,XX,0)
+            CALL HBOOKB(ID1+50,TIT//'HADRON NJET',NBIN,XX,0)
+            CALL HBOOKB(ID1+60,TIT//'HADRON NORM',NBIN,XX,0)
+C
+C..   BOOK THE HISTOGRAMS TO CALCULATE THE CORRELATION
+C
+            CALL HBOOK2(ID1+100,'COV(I,J)  ',19,0.5,19.5,19,0.5,19.5,0)
+            CALL HBOOK2(ID1+101,'MEAN(I)   ',19,0.5,19.5,19,0.5,19.5,0)
+            CALL HBOOK2(ID1+102,'MEAN(J)   ',19,0.5,19.5,19,0.5,19.5,0)
+            CALL HBOOK2(ID1+111,'MEAN(I)**2',19,0.5,19.5,19,0.5,19.5,0)
+            CALL HBOOK2(ID1+112,'MEAN(J)**2',19,0.5,19.5,19,0.5,19.5,0)
+            CALL HBOOK2(ID1+110,'NTOT      ',19,0.5,19.5,19,0.5,19.5,0)
+            PRINT*,TIT
+         ENDIF
+         IF((JETALG(JETFINDER)/NSAMPLE).LE.100) THEN
+C
+C..   MAKE SUBSAMPLE HISTOGRAMS FOR THE FIRST 100 SUBSAMPLES.
+C
+            ID = HBID+100*(JETALG(JETFINDER)/NSAMPLE) +JETFINDER
+            IF(MOD(JETALG(JETFINDER),NSAMPLE).EQ.1) THEN
+C
+C..   BOOK THE SUBSAMPLE HISTOGRAMS
+C
+               TIT = 'SUBSAMPLE XXX FOR JETFINDER XX'
+               WRITE(TIT(11:13),'(I3)') JETALG(JETFINDER)/NSAMPLE
+               WRITE(TIT(29:30),'(I2)') JETFINDER+IOFF
+               CALL HBOOKB(ID   ,TIT//'PARTON NJET',NBIN,XX,0)
+               CALL HBOOKB(ID+10,TIT//'PARTON NORM',NBIN,XX,0)
+               CALL HBOOKB(ID+50,TIT//'HADRON NJET',NBIN,XX,0)
+               CALL HBOOKB(ID+60,TIT//'HADRON NORM',NBIN,XX,0)
+               PRINT*,TIT
+            ENDIF
+C
+C..   FILL THE SUBSAMPLE HISTOGRAMS
+C
+            DO I=1,NBIN
+               IF(JETFINDER.EQ.7) THEN
+                  CALL CNJET(XM(I),NJET,IERR)
+               ELSE
+                  CALL YNJET(XM(I),NJET,IERR)
+               ENDIF
+               CALL HFILL(ID+5*IOFF,XM(I),0.,1.*NJET)
+               IF(NJET.NE.0) THEN
+                  CALL HFILL(ID+5*IOFF+10,XM(I),0.,1.)
+               ENDIF
+            ENDDO
+         ENDIF
+C
+C..   FILL THE TOTSAMPLE HISTOGRAMS
+C
+         DO I=1,NBIN
+            IF(JETFINDER.EQ.7) THEN
+               CALL CNJET(XM(I),NJET,IERR)
+            ELSE
+               CALL YNJET(XM(I),NJET,IERR)
+            ENDIF
+            CALL HFILL(ID1+5*IOFF,XM(I),0.,1.*NJET)
+            IF(NJET.NE.0) THEN
+               CALL HFILL(ID1+5*IOFF+10,XM(I),0.,1.)
+            ENDIF
+            LBIN(I) = NJET
+         ENDDO
+C
+C..   ATTEMPT TO CALCULATE THE CORRELATIONS BETWEEN THE NJET
+C
+         IF(IOFF.EQ.10) THEN
+            DO I=1,NBIN
+               DO J=1,NBIN
+                  CALL HFILL(ID1+100,1.*I,1.*J,1.*LBIN(I)*LBIN(J))
+                  CALL HFILL(ID1+101,1.*I,1.*J,1.*LBIN(I)        )
+                  CALL HFILL(ID1+102,1.*I,1.*J,1.*        LBIN(J))
+                  CALL HFILL(ID1+111,1.*I,1.*J,1.*LBIN(I)*LBIN(I))
+                  CALL HFILL(ID1+112,1.*I,1.*J,1.*LBIN(J)*LBIN(J))
+                  
+                  CALL HFILL(ID1+110,1.*I,1.*J,1.)
+               ENDDO
+            ENDDO
+         ENDIF
+      ELSE
+         PRINT*,'ERROR IN JETFINDER: ',JETFINDER
+      ENDIF
+
+      RETURN
+      END

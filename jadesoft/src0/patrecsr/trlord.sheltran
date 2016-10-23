@@ -1,0 +1,55 @@
+C   12/09/79 002251728  MEMBER NAME  TRLORD9  (PATRECSR)    SHELTRAN
+      SUBROUTINE TRLORD
+      IMPLICIT INTEGER*2 (H)
+#include "cworkpr.for"
+      DIMENSION HORD(9)
+      CALL SETSL(HORD(1),0,18,0)
+      IF(NTR.LE.0) RETURN
+      FOR I=1,NTR
+      NELM=HNREL(I)
+      IF NELM.GT.1
+      THEN
+      FOR IJ=1,NELM
+      ITK=HISTR(IJ,I)
+      ITK=IABS(ITK)
+      IF ITK.GT.0
+      THEN
+      IC=IPCL(ITK)
+      IF(IC.LE.24) IRING=1
+      IF(IC.GT.24.AND.IC.LE.48) IRING=2
+      IF(IC.GT.48) IRING=3
+      IW=NWR2(ITK)
+      ISORT=SHFTL(IRING,5)
+      ISORT=ISORT+IW
+      HORD(IJ)=ISORT
+      CIF
+      CFOR
+      IT=NELM-1
+      FOR I1=1,IT
+      ITMP=I1+1
+      FOR I2=ITMP,NELM
+      IF HORD(I1).LT.HORD(I2)
+      THEN
+      IEMP=HORD(I1)
+      HORD(I1)=HORD(I2)
+      HORD(I2)=IEMP
+      IEMP=HISTR(I1,I)
+      HISTR(I1,I)=HISTR(I2,I)
+      HISTR(I2,I)=IEMP
+      CIF
+      CFOR
+      CFOR
+      CIF
+      CFOR
+      NUM=100-NTR
+      IF NUM.GT.0
+      THEN
+      FOR I=1,NUM
+      HNREL(NTR+I)=0
+      FOR J=1,9
+      HISTR(J,NTR+I)=0
+      CFOR
+      CFOR
+      CIF
+      RETURN
+      END

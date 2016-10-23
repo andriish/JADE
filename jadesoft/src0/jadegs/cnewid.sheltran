@@ -1,0 +1,236 @@
+C   09/06/83 801291914  MEMBER NAME  CNEWID   (JADEGS)      SHELTRAN
+      SUBROUTINE CNEWID(INDEX)
+C
+C        J. SPITZER                         86/10/16
+C
+C        HANDELS NEW ID CALIBRATION CONSTANTS WHEN AVAILABLE.
+C        IN THE LATTER CASE SETS NEW RUN VERTEX TOO.
+C        IT IS CALLED FOR EACH EVENT FROM KALIBR AFTER KLREAD WITH
+C                                                            INDEX=0
+C        EXTRA CALL AT ANY TIME WITH
+C            INDEX=-1 : OLD CALIBRATION IS FORCED (CURRENT DEFAULT)
+C                  -2 : NEW CALIBRATION WHEN AVAILABLE, OLD OTHERWISE
+C               LE -3 : AS -2 BUT NEW RUN VERTEX IS NOT SET
+C        THESE SETTINGS REMAIN IN EFFECT UNTIL AN OTHER CALL WITH
+C        INDEX <0.   NEW OPERATION MODE SHOULD BE ASKED BEFORE
+C        THE CALL TO KALIBR OTHERWEISE THE NEW SETTING WILL APPLY
+C        STARTING AT THE NEXT EVENT ONLY. (AT THE CALLS WITH <0
+C        JUST THE SETTING IS CHANGED, THE NORMAL TASKS ARE NOT
+C        PERFORMED.)
+C
+C        THE NEW CALIBRATION IS IN EFFECT CURRENTLY ONLY IF JFETCH
+C        IS USED FOR RECONSTRACTING THE HIT COORDINATES.
+C        JFETCH HAS BEEN MODIFIED TO CALL THE NEW ROUTINE JFTNEW
+C        IN CASE JESCAL POSITIVE (AS SET BY THIS ROUTINE).
+C
+C
+C NEW CALIBRATION (ISTEAR=-2) DEFAULT 12.4.1987      J.S., J.O.
+C LAST MOD   C.B.   29/01/88     PRINT BLANK LINE BEFORE MESSAGE
+C
+C
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cdata.for"
+#include "calibr.for"
+C
+C
+C     DATA ISTEAR/-1/,IRLAST/-99999/,IPLAST/-99999/,IPOINT/0/,IRPLST/0/
+      DATA ISTEAR/-2/,IRLAST/-99999/,IPLAST/-99999/,IPOINT/0/,IRPLST/0/
+C
+      DATA ICLV /0/
+      DATA NCAL1/0/,IPLHDR/0/,IPRLIM/100/,IPRLIN/0/
+C
+      COMMON/JSCALD/ JESCAL,JESKEY,JESDRW
+      INTEGER NVERTS/0/,IVERTS/0/,NVRUN(300,2)/600*0/
+      REAL XVRUN(300)/300*0./,YVRUN(300)/300*0./
+      INTEGER IUPDJS(6,40),NUPDJS/0/
+      REAL RUPDJS(6,40)
+      EQUIVALENCE (IUPDJS(1,1),RUPDJS(1,1))
+C
+C
+C-----------------------------------------------------------------------
+C                        ----  CHANGE OF OPERATION MODE----
+      IF INDEX.LT.0
+      THEN
+         ISTEAR=INDEX
+         IF ISTEAR.LE.-2
+         THEN
+            PRINT 110,IRLAST
+            IF ISTEAR.EQ.-2
+            THEN
+               PRINT 111
+            ELSE
+               PRINT 112
+            CIF
+         ELSE
+            PRINT 120,IRLAST
+         CIF
+110   FORMAT(//,' **** USE NEW CALIBRATION WHEN AVAILABLE AFTER RUN',I7)
+111   FORMAT(6X,'WITH NEW RUN VERTEX',//)
+112   FORMAT(6X,'WITHOUT SETTING NEW RUN VERTEX',//)
+120   FORMAT(//,' **** USE OF OLD CALIBRATION FORCED AFTER RUN',I7,//)
+         RETURN
+      CIF
+C
+C-----------------------------------------------------------------------
+C
+      IF NCAL1.EQ.0
+      THEN
+         NCAL1=1
+         IPLHDR=IBLN('HEAD')
+         JESKEY=54321
+N     * GET POINTER OF NEW CALIBR. DATA IN ACALIB
+         IPOINT=ICALIB(13)
+      CIF
+C-----------------------------------------------------------------------
+C
+      IPHDR2=IDATA(IPLHDR)*2
+      IRUN=HDATA(IPHDR2+10)
+C
+C                --- NO NEW CALIBRATION IF OLD IS FORCED OR MONTE CARLO
+C
+      IF ISTEAR.GT.-2 .OR. IRUN.LE.100
+      THEN
+         JESCAL=0
+         RETURN
+      CIF
+C
+C-----------------------------------------------------------------------
+C    --- CHECK IF VALID CALIBRATION RECORD PRESENT ---
+      ICDNUM=ICALIB(IPOINT+1)
+      IF ICDNUM.LT.654320.OR.ICDNUM.GT.654322
+      THEN
+         IF IPRLIN.LT.IPRLIM
+         THEN
+            PRINT 9821,IRUN
+9821        FORMAT(' *** NO VALID RECORD FOR NEW CALIBRATION',
+     +      ' PRESENT AT RUN',I8)
+            IPRLIN=IPRLIN+1
+         CIF
+         JESCAL=0
+         RETURN
+      CIF
+C
+C-----------------------------------------------------------------------
+C                              --- NEW OR FIRST RUN ---
+      IF IRUN.NE.IRLAST
+      THEN
+         IRLAST=IRUN
+         IF ICALIB(IPOINT+2).NE.IPLAST
+         THEN
+C                            ---  NEW CAL. PREIOD ---
+            IPLAST=ICALIB(IPOINT+2)
+            IRPLST=ICALIB(IPOINT+3)
+            IF ICDNUM.EQ.654320
+            THEN
+C                            ---  NO NEW CAL. AVAILABLE YET ---
+               JESCAL=0
+               PRINT 721, IPLAST,IRPLST
+721            FORMAT(/' **** OLD ID CALIBRATION WILL BE USED FOR',
+     +         ' RUNS',I6,' TO',I6)
+            ELSE
+C                            ---  THERE IS NEW CALIBRATION ---
+               JESCAL=IPLAST
+C                     --- COPY RUN VERTICES ---
+               NVERTS=ICALIB(IPOINT+4)
+               IF NVERTS.GT.0
+               THEN
+                  FOR J=1,NVERTS
+                     NVRUN(J,1)=ICALIB(3*J+IPOINT+10275)
+                     XVRUN(J)=  ACALIB(3*J+IPOINT+10276)
+                     YVRUN(J)=  ACALIB(3*J+IPOINT+10277)
+                  CFOR
+C
+                  NVRUN(1,1)=IPLAST
+                  I=1
+                  WHILE I.LT.NVERTS
+                     NVRUN(I,2)=NVRUN(I+1,1)-1
+                     I=I+1
+                  CWHILE
+                  NVRUN(NVERTS,2)=IRPLST
+C                     --- SELECT RUN VERTEX PERIOD ---
+                  IVERTS=1
+                  WHILE IRUN.GT.NVRUN(IVERTS,2)
+                     IVERTS=IVERTS+1
+                  CWHILE
+               CIF
+C                            --- COPY UPDATES ---
+               NUPDJS=ICALIB(IPOINT+5)
+               IF NUPDJS.GT.0
+               THEN
+                  FOR J2=1,NUPDJS
+                     FOR J1=1,6
+                        IUPDJS(J1,J2)=ICALIB(6*J2+J1+IPOINT+11171)
+                     CFOR
+                  CFOR
+               CIF
+C                    --- NO/YES DISTORTIONS AVAILABLE ---
+               JESDRW=ICDNUM-654321
+               PRINT 720, JESCAL,IRPLST
+720            FORMAT(/' **** NEW ID CALIBRATION WILL BE USED FOR',
+     +         ' RUNS',I6,' TO',I6)
+            CIF
+         CIF
+C                      --- CHECK IF RUN OUT OF RANGE ---
+         IF IRUN.LT.IPLAST.OR.IRUN.GT.IRPLST
+         THEN
+            IF IPRLIN.LT.IPRLIM
+            THEN
+               PRINT 9823,IRUN,IPLAST,IRPLST
+9823           FORMAT(' *** RUN',I7,' OUT OF RANGE OF CURRENT',
+     +         ' CALIBRATION PERIOD:',I7,' TO',I7)
+               IF(JESCAL.GT.0) PRINT 9824
+9824           FORMAT(' FIRST RUN IN THIS PERIOD ASSUMED FOR',
+     +         ' VERTEX AND UPDATES')
+               IPRLIN=IPRLIN+1
+            CIF
+            IRUN=IPLAST
+         CIF
+C                      --- CHECK IF CHANGE IN RUN VERTEX PERIOD ---
+         IF JESCAL.GT.0 .AND. NVERTS.GT.0
+         THEN
+            IF IRUN.GT.NVRUN(IVERTS,2)
+            THEN
+               REPEAT
+                  IVERTS=IVERTS+1
+               UNTIL IRUN.LE.NVRUN(IVERTS,2)
+            ELSE
+               IF IRUN.LT.NVRUN(IVERTS,1)
+               THEN
+                  REPEAT
+                     IVERTS=IVERTS-1
+                  UNTIL IRUN.GE.NVRUN(IVERTS,1)
+               CIF
+            CIF
+         CIF
+C             --- HANDLE UPDATES (WITHIN CURRENT CAL. PER.) ---
+         IF JESCAL.GT.0 .AND. NUPDJS.GT.0
+         THEN
+            FOR J=1,NUPDJS
+               IND=IUPDJS(4,J)*96+IUPDJS(3,J)-91+IPOINT
+               IF IRUN.GE.IUPDJS(1,J).AND.IRUN.LE.IUPDJS(2,J)
+               THEN
+                  ACALIB(IND)=RUPDJS(5,J)
+               ELSE
+                  ACALIB(IND)=RUPDJS(6,J)
+               CIF
+            CFOR
+         CIF
+      CIF
+C
+C-----------------------------------------------------------------------
+C                            --- SET RUN VERTEX FOR EACH EVENT ---
+      IF JESCAL.GT.0 .AND. NVERTS.GT.0 .AND. ISTEAR.EQ.-2
+      THEN
+N *** SET RUN VERTEX
+      ICLV = ICLV + 1
+      IF(ICLV.EQ.1) WRITE(6,864)
+864   FORMAT('  CNEWID ***:  RUN VERTICES CORRESPONDING TO NEW ID CALIBR
+     $ATION SET IN /CALIBR/')
+         IPV  = ICALIB(10)
+         ACALIB(IPV+ 1) = XVRUN(IVERTS)
+         ACALIB(IPV+ 3) = YVRUN(IVERTS)
+      CIF
+C
+      RETURN
+      END

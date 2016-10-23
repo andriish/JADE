@@ -1,0 +1,165 @@
+C   21/11/78 C9012301   MEMBER NAME  ZBOS02   (S)           FORTRAN
+      SUBROUTINE BSCOM
+C     -----------------------------------------------------------------200000200
+C     2.  CREATION OF BANKS
+C
+C     2.1  CREATION OF A BANK
+C
+C                   -- -- --                               -- -- --
+C     CALL BCRE(IND,NA,NR,NW,&S1,IER)        CALL CCRE(IND,NA,NR,NW,IER)
+C               ---          --- ---                   ---          ---
+C
+C        WHERE NA = NAME OF THE BANK
+C              NR = NUMBER OF THE BANK
+C              NW = NUMBER OF WORDS OF THE BANK (NW.GE.0)
+C             IND = INDEX OF BANK (IER=1, IF BANK ALREADY EXISTING)
+C        ALL WORDS OF THE BANK ARE SET TO ZERO.
+C
+C
+C     SPECIAL CONDITIONS
+C                              BCRE              CCRE
+C
+C     BANK ALREADY PRESENT *)  IER=1             IER=1
+C                              NORMAL RETURN
+C
+C     NOT ENOUGH SPACE         IND=0             IND=0
+C                              IER=2             IER=2
+C                              RETURN 1
+C
+C     *) IF THE ARGUMENT NW IS LARGER THAN THE LENGTH OF THE
+C     EXISTING BANK, THE LENGTH OF THE BANK IS CHANGED TO THE
+C     LENGTH GIVEN IN THE ARGUMENT, ALL ADDITIONAL WORDS ARE
+C     SET TO ZERO (THE BANK IS MOVED TO THE END OF THE USED
+C     BANK SPACE).
+C     NOTE, THAT IN THE PREVIOUS BOS-VERSION THE LENGTH WAS
+C     LEFT UNCHANGED.
+C
+C
+C     IF THE NEW CREATED BANK BELONGS TO AN EVENT IN AN
+C     EVENT-BY-EVENT PROCESSING PROGRAM, THE NAME OF THE
+C     CREATED BANK SHOULD BE ADDED TO THE SPECIAL LIST (SEE
+C     CH. 4).
+C     THE BANK NAME IS ADDED TO THE SPECIAL LIST BY ONE OF
+C     THE STATEMENTS
+C         CALL BSAW(1,NA)     OR    BSAT(1,NA).
+C     BSAT HAS TO BE USED, IF THE BANK SHOULD NOT BE ADDED
+C     TO THE EVENT IN AN OUTPUT RECORD, BUT HAS TO BE DELETED
+C     AFTER PROCESSING THE EVENT.
+C
+C
+C
+C
+C
+C
+C
+C     2.2  CHANGING THE LENGTH OF A BANK
+C
+C
+C               --- --
+C     CALL BCHM(IND,NW,IER)
+C               ---    ---
+C
+C        WHERE NW = CHANGE IN LENGTH OF THE BANK (NW.LT.0 VALID)
+C             IND = INDEX OF THE BANK TO BE CHANGED IN LENGTH
+C
+C     IF POSSIBLE, THE LENGTH OF THE BANK IS CHANGED WITHOUT MOVING
+C     THE BANK. FOR NW=0, THE BANK IS MOVED TO THE END.
+C
+C
+C     A BANK LENGTH OF AT LEAST NW WORDS IS OBTAINED BY THE FOLLOWING
+C     CALL.
+C               --- --
+C     CALL BCHF(IND,NW,IER)
+C               ---    ---
+C
+C        WHERE NW = MINIMUM LENGTH OF THE BANK
+C             IND = INDEX OF THE BANK
+C
+C     THE BANK LENGTH IS CHANGED, IF THE ACTUAL LENGTH IS LESS
+C     THAN NW.
+C
+C     ADDITIONAL WORDS OF THE BANK ARE NOT SET TO ZERO (SEE REMARK
+C     IN CH. 2.1).
+C
+C
+C     SPECIAL CONDITIONS
+C                                               BCHM,BCHF
+C
+C     WRONG INDEX IND IN ARGUMENT, OR            IER = 1
+C     BANK LENGTH WILL BECOME NEGATIVE
+C
+C     NOT ENOUGH SPACE                           IER = 2
+C
+C
+C
+C     2.3  STORAGE OF DATA IN A BANK
+C
+C               --- -- --
+C     CALL BSTR(IND,JW,NW)
+C
+C
+C     WHERE IND = INDEX
+C           JW  = ARRAY TO BE STORED
+C           NW  = LENGTH OF JW
+C
+C     JW(1) IS STORED IN IW(IND+1) ETC.
+C
+C
+C
+C
+C
+C
+C     2.4  RENAMING A BANK
+C
+C     THE NAME AND NR OF A BANK CAN BE CHANGED (IN PLACE).
+C
+C               ------ ----- ------ -----
+C     CALL BRNM(NAMOLD,NROLD,NAMNEW,NRNEW)
+C
+C        WHERE NAMOLD, NROLD = NAME AND NR OF AN EXISTING BANK
+C              NAMNEW, NRNEW = NEW NAME AND NR OF THE BANK
+C
+C
+C
+C     2.5  CALLS OF THE PREVIOUS VERSION
+C
+C
+C
+C               --                                   --
+C     CALL BCHL(NW,&S1)                    CALL CCHL(NW,IER)
+C                  ---                                  ---
+C
+C        WHERE NW = CHANGE IN LENGTH OF THE BANK (NW.LT.0 VALID)
+C
+C
+C
+C     NOTE, THAT ONLY THE LENGTH OF THE LAST CREATED BANK CAN
+C     BE CHANGED DIRECTLY. A SAFER WAY OF CHANGING THE LENGTH
+C     OF A BANK IS BY USING BCHM OR BCHF (SEE CH. 2.2).
+C
+C               ---                                     ---
+C     CALL BMVE(IND,&S1)                      CALL CMVE(IND,IER)
+C               --- ---                                 --- ---
+C        WHERE IND = INDEX OF BANK TO BE MOVED
+C     THE BANK IS MOVED TO THE END OF THE USED STORAGE, IND
+C     IS CHANGED. AFTER BMVE THE LENGTH OF THE BANK CAN BE CHANGED
+C     BY BCHL.
+C
+C     SPECIAL CONDITIONS
+C                                  BCHL,BMVE   CCHL,CMVE
+C     NOT ENOUGH SPACE              RETURN 1     IER=2
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+C
+      RETURN
+      END

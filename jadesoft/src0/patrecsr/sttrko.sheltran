@@ -1,0 +1,262 @@
+C   29/07/80 102191206  MEMBER NAME  STTRKO   (PATRECSR)    SHELTRAN
+      SUBROUTINE STTRKO(ILAYMX)
+C
+C     STORES TRACK IN 'PATR'-BANK
+C     LABELS HITS  IN 'JHTL'-BANK
+C     P. STEFFEN 8/07/80
+C
+      IMPLICIT INTEGER*2 (H)
+      LOGICAL TBIT
+C
+      COMMON/CHEADR/HEAD(17),HRUN,HEV
+      COMMON/CADMIN/IEVTP,NREC,NRWRIT,NRERR
+C
+#include "cdata.for"
+#include "ccycp.for"
+C
+#include "cjdrch.for"
+C
+#include "cworkpr.for"
+#include "cworkeq.for"
+C
+      EQUIVALENCE
+     ,          (HPCO0 ,HPWRK(17)),(HPCO9 ,HPWRK(18)),(HLDCO ,HPWRK(19))
+     ,         ,(ICELL ,IDWRK( 1)),(MHIT  ,IDWRK( 2)),(IRING ,IDWRK( 3))
+     ,         ,(IERRCD,IDWRK( 4)),(NTRKEL,IDWRK( 5))
+C
+      INTEGER DATE(5), IDAY /0/
+C
+C
+C
+      DATA MAXTRK/ 50/
+      DATA MKBDHT /Z600/
+C
+C
+      DATA LBINIT /0/
+      IF LBINIT.EQ.0
+      THEN
+        LBINIT=1
+        IQJHTL = IBLN('JHTL')
+        IQPATR = IBLN('PATR')
+      CIF
+C
+N     INITIALISE DATE
+      IF IDAY.EQ.0
+      THEN
+        CALL DAY2(DATE)
+        IDAY = DATE(1)*1000 + DATE(2)
+      CIF
+C
+N     POINTER TO 'JHTL'-BANK
+      IPJHTL = IDATA(IQJHTL)*2 + 2
+N     POINTER TO 'PATR'-BANK
+      IPPATR = IDATA(IQPATR)
+N     CURRENT NUMBER OF TRACKS
+      ITRBK = IDATA(IPPATR+2)
+N     LENGTH OF TRACK BANK
+      LTRBK = IDATA(IPPATR+3)
+N     POINTER TO NEXT TRACK BANK - 1
+      IPTRBK = IPPATR + IDATA(IPPATR+1) + ITRBK*LTRBK
+C
+N     CHECK IF SPACE FOR NEW TRACK
+      IF(IPTRBK+LTRBK-IPPATR.GT.IDATA(IPPATR)) RETURN
+C
+C     PRINT 2005, (WRK(I),I=HPHT0,HPHT9)
+C
+N     PREPARE GOODNESS LABELS FOR ZRFIT
+      FOR IP=HPHT0,HPHT9,HLDHT
+N       SET ERROR LABEL FOR Z-R FIT
+        IWRK(IP+10) = IWRK(IP+ 7)
+        IWRK(IP+ 7) = 0
+        IF(IWRK(IP+10).GT.1) IWRK(IP+7) = 16
+N       CALCULATE R
+        WRK (IP+ 6) = ((WRK(IP+4)/WRK(IP+3))**2 *.5 + 1.) * WRK(IP+3)
+N       CALCULATE Z
+        IP0 = IWRK(IP+1)
+        IAMPL = HDATA(IP0+1)
+        IAMPR = HDATA(IP0+2)
+        IF IAMPR.LE.0.OR.IAMPL.LE.0
+        THEN
+          WRK (IP+5) = 0.
+          IWRK(IP+7) = 16
+        ELSE
+          Z1 = IAMPR + IAMPL
+          WRK(IP+5) = FLOAT(IAMPR-IAMPL) * ZAL*.5 / Z1
+        CIF
+      CFOR
+C2005 FORMAT('0TRACK:',/,(1X,3I6,4F8.1,I4,F6.2,2I4,F8.3,I6,F8.1))
+C     PRINT 2005, (WRK(I),I=HPHT0,HPHT9)
+C
+N     Z-R FIT
+      CALL ZRFIT
+C
+N     CHECK IF TRACK LEAVES AT MAX. LAYER
+      ZLYMX = 1400.
+      IF ILAYMX.LT.40
+      THEN
+        IZW = ILAYMX - 1 + 3
+        JRING = IZW / 16
+        ILAY  =-JRING*16 + IZW
+        RMAX  = ILAY*RINCR(JRING+1) + FSENSW(JRING+1)
+        ZLYMX = RMAX*WRK(HPTR0+29) + WRK(HPTR0+30)
+      CIF
+C
+      IF ABS(ZLYMX)+ 50. .LT. ZMAX
+      THEN
+C     PRINT 2004, ICELL,ILAYMX,RMAX,ZLYMX,ZMAX
+C     PRINT 2005, (WRK(I),I=HPHT0,HPHT9)
+C2004   FORMAT('0STTRKO-REJECT:',2I6,3F10.1)
+        RETURN
+      CIF
+C
+N     REGISTER TRACK IN PATR BANK
+      PERFORM TRKBNK
+      IDATA(IPPATR+2) = ITRBK
+C
+      RETURN
+C
+N     ***************************
+N     *      T R K B N K        *
+N     ***************************
+C
+N     SET TRACK BANK IN /CDATA/
+      PROC TRKBNK
+C
+N     CALC. Z AND DIRECTIONS
+      JP = HPTR0
+      IWRK(HPTR0+47)=LOR(IWRK(HPTR0+47),512)
+      WRK(JP+ 6) = WRK(JP+ 6)*WRK(JP+29) + WRK(JP+30)
+      WRK(JP+13) = WRK(JP+13)*WRK(JP+29) + WRK(JP+30)
+      WRK(JP+ 9)= WRK(JP+ 9)*WRK(JP+29)
+      WRK(JP+16)= WRK(JP+16)*WRK(JP+29)
+      ALGINV = 1./SQRT(WRK(JP+ 7)**2+WRK(JP+ 8)**2+WRK(JP+ 9)**2)
+      WRK(JP+ 7) = WRK(JP+ 7) * ALGINV
+      WRK(JP+ 8) = WRK(JP+ 8) * ALGINV
+      WRK(JP+ 9) = WRK(JP+ 9) * ALGINV
+      ALGINV = 1./SQRT(WRK(JP+14)**2+WRK(JP+15)**2+WRK(JP+16)**2)
+      WRK(JP+14) = WRK(JP+14) * ALGINV
+      WRK(JP+15) = WRK(JP+15) * ALGINV
+      WRK(JP+16) = WRK(JP+16) * ALGINV
+C
+N     INCREASE TRACK BANK COUNTER
+      ITRBK = ITRBK + 1
+      IP0 = IPTRBK + 1
+      IP9 = IPTRBK + LTRBK
+      FOR IP = IP0,IP9
+        IDATA(IP) = 0
+      CFOR
+      IDATA(IPTRBK+ 1) = ITRBK
+      IDATA(IPTRBK+ 2) = 16
+      IDATA(IPTRBK+ 3) = IDAY
+C
+N     RESULTS FROM X-Y-FIT + ZRFIT
+      IP1 = HPTR0+3
+      IP9 = IP1+29
+      JP  = IPTRBK + 3
+      FOR IP=IP1,IP9
+        JP = JP + 1
+        IDATA(JP) = IWRK(IP)
+      CFOR
+      IDATA(IPTRBK+47)=IWRK(HPTR0+46)
+      IDATA(IPTRBK+48)=IWRK(HPTR0+47)
+C
+N     POINTER TO FIRST CELL -1
+      IPCLL = IPTRBK + 33
+      IPCLLM = IPCLL + 6
+N     INITIALIZE CELL #
+      JCELL0 = -1
+C
+      IF ITRBK.LE.MAXTRK
+      THEN
+N     SET HIT LABELS
+N     LOOP OVER ALL HITS
+      IPJET0 = HPTSEC(1)
+      FOR IP=HPHT0,HPHT9,HLDHT
+N       LABEL FOR BAD HITS
+        LBBDHT = IWRK(IP+10)
+N       SELECT ONLY ACCEPTED HITS
+        IF LBBDHT.LE.1
+        THEN
+          LBBDHT = SHFTL(LBBDHT,9)
+N         POINTER TO HIT LABEL IN CWORK
+          IPHTLB = SHFTR((IWRK(IP+1)-IPJET0),1) + IPJHTL
+N         TRACK NO
+N         SET TRACK #
+          LBHIT = ITRBK*2
+N         SET L/R BIT
+          IF(IWRK(IP+2).GT.0) LBHIT = LOR(LBHIT,256)
+N         FETCH HIT LABEL OF TRACK
+          LBHIT1 = HDATA(IPHTLB+1)
+          LBHIT2 = HDATA(IPHTLB+2)
+          IRES = ABS(WRK(IP+13)) * 5.
+          IF(IRES.GT.31) IRES=31
+          IRES=SHFTL(IRES,11)
+          LBHIT=LBHIT+IRES
+C     PRINT 2002, LBHIT,LBHIT1,LBHIT2
+C2002 FORMAT(' LABEL:',10(2X,Z4))
+C
+          IF LAND(LBHIT1,MKBDHT).NE.0
+N         PRIOR HIT IS BAD(XYFIT)
+          THEN
+            IF LBBDHT.EQ.0
+N           THIS HIT IS GOOD
+            THEN
+              LBHIT1 = LBHIT
+N             SET BIT FOR BAD Z-COORDINATE
+              LBHIT1 = LOR(LBHIT1,1)
+              LBHIT2 = 0
+N           NEW HIT IS ALSO BAD
+            ELSE
+N             SET BIT FOR BAD  Z-COORDINATE
+              LBHIT1 = LOR(LBHIT1,1)
+              LBHIT  = LOR(LBHIT ,1)
+              IF(LBHIT2.EQ.0) LBHIT2 = LOR(LBHIT,LBBDHT)
+            CIF
+N         NO BAD PRIOR HIT
+          ELSE
+            IF LBHIT1.EQ.0
+N           FIRST TRACK FOR THIS HIT NOW
+            THEN
+              LBHIT1 = LOR(LBHIT,LBBDHT)
+N             SET BIT FOR GOOD  Z-COORDINATE
+              IF(IWRK(IP+7).EQ.0) LBHIT1 = LOR(LBHIT1,1)
+N           SECOND TRACK FOR THIS HIT NOW
+            ELSE
+              IF LBBDHT.EQ.0
+              THEN
+                LBHIT2 = LOR(LBHIT,LBBDHT)
+N               SET BIT FOR BAD Z-COORDINATE
+                LBHIT1 = LOR(LBHIT1,1)
+                LBHIT2 = LOR(LBHIT2,1)
+              CIF
+            CIF
+          CIF
+          HDATA(IPHTLB+1) = LBHIT1
+          HDATA(IPHTLB+2) = LBHIT2
+          JCELL = IWRK(IP+9)
+          IF JCELL.NE.JCELL0
+          THEN
+            JCELL0 = JCELL
+            IPCLL  = IPCLL + 1
+            IF(IPCLL.GT.IPCLLM) IPCLL = IPCLLM
+            IDATA(IPCLL) = JCELL0
+          CIF
+        CIF
+      CFOR
+C
+      DATA NPR /0/
+      NPR = NPR + 1
+      I0 = IPTRBK + 1
+      I9 = IPTRBK + LTRBK
+C     IF(NPR.LE.12) PRINT 2904,(IDATA(I1),I1=I0,I9)
+C2904 FORMAT(1H0,2I3,I8,2(I4,3F6.1,3F6.3),
+C    ,     /,14X,I3,4E13.5,F6.2,I3,4E13.5,
+C    ,     /,14X,I3,2F8.3,F6.1,I3,10X,6I3,5I6,2F6.0,I6,2X,Z4)
+      CIF
+C
+N     INCREASE POINTER TO TRACK BANK
+      IPTRBK = IPTRBK + LTRBK
+C
+      CPROC
+C
+      END

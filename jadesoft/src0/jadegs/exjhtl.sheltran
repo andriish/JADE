@@ -1,0 +1,88 @@
+C   12/12/79 106101754  MEMBER NAME  EXJHTL   (JADEGS)      SHELTRAN
+C   10/09/79 912120822  MEMBER NAME  EXJHTL   (JADESR)      SHELTRAN
+C   06/09/79 C9091001   MEMBER NAME  EXJHTL   (JADESR)      SHELTRAN
+      SUBROUTINE EXJHTL(IERR)
+C
+C     SUBROUTINE FOR EXTENSION OF HIT LABEL ARRAY IN /BCS/
+C     PETER STEFFEN   6/ 9/79
+C
+      IMPLICIT INTEGER*2 (H)
+      LOGICAL TBIT
+C
+#include "cdata.for"
+C
+C2007 FORMAT(1H ,12X,2I6,10(4X,Z4))
+C2008 FORMAT(' HIT LABEL OF TRELS:',4I6,/,(12X,20(2X,Z4)))
+C
+N     INITIALIZE ERROR FLAG
+      IERR = 0
+      IPJHTL = IDATA(IBLN('JHTL'))
+      IPJETC = IDATA(IBLN('JETC'))
+      IF(IPJETC.LE.0) RETURN
+      IF(IPJHTL.LE.0) RETURN
+N     # OF HITS
+      NHIT  = (HDATA(IPJETC*2+99)) / 4
+C
+N     LOOP OVER ALL EXISTING 'JHTL'-BANKS
+      REPEAT
+        NWHTL = IDATA(IPJHTL)
+C
+N       PRINTOUT
+        I0 = IPJHTL*2 + 1
+        I9 = IDATA(IPJHTL)*2 + I0 - 1
+C       PRINT 2008, NHIT,NWHTL,I0,I9,(HDATA(I1),I1=I0,I9)
+C
+N       'JHTL' ALREADY IN NEW FORMAT ?
+        IF(NWHTL.GE.NHIT) RETURN
+C
+N       EXTEND LENGTH
+        NWDIFF = NHIT+1 - NWHTL
+        CALL BCHM(IPJHTL,NWDIFF,IERR)
+        IF(IERR.NE.0) RETURN
+C
+N       REFORMAT 'JHTL'
+        IP0 =  IPJHTL*2+2
+        IP1 =  IP0 + NHIT
+        IP2 =  IP0 + NHIT*2
+        REPEAT
+          LBHIT = HDATA(IP1)
+          IF LBHIT.EQ.0
+          THEN
+            HDATA(IP2-1) = 0
+            HDATA(IP2  ) = 0
+          ELSE
+            LBZ   = LAND (LBHIT, 1)
+            LBB12 = SHFTR(LBHIT,13)
+            LBB12 = SHFTL(LBB12, 9)
+            LBHT1 = LAND (LBHIT,63)
+            LBHT1 = LOR  (LBHT1,LBB12)
+            IF(TBIT(LBHIT,25)) LBHT1 = BITON(LBHT1,23)
+            LBHT2 = SHFTR(LBHIT, 6)
+            LBHT2 = LAND (LBHT2,62)
+            IF LBHT2.NE.0
+            THEN
+              LBHT2 = LOR  (LBHT2,LBZ)
+              LBHT2 = LOR  (LBHT2,LBB12)
+              IF(TBIT(LBHIT,19)) LBHT2 = BITON(LBHT2,23)
+            CIF
+            HDATA(IP2-1) = LBHT1
+            HDATA(IP2  ) = LBHT2
+          CIF
+        DATA NPR /0/
+        NPR = NPR + 1
+C       IF(LBB12.NE.0) PRINT 2007, IP1,IP2,LBHIT,LBZ,LBB12,LBHT1,LBHT2
+        IP2 = IP2 - 2
+        IP1 = IP1 - 1
+        UNTIL IP1.LE.IP0
+C
+N       PRINTOUT
+        I0 = IPJHTL*2 + 1
+        I9 = IDATA(IPJHTL)*2 + I0 - 1
+C       PRINT 2008, NHIT,NWHTL,I0,I9,(HDATA(I1),I1=I0,I9)
+C
+      IPJHTL = IDATA(IPJHTL-1)
+      UNTIL IPJHTL.LE.0
+C
+      RETURN
+C
+      END

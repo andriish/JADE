@@ -1,0 +1,379 @@
+$   22/03/97 703221735  MEMBER NAME  JEOSUM2  (TOFLIB.S)    NEWLIB
+C   18/02/82 202180024  MEMBER NAME  CHEAD    (S)           FORTRAN
+      INTEGER *2  HEADR(108)
+      COMMON /CHEADR/ IHEADR(54)
+      EQUIVALENCE (IHEADR(1),HEADR(1))
+C   19/06/81 203260950  MEMBER NAME  CORCARD2 (S)           FORTRAN
+ 11TOFC  1  1  0  0         0  0 7660 - 79         040.676
+ 11TOFC  1  1  0  0         0  0 7660 -163         040.121
+ 11TOFC  1  1  0  0         0  0 7720 - 79         039.676
+ 11TOFC  1  1  0  0         0  0 7720 -163         039.121
+ 11TOFC  1  1  0  0         0  0 7900 - 79         040.176
+ 11TOFC  1  1  0  0         0  0 7900 -163         039.621
+C   19/05/82            MEMBER NAME  COSCAT   (S)           FORTRAN
+F22NAR.COSMIC.REDUC85                        A14446 32008003 00001
+F22NAR.COSMIC.REDUC86                        A14446 32008003 00002
+F22NAR.COSMIC.REDUC87                        A14446 32008003 00003
+F22NAR.COSMIC.REDUC88                        A14446 32008003 00004
+F22NAR.COSMIC.REDUC89                        A14446 32008003 00005
+F22NAR.COSMIC.REDU142                        A14446 32008003 00006
+F22NAR.COSMIC.RED95099                       A04477 32008003 00001
+F22NAR.COSMIC.REFRM201                       A14447 32008003 00001
+F22NAR.COSMIC.SEP80                          M03839 32008003 00030
+F22NAR.COSMICSR                              MIGRAT 30782009 00000
+F22NAR.COSP1.R291300                         M08150 32008003 00015
+F22NAR.COSP1.R301310                         M07748 32008003 00001
+F22NAR.COSP1.R311320                         M09394 32008003 00003
+F22NAR.COSP1.R321329                         M07128 32008003 00001
+F22NAR.COSP1.R330335                         M09434 32008003 00010
+F22NAR.PATREC.COSMIC.SEP80                   A22510 32008003 00001
+F22NAR.PEDCOS.SEP80R1                        M02193 32008003 00079
+F22NAR.PEDCOS.SEP80R2                        MIGRAT 30782009 00000
+C   12/03/79 007281422  MEMBER NAME  DDATA    (S)           FORTRAN
+C
+      COMMON /BCS/ IDATA(10000)
+      DIMENSION DATA(10000)
+      INTEGER *2 HDATA(20000)
+      EQUIVALENCE (IDATA(1),DATA(1)), (HDATA(1),IDATA(1))
+C
+C   12/03/79 007281422  MEMBER NAME  ELM84C   (S)           FORTRAN
+   17373    4088       3       0.            ELIM CODE.
+   17382    2479       5       2.            ELIM CODE. E PI
+   17394     468      10       0.            ELIM CODE.
+   17400    7935      14       5.            ELIM CODE. TAU
+   17413    6891      16       0.            ELIM CODE.
+   17435    1086      23       6.            ELIM CODE. COSMIC
+   17458    2131      29       1.            ELIM CODE. PI MU
+   17462    5719      27       0.            ELIM CODE.
+   17476    5166      31       6.            ELIM CODE.COS,NOT FOUND PRG
+   17482    7708      36       0.            ELIM CODE.
+   17486    2584      38       6.            ELIM CODE.CNP
+   17490    2891      41       6.            ELIM CODE.CNP
+   17489    4947      39       5.            ELIM CODE.
+   17493    1162      42       2.            ELIM CODE. TAU
+   17494    2483      43       5.            ELIM CODE.PROBABLY
+   17503    5525      45       0.            ELIM CODE.
+   17512    5780      49       0.            ELIM CODE.
+   17519    6801      54       0.            ELIM CODE.
+   17519    7631      55       0.            ELIM CODE.
+   17521    5226      59       5.            ELIM CODE. TAU
+   17532    2947      61       0.            ELIM CODE.
+   17535    1594      62       0.            ELIM CODE.
+   17537     421      63       0.            ELIM CODE.
+   17537    1055      64       0.            ELIM CODE.
+   17539    4020      66       1.            ELIM CODE. EMU/PI
+   17571     366      75       0.            ELIM CODE.
+   17598    5806      82       0.            ELIM CODE.
+   17604    1626      83       1.            ELIM CODE.
+   17607    5074      86       4.            ELIM CODE. BHA
+   17612    3609      87       0.            ELIM CODE.
+   17623    1229      88       0.            ELIM CODE.
+   17653    2909      94       0.            ELIM CODE.
+   17654    2446      95       0.            ELIM CODE.
+   17664    7216      99       0.            ELIM CODE.
+   17665    5993     100       0.            ELIM CODE.
+   17670    3051     101       5.            ELIM CODE.
+   17671    3287     102       2.            ELIM CODE. NO MU
+   17689     328     109       5.            ELIM CODE.
+   17725    1995     114       1.            ELIM CODE.
+   17727    7622     115       1.            ELIM CODE.
+   17740    7481     118       0.            ELIM CODE.
+   17751    6898     123       0.            ELIM CODE.
+   17754    2821     124       0.            ELIM CODE.
+   17777     452     128       0.            ELIM CODE.
+   17777     452     131       0.            ELIM CODE.
+   17778    2107     129       1.            ELIM CODE. E MU
+   17795    7371     134       2.            ELIM CODE.
+   17796    7296     135       5.            ELIM CODE.
+   17798    4716     136       0.            ELIM CODE.
+   17890     720     141       1.            ELIM CODE.
+   17921    6083     143       6.            ELIM CODE.
+   17963    1161     145       1.            ELIM CODE.
+   17983    3944     151       0.            ELIM CODE.
+   17984     307     152       5.            ELIM CODE.
+C   28/05/82            MEMBER NAME  FWCAT    (S)           FORTRAN
+F22NAR.DSK.FW158160                          MIGRAT 30782009 00000
+F22NAR.FWRED1.G158                           M04201 32008003 00007
+F22NAR.FWRED1.G160                           A27028 32008003 00004
+F22NAR.FWRED1.G343                           M05792 32008003 00002
+F22NAR.FWRED1.R336342                        M02096 32008003 00008
+F22NAR.FWRED1.R336368                        M07338 32008003 00006
+F22NAR.FWRED2.R072073                        A27340 32008003 00005
+F22NAR.FWRED2.R074077                        M11664 32008003 00005
+F22NAR.FWRED2.R077A                          M00497 32008003 00008
+F22NAR.FWRED2.R078                           A26916 32008003 00001
+F22NAR.FWRED2.R078080                        M11664 32008003 00006
+F22NAR.FWRED2.R081083                        M11664 32008003 00001
+F22NAR.FWRED2.R109                           M11664 32008003 00002
+F22NAR.FWRED2.R110                           A27282 32008003 00003
+F22NAR.FWRED2.R110113                        A27340 32008003 00007
+F22NAR.FWRED2.R111113                        M11664 32008003 00011
+F22NAR.FWRED2.R114116                        M11126 32008003 00002
+F22NAR.FWRED2.R117121                        M00668 32008003 00002
+F22NAR.MSS.FW072083                          VJAD08 30582009 00000
+F22NAR.MSSJAD.RED2.FW072083                  VJAD05 30582009 00000
+F22NAR.TAPE.FWRED2.R111121                   M08130 32008003 00006
+F22NAR.DSK.FW158160                          MIGRAT 30782009 00000
+F22NAR.DSK.MU.R111121                        MIGRAT 30782009 00000
+F22NAR.DSK.MUSEL.R072083                     MIGRAT 30782009 00000
+F22NAR.DSK.MUSEL.R111121                     MIGRAT 30782009 00000
+
+C   28/05/82            MEMBER NAME  JADNOT   (S)           FORTRAN
+1. HOW TO CREATE THE RESULT BANK 'TOFR'
+
+IN ORDER TO GET TOF ANALYSIS AND CREATE THE OUTPUT BANK 'TOFR' THE USER
+
+HAS TO ATTACH THE LIBRARY F22NAR.TOFLIB.L (CORRESPONDING SOURCE IS
+
+TOFLIB.S), MAKE SURE THAT THE CALIBRATION CONSTANTS ARE READ WHENEVER
+
+RUNNUMBER CHANGES, AND CALL FOR EACH EVENT:
+                       -------------------
+         CALL TOFINT (NRUN,IPATOF,IPPATR,&1000)   IPATOF= POINTER TO B
+                                                  BANK 'ATOF'
+                                                  IPPATR= POINTER TO
+                                                  BANK 'PATR'
+                                                  1000=ERROR EXIT
+
+AND IN CASE THE CREATED BANK TOFR IS TO BE WRITTEN OUT:
+                                        --------------
+         CALL BSAW(1,'TOFR')
+
+
+
+THE FOLLOWING SUBROUTINES ARE CALLED FROM TOFINT:
+
+      CALL RD0880    CALLED ONLY WHEN RUNNUMBER CHANGES, TRANSFERS
+                     CALIBRATION DATA FROM BOS COMMON INTO LOCAL
+                     COMMON
+
+      CALL TOFARD    COMPUTES PRELIMINARY TOF FOR COUNTERS THAT
+                     WERE HIT
+
+      CALL TFCTD1    EXTRAPOLATES TRACKS TO TOF COUNTERS, DETERMINES
+                     PATHLENGTH
+
+      CALL TOFCOR    CORRELATES TRACKS WITH HIT COUNTERS
+           TFCLC
+
+      CALL TOFMAS    COMPUTES FINAL TOF,QUALITY
+           CMASS     CALLS CMASS WHERE MASSES AND PROBABILITIES ARE
+           TFSTOR    CALCULATED FOR EACH PARTICLE TO BE A PROTON,KAON,
+                     PION,OR ELECTRON
+                     BANK 'TOFR' IS CREATED
+
+
+FOR RUNNUMBERS BELOW 1660 THE FOLLOWING ROUTINES ARE CALLED
+
+TOFIN2,CORCST,TOFAR2,TOFCO2,TFCL2,TOFMA2 ARE CALLED INSTEAD OF THE
+
+NAMES ABOVE.
+
+NOTE: THE COMMON TFPARM IS DIFFERENT FOR THE TWO SETS OF PROGRAMS!!!!!
+
+
+
+
+
+2. CONTENT OF BANK 'TOFR'
+
+   N = TRACK NUMBER IN PATR BANK
+
+   IDATA(IPTOFR+1)= NR OF TRACKS
+   IDATA(IPTOFR+2)= NR OF TRACKS FOR WHICH TOF IS COMPUTED
+   IDATA(IPTOFR+3)= NR OF TRACKS WITH 'BAD' TOF
+   IDATA(IPTOFR+4)= NR OF TRACKS NOT CONNECTED TO COUNTER
+
+   RDATA(IPTOFR+(N-1)*14+1)= N
+                         2 = QUALITY FLAG   1,-1,2,-2,3,-3,10
+                              CORRESPONDS TO THE NUMBER OF TRACKS CON-
+                              NECTED TO THIS COUNTER (10 NO CONNECTION)
+                              ' - ' MEANS THAT ONLY ONE MEASUREMENT WAS
+                              USED FOR THE TOF VALUE
+                         3 = TOFCOUNTER
+                         4 = TOF
+                         5 = PATH LENGTH
+                         6 = BETA
+                         7 = SIGMA(BETA)
+                         8 = MASS (IS NEGATIVE IF BETA>1)
+                         9 = SIGMA(MASS)
+                        10 = (BETA-BETA(PROTON))**2/(2*DBETA**2)
+                        11 = (BETA-BETA(KAON  ))**2/(2*DBETA**2)
+                        12 = (BETA-BETA(PION  ))**2/(2*DBETA**2)
+                        13 = (BETA-BETA(ELECTR))**2/(2*DBETA**2)
+                        14 = Z-COORDINATE FROM TOF MEASUREMENT
+                             (ONLY FOR QUALITY 1)
+
+
+
+3. COMPUTATION OF TOF
+
+ITDCM, ITDCP ARE THE TDC CHANNELS SET CORRESPONDING TO THE I'TH COUNTER
+
+ON THE NEGATIVE AND POSITIVE Z SIDE.
+
+   TMPREL(I) = ITDCM*GFM(I)-CORADCM(I)-OFFSETM(I)  I
+                                                   I IN TOFARD
+   TPPREL(I) = ITDCP*GFP(I)-CORADCP(I)-OFFSETP(I)  I
+
+               GFM,GFP,OFFSETM,OFFSETP ARE CALIBRATION CONSTANTS
+
+       TM(I)=TMPREL(I)-ZTOF/SCVELM(I)             I
+                                                  I IN TOFMAS
+       TP(I)=TPPREL(I)-ZTOF/SCVELP(I)             I
+
+
+ IF TM AND TP AGREE WITHIN 3 STANDARD DEVIATIONS THE WEIGHTED
+
+ AVERAGE IS CALCULATED AND QUALITY FLAG 1 IS GIVEN:
+
+    TOF(I) = (WM(PHM)*TM(I)+WP(PHP)*TP(I))/(WM(PHM)+WP(PHP))
+                               PHM = PULSEHEIGHT OF PM -Z
+                               PHP = PULSEHEIGHT OF PM +Z
+
+ OTHERWISE THE MEASUREMENT CLOSER TO THE TRACK IS PUT INTO THE TOFR-
+
+ BANK AND QUALITY FLAG -1 IS GIVEN.
+
+ IF SEVERAL TRACKS HIT A COUNTER THE TOF MEASUREMENT IS AMBIGUOUS,
+
+ AT THE MOMENT IT IS NOT ADVISED TO USE IT.
+
+
+
+
+4. PULSEHEIGHT CORRECTION
+
+THIS IS A CORRECTION TO COMPENSATE FOR THE TIME SLEWING INTRODUCED AT
+
+THE DISCRIMINATOR THRESHOLD. FOR OLDER DATA (BEFORE RUN 3731) THE
+
+FOLLOWING FORM IS USED:
+
+          CORADCM(I) =  A + B/ADC       INDEPENDENT OF COUNTER!!!!!
+
+AFTER RUN 3731 (WHEN MORE CALIBRATION DATA ARE AVAILABLE) IT HAS THE
+
+FORM:
+          CORADCM(I) = BM(I)/SQRT(ADCM)
+
+THE RESULTING CORRECTION IS DEFINITELY IMPROVED WITH THE SECOND TYPE OF
+
+CORRECTIONS AS CAN BE SEEN IN FIGS.
+
+THE RESOLUTION AS A FUNCTION OF PULSEHEIGHT IS SHOWN IN FIG.
+
+THE INVERSE SQUARE OF THIS CURVE IS TAKEN AS WEIGHT FOR THE COMPUTATION
+
+OF THE FINAL TOF.
+
+
+
+
+5. CALIBRATION PERIODS
+
+-----------------------------------------------------------------------
+            I                                   I          I
+   RUNS     I    COMMENTS                       INR OF EV  I RESOLUTION
+            I                                   I/COUNTER  I  (NSEC)
+-----------------------------------------------------------------------
+            I                                   I          I
+ 540 - 1658 I CONSTANTS ARE CHANGING FREQUENTLY I    48.3 *I  .55
+            I                                   I          I
+1659 - 1869 I COMMON STOP                       I    18.9  I  .32
+            I                                   I          I
+1870 - 2305 I DISCR THR 100 MV                  I    73.3  I  .32
+            I                                   I          I
+2306 - 2520 I 6 DB IN 36-42                     I    44.4  I  .36
+            I                                   I          I
+2718 - 3324 I BAD BACKGROUND CONDITIONS         I    21.3  I  .47
+            I 3136 DISC THRESH 150 MV,FEW HV CHAI          I
+            I 3182 6 DB IN ALL ADC INPUTS       I          I
+            I 3560 WATERLEAK DISABLES MANY      I          I
+            I MULTIPLIERS FOR COUNTERS 22-31    I          I
+            I                                   I          I
+3325 - 3727 I NEW PM'S IN BROKEN COUNTERS       I    35.7  I  .34
+            I                                   I          I
+3728 - 4841 I CAMAC CRATES CHANGED, 2TDC'S      I    95.2  I  .38
+            I REPLACED, ALL TDC'S REPAIRED      I          I
+            I                                   I          I
+4842 - 4860 I JUMP OF TDC 3 COUNTERS 9-12 BY    I          I
+            I 3 NSEC                            I          I
+------------------------------------------------------------------------
+
+
+
+6. ROUTINES TOFSMP AND TFPAIR
+
+THESE TWO ROUTINES USE ONLY COUNTER INFORMATION AND COMPUTE A TIME OF
+
+FLIGHT FOR EVERY COUNTER THAT WAS HIT (= LATCH WAS SET).THEY NEED
+
+LARRYS CALIBRATION CONSTANTS WHICH ARE READ IN ON FIRST CALL.
+
+THEY REQUIRE TWO ARGUMENTS: NRUN,IAFLG (SEE AT END OF CHAPTER)
+
+
+THE OUTPUT OF ROUTINE TOFSMP IS FOUND IN THE COMMON:
+
+      COMMON/SMPTOF/MTOF,TTOF(42),NTOF,HTOF(42)
+
+      MTOF=HISTORICAL ,NOT USED
+      NTOF = NR OF TOF LATCHES SET
+      HTOF = 0,1 IF LATCH WAS NOT/WAS SET     INTEGER*2!!!!!
+      TTOF = TIME OF FLIGHT
+
+
+TFPAIR IN ADDITION SEARCHES COLLINEAR PAIRS OF COUNTERS.
+
+THE OUTPUT OF ROUTINE TFPAIR IS FOUND IN THE COMMON:
+
+      COMMON/TOFPAR/MPAIR,LTOF(2,10),TTOF(2,10),ZTOF(2,10)
+
+                 MPAIR = NR OF COLLINEAR PAIRS OF TOF COUNTERS
+                 LTOF(I,N)= FIRST(SECOND) COUNTER BELONGING TO PAIR N
+                 TTOF(I,N)= TOF OF I TH COUNTER OF PAIR N
+                 ZTOF(I,N)= Z COORDINATE OF I TH COUNTER OF PAIR N
+
+THE FULL CALIBRATION IS USED IF THE PARAMETER IAFLG IS DIFFERENT
+
+FROM ZERO. IF IAFLG = 0 NO PULSEHEIGHT CORRECTION CAN BE DONE.
+
+C   28/05/82            MEMBER NAME  PERIODS  (S)           FORTRAN
+REDUC NR.  RUNS         PERIOD          ENERGY
+520-532   12556 - 12950   AUT 1982       19  REF1.DSK.MY520531
+533-615   13088 - 14586   SUM 1983       21
+533-551   13088 - 13552   MUCND45/MYREF2.R1983A
+          13088 - 13552   MUCND45/MYREF2.R1983A
+          14605 - .....   AUT 1983       22
+C   24/04/81 104251629  MEMBER NAME  TCALCM   (CORLIB)      FORTRAN
+C
+C  --------------------------------------------------------------
+       INTEGER *2 HADC,HTDC
+      COMMON/CWORK/NR,RAW(5,42),NC,ICRT1(5,42),NTRK,ICRT2(50),TRK(5,50)
+     - ,ITRC(50),NTC,ITRK(5,42),INFM(4),IRELT(14,50)
+      COMMON/TFPED/ HADC(2,42),HTDC(2,42)
+      COMMON/TMTP/TAUM(42),TAUP(42)
+      DIMENSION IRAW(5,42),IW(704)
+      EQUIVALENCE (IRAW(1,1),RAW(1,1)),(IW(1),INFM(1)),
+     -             (IW(5),IRELT(1,1))
+C  --------------------------------------------------------------
+C
+C   24/04/81 409061122  MEMBER NAME  TCALCM1  (S)           FORTRAN
+C
+C  --------------------------------------------------------------
+      INTEGER *2 HADC,HTDC,HSTAT,HON,HADCF,HTDCF,HFSTAT,HFON,
+     - HTDC1,HON1,HTSPAR
+      COMMON/TFPED/ HADC(2,42),HTDC(2,42),HSTAT(42),HON(42)
+      COMMON/FWPED/ HADCF(2,16),HTDCF(2,16),HFSTAT(16),HFON(16)
+      COMMON/TFPED1/HTDC1(2,42),HON1(42),HTSPAR(16)
+      COMMON/CWORK/NR,RAW(5,42),NC,ICRT1(5,42),NTRK,ICRT2(50),TRK(5,50)
+     - ,ITRC(50),NTC,ITRK(5,42),INFM(4),IRELT(14,50),RAW2(2,42)
+      COMMON/TMTP/TAUM(42),TAUP(42)
+      DIMENSION IRAW(5,42),IW(704),RE(14,50)
+      EQUIVALENCE (IRAW(1,1),RAW(1,1)),(IW(1),INFM(1)),
+     -             (IW(5),IRELT(1,1)),(RE(1,1),IRELT(1,1))
+C  --------------------------------------------------------------
+C
+C   24/04/81 409061122  MEMBER NAME  TFADC    (S)           FORTRAN
+      COMMON/TFADC/ CADCA(84),CADCB(84)

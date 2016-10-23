@@ -1,0 +1,85 @@
+C   28/04/87 706201702  MEMBER NAME  AMPS2S1  (JADEGS)      SHELTRAN
+      SUBROUTINE AMPS2Z( IP, NPJETC, Z, W, IFLAG )
+C-----------------------------------------------------------
+C-     COPIED FROM F22ELS.ZSLIB.S   20.6.87   --------------
+C-----------------------------------------------------------
+C  VERSION OF 21/04/87         LAST MOD 05/06/87   E ELSEN
+C  Convert the amplitudes stored in HW(IP+1) and HW(IP+2)
+C  into Z and calculate the weight W associated with this
+C  measurement.
+C  NPJETC = IW(IBLN('JETC'))
+C  Flag IFLAG is 0 if the hit passes some quality criteria
+C  Weighting will only work if ZSFIT has been called. In that
+C  case CZSCAL has been initialised ( ZALPDI=1400 )
+C  Note the different effective wire length that is used
+C  for the two calibrations.
+C-----------------------------------------------------------
+      IMPLICIT INTEGER*2 (H)
+C                                           from zsfit
+C                                           zal name conflict
+C     COMMON /CZSCAL/ IPVERS,ZAL,RESFAC,SECH(5)
+      COMMON /CZSCAL/ IPVERS, ZALPDI, RESFAC, SECH(5)
+#include "czsprm.for"
+C
+C
+#include "cjdrch.for"
+C
+      COMMON / BCS / HW(1)
+C
+      REAL EXTRMZ / 1250. /, ZALDEF / 1400. /
+C                                           ROUGHLY 3.6MM
+      INTEGER IDTMAX / 600 /
+C
+      Z = 0.
+      W = 1.
+      IFLAG = 16
+C
+      AL = HW(IP+2)/8.
+      AR = HW(IP+1)/8.
+C                                          check whether CZSCAL has been
+C                                          initialised
+      IF  AL.GT.0. .AND. AR.GT.0.
+      THEN
+        IF  ZALPDI .EQ. ZALDEF
+        THEN
+          Z = ZALPDI*(AL-AR)/(AL+AR)
+          IF NZSPRD .LE. 2
+          THEN
+            W = ( AZSSAV(NZSPRD) /
+     *              ( AZSRS0(NZSPRD)+
+     *                AZSRSA(NZSPRD)*SQRT(AL**2+AR**2)/(AL+AR)**2
+     *              )
+     *          )**2
+          ELSE
+            W = (AZSSAV(NZSPRD)/
+     *             (AZSRS0(NZSPRD)+AZSRSA(NZSPRD)/(AL+AR)))**2
+          CIF
+        ELSE
+          Z = .5*ZAL*(AL-AR)/(AL+AR)
+        CIF
+        IF  ABS( Z ) .LT. EXTRMZ
+        THEN
+          IF NZSPRD.GT.2
+          THEN
+C                                           ANY CLOSE HIT?
+            ISEC = 0
+            NP = IP - 4
+            IDT = HW(NP+3)-HW(IP+3)
+            IF( NP.GT.NPJETC*2+100 .AND. HW(NP)/8 .EQ. HW(IP)/8.AND.
+     *          IABS(IDT).LT.IDTMAX ) ISEC = ISEC + 1
+            NP = IP + 4
+            IDT = HW(NP+3)-HW(IP+3)
+            IF( NP.LT.NPJETC*2+100+HW(NPJETC*2+99) .AND.
+     *          HW(NP)/8 .EQ. HW(IP)/8.AND.
+     *          IABS(IDT).LT.IDTMAX ) ISEC = ISEC + 1
+            IF( ISEC .EQ. 0 ) IFLAG = 0
+          ELSE
+             IFLAG = 0
+          CIF
+        CIF
+C                                           OVERFLOW HITS
+        IF(IFLAG.EQ.0 .AND.
+     *     ( HW(IP+1).EQ. 32760 .OR. HW(IP+2).EQ. 32760 ) ) IFLAG = 32
+      CIF
+      RETURN
+      END

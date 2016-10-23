@@ -1,0 +1,196 @@
+C   12/03/84 412041859  MEMBER NAME  PEDFX3   (S)           FORTRAN
+C
+C
+C
+C
+C
+C
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C
+C    SECOND ROUTINE TO ATTEMPT OFFLINE SUBTRACTION OF PEDESTALS
+C     FOR EACH 'SUPERBLOCK' OF 3 LEAD SCINTILLATOR ELEMENTS IT
+C   CHECKS THAT
+C     NOONE CHANNEL IS GREATER THAT 500 MEV,IF THIS IS THE CASE ALL
+C  THREE BLOCKS ARE IGNORED , OTHERWISE THE VALUES IN THE BLOCKS ARE
+C   USED TO ESTIMATE A MEAN ADC PEDESTAL , WHICH IS THEN SUBTACTED
+C   FROMALL BLOCKS.
+C
+C A.J.FINCH 11/12/82
+C
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C
+       SUBROUTINE TAGPD2
+C
+C
+C
+C
+C------------ C O M M O N    C W O R K   F O R   T A G A N -------------
+C
+C
+       COMMON/CWORK/MARK,IFLMRK,IMC,NCLST,NNEI,
+     *              ISTMZ,ISTPZ,IENDMZ,IENDPZ,
+     *              SIGX,SIGY,SIGEN,
+     *              CAND(3),CLUS(9,2),CMAP(10,9),
+     *              SADC(32,2),CATAG(192)
+C
+C
+C CWORK - WORKSPACE USED ONLY ONCE PER EVENT FOR INTERNAL PROCESSING
+C ==================================================================
+C
+C MARK   ->  WHICH 'MARK' OF TAGGER - 1 = 1981,2
+C                                   - 2 = 1983 ONWARDS
+C
+C IFLMRK ->  SET TO '1' BY TAGMRK
+C
+C IMC    ->  SET TO '1' BY TAGMRK IF MC DATA
+C
+C CATAG  ->  CONTAINS THE ADC CONTENTS UNPACKED FROM ATAG
+C
+C SADC   ->  COMMON FOR ADC'S AFTER SORTING  (SORT 1)
+C
+C CMAP(I,1...9) ->  ADDRESS OF ADC'S IN CLUSTER I,SORT23 PUTS THESE IN
+C                   ORDER OF ENERGY.
+C
+C CAND(3) ->  X, Y, AND ENERGY OF A FOUND CLUSTER IN AFTER CLSPS
+C
+C SIGX,SIGY,SIGEN ->  ERROR ON X, Y, AND ENERGY AFTER CLSPS
+C
+C CLUS(9,2) ->  ADC ADDRESS AND CONTENTS OF CLUSTERS - SORTED BY ENERGY
+C
+C NCLST   ->  NUMBER OF CLUSTERS THIS END
+C ISTMZ   ->  POINTER TO START OF -Z DATA IN CATAG ( ALWAYS  1       )
+C ISTPZ   ->  POINTER TO START OF +Z DATA IN CATAG ( EITHER 33 OR 25 )
+C IENDMZ  ->  POINTER TO   END OF -Z DATA IN CATAG ( EITHER 32 OR 24 )
+C IENDPZ  ->  POINTER TO   END OF +Z DATA IN CATAG ( EITHER 64 OR 48 )
+C
+C A.J.FINCH 24/2/84
+C MODIFIED 12/3/84 CATAG PUT TO END AND INCREASED TO 192
+C  TO ALLOW IT TO BE USED FOR 1979,80 TAGGER IN GRAPHICS
+C LAST MOD : J. NYE  30/05/84  RE-ORGANIZED INCLUDING IFLMRK
+C
+C
+C-----------------------------------------------------------------------
+C
+C
+C
+       VALUE  = 500.0
+       APICKM = 0.0
+       APICKP = 0.0
+       NUMM   = 0
+       NUMP   = 0
+C
+C
+C---                                MINUS Z FIRST
+C
+C---                                LOOP OVER ALL 8 'CAKESLICES'
+C
+       DO 10 I = 1,8
+C
+C---                                LOOP OVER 3 PARTS OF 'CAKESLICE'
+C---                                AND TEST FOR ENERGY > 'VALUE'
+C
+          DO 20 J = 1,17,8
+             ITEST = J+I-1
+             IF ( CATAG(ITEST) .GT. VALUE ) GOTO 10
+   20     CONTINUE
+C
+C   NONE OF THE BLOCKS IN THE 'CAKESLICE' UNDER TEST HAVE FAILED
+C   TO BE LESS THAN 'VALUE'
+C
+C
+C---                                SUM ALL NON ZERO BLOCKS IN NON-HIT
+C---                                'CAKESLICE' AND COUNT HOW MANY
+C---                                THERE ARE
+C
+          DO 30 L = 1,17,8
+             ITEST = I+L-1
+             IF ( CATAG(ITEST) .EQ. 0 ) GOTO 30
+             APICKM = APICKM + CATAG(ITEST)
+             NUMM = NUMM + 1
+   30     CONTINUE
+   10  CONTINUE
+C
+C
+C
+C
+C
+C---                                NOW PLUS Z
+C
+C
+C
+C
+C
+C---                                LOOP OVER ALL 8 'CAKESLICES'
+C
+       DO 11 I = 25,32
+C
+C---                                LOOP OVER 3 PARTS OF 'CAKESLICE'
+C---                                AND TEST FOR ENERGY > 'VALUE'
+C
+C
+          DO 21 J = 1,17,8
+             ITEST = J + I - 1
+             IF ( CATAG(ITEST) .GT. VALUE ) GOTO 11
+   21     CONTINUE
+C
+C   NONE OF THE BLOCKS IN THE SUPERBLOCK UNDER TEST HAVE FAILED
+C   TO BE LESS THAN VALUE
+C
+C---                                SUM ALL NON ZERO BLOCKS IN NON-HIT
+C---                                'CAKESLICE' AND COUNT HOW MANY
+C---                                THERE ARE
+          DO 31 L = 1,17,8
+             ITEST = I + L - 1
+             IF ( CATAG(ITEST) .EQ. 0 ) GOTO 31
+             APICKP = APICKP + CATAG(ITEST)
+             NUMP = NUMP + 1
+   31     CONTINUE
+   11  CONTINUE
+C
+C
+C
+C---------------------------------- SUBTRACT PEDESTAL FROM CATAG ARRAY
+C
+C
+C NOW WE HAVE THE VALUE APICKP AND APICKM TO BE SUBTRACTED
+C  DO THE SUBTRACTION FROM CATAG ARRAY
+C
+C
+C
+C---                                CALC THE MEAN NON ZERO PEDESTAL - Z
+C
+       IF ( NUMM .LE. 6 ) GOTO 50
+       APICKM = APICKM / NUMM
+C
+C
+       DO 40 I = 1,24
+          IF ( CATAG(I) .EQ. 0 ) GOTO 40
+          CATAG(I) = CATAG(I) - APICKM
+          IF ( CATAG(I) .LT. 0) CATAG(I) = 0
+   40  CONTINUE
+C
+C
+C---                                SAME FOR +Z
+C
+C
+
+*** PMF 15/10/99: new GOTO label introduced behind the 'END DO'-CONTINUE statement at label 41
+*   50  IF ( NUMP .LE. 6 ) GOTO 41
+   50  IF ( NUMP .LE. 6 ) GOTO 42
+*** PMF (end)
+C      IF ( NUMP .LE. 4 ) GOTO 41
+C
+       APICKP = APICKP / NUMP
+C
+       DO 41 I = 25,48
+          IF ( CATAG(I) .EQ. 0 ) GOTO 41
+          CATAG(I) = CATAG(I) - APICKP
+          IF ( CATAG(I) .LT. 0) CATAG(I) = 0
+   41  CONTINUE
+*** PMF 15/10/99: new label added for a former GOTO statement
+   42  CONTINUE
+*** PMF (end) 
+C
+C
+   51  RETURN
+       END

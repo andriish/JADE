@@ -1,0 +1,70 @@
+C   23/06/78 708241634  MEMBER NAME  FUNCTN   (S)           FORTRAN
+      FUNCTION FUNCTN(X,I,A)
+C
+C---- S.YAMADA         06-12-77
+C---- FIT FUNTION FOR CERENKOV LIGHT DETECTION EFFICIENCY
+C
+      DIMENSION X(1),A(1),DELTAA(1),DERIV(2)
+      COMMON /COSTB/ COST, MODE
+C     DATA ACON/0.55/
+      DATA ACON/0.68/
+C
+      GO TO (1,2,3),MODE
+C
+C---- MODE=1
+    1 CONTINUE
+C---- FUNCTN=A(1)+CC(COST)*EXP(ACON*X(I))+A(2)*X(I)
+C
+      CC = ((0.8751*COST-0.8362)*COST+0.3924)*COST-2.0
+      CC = 10.**CC
+C---- FOR ENDCAP CC=1.5*CC
+      CC = 1.5*CC
+      EXPARG = EXP(ACON*X(I))
+      FUNCTN = A(1)+CC*EXPARG+A(2)*X(I)
+      RETURN
+C
+C---- MODE=2
+    2 Z = X(I)**2
+      GO TO 4
+C---- MODE=3
+    3 Z = X(I)
+    4 FF = ((A(8)*Z+A(7))*Z+A(6))*Z
+      FUNCTN = ((((FF+A(5))*Z+A(4))*Z+A(3))*Z+A(2))*Z+A(1)
+      RETURN
+C
+C
+C **************************************
+C
+      ENTRY FDERIV(X,I,A,DELTAA,NTERMS,DERIV)
+C
+C    S.YAMADA     06-12-77
+C     MODIFIED  07-12-77
+C----CALCULATE DERIVATIVES OF THE FIT FUNCTION FOR CEERENKOV LIGHT
+C    DETECTION EFFICIENCY SIMULATION DATA.
+C----DEIFFERENCIATION IS DONE FOR EACH PARAMETER.
+C
+C---- FUNCTN=A(1)+CC(COST)*EXP(ACON*X(I))+A(2)*X(I)
+      GO TO (10,20,30),MODE
+   10 CONTINUE
+C----- J=1
+      DERIV(1) = 1.
+C----- J=2
+      DERIV(2) = X(I)
+      IF(NTERMS.LT.3) RETURN
+C----- J=3
+      DERIV(3) = EXP(ACON*X(I))
+      IF(NTERMS.LT.4) RETURN
+C----- J=4
+      DERIV(4) = DERIV(3)*A(3)*X(I)
+      RETURN
+C
+C---- MODE=2
+   20 Z = X(I)**2
+      GO TO 40
+C---- MODE=3
+   30 Z = X(I)
+   40 DERIV(1) = 1.0
+        DO 50 I=1,7
+   50   DERIV(I+1) = DERIV(I)*Z
+      RETURN
+      END

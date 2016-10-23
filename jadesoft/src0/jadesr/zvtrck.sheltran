@@ -1,0 +1,244 @@
+C   19/05/80 203041001  MEMBER NAME  ZVTRCK   (JADESR)      SHELTRAN
+      SUBROUTINE ZVTRCK(ZVTX,IND,IPPATR)
+C
+C   *****************************************
+C   *    DETERMINE VERTEX FROM PATR-BANK    *
+C   *****************************************
+C   19/05/80 : P. STEFFEN
+C
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cdata.for"
+C
+      COMMON /CWORK/ ZTR(120), HIST(100)
+      EQUIVALENCE (Z1,ZTR(1)) , (Z2,ZTR(2)) , (Z3,ZTR(3))
+C
+C     INITIALIZE PARAMETERS
+      DZBIN  =  60.
+      DZBIN2 = 120.
+      Z0BIN  =-3000.
+C
+C     PRINT OUT OF TRACK BANKS
+      IP = IPPATR
+C
+N     CHECK IF PATR-BANK
+      IND = -3
+      IF(IP.LE.0) RETURN
+C
+N     CHECK IF >0 TRACKS
+      IND = -2
+      IF(IDATA(IP+2).LE.0) RETURN
+C
+N     LOOP OVER ALL TRACKS
+      IND = -1
+C     PRINT 2008,IDATA(IP-3),IDATA(IP-2),IDATA(IP-1),IDATA(IP),
+C    ,           IDATA(IP+1),IDATA(IP+2),IP
+C2008 FORMAT(1H0,A4,8I12)
+      NTR = IDATA(IP+2)
+      LDTR = IDATA(IP+3)
+      JP0 = IP+IDATA(IP+1)
+      JP9 = JP0 + LDTR*NTR - 1
+      MTR = 0
+      FOR JP1 = JP0,JP9,LDTR
+          I0 = JP1+ 1
+          I9 = I0 + LDTR
+C         PRINT 2009,(IDATA(I1),I1=I0,I9)
+C2009 FORMAT(1H0,2I3,I8,2(I4,3F6.1,3F6.3),
+C    ,   /,14X,I3,4E13.5,F6.2,I3,4E13.5,
+C    ,   /,14X,I3,2F8.3,F6.1,I3,10X,6I3,8I6,2X,Z4)
+C
+N       CHECK ZFIT, # OF HITS, P<100MEV
+        IF ADATA(JP1+32).LT.60. .AND. IDATA(JP1+33).GT.12 .AND.
+     ?     ABS(ADATA(JP1+25)).LT..00150
+        THEN
+C
+N         CHECK RADIUS
+          RSQ = ADATA(JP1+5)**2 + ADATA(JP1+6)**2
+          IF RSQ.LT.250000.
+          THEN
+            MTR = MTR + 1
+            ZTR(MTR) = ADATA(JP1+31)
+          CIF
+        CIF
+      CFOR
+C     PRINT 2001, MTR,(ZTR(I1),I1=1,MTR)
+C2001 FORMAT('0Z(TRACKS):',I6,15F7.0)
+C
+N     CHECK IF ANY GOOD Z
+      IF(MTR.LE.0) RETURN
+      IND = 0
+C
+N     CHECK IF SINGLE TRACK
+      IF MTR.EQ.1
+      THEN
+        ZVTX = Z1
+        RETURN
+      CIF
+C
+N     2 TRACKS
+      IF MTR.EQ.2
+      THEN
+        IF ABS(Z2-Z1).GT.DZBIN2
+        THEN
+N         BAD VERTEX
+          ZVTX = Z1
+          IF(ABS(Z1).GT.ABS(Z2)) ZVTX = Z2
+          RETURN
+        CIF
+N       GOOD VERTEX
+        ZVTX = (Z1+Z2)*.5
+        IND = 1
+        RETURN
+      CIF
+C
+N     3 TRACKS
+      IF MTR.EQ.3
+      THEN
+N       ORDER Z
+        IF Z1.GT.Z2
+        THEN
+          ZW = Z2
+          Z2 = Z1
+          Z1 = ZW
+        CIF
+        IF Z2.GT.Z3
+        THEN
+          IF Z1.GT.Z3
+          THEN
+            ZW = Z3
+            Z3 = Z2
+            Z2 = Z1
+            Z1 = ZW
+          ELSE
+            ZW = Z3
+            Z3 = Z2
+            Z2 = ZW
+          CIF
+        CIF
+N       CHECK IF ALL DISAGREE
+        IF ABS(Z2-Z1).GT.DZBIN2 .AND. ABS(Z3-Z2).GT.DZBIN2
+        THEN
+          ZVTX = Z1
+          IF(ABS(Z2).LT.ABS(ZVTX)) ZVTX = Z2
+          IF(ABS(Z3).LT.ABS(ZVTX)) ZVTX = Z3
+          RETURN
+        CIF
+N       CHECK IF ALL AGREE
+        IF ABS(Z3-Z1).LT.DZBIN2
+        THEN
+          ZVTX = (Z1+Z2+Z3) / 3.
+          IND = 1
+          RETURN
+        CIF
+N       CHECK IF ONLY 2 AGREE
+        IF ABS(Z2-Z1).LT.DZBIN2 .AND. ABS(Z3-Z2).LT.DZBIN2
+        THEN
+          Z1 = (Z1+Z2) * .5
+          Z2 = (Z2+Z3) * .5
+          ZVTX = Z1
+          IF(ABS(Z2).LT.ABS(ZVTX)) ZVTX = Z2
+          IND = 1
+          RETURN
+        CIF
+N       ONLY 2 AGREE
+        IF ABS(Z2-Z1).GT.DZBIN2
+        THEN
+          Z1 = Z2
+          Z2 = Z3
+        CIF
+        ZVTX = (Z1+Z2) * .5
+        IND = 1
+        RETURN
+      CIF
+C
+N     >3 TRACKS: HISTOGRAM Z
+N     ZERO HISTOGRAM
+      CALL SETS(HIST(1),0,200,0)
+N     FILL HISTOGRAM
+      FOR I=1,MTR
+        IZ = (ZTR(I)-Z0BIN) / DZBIN
+        IF IZ.GT.0 .AND. IZ.LT.99
+        THEN
+          HIST(IZ  ) = HIST(IZ  ) + 1
+          HIST(IZ+1) = HIST(IZ+1) + 2
+          HIST(IZ+2) = HIST(IZ+2) + 1
+        CIF
+      CFOR
+C     PRINT 2002, HIST
+C2002 FORMAT('0HIST:'50I2,/,6X,50I2)
+N     SEARCH FOR PEAK
+      MPEAK0 = 0
+      ZVTX = -100000.
+      LBPEAK = 0
+      FOR IZ=1,99
+        MPEAK1 = HIST(IZ) + HIST(IZ+1)
+        IF MPEAK1.GT.3
+        THEN
+          IF MPEAK1.GT.MPEAK0
+          THEN
+            MZ = IZ
+            MPEAK = MPEAK1
+            LBPEAK = 1
+          ELSE
+            IF MPEAK1.EQ.MPEAK0
+            THEN
+              LBPEAK = 2
+            ELSE
+              IF LBPEAK.NE.3
+              THEN
+                ZV0  = MZ*DZBIN + Z0BIN
+                DZV0 = DZBIN
+                IF(LBPEAK.EQ.2) ZV0  = DZBIN*.5 + ZV0
+                IF(LBPEAK.EQ.2) DZV0 = DZBIN*1.5
+C     PRINT 2003, ZV0,DZV0,ZVTX
+C2003 FORMAT(' NEW VERTEX:',3F8.1)
+                IF ABS(ZV0).LT.ABS(ZVTX)
+                THEN
+                  ZVTX = ZV0
+                  DZVT = DZV0
+                CIF
+              CIF
+              LBPEAK = 3
+            CIF
+          CIF
+        ELSE
+          IF LBPEAK.GT.0 .AND. LBPEAK.NE.3
+          THEN
+            ZV0  = MZ*DZBIN + Z0BIN
+            DZV0 = DZBIN
+            IF(LBPEAK.EQ.2) ZV0  = DZBIN*.5 + ZV0
+            IF(LBPEAK.EQ.2) DZV0 = DZBIN*1.5
+C     PRINT 2003, ZV0,DZV0,ZVTX
+            IF ABS(ZV0).LT.ABS(ZVTX)
+            THEN
+              ZVTX = ZV0
+              DZVT = DZV0
+            CIF
+          CIF
+          LBPEAK = 0
+        CIF
+        MPEAK0 = MPEAK1
+      CFOR
+N     AVERAGE VERTEX
+      ZVSUM = 0.
+      NZVS  = 0
+      FOR I=1,MTR
+        IF ABS(ZTR(I)-ZVTX).LE.DZVT
+        THEN
+          ZVSUM = ZVSUM + ZTR(I)
+          NZVS  = NZVS + 1
+        CIF
+      CFOR
+      IF NZVS.GT.1
+      THEN
+        ZVTX = ZVSUM / NZVS
+        IND = 1
+      ELSE
+        ZVTX = -100000.
+        FOR I=1,MTR
+          IF(ABS(ZTR(I)).LT.ABS(ZVTX)) ZVTX = ZTR(I)
+        CFOR
+      CIF
+      RETURN
+C
+      END

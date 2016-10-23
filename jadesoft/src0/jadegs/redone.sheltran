@@ -1,0 +1,722 @@
+C   19/03/80 312171949  MEMBER NAME  REDONE   (JADEGS)      SHELTRAN
+      SUBROUTINE REDONE (INDREJ,LBWRT,IWRT)
+C---
+C---     SHORT VERSION OF USREDUC1 ON JADEPR.JADESR
+C---     RETURNS REJECT CODE INDREJ, WRITE CODES LBWRT AND IWRT
+C---                                  LAST CHANGE 25.08.80
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cdata.for"
+C
+      COMMON /CREDON/LIMHIT,LIMHT1,CRVTAG,CRVNTG
+      COMMON /CIPRI/ IPRI
+      COMMON /CHEADR/ HEAD(108)
+      EQUIVALENCE (HRUN,HEAD(18)),(HEVENT,HEAD(19))
+C
+      DATA ETAGLM /300./
+      DATA MKTAGE /Z400/, MKLGLE /Z200/, MKLUMI /Z100/, MKFWMU/Z800/
+      DATA MKMUCN /Z00F/
+C
+        IQHEAD = IBLN('HEAD')
+        IQTRIG = IBLN('TRIG')
+        IQALGN = IBLN('ALGN')
+        IQZVTX = IBLN('ZVTX')
+        IQJETC = IBLN('JETC')
+        IQPATR = IBLN('PATR')
+        IQJHTL = IBLN('JHTL')
+      IPHEAD=IDATA(IQHEAD)
+      CALL MVCL(HEAD(1),0,IDATA(IPHEAD-3),0,216)
+C
+      INDREJ = 0
+      LBWRT = 0
+        IWRT = 0
+C
+N       SET OVERFLOW MARKER
+        IFLW= 0
+        IF(HEAD(23).NE.0) IFLW = 1
+C
+N       CHECK TRIGGER WITH T2-ACCEPT
+        LBTRBT = 0
+N       SET TRIGGER BITS IF 'TRIG' BANK # 1 EXISTS
+        IPTRIG = IDATA(IQTRIG)
+        IF(IPTRIG.GT.0 .AND. IDATA(IPTRIG-2).EQ.1)
+     ?  LBTRBT = HDATA(IPTRIG*2+10)
+N       SET LUMI-FLAG
+        ILUMI = 0
+        IF(LAND(LBTRBT,MKLUMI).NE.0) ILUMI = 1
+C
+N       CHECK FOR MUON HITS IF FWD MU TRIG
+        IMUACC=0
+        IF(LAND(LBTRBT,MKFWMU).NE.0) CALL MEWT3(IMUACC)
+        IF IMUACC.LE.0
+        THEN
+        CALL TRGCHK(LBTRCK,LBTRBT)
+N       TRIGGER CHECK -VE
+C                                                     >>>>> REJECT <<<<<
+        INDREJ =  1
+        IF(IPRI.GT.0.AND.LBTRCK.EQ.0) WRITE(6,4810)
+4810  FORMAT(' REJECTED BY TRIGGER CHECK  ')
+        IF(LBTRCK.EQ.0) RETURN
+C
+N       LG-ENERGY IN CYLINDER AND E-CAPS; SET FLAG IACC
+        IACC = 0
+        CALL LGCUTX(IACC,ECYL,ECAMI,ECAPL,ETOT)
+N       RESET IACC IF NO HIGH ENERGY TRIGGER
+        IF(LAND(LBTRBT,MKLGLE).EQ.0) IACC = 0
+C
+C  SET   FLAG FOR ENERGY IN FORWARD TAGGING BLOCKS
+C              IFTG = 0      NO ENERGY
+C              IFTG = 11     ENERGY ABOVE LIMIT IN NEG. FW ARM
+C              IFTG = 12     ENERGY ABOVE LIMIT IN POS. FW ARM
+C              IFTG = 113/13 ENERGY ABOVE LIMIT IN BOTH FW ARMS(LUMI)
+        IFTG = 0
+        IF(LAND(LBTRBT,2).NE.0) CALL TAGFLG(IFTG)
+        ETAG = 0.
+        IF(IFTG.NE.0. .AND. LAND(LBTRBT,MKTAGE).NE.0) ETAG = ETOT
+C
+N       SET WRITE FLAG FOR HIGH ENERGY, OVERFLOW, TAGGING, MU-CAND.
+        IF(IACC.NE.     0) IWRT = 1
+        IF(IFLW.NE.     0) IWRT = IWRT + 2
+        IF ETAG.GT.ETAGLM .AND. IWRT.EQ.0
+        THEN
+          ECENTR = 0.
+          IF(IFTG.EQ.11) ECENTR = ETOT - ECAMI
+          IF(IFTG.EQ.12) ECENTR = ETOT - ECAPL
+          IF(IFTG.GT.12) ECENTR = ETOT
+          IF(ECENTR.GT.100.) IWRT = IWRT + 4
+C         IF(IFTG.GT.0.AND.IFTG.LT.11.AND.ETOT.GT.100.) IWRT=IWRT+4
+        CIF
+C
+N       IWRT = 0 .AND. GOOD TRIGGER CHECK -VE
+C                                                     >>>>> REJECT <<<<<
+        INDREJ =  2
+        IF(IPRI.GT.0.AND.LBTRCK.EQ.16.AND.IWRT.EQ.0) WRITE(6,4811)
+4811  FORMAT(' REJECTED BY TRIGGER CHECK, WITH IWRT = 0 ,NO TRACKS ')
+        IF(IWRT.EQ.0 .AND. LBTRCK.EQ.16) RETURN
+N       ACCEPT FWD MUON TRIG WITH MUON HITS
+        ELSE
+        IWRT=1
+        LBWRT=16
+        INDREJ = 0
+        IF(IPRI.GT.0) WRITE(6,4521)
+4521  FORMAT(' ACCEPTED AS FW MU TRIGGER WITH MU TRACKS ')
+        RETURN
+        CIF
+C
+C       CHECK IF HITS IN ID
+        IPJCA  = IDATA(IQJETC)
+        IF IPJCA.LE.0
+        THEN
+N         NO HITS IN 'JETC'
+C                                                     >>>>> REJECT <<<<<
+          INDREJ =  3
+        IF(IPRI.GT.0.AND.IWRT.EQ.0) WRITE(6,4812)
+4812  FORMAT(' NO HITS IN INNER DET.,WITH IWRT = 0  REJECTED ')
+          IF(IWRT.EQ.0) RETURN
+N         WRITE  IF IWRT = 1
+N         IWRT=1, NO HITS IN 'JETC'
+C                                                     ***** ACCEPT *****
+          INDREJ = 0
+          LBWRT =  1
+        IF(IPRI.GT.0) WRITE(6,4813)
+4813  FORMAT(' NO HITS IN INNER DET.,WITH IWRT = 1  ACCEPTED ')
+          RETURN
+        CIF
+C
+C
+N       STOP ANALYSIS FOR IWRT=1,4
+        INDREJ = 0
+        LBWRT = 2
+        IF(IPRI.GT.0.AND.(IWRT.EQ.1.OR.IWRT.EQ.4)) WRITE(6,4814)
+4814  FORMAT('  IWRT = 1,4 ACCEPTED ')
+        IF(LAND(IWRT,5).NE.0) RETURN
+        LBWRT = 0
+C
+        IPJCA  = IDATA(IQJETC)
+        IPJCA2 = IPJCA*2
+        IPZV   = IDATA(IQZVTX)
+        IF IPZV.GT.0
+        THEN
+          IFLAG  = IDATA(IPZV+6)
+          ZVTX   = ADATA(IPZV+1)
+          PEAK   = ADATA(IPZV+4)
+C
+N         ONLY CLEAN VTX FOR 1T + 1T(R1) * CLEAN R1
+          IF(IFLAG.LT.3 .AND. LBTRCK.EQ.8) IFLAG = 0
+          IF IFLAG.LE.0
+          THEN
+N           EVENTS WITHOUT ZVTX
+C                                                     >>>>> REJECT <<<<<
+             IF IWRT.EQ.0
+             THEN
+                INDREJ=4
+                IF(IPRI.GT.0) WRITE(6,4347)
+4347  FORMAT('  NO ZVTX FOUND,IWRT=0   REJECTED ')
+             ELSE
+                LBWRT = 14
+                IF(IPRI.GT.0) WRITE(6,4387)
+4387  FORMAT('  NO ZVTX FOUND,IWRT>0   ACCEPTED ')
+             CIF
+             RETURN
+          ELSE
+C
+            IF ABS(ZVTX).GT.350.
+            THEN
+             IF IWRT.EQ.0
+             THEN
+                INDREJ=5
+                IF(IPRI.GT.0) WRITE(6,9347)
+9347  FORMAT('  ZVTX > 350,IWRT=0   REJECTED ')
+             ELSE
+                LBWRT = 15
+                IF(IPRI.GT.0) WRITE(6,9387)
+9387  FORMAT('  ZVTX > 350,IWRT>0   ACCEPTED ')
+             CIF
+             RETURN
+            CIF
+          CIF
+        ELSE
+N         NO 'ZVTX'-BANK
+C                                                     >>>>> REJECT <<<<<
+          IF IWRT.EQ.0
+          THEN
+             INDREJ=6
+        IF(IPRI.GT.0) WRITE(6,4817)
+4817  FORMAT('  NO ZVTX BANK,IWRT=0   REJECTED ')
+          ELSE
+             LBWRT = 6
+        IF(IPRI.GT.0) WRITE(6,4887)
+4887  FORMAT('  NO ZVTX BANK,IWRT>0   ACCEPTED ')
+          CIF
+          RETURN
+        CIF
+C
+        IPPATR = IDATA(IQPATR)
+        IF IPPATR.LE.0
+        THEN
+           IF IWRT.EQ.0
+           THEN
+              INDREJ = 7
+        IF(IPRI.GT.0) WRITE(6,4818)
+4818  FORMAT('  NO PATR BANK,IWRT=0   REJECTED ')
+           ELSE
+              LBWRT = 7
+        IF(IPRI.GT.0) WRITE(6,4888)
+4888  FORMAT('  NO PATR BANK, IWRT>0  ACCEPTED ')
+           CIF
+           RETURN
+        CIF
+C
+        NTR    = IDATA(IPPATR+2)
+        LDTR   = IDATA(IPPATR+3)
+        IPTR0  = IPPATR + IDATA(IPPATR+1)
+        IPTR9  = IPTR0 + (NTR-1)*LDTR
+        IF NTR.LE.0
+        THEN
+N         0 TRACKS
+C                                                     >>>>> REJECT <<<<<
+          IF IWRT.EQ.0
+          THEN
+             INDREJ = 8
+             IF(IPRI.GT.0) WRITE(6,4819)
+4819  FORMAT('  NO TRACKS, IWRT=0   REJECTED ')
+          ELSE
+             LBWRT = 8
+             IF(IPRI.GT.0) WRITE(6,4889)
+4889  FORMAT('  NO TRACKS, IWRT>0   ACCEPTED ')
+          CIF
+          RETURN
+        CIF
+C
+        IF IFTG.NE.0
+        THEN
+C
+N         ***** TAGGING EVENTS WITH IWRT=0
+          ACRV=1000.
+          ZMIN = 1000.
+N         FIND MIN(Z) OF LONG TRACKS, >200MEV
+          FOR IPTR=IPTR0,IPTR9,LDTR
+            IF IDATA(IPTR+24).GT.LIMHIT
+            THEN
+              CRV = ADATA(IPTR+25)
+              IF(ABS(CRV).LT.ACRV) ACRV=ABS(CRV)
+N             CURVATURE CUT CORRESPONDING TO 200 MEV
+              IF ABS(CRV)      .LE.CRVTAG
+              THEN
+                AZV = ADATA(IPTR+31)
+N               ZR FIT INTERCEPT WITH Z-AXIS
+                IF(ABS(AZV).LT.ABS(ZMIN)) ZMIN = AZV
+              CIF
+            CIF
+          CFOR
+          IF ABS(ZMIN).GT.300.
+          THEN
+N           MIN(Z) > 300.
+C                                                     >>>>> REJECT <<<<<
+            IF IWRT.EQ.0
+            THEN
+               INDREJ = 9
+               IF(IPRI.GT.0) WRITE(6,4829)
+4829  FORMAT('  TAGGED EVENT, ZMIN > 300 MM IWRT=0   REJECTED ')
+            ELSE
+               LBWRT = 9
+               IF(IPRI.GT.0) WRITE(6,4869)
+4869  FORMAT('  TAGGED EVENT, ZMIN > 300 MM IWRT>0   ACCEPTED ')
+            CIF
+            RETURN
+          CIF
+          IWRT = IWRT + 16
+N         MIN(Z) < 300.
+C                                                     ***** ACCEPT *****
+          INDREJ = 0
+          LBWRT = 3
+        IF(IPRI.GT.0) WRITE(6,4830)
+4830  FORMAT('  TAGGED EVENT, ZMIN < 300 MM  ACCEPTED ')
+          RETURN
+        CIF
+C
+N       ***** OTHER EVENTS WITH IWRT=0
+C
+N       LABEL FOR LONG TRACKS
+        LBLONG = 0
+N       LABEL FOR LONG TRACKS, >600MEV
+        NE100 = 0
+        ZSUM = 0.
+        LBEHIG = 0
+        ACRV=1000.
+        ZAV=0.
+        ZMIN = 1000.
+        IKNT=0
+N       DET. MIN(Z) FOR LONG TRACKS, >600MEV
+        FOR IPTR=IPTR0,IPTR9,LDTR
+N         CHECK IF LIMHIT HITS USED IN ZR-FIT
+          IF IDATA(IPTR+33).GT.LIMHIT
+          THEN
+            LBLONG = 1
+            CRV = ADATA(IPTR+25)
+            AZV = ADATA(IPTR+31)
+            IF(ABS(CRV).LT.ACRV) ACRV=ABS(CRV)
+N           CURVATURE CUT CORRESPONDING TO C:A 600 MEV
+            IF ABS(CRV)      .LE.CRVNTG
+            THEN
+              LBEHIG = 1
+              ZAV=ZAV+AZV
+              IKNT=IKNT+1
+              IF(ABS(AZV).LT.ABS(ZMIN)) ZMIN = AZV
+            ELSE
+              IF ABS(CRV).LT.CRVTAG.AND.ABS(AZV).LE.300.
+              THEN
+                RSQ = ADATA(IPTR+5)**2+ADATA(IPTR+6)**2
+                IF RSQ.LT.250000.
+                THEN
+                   NE100 = NE100 + 1
+                   ZSUM = AZV + ZSUM
+                CIF
+              CIF
+            CIF
+          CIF
+        CFOR
+        ISTAR = LBEHIG*2 + LBLONG
+        IF(NE100.GE.2) ISTAR = ISTAR + 4
+        IF(IKNT.GT.0) ZAV=ZAV/FLOAT(IKNT)
+        IF(NE100.GE.2.AND.LBEHIG.EQ.0) ZMIN = ZSUM/FLOAT(NE100)
+C
+N       ***** EVENTS WITH SHORT TRACKS ONLY
+        IF LBLONG.EQ.0
+        THEN
+          ETOTX = ECAMI + ECAPL
+N         CHECK IF LONG TRACK IN R-FI
+          ACRV=1000.
+          IKNT=0
+          FOR IPTR=IPTR0,IPTR9,LDTR
+N           CHECK IF LIMHT1 HITS USED IN RFI-FIT
+            IF IDATA(IPTR+24).GT.LIMHT1
+            THEN
+              LBLONG = 1
+              CRV = ADATA(IPTR+25)
+              IF(ABS(CRV).LT.ACRV) ACRV=ABS(CRV)
+              IKNT=IKNT+1
+            CIF
+          CFOR
+          IF LBLONG.EQ.0
+          THEN
+N           ONLY SHORT TRACKS
+C                                                     >>>>> REJECT <<<<<
+            IF IWRT.EQ.0
+            THEN
+               INDREJ = 10
+               IF(IPRI.GT.0) WRITE(6,4831)
+4831  FORMAT('  NOTAG EVENT, ONLY SHORT TRACKS  IWRT=0    REJECTED ')
+            ELSE
+               LBWRT = 10
+               IF(IPRI.GT.0) WRITE(6,4851)
+4851  FORMAT('  NOTAG EVENT, ONLY SHORT TRACKS  IWRT>0  ACCEPTED ')
+            CIF
+            RETURN
+          CIF
+C
+N         LONG TRACKS IN R-FI, SHORT TRACKS IN R-Z
+C                                                     ***** ACCEPT *****
+          INDREJ = 0
+          LBWRT = 4
+        IF(IPRI.GT.0) WRITE(6,4832)
+4832  FORMAT('  NOTAG EVENT, LONG TRACKS RFI, SHORT RZ, ACCEPTED ')
+          IWRT = IWRT + 32
+          RETURN
+        CIF
+C
+N       ***** LONG TRACKS
+        IF LBEHIG.EQ.0.AND.NE100.LT.2
+        THEN
+N         ***** LONG TRACKS, <600MEV
+          ETOTX = ECAMI + ECAPL
+N         LONG TRACKS, <600MEV
+C                                                     >>>>> REJECT <<<<<
+          IF IWRT.EQ.0
+          THEN
+             INDREJ = 11
+             IF(IPRI.GT.0) WRITE(6,4833)
+4833  FORMAT(' LONG TRKS < 600 , < 2 WEAK TRACKS, IWRT=0  REJECTED')
+          ELSE
+             LBWRT = 11
+             IF(IPRI.GT.0) WRITE(6,4873)
+4873  FORMAT(' LONG TRKS < 600 , < 2 WEAK TRACKS, IWRT>0  ACCEPTED')
+          CIF
+          RETURN
+        CIF
+C
+N       ***** LONG TRACKS, >600MEV
+        IF ABS(ZMIN).GT.300.
+        THEN
+N         MIN(Z) >300.
+C                                                     >>>>> REJECT <<<<<
+          IF IWRT.EQ.0
+          THEN
+             INDREJ = 12
+             IF(IPRI.GT.0) WRITE(6,4834)
+4834  FORMAT(' LONG TRKS > 600, OR<2 WEAK TR.ZMIN>300 IWRT=0 REJECTED')
+          ELSE
+             LBWRT = 12
+             IF(IPRI.GT.0) WRITE(6,4884)
+4884  FORMAT(' LONG TRKS > 600, OR<2 WEAK TR.ZMIN>300 IWRT>0 ACCEPTED')
+          CIF
+          RETURN
+        CIF
+C
+N       ***** LONG TRACKS, >600MEV, MIN(Z)<300.
+C
+C       CHECK RMIN
+        RMIN=10000.
+        FOR IPTR=IPTR0,IPTR9,LDTR
+          IF IDATA(IPTR+33).GT.LIMHIT
+          THEN
+            CRV = ADATA(IPTR+25)
+            AZV = ADATA(IPTR+31)
+            IF ABS(CRV)      .LE.CRVTAG.AND.ABS(AZV).LE.300.
+            THEN
+              CALL PRTOCI(IPTR,DUM1,RM,DUM2,DUM3)
+              IF(RM.LT.RMIN) RMIN=RM
+            CIF
+          CIF
+        CFOR
+N       RMIN > 60.
+C                                                     >>>>> REJECT <<<<<
+        IF RMIN.GT.60.
+        THEN
+           IF IWRT.EQ.0
+           THEN
+              INDREJ = 13
+              IF(IPRI.GT.0) WRITE(6,4835)
+4835  FORMAT(' LONG>600,OR<2 WEAK TR.ZMN>300 IWRT=0 RMIN>60 REJECTED')
+           ELSE
+              LBWRT = 13
+              IF(IPRI.GT.0) WRITE(6,4895)
+4895  FORMAT(' LONG>600,OR<2 WEAK TR.ZMN>300 IWRT>0 RMIN>60 ACCEPTED')
+           CIF
+           RETURN
+        CIF
+N       LONG TRACKS, >600MEV, MIN(Z)<300.,
+C                                                     ***** ACCEPT *****
+N       RMIN<60.
+        INDREJ = 0
+        LBWRT  = 5
+        IF(IPRI.GT.0) WRITE(6,4836)
+4836  FORMAT(' LONG TR>600 OR 2 WEAK TR., ZMIN<300 RMIN<60  ACCEPTED')
+        IWRT = IWRT + 64
+        RETURN
+      END
+      BLOCK DATA
+      COMMON /CREDON/LIMHIT,LIMHT1,CRVTAG,CRVNTG
+      COMMON /CIPRI/IPRI
+      DATA IPRI /0/
+      DATA LIMHIT/12/, LIMHT1/20/
+      DATA CRVTAG/.00150/, CRVNTG/.00025/
+      END
+      SUBROUTINE TRGCHK(LBTRCK,LBTRBT)
+C
+      IMPLICIT INTEGER*2 (H)
+      LOGICAL TBIT
+C
+#include "cdata.for"
+C
+#include "cheadr.for"
+C
+      COMMON /CWORK/ ILGE(84),HCLWR(96)
+C
+N     MASKS FOR EVENT TRIGGER  + HIGH ENERGY
+      DATA MKTREV /Z653/, MKT2AC /Z53/, MKEHIG /Z600/
+N     MASKS FOR TRIGGER IN 'LATC' BANK
+      INTEGER MKTRBT( 7) /1,2,4,8,16,32,64/
+N     MASKS FOR HITS IN LAYERS OF JETC
+C     INTEGER MKCLBT(16) /1,2,4,8,16,32,64,128,256,512,1024,2048,
+C    ,                    Z1000,Z2000,Z4000,Z8000/
+N     # OF CELLS FOR TOF COUNTER 1...7
+      INTEGER NCTOF ( 7) /2,3,3,3,3,3,3/
+N     1. CELL FOR TOF-COUNTER 1...7
+      INTEGER ICTOF ( 7) /0,1,2,3,4,5,6/
+C
+N     INITIALIZE LABEL FOR TRIGGER CHECK
+      LBTRCK = 0
+C
+N     REJECT LUMI-TRIGGER
+      IF(LAND(LBTRBT,MKTREV).EQ.0) RETURN
+C
+N     ACCEPT T1-ACCEPT TRIGGER
+      IF(LAND(LBTRBT,MKEHIG).NE.0) LBTRCK = 16
+C     PRINT 2991, HHEADR(17),HHEADR(18),HHEADR(19),NREC,LBTRBT,LBTRCK
+C2991 FORMAT(' **********************   EVENT:',4I6,1X,Z4,1X,Z4)
+C
+N     CHECK IF T1-POSTPONE
+      IF(LAND(LBTRBT,MKT2AC).EQ.0) RETURN
+C
+N     INITIALIZE LG-ROWS + CELL BITS
+      CALL SETSL(ILGE(1),0,528,0)
+C
+N     ACCUMULATE E(LG-ROWS)
+      REPEAT
+        IPALGN = IDATA(IBLN('ALGN'))
+        IF(IPALGN.LE.0) XREPEAT
+N       CHECK IF ANY LG-ENERGIES
+        IF(IDATA(IPALGN).LE. 3) XREPEAT
+        IPLG2 = IPALGN*2
+        NBARR = HDATA(IPLG2+ 4) - HDATA(IPLG2+ 3)
+N       CHECK IF ANY LG-ENERGY IN BARREL
+        IF(NBARR.LE.0) XREPEAT
+N       SUM ENERGIES OF LG-ROWS
+        IP0 = IPLG2 + 7
+        IP9 = IP0 + NBARR - 1
+        FOR IP=IP0,IP9,2
+          NBL  = HDATA(IP)
+          IROW = SHFTR(NBL,5)
+          ILGE(IROW) = ILGE(IROW) + HDATA(IP+1)
+        CFOR
+C     PRINT 2003, ILGE
+C2003   FORMAT('0EROW:',20I6,/,(6X,20I6))
+      UNTIL .TRUE.
+C
+N     ACCUMULATE CELL BITS OF 3. RING
+      IPJETC = IDATA(IBLN('JETC'))
+      IF(IPJETC.LE.0) RETURN
+C     PRINTOUT
+C     I0 = IPJETC*2 + 1
+C     I9 = I0 + IDATA(IPJETC)*2 - 1
+C     PRINT 2001, I0,I9,IDATA(IPJETC),(HDATA(I1),I1=I0,I9)
+C2001 FORMAT('0JETC:',3I6,/,(6X,20I6))
+C
+N     CHECK IF ANY JETC DATA
+      IF(IDATA(IPJETC).LE.50) RETURN
+      IPJC2 = IPJETC*2
+      NHTR3 = HDATA(IPJC2+99) - HDATA(IPJC2+51)
+N     CHECK IF ANY HITS IN R3
+      IF(NHTR3.LE.0) RETURN
+N     SET UP 1 LABEL/CELL WITH 1 BIT/LAYER
+      IP0 = IPJC2 + 100 + HDATA(IPJC2+51)
+      IP9 = IP0 + NHTR3 - 1
+      IWIR0 =-1
+      FOR IP=IP0,IP9,4
+        IWIR = HDATA(IP)
+        IWIR = SHFTR(IWIR,3)
+        HCLL = SHFTR(IWIR,3) - 95
+        IF(IWIR.NE.IWIR0) HCLWR(HCLL) = HCLWR(HCLL) + 1
+        IWIR0 = IWIR
+      CFOR
+C     PRINT 2004, HCLWR
+C2004 FORMAT('0HCLWR:',12I6,/,(7X,12I6))
+C
+N     CHECK IF 'LATC' BANK
+      IPLATC = IDATA(IBLN('LATC'))
+      IF(IPLATC.LE.0) RETURN
+N     LOOP OVER ALL TOF COUNTER
+      IPLT2 = IPLATC*2
+      IP0 = IPLT2 + 6
+      IP9 = IP0 + 5
+      ITLST =-100
+      ITOF0 = 0
+      ICLL0 = 0
+      NTRCK = 0
+      NTREL = 0
+      REPEAT
+        ITRBT = HDATA(IP0)
+        FOR JTOF=1,7
+          IF LAND(MKTRBT(JTOF),ITRBT) .NE. 0
+          THEN
+N           TOF COUNTER #
+            ITOF = ITOF0 + JTOF
+C
+N           CHECK IF TRACK IN JETC
+C
+C
+N           LABEL FOR OVERLAPPING CELLS
+            JCTOF = (ICTOF(JTOF) + ICLL0)*2 - 1
+N           INITIALIZE LABEL FOR TRACK CAND.
+            LBTRK = 0
+C
+N           CHECK IF 2 ADJACENT TOF
+            IF ITOF-ITLST.LE.2
+            THEN
+N             CHECK IF 2 DIFFERENT TRACKS
+              HCLL9 = NCTOF(JTOF)*2 + JCTOF - 1
+              HCLL1 =-99
+              MTRK = 0
+C     PRINT 2005, ITOF,JTOF,JCTOF,ITLST,HCLL0,HCLL9
+              FOR ICLL=HCLL0,HCLL9
+                IF HCLWR(ICLL).GE.6
+                THEN
+                  HDCLL = ICLL - HCLL1
+                  IF HDCLL.EQ.1
+                  THEN
+                    HCLL1 = -99
+                  ELSE
+                    IF HDCLL.NE.3 .OR. TBIT(ICLL,31)
+                    THEN
+                      MTRK = MTRK + 1
+                      HCLL1 = ICLL
+                    CIF
+                  CIF
+                CIF
+              CFOR
+              IF(MTRK.GE.2) LBTRK = 1
+            ELSE
+              NHIT5 = 0
+              NHIT6 = 0
+              IF JCTOF.LT.0
+              THEN
+                NHIT1 = HCLWR(95)
+                NHIT2 = HCLWR(96)
+                NHIT3 = HCLWR( 1)
+                NHIT4 = HCLWR( 2)
+                IF(NHIT2.GE.3 .AND. HCLWR(93).GE.6) NHIT2 = 8
+                IF(NHIT4.GE.3 .AND. HCLWR( 3).GE.6) NHIT4 = 8
+              ELSE
+                NHIT1 = HCLWR(JCTOF  )
+                NHIT2 = HCLWR(JCTOF+1)
+                NHIT3 = HCLWR(JCTOF+2)
+                NHIT4 = HCLWR(JCTOF+3)
+                IF NCTOF(JTOF).EQ.3
+                THEN
+                  NHIT5 = HCLWR(JCTOF+4)
+                  NHIT6 = HCLWR(JCTOF+5)
+                ELSE
+                  IF(NHIT2.GE.3 .AND. HCLWR(JCTOF-2).GE.6) NHIT2 = 8
+                  IF(NHIT4.GE.3 .AND. HCLWR(JCTOF+4).GE.6) NHIT4 = 8
+                CIF
+              CIF
+C     PRINT 2005,ITOF,JTOF,JCTOF,NHIT1,NHIT2,NHIT3,NHIT4,NHIT5,NHIT6
+C2005   FORMAT(' JETC:',20I6)
+C
+N             CHECK IF ENOUGH HITS FOR TRACK CAND.
+              IF(MAX0(NHIT1,NHIT2,NHIT3,NHIT4,NHIT5,NHIT6).GE.6) LBTRK=100062700
+            CIF
+C
+N           CHECK IF TRACK + COUNT
+            IF LBTRK.NE.0
+            THEN
+              NTRCK = NTRCK + 1
+              ITLST = ITOF
+              HCLL0 = JCTOF
+C     PRINT 2005, NHIT1,NHIT2,NTRCK
+C
+N             CHECK IF ELECTRON TRACK
+N             CORRESP. LG-ROW
+              IR = ITOF*2 - 3
+              IF ITOF.EQ.1
+              THEN
+                ILGENG = ILGE(83)+ILGE(  84)+ILGE(   1)+ILGE(   2)
+              ELSE
+                IF ITOF.EQ.42
+                THEN
+                  ILGENG = ILGE(82)+ILGE(  83)+ILGE(  84)+ILGE(   1)
+                ELSE
+                  ILGENG = ILGE(IR)+ILGE(IR+1)+ILGE(IR+2)+ILGE(IR+3)
+                CIF
+                IF(ILGENG.GT.1000) NTREL = NTREL + 1
+C     PRINT 2002,NTREL,ITOF,IR,ILGENG
+C2002 FORMAT(6X,20I6)
+C
+              CIF
+            CIF
+          CIF
+        CFOR
+      ICLL0 = ICLL0 + 8
+      ITOF0 = ITOF0 + 7
+      IP0   = IP0   + 1
+      UNTIL IP0.GT.IP9
+C
+N     CHECK IF ONLY 1 TRACK, NO E
+      LB1TCL = 0
+      IF NTRCK.EQ.1 .AND. NTREL.EQ.0
+      THEN
+N       CHECK CLEAN 1. RING
+        IPJC2 = IPJETC*2
+        NHTR1 = HDATA(IPJC2+27) - HDATA(IPJC2+ 3)
+N       CHECK IF ANY HITS IN R3
+        IF NHTR1.GT.96 .AND. NHTR1.LT.196
+        THEN
+N         COUNT HITS/HALF CELL
+          CALL SETS(HCLWR(1),0,48,0)
+          IP0 = IPJC2 + 100 + HDATA(IPJC2+ 3)
+          IP9 = IP0 + NHTR1 - 1
+          IWIR0 =-1
+          FOR IP=IP0,IP9,4
+            IWIR = HDATA(IP)
+            IWIR = SHFTR(IWIR,3)
+            HCLL = SHFTR(IWIR,3) + 1
+            IF(IWIR.NE.IWIR0) HCLWR(HCLL) = HCLWR(HCLL) + 1
+            IWIR0 = IWIR
+          CFOR
+C     PRINT 2004, HCLWR
+          MTRK = 0
+          HCLL1 =-99
+          FOR ICLL=1,48
+            IF HCLWR(ICLL).GE.6
+            THEN
+              HDCLL = ICLL - HCLL1
+              IF HDCLL.EQ.1
+              THEN
+                HCLL1 = -99
+              ELSE
+                IF HDCLL.NE.3 .OR. TBIT(ICLL,31)
+                THEN
+                  MTRK = MTRK + 1
+                  HCLL1 = ICLL
+                CIF
+              CIF
+            CIF
+          CFOR
+          IF(MTRK.EQ.2 .OR. MTRK.EQ.3) LB1TCL = 1
+        CIF
+      CIF
+C
+N     SET LABEL FOR TRIGGER CHECK
+N     2 TRACKS IN GENERAL
+      IF(NTRCK .GE.2) LBTRCK = LBTRCK + 2
+N     1 TRACK FOR TAGG-EVENTS ONLY
+      IF(NTRCK .EQ.1 .AND. LAND(LBTRBT,2).NE.0) LBTRCK = LBTRCK + 1
+N     1 TRACK FOR ELECTRON EVENTS ONLY
+      IF(NTREL .EQ.1) LBTRCK = LBTRCK + 4
+N     1 TRACK +1 TRACK IN CLEAN RING 1
+      IF(LB1TCL.EQ.1) LBTRCK = LBTRCK + 8
+C     PRINT 2009, NTRCK,NTREL,LB1TCL,LBTRCK
+C2009 FORMAT('0TRACKS:',4I6)
+      RETURN
+      END

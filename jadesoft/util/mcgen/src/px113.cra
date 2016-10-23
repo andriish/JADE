@@ -1,0 +1,34 @@
++EXE.
++USE,HPUX.
++USE,TYPE.
++USE,ROCDES.
++USE,PXCMDS,PXKERN,PXEECO,PXAKOP,PXFOXW,PXJSPH.
++USE,PXTTHR,PXLTHR,PXYCLU,PXLCLU,PXCONE,PXEXPL.
++KEEP,LASTMOD. << PXJRC4, YASSO: increase some arrays
++REP,P=PXYCLU,D=PXJRC4,C=46.
+*. LAST MOD  :  JUL 28 1999
++ADD,P=PXYCLU,D=PXJRC4,C=51.
+*. 28-JUL-99   D. Chrisman - Introduce parameters NJETMX and NYCLMX, then
+*.                           dimension YINT, PJET and HISTOR accordingly.
+*.                           The dimensions of these arrays must be the 
+*.                           same as in YKERN.
++REP,P=PXYCLU,D=PXJRC4,C=56-59.
+      INTEGER  MXCTRK, NJETMX, NYCLMX
+      PARAMETER (MXCTRK=250, NJETMX=20, NYCLMX=500)
+      INTEGER  IMODE,NTRAK,IER,IERR,I,ITKDM,HISTOR(2,NYCLMX)
+      REAL PTRAK(ITKDM,*),YREC(*),YINT(NJETMX),PJET(10,NJETMX,NJETMX)
++REP,P=PXYCLU,D=PXJRC4,C=78.
+        DO 5001 I=1,NJETMX
++REP,P=PXYCLU,D=YASSO,C=8.
+C  LAST MOD  :  28-Jul-99
++ADD,P=PXYCLU,D=YASSO,C=15.
+C  28-Jul-99 D. Chrisman, ITAG and IREORD are now dimensioned with NJETMX 
+C                         elements.
++REP,P=PXYCLU,D=YASSO,C=22.
+      INTEGER HISTOR(2,NYCLMX),IMAX,BL(NYCLMX),ITAG(NJETMX),
+     +         IREORD(NJETMX)
++KEEP,LASTMOD. << PX113 to PRO area
+      IDAMPX =    990412
++PAM,16,R=ROCDES,T=ATTACH,T=CARDS.      rope417
++PAM,17,T=ATTACH,T=CARDS.      px113
++QUIT.

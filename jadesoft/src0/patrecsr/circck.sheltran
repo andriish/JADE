@@ -1,0 +1,577 @@
+C   10/02/80 102191151  MEMBER NAME  CIRCCK   (PATRECSR)    SHELTRAN
+      SUBROUTINE CIRCCK(MTREL0,IATREL,RSLT)
+C
+      IMPLICIT INTEGER*2 (H)
+      LOGICAL TBIT
+C
+C     SUBROUTINE TO ELIMINATE DOUBLE CONNECT. OF TRELS
+C     AUTHOR: P. STEFFEN(78/11/21)
+C
+C     INPUT : IATREL(1) = # OF TRELS
+C             IATREL(2) = POINTER TO 1. TREL
+C             IATREL(3) = POINTER TO 2. TREL
+C
+C     OUTPUT: RSLT(1) = R
+C             RSLT(2) = XCIRC
+C             RSLT(3) = YCIRC
+C             RSLT(4) = SIGMA
+C             RSLT(5) = DEG. OF FREEDOM
+C             RSLT(6) = LENGTH / R
+C             RSLT(7) = SIGMA(DIRECTIONS)
+C             RSLT(8) = #(CELLS)*200 / R
+C
+      DIMENSION IATREL(1),RSLT(6),HATREL(24)
+C
+#include "cpatlm.for"
+C
+#include "cworkpr.for"
+#include "cworkeq.for"
+      EQUIVALENCE
+     ,           (ICELL ,IDWRK(1)),(NHIT  ,IDWRK(2)),(IRING ,IDWRK(3))
+     ,         , (IERRCD,IDWRK(4)),(NTRKEL,IDWRK(5))
+C
+N     COORDINATE ARRAYS FOR CIRCLE FIT
+      DIMENSION XO(20),YO(20), XT(20),YT(20)
+C
+N     FUNCTION
+      FPAR (X) = (PAR1 *X + PAR2 )*X + PAR3
+C
+C2000 FORMAT('0FXYZPS:',12(I7,I3))
+C2001 FORMAT('     XO:',I6,2F8.3,/,(8X,I6,2F8.3))
+C2002 FORMAT('     XT:',I6,2F8.1,/,(8X,I6,2F8.1))
+C2003   FORMAT(' CIRCLE:',10E12.5,/,(8X,10E12.5))
+C2004     FORMAT(' LOOP(TILT):',I3,3F10.2,5E13.5)
+C2005   FORMAT(' TILT + DX:',5E13.5)
+C2006     FORMAT(' LOOP(SAG):',I3,3F10.2,5E13.5)
+C2007   FORMAT(' B + DSAG:',5E13.5)
+C2008     FORMAT(' RESIDUALS:',I3,5F10.2,3E13.5)
+C2009   FORMAT(' AVERAGE + SIGMA:',9E13.5)
+C2010   FORMAT(' SAG.CORR:', 8E13.5)
+C2902 FORMAT('0PARABEL FIT',4F12.5,4F12.2,F8.2)
+C2991 FORMAT(1X,3F10.1,F8.2,F3.0,F8.3)
+C
+        DATA NPR /0/
+        NPR = NPR + 1
+C
+N     # OF TREL
+      MTREL = IABS(MTREL0)
+C
+N     SAVE MAX(SIGMA)
+      SIGDV0 = RSLT(4)
+C     LBPR = IATREL(1)
+C     LBPR = SHFTR(IPPR,16)
+C
+C
+N     ***************************
+N     *      F X Y Z            *
+N     ***************************
+C
+N     GET COORDINATES OF TRELS
+C
+C     LBPR = 0
+      IP = 0
+      ITREL = MTREL
+      REPEAT
+N       POINTER TO COORDINATE ARRAY
+        JPTREL = IATREL(ITREL)
+        IPTREL = SHFTR(JPTREL,16)
+C       IF(IPTREL.EQ.2817 .OR. IPTREL.EQ.1905) LBPR = LBPR + 1
+N       CHECK IF LEFT /RIGHT SOLUTION
+        IF LAND(JPTREL,1).EQ.0
+        THEN
+          XO(IP+1) = WRK(IPTREL+ 3)
+          XO(IP+2) = WRK(IPTREL+11)
+          YO(IP+1) = WRK(IPTREL+ 4)
+          YO(IP+2) = WRK(IPTREL+12)
+        ELSE
+          XO(IP+1) = WRK(IPTREL+ 7)
+          XO(IP+2) = WRK(IPTREL+15)
+          YO(IP+1) = WRK(IPTREL+ 8)
+          YO(IP+2) = WRK(IPTREL+16)
+        CIF
+C
+N       CHECK IF BOTH POINTS GOOD
+        IF LAND(JPTREL,12).EQ.0
+        THEN
+N         BOTH POINTS
+N         CHECK IF POINTS TO BE REVERSED
+          IF MTREL0.LT.0
+          THEN
+            ZWZ = XO(IP+1)
+            XO(IP+1) = XO(IP+2)
+            XO(IP+2) = ZWZ
+            ZWZ = YO(IP+1)
+            YO(IP+1) = YO(IP+2)
+            YO(IP+2) = ZWZ
+          CIF
+          IP = IP + 2
+        ELSE
+N         ONLY 1 POINT GOOD
+          IF LAND(JPTREL, 4).NE.0
+          THEN
+N           1. POINT BAD
+            XO(IP+1) = XO(IP+2)
+            YO(IP+1) = YO(IP+2)
+          CIF
+          IP = IP + 1
+        CIF
+      ITREL = ITREL - 1
+      UNTIL ITREL.EQ.0
+      IP9 = IP
+      IP8 = IP - 1
+C     IF(MTREL.NE.2) LBPR = 0
+C     IF(LBPR.EQ.2)
+C    ,PRINT 2001, (I1,XO(I1),YO(I1),I1=1,IP9)
+C
+C
+N     ***************************
+N     *      T R A N S F        *
+N     ***************************
+C
+N     TRANSFORM COORDINATES
+C
+N       1. + LAST POINT + AVERAGE
+        X1 = XO(  1)
+        X2 = XO(IP9)
+        Y1 = YO(  1)
+        Y2 = YO(IP9)
+        XOA = ( X1 + X2 ) / 2
+        YOA = ( Y1 + Y2 ) / 2
+N       DIRECTIONS FOR TRANSFORMATION
+        COSTH = X2 - X1
+        SINTH = Y2 - Y1
+        SUMX = 1.0 / SQRT(COSTH**2+SINTH**2)
+        COSTH = COSTH * SUMX
+        SINTH = SINTH * SUMX
+N       TRANSFORMATIONS OF POINTS
+N       + SEARCH FOR CENTRAL POINT
+        DMIN = 1000000.
+        FOR IP=1,IP9
+          XX = XO(IP) - XOA
+          YY = YO(IP) - YOA
+          YT(IP) = YY * COSTH - XX * SINTH
+          XT(IP) = XX * COSTH + YY * SINTH
+          DX = ABS(XT(IP))
+          IF DX.LT.DMIN
+          THEN
+            DMIN = DX
+            IPA = IP
+          CIF
+        CFOR
+N       CENTRAL POINT
+        XC = XT(IPA)
+        YC = YT(IPA)
+C     IF(LBPR.EQ.2)
+C    ,PRINT 2002, (I1,XT(I1),YT(I1),I1=1,IP9)
+C
+C
+N     ***************************
+N     *      P A R A B          *
+N     ***************************
+N         DO PARABOLA FIT
+C
+C
+N     GET EQUATIONS
+      S1 = 0.
+      S2 = 0.
+      S3 = 0.
+      S4 = 0.
+      S5 = 0.
+      S6 = 0.
+      S7 = 0.
+      FOR IP = 1,IP9
+        X = XT(IP)
+        Y = YT(IP)
+        X2 = X**2
+        S1 = S1 + X
+        S2 = S2 + X2
+        S3 = S3 + X*X2
+        S4 = S4 + X2**2
+        S5 = S5 + Y*X2
+        S6 = S6 + Y*X
+        S7 = S7 + Y
+      CFOR
+      S0 = IP9
+N     SOLVE EQUATIONS FOR PARABOLA FIT
+      F1 = 1. / S4
+      XX12 = S3*F1
+      XX13 = S2*F1
+      YY1  = S5*F1
+      XX22 = S2 - S3*XX12
+      XX23 = S1 - S3*XX13
+      YY2  = S6 - S3*YY1
+      XX32 = S1 - S2*XX12
+      XX33 = S0 - S2*XX13
+      YY3  = S7 - S2*YY1
+      IF XX22.GT.XX32
+      THEN
+        XX23 = XX23 / XX22
+        YY2  = YY2  / XX22
+        PAR3 = (YY3 - XX32*YY2) / (XX33 - XX32*XX23)
+        PAR2 = YY2 - XX23*PAR3
+      ELSE
+        XX33 = XX33 / XX32
+        YY3  = YY3  / XX32
+        PAR3 = (YY2 - XX22*YY3) / (XX23 - XX22*XX33)
+        PAR2 = YY3 - XX33*PAR3
+      CIF
+      PAR1 = YY1 - XX12*PAR2 - XX13*PAR3
+C
+N     CALC. CIRCLE PARAMETERS
+      XCIRC =-.5 * PAR2 / PAR1
+      YZW   = FPAR(XCIRC)
+      R0 = SIGN(1.E6,PAR1)
+      IF(ABS(PAR1).GT..5E-6) R0 = .5 / PAR1
+      YCIRC = R0 + YZW
+      R0 = ABS(R0)
+C     IF(LBPR.EQ.2) PRINT 2902, PAR1,PAR2,PAR3,XCIRC,YZW,YCIRC,R0,SIG
+C
+C
+N     CHECK IF R > 2000 MM
+      IF R0.GT.2000.
+      THEN
+C
+N       ===================================
+N       =  R > 2000 ... PARABOLA IS GOOD  =
+N       ===================================
+C
+C
+N       CALC. ERROR
+        SUM2 = 0.
+        ZW1 = R0**2
+        ZW2 = .5/R0
+        FOR IP=1,IP9
+          F = FPAR(XT(IP))
+          DR = YT(IP) - F
+          SUM2 = SUM2 + DR**2
+        CFOR
+N       AVERAGE + SIGMA
+        SIG = SQRT(SUM2/(IP9-3))
+        DX = 0.
+C     IF(LBPR.EQ.2) PRINT 2902, PAR1,PAR2,PAR3,XCIRC,YZW,YCIRC,R0,SIG
+      ELSE
+C
+N       ===================================
+N       =   R < 2000 ... TRY CIRCLE FIT   =
+N       ===================================
+C
+C
+N       ***************************
+N       *      C I R C L 1        *
+N       ***************************
+C
+N       CALC. CIRCLE FROM 3 POINTS
+N
+N       SELECT 1. OR 2. BRANCH
+        IF XC.LT.0.
+        THEN
+          X2 = XC
+          Y2 = YC
+          X1 = XT(  1)
+          Y1 = YT(  1)
+        ELSE
+          X1 = XC
+          Y1 = YC
+          X2 = XT(IP9)
+          Y2 = YT(IP9)
+        CIF
+N       INTERSECT WITH Y-AXIS
+        XCIRC = 0.
+        YCIRC = 100000.
+        DY = Y2 - Y1
+        IF(ABS(DY).GT..01)
+     *     YCIRC = ((X2-X1)*(X2+X1)/DY + Y2+Y1)*.5
+        IF(ABS(YCIRC).GT.100000.) YCIRC = SIGN(100000.,YCIRC)
+        T  = YCIRC - YC
+        R0 = ABS(T)
+        CHARGE = SIGN(1.,T)
+        R0 = .5*(R0 + ((YCIRC-YC)**2+XC**2) / R0)
+C     IF(LBPR.EQ.2)
+C    ,PRINT 2003, X1,Y1,X2,Y2,XC,YC,XCIRC,YCIRC,T,R0
+C
+N     **********************************
+N     *  2 TRIALS IF CHANGE OF CHARGE  *
+N     **********************************
+C
+      NTRIAL = 0
+      REPEAT
+      NTRIAL = NTRIAL + 1
+C
+N     ***************************
+N     *      T I L T C R        *
+N     ***************************
+C
+N     TILT CORRECTION
+C
+N       CALCULATE AVERAGE TILT
+        SUM1 = 0.
+        SUM2 = 0.
+        SUM3 = 0.
+        SUM4 = 0.
+        ZW1 = R0**2
+        ZW2 = .5/R0
+        FOR IP=1,IP9
+          XZW = XT(IP)
+          YZW = (XZW**2+(YT(IP)-YCIRC)**2 - ZW1) * ZW2
+          SUM1 = SUM1 + XZW
+          SUM2 = SUM2 + XZW**2
+          SUM3 = SUM3 + XZW*YZW
+          SUM4 = SUM4 + YZW
+C     IF(LBPR.EQ.2)
+C    ,PRINT 2004, IP,XT(IP),YT(IP),YZW,SUM1,SUM2,SUM3,SUM4
+        CFOR
+N       AVERAGE TILT
+        TILT = (SUM3*IP9-SUM1*SUM4) / (SUM2*IP9-SUM1**2)
+        DR0  = (SUM4 - TILT*SUM1)/IP9
+N       MODIFY RADIUS
+        R0 = R0 + DR0
+        DX =-TILT*R0
+C     IF(LBPR.EQ.2)
+C    ,PRINT 2005, TILT,DR0,DX
+C
+C
+N     ***************************
+N     *      R A D C R          *
+N     ***************************
+C
+N     RADIAL CORRECTION
+C
+N       DET. CHANGE OF SAGITTA BY PARABOLA FIT
+N       DR = DSAG/2 + B*X**2
+        SUM1 = 0.
+        SUM2 = 0.
+        SUM3 = 0.
+        SUM4 = 0.
+        ZW1 = R0**2
+        ZW2 = .5/R0
+        FOR IP=1,IP9
+N         APPLY TILT CORRECTION
+          XT(IP) = XT(IP) + DX
+          XZW = XT(IP)**2
+          YZW = (XZW+(YT(IP)-YCIRC)**2 - ZW1) * ZW2
+          SUM1 = SUM1 + XZW
+          SUM2 = SUM2 + XZW**2
+          SUM3 = SUM3 + XZW*YZW
+          SUM4 = SUM4 + YZW
+C     IF(LBPR.EQ.2)
+C    ,PRINT 2006, IP,XT(IP),YT(IP),YZW,SUM1,SUM2,SUM3,SUM4
+        CFOR
+N       PARAMETER
+        B = (SUM3*IP9-SUM1*SUM4) / (SUM2*IP9-SUM1**2)
+        DSAG = (SUM4 - B*SUM1)*2. / IP9
+C     IF(LBPR.EQ.2)
+C    ,PRINT 2007, B,DSAG
+N       CHANGE YCIRC ACCORDINGLY
+        SAG = (XT(IP9)-XT(1))**2 * .125/R0
+        DR0 =-R0*DSAG/SAG
+N       SET DRO=0. IF DSAG/SAG > 0.2
+        IF(ABS(DSAG/SAG) .GT. 0.2) DR0 = 0.
+        R0ZW  = DR0 + R0
+        YCZW  = CHARGE*DR0 + YCIRC
+N       CHECK IF CHANGE OF CHARGE
+        IF ABS(YCZW).LT.100000. .AND. ABS(DR0).LT.100000.
+        THEN
+          YCIRC = YCZW
+          R0    = R0ZW
+          LBCHCH= 0
+        ELSE
+          LBCHCH= 1
+        CIF
+C     IF(LBPR.EQ.2)
+C    ,PRINT 2010, SAG,YCIRC,R0,DR0
+C
+N     ***************************
+N     *      R M S C A L        *
+N     ***************************
+C
+N     CALCULATIONS OF RMS
+C
+N       CALCULATE AVERAGE + SIGMA
+        SUM1 = 0.
+        SUM2 = 0.
+        ZW1 = R0**2
+        ZW2 = .5/R0
+        FOR IP=1,IP9
+          DR = ((XT(IP)-XCIRC)**2+(YT(IP)-YCIRC)**2 - ZW1) * ZW2
+          SUM1 = SUM1 + DR
+          SUM2 = SUM2 + DR**2
+C     IF(LBPR.EQ.2)
+C    ,PRINT 2008, IP,XT(IP),YT(IP),DR,SUM1,SUM2,R0,ZW1,ZW2
+        CFOR
+N       AVERAGE + SIGMA
+        DR0 = SUM1 / IP9
+        R0 = R0 + DR0
+        YCIRC = YCIRC + DR0*CHARGE
+        SIG = 0.
+        IF(IP9.GT.3) SIG = SQRT(ABS(SUM2/IP9 - DR0**2)*IP9/(IP9-3))
+        SIG0= SQRT(SUM2/IP9)
+C
+N       CHECK IF CHANGE OF CHARGE
+        IF(LBCHCH.EQ.0) XREPEAT
+N       STOP AFTER 2. TRIAL
+        IF(NTRIAL.GT.1) XREPEAT
+C
+N       SAVE CIRCLE PARAMETERS OF 1. TRIAL1
+        YCSAV = YCIRC
+        DXSAV = DX
+        SGSAV = SIG0
+        R0SAV = R0
+        CHSAV = CHARGE
+C
+N       SET NEW START PARAMETERS
+        YCIRC  = -YCIRC
+        R0     = ABS(YCIRC)
+        CHARGE =-CHARGE
+        FOR IP=1,IP9
+          XT(IP) = XT(IP) - DX
+        CFOR
+      UNTIL .FALSE.
+C
+N     SELECT RESULTS IF 2 TRIALS
+      IF NTRIAL.GT.1 .AND. SIG0.GT.SGSAV
+      THEN
+N       RESTORE CIRCLE PARAMETERS OF 1. TRIAL1
+        YCIRC  = YCSAV
+        DX     = DXSAV
+        SIG0   = SGSAV
+        R0     = R0SAV
+        CHARGE = CHSAVE
+      CIF
+C
+      CIF
+C
+N     TRANSFORM BACK TO INPUT SYSTEM
+      XX = XCIRC - DX
+      YY = YCIRC
+      X0 = XX * COSTH - YY * SINTH + XOA
+      Y0 = YY * COSTH + XX * SINTH + YOA
+N     L/R RATIO
+      RATLR = ABS(XT(1)*2. / R0)
+C
+N     ***************************
+N     *      S I G A N G        *
+N     ***************************
+C
+N     CALC. SIGMA(DIRECTIONS OF TRELS)
+C
+N     INITIALIZE SIGMA
+      SGANG  = 0.
+      RATCR  = 0.
+C
+N     CHECK IF REASONABLE FIT
+      IF SIG.LE.SIGDV0
+      THEN
+N       GOOD FIT: GET DIRECTIONS OF TRELS
+        NCLL  = 0
+        ICLL0 = 0
+        IP = 0
+        ITREL = MTREL
+        REPEAT
+N         POINTER TO COORDINATE ARRAY
+          JPTREL = IATREL(ITREL)
+          IPTREL = SHFTR(JPTREL,16)
+N         COUNT # OF CELLS
+          ICLL = IWRK(IPTREL)
+          IF(ICLL.NE.ICLL0) NCLL = NCLL + 1
+C     IF(NPR.LE.5) PRINT 2901,ICLL0,ICLL,NCLL,IPTREL
+          ICLL0 = ICLL
+N         CHECK IF LEFT /RIGHT SOLUTION
+          IF LAND(JPTREL,1).EQ.0
+          THEN
+            XO(IP+1) = WRK(IPTREL+ 3)
+            XO(IP+2) = WRK(IPTREL+11)
+            YO(IP+1) = WRK(IPTREL+ 4)
+            YO(IP+2) = WRK(IPTREL+12)
+            XT(IP+1) = WRK(IPTREL+ 5)
+            XT(IP+2) = WRK(IPTREL+13)
+            YT(IP+1) = WRK(IPTREL+ 6)
+            YT(IP+2) = WRK(IPTREL+14)
+          ELSE
+            XO(IP+1) = WRK(IPTREL+ 7)
+            XO(IP+2) = WRK(IPTREL+15)
+            YO(IP+1) = WRK(IPTREL+ 8)
+            YO(IP+2) = WRK(IPTREL+16)
+            XT(IP+1) = WRK(IPTREL+ 9)
+            XT(IP+2) = WRK(IPTREL+17)
+            YT(IP+1) = WRK(IPTREL+10)
+            YT(IP+2) = WRK(IPTREL+18)
+          CIF
+C
+C         CHECK IF BOTH POINTS GOOD
+          IF LAND(JPTREL,12).EQ.0
+          THEN
+N           BOTH POINTS GOOD; CHECK IF >5 HITS ON TREL
+            IF IABS(IWRK(IPTREL+2)).GT.5
+            THEN
+N             USE BOTH SLOPES
+              IP = IP + 2
+            ELSE
+N             SHORT TREL: USE AVERAGE SLOPE ONLY
+              XT(IP+1) = (XT(IP+1)+XT(IP+2)) * .5
+              YT(IP+1) = (YT(IP+1)+YT(IP+2)) * .5
+              XO(IP+1) = (XO(IP+1)+XO(IP+2)) * .5
+              YO(IP+1) = (YO(IP+1)+YO(IP+2)) * .5
+              IP = IP + 1
+            CIF
+          ELSE
+N           ONLY 1 POINT GOOD
+            IF LAND(JPTREL, 4).NE.0
+            THEN
+N             1. POINT BAD
+              XT(IP+1) = XT(IP+2)
+              YT(IP+1) = YT(IP+2)
+            CIF
+            IP = IP + 1
+          CIF
+        ITREL = ITREL - 1
+        UNTIL ITREL.EQ.0
+        IP9 = IP
+        IP8 = IP - 1
+C     IF(NPR.LT.40)
+C    ,PRINT 2001, (I1,XO(I1),YO(I1),I1=1,IP9)
+C     IF(NPR.LT.40)
+C    ,PRINT 2001, (I1,XT(I1),YT(I1),I1=1,IP9)
+C
+N       CALC. SIGMA(DIRECTIONS)
+        FOR IP=1,IP9
+          DX = XT(IP)
+          DY = YT(IP)
+          XX = XO(IP)
+          YY = YO(IP)
+C
+N         CALC. TANGENTIAL ANGLES
+          IF ABS(XX-X0).LT.ABS(YY-Y0)
+          THEN
+            TG1  = DY / DX
+            TGC1 =-(XX-X0) / (YY-Y0)
+          ELSE
+            TG1  = DX / DY
+            TGC1 =-(YY-Y0) / (XX-X0)
+          CIF
+N         DIFF. OF ANGLES
+          DLTS1 = ABS((TG1-TGC1) / (1.+TG1*TGC1))
+          SGANG  = DLTS1**2 + SGANG
+        CFOR
+        SGANG  = SQRT(SGANG/FLOAT(IP9))
+        RATCR  = NCLL*200. / R0
+      CIF
+C
+N     ***************************
+N     *    STORE   RESULTS      *
+N     ***************************
+      RSLT(1) = R0
+      RSLT(2) = X0
+      RSLT(3) = Y0
+      RSLT(4) = SIG
+      RSLT(5) = IP9 - 3
+      RSLT(6) = RATLR
+      RSLT(7) = SGANG
+      RSLT(8) = RATCR
+C     IF(LBPR.EQ.2)
+C    ,PRINT 2009, DR0,SIG,SIG0,XCIRC,YCIRC,R0
+C     IF(LBPR.EQ.2)
+C    ,PRINT 2991, RSLT
+C
+      RETURN
+C
+      END

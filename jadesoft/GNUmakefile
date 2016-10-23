@@ -1,0 +1,210 @@
+####################################################
+#
+#	Makefile for the JADE library
+#	======== === === ==== =======
+#
+#	07/10/1999	Pedro Movilla Fernandez
+#	07/04/2000	PMF last modified
+#	29/05/2000	PMF last modified
+#       19/06/2003	PMF last modified
+#
+#	This make file needs the following help files:
+#
+#	- GNUmake-rules	  ... rules to compile the FORTRAN files
+#	- GNUmake-objects ... currently used object files for the JADE libraries
+#	- Incdep.ksh      ... shell script which extracts file dependencies given 
+#			      by the precompiler `#include` statements
+#
+#	Environment variables:
+#	----------- ----------
+#	$CERN_ROOT	: location of the CERN library (use version of 98!)
+#	$MACHTYPE	: type of the current platform (currently only 'RS6000' supported)
+#
+#       $tinit		: yes (default):
+#				1. extract the precompiler '#include' dependencies
+#				2. force generation of new temporary make file for a library
+#			  This TIME CONSUMING OPTION should be used ONCE for the very first
+#			  installation. If subsequently the code was changed without modifying 
+#			  file names or adding new files, you are advised to set $tinit=no 
+#			  (e.g. 'gmake mcjade tinit=no')
+#			  
+#
+#	Functionality:
+#	-------------
+#	- 'gmake <lib>' compiles the library <lib> and generates/updates the archive file 
+#
+#		lib/lib<lib>.a
+#
+#	- 'gmake <main>' looks for updates and compiles and links the main programs to the executables
+#
+#		bin/<main>
+#
+#	- 'gmake all' installs the total JADE library and generates all the executables
+#
+#	- 'gmake clean'	 removes all .a-, .o-files and removes all src/<lib>/TMP directories
+#	- 'gmake mclean' removes all temporary make files
+#	- 'gmake aclean' removes all archive files
+#
+#	Directory structure
+#	--------- ---------
+#
+#	Sources:     	src/...
+# 			boslib/  grafix/  interface/  jadegs/  jademus/  jadesr/  jmc/
+#			patrecsr/ source/  tagg/  toflib/  vertex/  wertex/  zlib/
+#
+#	Libraries:  	lib/...
+#
+#	Main programs:	main/...
+#			superv/  mcjade/  jadez/  ze4v/
+#
+#	Executables:	bin/...
+#
+####################################################
+
+### JADE library structure
+	   ROOT = $(PWD)
+	 LIBDIR = $(ROOT)/lib
+	 SRCDIR = $(ROOT)/src
+	 BINDIR = $(ROOT)/bin
+	MAINDIR = $(ROOT)/main
+
+	 MCJADE = $(MAINDIR)/mcjade
+	 SUPERV = $(MAINDIR)/superv
+	 ZE4V   = $(MAINDIR)/ze4v
+	 JADEZ  = $(MAINDIR)/jadez
+
+### Environment variables
+	ifeq ("x$(MACHTYPE)","x")
+	  MACHTYPE = rs6000
+	endif
+	ifeq ("x$(CERN_ROOT)","x")
+	  CERN_ROOT = /cern/98
+	endif
+	ifeq ("x$(tinit)","x")
+	    tinit=yes
+	endif
+
+### Libraries
+
+# - JADE libs
+	  JADELIBS = boslib interface grafix jadegs \
+		     vertex wertex jademus jmc patrecsr \
+		     source tagg toflib zlib # jadesr
+      JADELIBS_STD = interface patrecsr jmc source jadegs vertex boslib jademus
+        JADELIBS_X = grafix interface patrecsr jmc source jadegs wertex boslib jademus toflib tagg
+        JADELIBS_Z = interface jadegs boslib source zlib
+
+# - CERN libs and further general libs
+	  CERNLIBS = kernlib packlib mathlib graflib grafX11 curses X11
+
+### Current object files
+include GNUmake-objects
+
+# - Source files containing a precompiler #include (time consuming!)
+	ifeq ("$(tinit)","yes")
+              dotF = $(wildcard $(SRCDIR)/*/$(obj).F)
+            Ffiles:= $(foreach obj,$(basename $(OBJS)),$(dotF)) 
+	endif
+
+# - Shell script which extracts the #include files dependencies
+	    INCDEP = $(ROOT)/Incdep.ksh
+
+### Search path for all dependencies
+
+# - general
+VPATH = ./:$(SRCDIR)/boslib:$(SRCDIR)/interface:$(SRCDIR)/patrecsr:$(SRCDIR)/source:$(SRCDIR)/grafix:$(SRCDIR)/jadegs:$(SRCDIR)/vertex:$(SRCDIR)/wertex:$(SRCDIR)/jademus:$(SRCDIR)/jadesr:$(SRCDIR)/jmc:$(SRCDIR)/tagg:$(SRCDIR)/toflib:$(SRCDIR)/zlib
+
+
+### Compile and archive commands
+ifeq ("$(MACHTYPE)","rs6000")
+		FC = /usr/bin/xlf
+#	    FFLAGS = -g -qextname -qxlf77=leadzero -qctyplss -qintlog -qfullpath -qddim #-qxref=full -C
+	    FFLAGS = -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog
+	       CPP = /lib/cpp
+	  CPPFLAGS = -P $(patsubst %,-I%,$(subst :, ,$(subst $(LIBDIR):,,$(VPATH)))) 
+	   LDFLAGS = -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS))     -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) -Wl,-m,-bloadmap:MAIN.map,-bnoquiet
+       LDFLAGS_STD = -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_STD)) -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) -Wl,-m,-bloadmap:MAIN.map,-bnoquiet
+         LDFLAGS_Z = -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_Z))   -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) -Wl,-m,-bloadmap:MAIN.map,-bnoquiet
+	 LDFLAGS_X = -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_X))   -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) -Wl,-m,-bloadmap:MAIN.map,-bnoquiet
+
+		AR = /usr/bin/ar
+	   ARFLAGS = rv
+else
+endif
+
+### Rules to compile the FORTRAN code
+include GNUmake-rules
+
+### Help
+help:	
+	@echo "usage:"
+	@echo "'gmake <lib>' or 'gmake <main>' or 'gmake all'"
+	@echo "  lib =" "$(JADELIBS)"
+	@echo " main = mcjade, superv, ze4v, jadez"
+
+### Installation of total JADE library + executables
+all:	lib main
+
+### Handling of the libraries
+lib:	$(JADELIBS)
+lib_std:	$(JADELIBS_STD)
+lib_x:	$(JADELIBS_X)
+lib_z:	$(JADELIBS_Z)
+
+$(JADELIBS):
+	@echo "...updating" $@
+	@mkdir -p $(LIBDIR)
+	@if [ $(tinit) = "yes" ]; then \
+	  echo "#" Temporary Makefile for library $@. Generation date = `date` 	>  $(SRCDIR)/$@/GNUmakefile ;\
+	  echo include $(ROOT)/GNUmake-rules 					>> $(SRCDIR)/$@/GNUmakefile ;\
+	  echo "#"							 	>> $(SRCDIR)/$@/GNUmakefile ;\
+	  echo $(LIBDIR)"/lib"$@".a : "$(LIBDIR)"/lib"$@".a( "$(OBJS_$@)" )"     	>> $(SRCDIR)/$@/GNUmakefile ;\
+	  echo "#"							 	>> $(SRCDIR)/$@/GNUmakefile ;\
+	  cd $(SRCDIR)/$@; ${INCDEP} $(LIBDIR)/lib$@.a $(notdir $(filter $(SRCDIR)/$@%,$(Ffiles))) 	>> $(SRCDIR)/$@/GNUmakefile;\
+        fi
+
+	@cd $(SRCDIR)/$@;\
+	if [ -e GNUmakefile ]; then \
+	   $(MAKE) -f GNUmakefile FC="$(FC)" FFLAGS="$(FFLAGS)" CPP="$(CPP)" CPPFLAGS="$(CPPFLAGS)" VPATH="$(VPATH)" ;\
+	else \
+	   echo "Makefile for library $@ does not exist!" ;\
+	fi
+
+### Handling of the main programs
+main:	mcjade superv jadez ze4v
+
+mcjade:	lib_std $(MCJADE)/mcjade.o $(MCJADE)/mcuser.o $(MCJADE)/mcrand.o $(SUPERV)/showb.o
+	@echo "...updating" $@; mkdir -p $(BINDIR); cd $(MCJADE); \
+	$(FC) $(LDFLAGS_STD) $(FFLAGS) -o $(BINDIR)/mcjade mcmain.f mcjade.o mcrand.o mcuser.o $(SUPERV)/showb.o >> MAIN.map
+
+superv:	lib_std $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o
+	@echo "...updating" $@; mkdir -p $(BINDIR); cd $(SUPERV); \
+	$(FC) $(LDFLAGS_STD) $(FFLAGS) -o $(BINDIR)/superv jdmain.f ana.o user.o showb.o $(MCJADE)/mcrand.o >> MAIN.map
+
+$(SUPERV)/ana.o:	$(SUPERV)/cana.for
+
+jadez:	lib_x $(JADEZ)/xuser.o
+	@echo "...updating" $@; mkdir -p $(BINDIR); cd $(JADEZ); \
+	$(CPP) $(CPPFLAGS) gphmain.F TMP/gphmain.F_cpp.f ;\
+	$(FC) $(LDFLAGS_X) $(FFLAGS) -o $(BINDIR)/jadez TMP/gphmain.F_cpp.f xuser.o >> MAIN.map
+
+$(JADEZ)/xuser.o:		cgraph.for cdata.for
+
+ze4v:   lib_z $(MCJADE)/mcrand.o $(SUPERV)/showb.o
+	@echo "...updating" $@; cd $(ZE4V); \
+	$(FC) $(LDFLAGS_Z) $(FFLAGS) -o $(BINDIR)/ze4v ze4vjb.f  $(MCJADE)/mcrand.o $(SUPERV)/showb.o >> MAIN.map
+
+
+# Clean up
+.PHONEY : clean mclean aclean
+
+clean:
+	rm -f  `find $(SRCDIR) -name "*.o" -print`
+	rm -f  `find $(MAINDIR) -name "*.o" -print`
+	rm -f  `find $(LIBDIR) -name "*.a" -print`
+	rm -rf  `find $(SRCDIR) -name "TMP" -print`
+mclean:
+	rm -f  `find $(SRCDIR) -name "GNUmake*"`
+aclean:
+	rm -f  `find $(LIBDIR) -name "*.a"`
+# The End

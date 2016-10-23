@@ -1,0 +1,255 @@
+C   25/10/79 807251857  MEMBER NAME  THRUNB   (JADEGS)      SHELTRAN
+C
+C-----------------------------------------------------------------------
+      SUBROUTINE THRUNB( P, NP, NMAXP, PTHR, AXIS, ITMERR )
+C-----------------------------------------------------------------------
+C
+C    VERSION OF 21/05/79   LAST MOD 25/10/79   E.ELSEN
+C                          ITMERR IS ADDED TO THE ARG06-06-79 S.YAMADA
+C    INPUT : P(4,NP)   NP MOMENTA PX,PY,PZ,ABS(P)
+C            NP        NUMBER OF MOMENTA
+C            NMAXP     CUTOFF FOR PERMUTED MOMENTA
+C                      =0 MEANS NO CUTOFF
+C    OUTPUT: PTHR      THRUST VALUE
+C            AXIS      THRUST AXIS
+C            ITMERR    =1, IF LEFT TIME IS NOT ENOUGH TO CALCULATE THRST
+C                      (NOW MIN.2 SECONDS ARE REQUIRED.)
+C    METHOD: NO MOMENTUM CONSERVATION
+C            THRUST VALUE IS FOUND BY LOOKING THROUGH ALL
+C            PERMUTATIONS OF THE MOMENTA.
+C
+C-----------------------------------------------------------------------
+C
+      DIMENSION P(1), AXIS(3)
+      DIMENSION PIN(320), IPERM(80),IPS(320),PS(320)
+      COMMON / CWORK / WORK(720)
+      EQUIVALENCE (WORK(1),PIN(1)),(WORK(321),IPERM(1))
+      EQUIVALENCE (WORK(401),PS(1)),(WORK(401),IPS(1))
+C
+      DATA IPINC / 4 /
+      DATA NLIMIT / 15 /
+      DATA NSEC / 2 /
+C
+C------------------  C O D E  ------------------------------------------
+C
+      ITMERR = 0
+C
+      NMAXP1 = NMAXP
+      IF  NP.GE.NLIMIT .AND. ( NMAXP.EQ.0 .OR. NMAXP.GT.NLIMIT )
+      THEN
+N     WARNING CONCERNING NUMBER OF PARAMETERS
+      PERFORM WARN
+      NMAXP1 = NLIMIT
+      CIF
+      NTOT = NP
+      NP1 = NTOT
+      IF NTOT.GT.NMAXP1 .AND. NMAXP1.NE. 0
+      THEN
+N     SORT MOMENTA IN DECREASING ORDER
+      PERFORM SORT
+      NTOT = NMAXP1 - 1
+N     PIN ARRAY = ORDERED P ARRAY
+      PERFORM FILLIN
+      ELSE
+N     COPY FROM P TO PIN ARRAY
+      CALL UCOPY( P, PIN, NTOT*4 )
+      CIF
+N     THRUST AXIS FOR PIN ARRAY
+      PERFORM THRST
+N     THRUST VALUE FOR P ARRAY
+      PERFORM THREXP
+      RETURN
+C
+C
+C
+C--------------
+C
+      PROC WARN
+C--------------
+      WRITE(6,9101) NP,NLIMIT,NMAXP
+ 9101 FORMAT(' +++++  WARNING FROM THRUST ROUTINE  +++++'/
+     *       2X,I4,' ARE TOO MANY INPUT VECTORS. NLIMIT=',I4,
+     *' INPUT CUTOFF NMAXP=',I4,'.PTHR VAL. FOR NMAXP=NLIMIT WAS TAKEN')
+      CPROC
+C
+C
+C
+C--------------
+C
+      PROC SORT
+C--------------
+N     ORDER P ARRAY USING SHELLSORT ALGTHM
+N     SEQUENCE OF MOMENTA IS STORED IN IPERM
+      FOR J=1,NTOT
+N     INIT IPERM IN NATURAL ORDER
+      IPERM(J) = J*4
+      CFOR
+C
+      M = NTOT / 2
+      WHILE  M.GT.0
+      K = NTOT - M
+      FOR J=1,K
+      I = J
+      WHILE  I.GT.0
+      ILOW = IPERM(I)
+      IHIGH = IPERM(I+M)
+      IF  P(IHIGH) .GT. P(ILOW)
+      THEN
+      IPERM(I) = IHIGH
+      IPERM(I+M) = ILOW
+      I = I - M
+      ELSE
+      XWHILE
+      CIF
+      CWHILE
+      CFOR
+      M = M/2
+      CWHILE
+      CPROC
+C
+C
+C--------------
+C
+      PROC FILLIN
+C--------------
+N     PIN(1..4,J) = P(1..4,IPERM(J)/4)
+      FOR J=1,NTOT
+      IPJ = IPERM(J)
+      J4 = J*4
+      PIN(J4  ) = P(IPJ  )
+      PIN(J4-1) = P(IPJ-1)
+      PIN(J4-2) = P(IPJ-2)
+      PIN(J4-3) = P(IPJ-3)
+      CFOR
+      CPROC
+C
+C
+C----------------
+      PROC THRST
+C----------------
+      NUP = NTOT*4 - 4
+N     FIRST VALID POSITION
+      K = 5
+N     INIT ACCUMULATOR ARRAY
+      IPS(1) = 1
+      IPS(K) = 1
+      PS(2) = 0.
+      PS(3) = 0.
+      PS(4) = 0.
+      PM2 = 0.
+C
+N     START OF PERMUTATION LOOP
+      REPEAT
+N     COMPARE THIS PERMUTATION WITH PREVIOUS
+      PERFORM COMPAR
+      IF IPS(K) .LT. NUP
+      THEN
+N     EXPAND NUMBER OF ELEMENTS IN PERMUTATION
+      PERFORM EXPAND
+      ELSE
+N     DECREASE NUMBER OF ELEMENTS IN PERMUTATION
+      PERFORM COMPRS
+      CIF
+N     END IF FIRST VALID ELEMENT IS THE SECOND VECTOR
+      UNTIL IPS(1) .NE. 1
+C
+C
+N     SQRT( MAX (SUM OVER PERM. OF MOMENTA ))
+      AXISL = SQRT( PM2)
+      FOR  J=1,3
+N     THRUST AXIS
+      AXIS(J) = AXIS(J) / AXISL
+      CFOR
+      PSUM = 0.
+      NIPINC = NTOT * 4
+      FOR J = 4,NIPINC,4
+N     SUM OF MOMENTA
+      PSUM = PSUM + PIN(J)
+      CFOR
+N     THRUST VALUE
+      PTHR = 2. * AXISL / PSUM
+      CPROC
+C
+C
+C--------------
+C
+      PROC THREXP
+C--------------
+N     COMPUTE THRUST EXPLICITLY
+      NIPINC = NP1*IPINC
+      SPCOS = 0.
+      PSUM = 0.
+      FOR J=1,NIPINC,IPINC
+      SPCOS = SPCOS + ABS( AXIS(1)*P(J)+AXIS(2)*P(J+1)+AXIS(3)*P(J+2) )
+      PSUM = PSUM + P(J+3)
+      CFOR
+      PTHR = SPCOS / PSUM
+      CPROC
+C
+C
+C--------------
+C
+      PROC COMPAR
+C--------------
+N     CHECK THIS PERMUTATION AND STORE IN AXIS IF .GT. THAN ALL PREVIOUS
+      J = IPS(K)
+      PS(K+1) = PS(K-3) + PIN(J  )
+      PS(K+2) = PS(K-2) + PIN(J+1)
+      PS(K+3) = PS(K-1) + PIN(J+2)
+      PCL2 = PS(K+1)*PS(K+1) + PS(K+2)*PS(K+2) + PS(K+3)*PS(K+3)
+      IF  PCL2 .GT. PM2
+      THEN
+      PM2 = PCL2
+      AXIS(1) = PS(K+1)
+      AXIS(2) = PS(K+2)
+      AXIS(3) = PS(K+3)
+      CIF
+      CPROC
+C
+C
+C-----------------
+C
+      PROC EXPAND
+C-----------------
+N     INCREASE NUMBER OF COMPARED ELEMENTS BY 1
+      K = K + 4
+      IPS(K) = IPS(K-4) + 4
+      CPROC
+C
+C
+C-----------------
+C
+      PROC COMPRS
+C-----------------
+N     DECREASE NUMBER OF COMPARED ELEMENTS BY 1
+      K = K - 4
+      IPS(K) = IPS(K) + 4
+N     CHECK REMAINING TIME
+      IF  JUHR(NSEC) .EQ. 2
+      THEN
+      PERFORM ERROR
+      RETURN
+      CIF
+      CPROC
+C
+C
+C-----------------
+C
+      PROC ERROR
+C-----------------
+N     SET DEFAULT FOR AXIS AND THRUST
+      AXIS(1) = 0.
+      AXIS(2) = 0.
+      AXIS(3) = 1.
+      PTHR = .5
+      ITMERR = 1
+      WRITE(6,9102) NSEC,NP,NMAXP,NLIMIT
+ 9102 FORMAT(' +++++++   TIME PROBLEMS IN THRUST - ROUTINE   ++++++++'/
+     *       '        REMAINING TIME IS LESS THAN ',I4,' SECS.'/
+     *       '        ',I4,' ARE TOO MANY INPUT VECTORS.  NMAXP =',I4,
+     *       ' NLIMIT =',I4/
+     *       '         AXIS WAS SET TO Z AXIS AND PTHR = .5')
+      CPROC
+C
+C
+      END

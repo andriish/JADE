@@ -1,0 +1,31 @@
+C   14/08/78 C8081401   MEMBER NAME  PTCPRT   (LGSOURCE)    FORTRAN
+      SUBROUTINE PTCPRT(PRTCL,NP)
+C
+C---- S.YAMADA   14-08-78  16:00
+C
+C---- PRINT NO.OF PARTICLES AND ENERGY IN THE PRTCL-ARRAY.
+C
+      DIMENSION PRTCL(9,200)
+C
+      ETOT = 0.
+      EEP = 0.
+      EGM = 0.
+      NEP = 0
+      NGM = 0
+C
+      IF(NP) 10,10,1
+    1   DO 2 N=1,NP
+        EN = PRTCL(2,N)*0.511
+        ETOT = ETOT+EN
+        IF(PRTCL(1,N)) 3,4,3
+    3   EEP = EEP+EN
+        NEP = NEP+1
+        GO TO 2
+    4   EGM = EGM+EN
+        NGM = NGM+1
+    2   CONTINUE
+C
+   10 WRITE(6,600) NP,NEP,NGM,ETOT,EEP,EGM
+  600 FORMAT(' NP,NEL,NGM=',3I4,'  ETOT,EEL,EGM=',3F10.1,'MEV')
+      RETURN
+      END

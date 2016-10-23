@@ -1,0 +1,339 @@
+C   28/09/79 102191155  MEMBER NAME  FLINEL   (PATRECSR)    SHELTRAN
+      SUBROUTINE FLINEL
+C
+C        FIND LINE ELEMENTS IN ONE CELL: P.STEFFEN(78/11/78)
+C
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cworkpr.for"
+#include "cworkeq.for"
+C
+      EQUIVALENCE
+     ,           (ICELL ,IDWRK(1)),(NHIT  ,IDWRK(2)),(IRING ,IDWRK(3))
+     ,         , (IERRCD,IDWRK(4)),(NTRKEL,IDWRK(5))
+C
+#include "cpatlm.for"
+C
+C2000 FORMAT(1H0,'ERROR CODE:',I4, ', ICELL:',I3,', TRACKS:',I9)
+C2001 FORMAT(1X,/,(1X,2I6,2F6.2,2X,Z4,6I6,F6.2))
+C     PRINT 2000, IERRCD, ICELL, IPPATR
+C     IF(ICELL.EQ.20)PRINT 2001, (WRK(I1),I1=HPHT0,HPHT9)
+C
+N     LOOP OVER ALL HITS: TOP-DOWN
+      I9 = HPHL0 + 39
+      IP1 = HPHT0
+      IP9 = HPHT9
+      IPD = HLDHT
+      IP8 = IP9 - IPD
+      IP7 = IP8 - IPD
+      IP  = IP1 - IPD
+      WHILE IP.LT.IP7
+      IP = IP + IPD
+N     CHECK IF HIT ALREADY FOUND
+      IF IWRK(IP+7).EQ.0
+      THEN
+N       LAYER NO.
+        ILAY0 = IWRK(IP)
+N       DRIFT SPACE
+        DS0 = WRK(IP+2)
+C
+N       SEARCH FOR CLOSE HITS IN UPPER LAYERS
+        PERFORM CLHTUP
+      CIF
+      CWHILE
+C
+C     CHECK ONE TO ONE CORRESPONDENCE OF POINTERS
+C     AND LABEL POINTS OF DIVERGENCE
+C
+      PERFORM LBCHCK
+C     IF(ICELL.EQ.20)PRINT 2001, (WRK(I1),I1=HPHT0,HPHT9)
+C
+      RETURN
+C
+C
+N     ***************************
+N     *      C L H T U P        *
+N     ***************************
+C
+N     SEARCH FOR CLOSE HITS IN UPPER LAYERS
+      PROC CLHTUP
+C
+        IPHT = IP
+        IPA = IP
+        IPALST = 0
+        WHILE IPA.LT.IP8
+        IPA = IPA + IPD
+          IDLAYR = IWRK(IPA) - ILAY0
+          DS = WRK(IPA+2)
+          IF IDLAYR.EQ.2
+          THEN
+            IF IPALST.EQ.0
+            THEN
+              IF(IWRK(IPHT+7).EQ.0) IWRK(IPHT+7) = -1
+              XWHILE
+            CIF
+            IPHT = IPALST
+            IF IWRK(IPHT+7).GT.0
+            THEN
+              XWHILE
+            CIF
+            IPA = IPHT + IPD
+            ILAY0 = IWRK(IPHT)
+            DS0 = WRK(IPHT+2)
+            IDLAYR = IWRK(IPA) - ILAY0
+            DS = WRK(IPA+2)
+            IPALST = 0
+          CIF
+N         STOP IF NOT SAME/ADJACENT LAYER OR DISTANT HIT
+          IF IDLAYR.GT.1
+          THEN
+            XWHILE
+          CIF
+C
+N         CHECK IF CLOSE HIT
+          DDS = DS-DS0
+          IF ABS(DDS).LT.FLINLM(1)
+          THEN
+            IF IDLAYR.EQ.1
+N           CLOSE HIT IN ADJ. LAYR
+            THEN
+N             CHECK IF 1. CLOSE HIT
+              IF IWRK(IPHT+7).LE.0
+              THEN
+                WRK (IPHT+10) = DDS
+                IWRK(IPHT+ 7) = IPA
+                IPALST = IPA
+N             OTHER CLOSE HIT EXISTS: CHOSE CLOSEST
+              ELSE
+                IWRK(IPHT+4) = LOR(IWRK(IPHT+4),32)
+                IF ABS(DDS).LT.ABS(WRK(IPHT+10))
+                THEN
+                  WRK (IPHT+10) = DDS
+                  IWRK(IPHT+ 7) = IPA
+                  IPALST = IPA
+                CIF
+              CIF
+N             CHECK IF 1. CLOSE HIT
+              IF IWRK(IPA+5).EQ.0
+              THEN
+                IWRK(IPA+ 5) = IPHT
+                WRK (IPA+ 8) = DDS
+N             OTHER CLOSE HIT EXISTS: CHOSE CLOSEST
+              ELSE
+                IWRK(IPA +4) = LOR(IWRK(IPA +4), 8)
+                IF ABS(DDS).LT.ABS(WRK(IPA+ 8))
+                THEN
+                  IWRK(IPA+ 5) = IPHT
+                  WRK (IPA+ 8) = DDS
+                CIF
+              CIF
+C
+N           CLOSE HIT IN SAME LAYER
+            ELSE
+N             CHECK IF 1. CLOSE HIT
+              IF IWRK(IPHT+6).EQ.0
+              THEN
+                IWRK(IPHT+ 6) = IPA
+                WRK (IPHT+ 9) = DDS
+N             OTHER CLOSE HIT EXISTS: CHOSE CLOSEST
+              ELSE
+                IF ABS(DDS).LT.ABS(WRK(IPHT+ 9))
+                THEN
+                  IWRK(IPHT+ 6) = IPA
+                  WRK (IPHT+ 9) = DDS
+                CIF
+              CIF
+N             CHECK IF 1. CLOSE HIT
+              IF IWRK(IPA+6).EQ.0
+              THEN
+                IWRK(IPA+ 6) = IPHT
+                WRK (IPA+ 9) = DDS
+N             OTHER CLOSE HIT EXISTS: CHOSE CLOSEST
+              ELSE
+                IF ABS(DDS).LT.ABS(WRK(IPA+ 9))
+                THEN
+                  IWRK(IPA+ 6) = IPHT
+                  WRK (IPA+ 9) = DDS
+                CIF
+              CIF
+            CIF
+          CIF
+        CWHILE
+C
+      CPROC
+C
+N     ***************************
+N     *      L B C H C K        *
+N     ***************************
+C
+N     CHECK ONE TO ONE CONNECTIONS + LABEL HITS
+      PROC LBCHCK
+C
+N     FIND STRAIGHTEST LINEL IN MULT. CONNECTS.
+      IPHT = IP1
+      REPEAT
+N       CHECK IF >1 LINEL POSSIBLE
+        IF LAND(IWRK(IPHT+4),40).NE.0
+        THEN
+N         SEARCH FOR STRAIGHTEST LINEL
+          PERFORM STRLIN
+        CIF
+      IPHT = IPHT + IPD
+      UNTIL IPHT.GT.IP9
+C
+      FOR IPHT = IP1,IP9,IPD
+N       POINTER DOWN
+        IPAL = IWRK(IPHT+5)
+N       POINTER UP
+        IPAH = IWRK(IPHT+7)
+N       CALCULATE PARAMETERS + LABEL
+        DDS = 100000.
+        IF IPAH.GT.0
+        THEN
+          IF IPAL.GT.0
+          THEN
+            SL = WRK(IPAH+2) - WRK(IPAL+2)
+            DDS= WRK(IPAH+2)+WRK(IPAL+2) - WRK(IPHT+2)*2
+N           SET LABEL
+            LB = 3
+            IF(ABS(DDS).LE.FLINLM(2)) LB = 7
+          ELSE
+            SL = (WRK(IPAH+2) - WRK(IPHT+2)) * 2
+            LB = 2
+          CIF
+        ELSE
+          IF(IPAH.LT.0) IWRK(IPHT+7) = 0
+          IF IPAL.GT.0
+          THEN
+            SL = (WRK(IPHT+2) - WRK(IPAL+2)) * 2
+            LB = 1
+          ELSE
+            SL = 0
+            LB = 0
+          CIF
+        CIF
+N       SET BIT FOR CLOSE HIT IN SAME LAYER
+        IF(IWRK(IPHT+6).NE.0) LB = LOR(LB,16)
+N       FILL HIT ARRAY
+        WRK (IPHT+ 3) = SL
+        IWRK(IPHT+ 4) = LOR(IWRK(IPHT+4),LB)
+        WRK (IPHT+ 8) = 0
+        WRK (IPHT+ 9) = 0
+        WRK (IPHT+10) = 0
+        WRK (IPHT+11) = DDS
+C
+      CFOR
+C
+N       CHECK ONE TO ONE CORRESP.
+C
+      FOR IPHT = IP1,IP9,IPD
+N       POINTER DOWN
+        IPAL = IWRK(IPHT+5)
+N       POINTER UP
+        IPAH = IWRK(IPHT+7)
+        LB   = IWRK(IPHT+4)
+        IF IPAL.GT.0
+        THEN
+N         POINTER UP
+          IPALH = IWRK(IPAL+7)
+N         CHECK ONE TO ONE CORRESPONDENCE
+          IF IPALH.NE.IPHT
+N         LABEL POINTS OF DIVERGENCE
+          THEN
+            LB = LOR(LB, 256)
+            IWRK(IPALH+4) = LOR(IWRK(IPALH+4), 512)
+            IWRK(IPAL +4) = LOR(IWRK(IPAL +4),1024)
+          CIF
+        CIF
+        IF IPAH.GT.0
+        THEN
+N         POINTER DOWN
+          IPAHL = IWRK(IPAH+5)
+N         CHECK ONE TO ONE CORRESPONDENCE
+          IF IPAHL.NE.IPHT
+N         LABEL POINTS OF DIVERGENCE
+          THEN
+            LB = LOR(LB, 256)
+            IWRK(IPAHL+4) = LOR(IWRK(IPAHL+4), 512)
+            IWRK(IPAH +4) = LOR(IWRK(IPAH +4),1024)
+          CIF
+        CIF
+        IWRK(IPHT +4) = LB
+C
+      CFOR
+C
+      CPROC
+C
+N     ***************************
+N     *      S T R L I N        *
+N     ***************************
+C
+N     SEARCH FOR STRAIGHTESTT LINEL
+      PROC STRLIN
+C
+        IPAL = IWRK(IPHT+5)
+        IPAH = IWRK(IPHT+7)
+        IF IPAH.GT.0 .AND. IPAL.GT.0
+        THEN
+        DDS = WRK(IPHT+10) - WRK(IPHT+ 8)
+N       CHECK IF KINKED LINEL
+        IF ABS(DDS).GT.FLINLM(2)
+        THEN
+          ILAY0 = IWRK(IPHT)
+          DS0 = WRK(IPHT+2)
+          DSLM = 100000.
+N         SELECT UP CONNECTION
+          IPUP = IPHT
+          WHILE IPUP.LT.IP8
+          IPUP = IPUP + IPD
+            IF IWRK(IPUP)-ILAY0.GT.0
+            THEN
+              IF IWRK(IPUP)-ILAY0.GT.1
+              THEN
+                XWHILE
+              CIF
+              SLH = WRK(IPUP+2) - DS0
+N             SELECT DOWN CONNECTION
+              IPDW = IPHT
+              WHILE IPDW.GT.IP1
+              IPDW = IPDW - IPD
+                IF ILAY0-IWRK(IPDW).GT.0
+                THEN
+                  IF ILAY0-IWRK(IPDW).GT.1
+                  THEN
+                    XWHILE
+                  CIF
+                  SLL = DS0 - WRK(IPDW+2)
+                  DSL = ABS(SLH-SLL)
+                  IF DSL.LT.DSLM
+                  THEN
+N                   SET STRAIGHTEST SLOPE PARAMETERS
+                    DSLM = DSL
+                    IPAL = IPDW
+                    IPAH = IPUP
+                  CIF
+                CIF
+              CWHILE
+            CIF
+          CWHILE
+          IWRK(IPHT+ 5) = IPAL
+          IWRK(IPHT+ 7) = IPAH
+          WRK (IPHT+ 8) = DS0 - WRK(IPAL+2)
+          WRK (IPHT+10) = WRK(IPAH+2) - DS0
+          IF(IWRK(IPAL+ 7).LE.0)  WRK(IPAL+10) = WRK(IPHT+ 8)
+          IF(IWRK(IPAL+ 7).LE.0) IWRK(IPAL+ 7) = IPHT
+          IF(IWRK(IPAH+ 5).LE.0)  WRK(IPAH+ 8) = WRK(IPHT+10)
+          IF(IWRK(IPAH+ 5).LE.0) IWRK(IPAH+ 5) = IPHT
+          DATA IPR /0/
+          IPR = IPR + 1
+C         IF IPR.LE.10
+C         THEN
+C2006   FORMAT(1H0,'IPHT:',I4, ', IPAL:',I3,', IPAH:',I4,', DDS =',F6.2)
+C     IF(ICELL.EQ.20)PRINT 2006, IPHT,IPAL,IPAH,DDS
+C     IF(ICELL.EQ.20)PRINT 2001, (WRK(I1),I1=HPHT0,HPHT9)
+C         CIF
+        CIF
+        CIF
+      CPROC
+C
+      END

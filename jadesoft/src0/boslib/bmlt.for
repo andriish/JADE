@@ -1,0 +1,26 @@
+C   07/06/96 606071824  MEMBER NAME  BMLT     (S4)          FORTG1
+      SUBROUTINE BMLT(NL,LIST)
+C     BOS SUBPROGRAM =0.4=
+#include "acs.for"
+      COMMON/BCS/IW(1)
+C
+      INTEGER LIST(1)
+C
+      IF(NL.LT.0) GOTO 20
+      IN=NL
+      IF(NL.EQ.0) GOTO 100
+      DO 10 I=1,IN
+   10 IW(NLST+I)=IBLN(LIST(I))
+      GOTO 100
+C
+   20 IN=0
+      IF(NS.EQ.0) GOTO 100
+      MARK=LIST(1)
+      DO 30 I=1,NS
+      IF(MARK.EQ.0) GOTO 25
+      IF(IW(IMLST+I).EQ.0) GOTO 30
+   25 IN=IN+1
+      IW(NLST+IN)=IW(ISLST+I)
+   30 CONTINUE
+  100 RETURN
+      END

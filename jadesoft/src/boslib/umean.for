@@ -1,0 +1,34 @@
+C   07/06/96 606071916  MEMBER NAME  UMEAN    (S4)          FORTG1
+      SUBROUTINE UMEAN(NA,KA,X)
+      COMMON/BCS/IW(1)
+      REAL RW(1)
+      EQUIVALENCE (RW(1),IW(1))
+      REAL Q(10)
+      IF(KA.LT.0) GOTO 100
+      CALL BLOC(IND,'MEA*',NA,&20)
+   10 INDK=IND+KA*50
+      IF(INDK.GE.IND+IW(IND)) GOTO 100
+      IW(INDK+1)=IW(INDK+1)+1
+      N=IW(INDK+1)
+      IF(N.GT.46) GOTO 15
+      RW(INDK+4+N)=X
+      IF(N.EQ.46) CALL HMEAN(INDK,Q)
+      GOTO 100
+   15 J=46.0*(X-RW(INDK+2))/(RW(INDK+3)-RW(INDK+2))+1.0
+      IF(J.LT.0.OR.J.GT.46) J=0
+      IW(INDK+4+J)=IW(INDK+4+J)+1
+      GOTO 100
+   20 IF(KA.NE.0) GOTO 100
+      CALL BCRE(IND,'MEA*',NA,50,&100,IER)
+      GOTO 10
+C
+      ENTRY DMEAN(NA,KA)
+      KAK=0
+      IF(KA.GT.0) KAK=KA
+      CALL BLOC(IND,'MEA*',NA,&30)
+      GOTO 100
+   30 NW=50*(KAK+1)
+      CALL BCRE(IND,'MEA*',NA,NW,&100,IER)
+C
+  100 RETURN
+      END

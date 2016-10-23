@@ -1,0 +1,11 @@
+C   06/01/83 311291231  MEMBER NAME  FCRANG   (S)           FORTRAN
+      FUNCTION FCRANG(COSTH,A,B)
+C
+C
+      FCRANG=0.
+      IF(COSTH.LT.0. .OR. COSTH.GT.1.) RETURN
+C
+      FCRANG=(1.-A)*EXP(B*(COSTH-1.))+A
+C
+      RETURN
+      END

@@ -1,0 +1,119 @@
+C   09/06/83 801112018  MEMBER NAME  XYRFTV0  (JADEGS)      SHELTRAN
+      SUBROUTINE XYRFTV(MODE)
+C-----------------------------------------------------------------------
+C                                   J. SPITZER 13/3/87
+C        FIT ALL TRACKS WITH OR WITHOUT CONSTRAINT TO RUN VERTEX
+C        INPUT :
+C        MODE   = 0 : OVERWRITE OLD PATR-BANK WITH NEW RESULTS
+C        MODE   = 1 : CREATE NEW PATR-BANK WITH NEW RESULTS
+C        MODE   + 2 : NOT USED
+C        MODE   + 4 : VERTEX WEAKLY CONSTRAINED (ERRFAC = 100.0)
+C        MODE   + 8 : NOT USED
+C        MODE   +16 : NO VERTEX CONSTRAINT (ERRFAC = 1000.0 )
+C        MODE   +32 : UPDATE OR CREATE JHTL IN PARALLEL WITH PATR.
+C                     IF A NEW PATR IS TO BE CREATED OR THE OLD
+C                       PATR IS TO BE OVERWRITTEN AND THERE IS NO
+C                       JHTL WITH THE SAME NUMBER A NEW JHTL WILL
+C                       BE CREATED.
+C                     OTHERWISE THE OLD JHTL IS OVERWRITTEN.
+C-----------------------------------------------------------------------
+C
+      IMPLICIT INTEGER*2 (H)
+C
+#include "cdata.for"
+C
+      COMMON/XYFVT1/MODXYV
+C
+      DATA LBINIT /0/, IQPATR/0/, IQJHTL/0/
+C
+N     INITIALIZATION
+      IF LBINIT .LE.0
+      THEN
+         LBINIT = 1
+         IQPATR = IBLN('PATR')
+         IQJHTL = IBLN('JHTL')
+         IF LAND(MODE,16).NE.0
+         THEN
+            WRITE(6,81)
+ 81         FORMAT(' *** XYRFTV WITHOUT VERTEX CONSTRAINT ***')
+         ELSE
+            IF LAND(MODE,4).EQ.0
+            THEN
+               WRITE(6,82)
+ 82            FORMAT(' *** XYRFTV WITH VERTEX CONSTRAINT ***')
+               WRITE(6,84)
+ 84            FORMAT(' VC NOT APPLIED IF VERTEX INCOMPATIBLE',
+     +         ' WITH TRACK FITTED W/O VC FIRST.')
+            ELSE
+               WRITE(6,83)
+ 83            FORMAT(' *** XYRFTV WITH WEAK VERTEX CONSTRAINT ***')
+               WRITE(6,84)
+            CIF
+         CIF
+      CIF
+C
+C
+N     CHECK IF PATR- AND JHTL-BANK
+      IPPAT0 = IDATA(IQPATR)
+      IF(IPPAT0.LE.0 .OR. IDATA(IQJHTL).LE.0 ) RETURN
+C
+      NTR    = IDATA(IPPAT0+2)
+C
+N     CHECK IF 1 TRACK
+      IF(NTR.LT.1) RETURN
+C
+N     CREATE NEW PATR BANK
+      IF LAND(MODE,1) .NE. 0
+      THEN
+         NBNK1  = IDATA(IPPAT0-2) - 1
+         NWRD   = IDATA(IPPAT0)
+         NBYTE  = NWRD*4
+         CALL CCRE(IPPATR,'PATR',NBNK1,NWRD,IERR)
+         IF IERR.NE.0
+         THEN
+            PRINT 2900, IERR
+ 2900       FORMAT(' CREATION OF NEW PATR-BANK RESULTED IN ERROR',I3)
+            RETURN
+         CIF
+N        COPY CONTENTS OF 'PATR'-BANK
+         CALL MVCL(IDATA(IPPATR+1),0,IDATA(IPPAT0+1),0,NBYTE)
+      CIF
+C
+N     UPDATE JHTL BANK
+      IF LAND(MODE,32) .NE. 0
+      THEN
+         NBNK1 = IDATA(IDATA(IQPATR)-2)
+         IPJHTL = IDATA(IQJHTL)
+         NWRD = IDATA(IPJHTL)
+         CALL CLOC( NPJHTL, 'JHTL', NBNK1, IER )
+         IF NPJHTL.LE.0
+         THEN
+           CALL CCRE(NPJHTL,'JHTL',NBNK1,NWRD,IERR)
+           IF IERR.NE.0
+           THEN
+              PRINT 2910, IERR
+ 2910         FORMAT(' CREATION OF NEW JHTL-BANK RESULTED IN ERROR',I3)
+              RETURN
+           CIF
+N        COPY CONTENTS OF 'JHTL'-BANK
+           CALL MVCL(IDATA(NPJHTL+1),0,IDATA(IPJHTL+1),0,NWRD*4)
+         CIF
+      CIF
+C
+      IPPATR = IDATA(IQPATR)
+      IPTR   = IDATA(IPPATR+1) + IPPATR
+      LDTR   = IDATA(IPPATR+3)
+C
+      ERRFAC = 1.0
+      IF(LAND(MODE,4)  .NE. 0) ERRFAC =  100.0
+      IF(LAND(MODE,16) .NE. 0) ERRFAC = 1000.0
+C
+      MODXYV=MODE
+      FOR ITR=1,NTR
+N        R-PHI FIT
+         CALL XYRFT1(IPTR,IDATA(IQJHTL),ERRFAC,LDTR)
+         IPTR=IPTR+LDTR
+      CFOR
+C
+      RETURN
+      END
