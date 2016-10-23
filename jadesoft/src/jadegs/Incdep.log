@@ -1,4 +1,4 @@
-Current directory is/home/pcl2483/pedro/jadesoft/src/jadegs
+Current directory is/home/andriish/Projects/JADE.git/trunk/jadesoft/src/jadegs
 
 Dependencies:
 -------------
@@ -155,10 +155,10 @@ cdata.for: evread.F jetcal.F ebeam.F evwrit9.F evbkpr.F runfix.F rdalgn.F ktmcon
 cdededx.for: dedxbn.F
 cdsmax.for: klread.F zvertf.F zsxy.F jfetch.F
 cgeo1.for: klread.F jadebd.F xyblk.F momgam.F errmom.F rbpipe.F drpipe.F
-cgeo2.for: jadebd.F
 cgeo2com.for: jadebd.F
-cgeo3.for: jadebd.F
+cgeo2.for: jadebd.F
 cgeo3com.for: jadebd.F
+cgeo3.for: jadebd.F
 cgeov.for: rdrnhv.F rdiefv.F jadebd.F rbpipe.F drpipe.F
 cgraph.for: evread.F jetcal.F opunit.F evwrit9.F messag.F rdalgn.F ktmcon.F klread.F zvertf.F jadebd.F zsfit.F xyblk.F change.F dedxbn.F momenp.F moment.F momgam.F jrecal.F superv.F
 cheadr.for: errprt.F
@@ -179,31 +179,31 @@ mvccal.for: klread.F
 
 Library members sorted by include-files:
 ------- ------- ------ -- -------------
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( evread.o evwrit9.o prstat.o rdtrig.o rddate.o jadebd.o rbpipe.o xbpipe.o drpipe.o superv.o ) :	 cadmin.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( cnewid.o zsrftv.o jfetch.o zsrft1.o ) :	 calibr.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( superv.o ) :	 cbcsmx.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( evread.o jetcal.o ebeam.o evwrit9.o evbkpr.o runfix.o rdalgn.o ktmcon.o klread.o exjhtl.o zvertf.o cnewid.o zsrftv.o zsfit.o ergtot.o dedxbn.o momenp.o moment.o momgam.o errmom.o zsxy.o dedxbk.o jfetch.o jrecal.o zsrft1.o drtrck.o zspur.o n50sco.o fampco.o jftnew.o track.o rbpipe.o xbpipe.o drpipe.o vtxbnk.o vtxpre.o ) :	 cdata.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( dedxbn.o ) :	 cdededx.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( klread.o zvertf.o zsxy.o jfetch.o ) :	 cdsmax.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( klread.o jadebd.o xyblk.o momgam.o errmom.o rbpipe.o drpipe.o ) :	 cgeo1.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( jadebd.o ) :	 cgeo2.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( jadebd.o ) :	 cgeo2com.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( jadebd.o ) :	 cgeo3.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( jadebd.o ) :	 cgeo3com.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( rdrnhv.o rdiefv.o jadebd.o rbpipe.o drpipe.o ) :	 cgeov.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( evread.o jetcal.o opunit.o evwrit9.o messag.o rdalgn.o ktmcon.o klread.o zvertf.o jadebd.o zsfit.o xyblk.o change.o dedxbn.o momenp.o moment.o momgam.o jrecal.o superv.o ) :	 cgraph.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( errprt.o ) :	 cheadr.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( klread.o jadebd.o superv.o ) :	 ciouni.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( klread.o zvertf.o jadebd.o change.o dedxbn.o zsxy.o amps2z.o jfetch.o jrecal.o jftnew.o superv.o ) :	 cjdrch.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( jadebd.o ) :	 cjvcel.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( rdresv.o rdrnhv.o rdiefv.o rddouv.o klread.o jadebd.o ) :	 cjvtxc.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( zvertf.o superv.o ) :	 clbpgm.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( mctr4v.o rdmtco9.o rdresv.o rdmodv.o rdreso.o rdmodn.o rdpatr.o mctrcb.o mchtrb.o ) :	 cmubcs.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( change.o superv.o ) :	 cpatlm.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( change.o alphan.o ) :	 creply.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( treltr.o ) :	 cworkpr.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( zvertf.o ) :	 cworkzv.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( jadebd.o zsfit.o amps2z.o zsline.o zspur.o ) :	 czsprm.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( zvertf.o ) :	 czvpar.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( jadebd.o ) :	 mccomf.for
-/home/pcl2483/pedro/jadesoft/lib/libjadegs.a( klread.o ) :	 mvccal.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( evread.o evwrit9.o prstat.o rdtrig.o rddate.o jadebd.o rbpipe.o xbpipe.o drpipe.o superv.o ) :\t cadmin.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( cnewid.o zsrftv.o jfetch.o zsrft1.o ) :\t calibr.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( superv.o ) :\t cbcsmx.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( evread.o jetcal.o ebeam.o evwrit9.o evbkpr.o runfix.o rdalgn.o ktmcon.o klread.o exjhtl.o zvertf.o cnewid.o zsrftv.o zsfit.o ergtot.o dedxbn.o momenp.o moment.o momgam.o errmom.o zsxy.o dedxbk.o jfetch.o jrecal.o zsrft1.o drtrck.o zspur.o n50sco.o fampco.o jftnew.o track.o rbpipe.o xbpipe.o drpipe.o vtxbnk.o vtxpre.o ) :\t cdata.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( dedxbn.o ) :\t cdededx.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( klread.o zvertf.o zsxy.o jfetch.o ) :\t cdsmax.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( klread.o jadebd.o xyblk.o momgam.o errmom.o rbpipe.o drpipe.o ) :\t cgeo1.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( jadebd.o ) :\t cgeo2com.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( jadebd.o ) :\t cgeo2.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( jadebd.o ) :\t cgeo3com.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( jadebd.o ) :\t cgeo3.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( rdrnhv.o rdiefv.o jadebd.o rbpipe.o drpipe.o ) :\t cgeov.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( evread.o jetcal.o opunit.o evwrit9.o messag.o rdalgn.o ktmcon.o klread.o zvertf.o jadebd.o zsfit.o xyblk.o change.o dedxbn.o momenp.o moment.o momgam.o jrecal.o superv.o ) :\t cgraph.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( errprt.o ) :\t cheadr.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( klread.o jadebd.o superv.o ) :\t ciouni.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( klread.o zvertf.o jadebd.o change.o dedxbn.o zsxy.o amps2z.o jfetch.o jrecal.o jftnew.o superv.o ) :\t cjdrch.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( jadebd.o ) :\t cjvcel.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( rdresv.o rdrnhv.o rdiefv.o rddouv.o klread.o jadebd.o ) :\t cjvtxc.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( zvertf.o superv.o ) :\t clbpgm.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( mctr4v.o rdmtco9.o rdresv.o rdmodv.o rdreso.o rdmodn.o rdpatr.o mctrcb.o mchtrb.o ) :\t cmubcs.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( change.o superv.o ) :\t cpatlm.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( change.o alphan.o ) :\t creply.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( treltr.o ) :\t cworkpr.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( zvertf.o ) :\t cworkzv.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( jadebd.o zsfit.o amps2z.o zsline.o zspur.o ) :\t czsprm.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( zvertf.o ) :\t czvpar.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( jadebd.o ) :\t mccomf.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libjadegs.a( klread.o ) :\t mvccal.for
