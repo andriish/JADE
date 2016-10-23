@@ -86,8 +86,8 @@
 
 ### Libraries
 
-# - JADE libs
-	  JADELIBS = boslib interface grafix jadegs \
+# - JADE libs boslib interface grafix
+	  JADELIBS =  jadegs \
 		     vertex wertex jademus jmc patrecsr \
 		     source tagg toflib zlib # jadesr
       JADELIBS_STD = interface patrecsr jmc source jadegs vertex boslib jademus
@@ -133,13 +133,13 @@ endif
 
 
 ifeq ("$(MACHTYPE)","Linux")
-		FC = /usr/bin/g77
+		FC = /usr/bin/gfortran
 #	    FFLAGS = -g -qextname -qxlf77=leadzero -qctyplss -qintlog -qfullpath -qddim #-qxref=full -C
-	    FFLAGS =  -g -w
+	    FFLAGS =  -g -fno-range-check -fdollar-ok -ffixed-line-length-none
 	    #-qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl 
 	    #-qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog
-	       CPP = /lib/cpp
-	  CPPFLAGS = -P $(patsubst %,-I%,$(subst :, ,$(subst $(LIBDIR):,,$(VPATH)))) 
+	       CPP = /usr/bin/cpp
+	  CPPFLAGS = -traditional -P $(patsubst %,-I%,$(subst :, ,$(subst $(LIBDIR):,,$(VPATH)))) 
 	   LDFLAGS = -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS))     -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) -Wl,-m,-bloadmap:MAIN.map,-bnoquiet
        LDFLAGS_STD = -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_STD)) -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) -Wl,-m,-bloadmap:MAIN.map,-bnoquiet
          LDFLAGS_Z = -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_Z))   -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) -Wl,-m,-bloadmap:MAIN.map,-bnoquiet
@@ -151,7 +151,7 @@ endif
 
 
 ### Rules to compile the FORTRAN code
-include GNUmake-rules
+include GNUmake-rules.av
 
 ### Help
 help:	
@@ -174,10 +174,19 @@ $(JADELIBS):
 	mkdir -p src.av
 	cp -r src/* src.av
 	cp -r src_patched/* src.av
+	
+	#sed -i "s@CONTINUE@\ \ \ \ \ CONTINUE@g" src.av/*/*.for
+	#sed -i "s@CONTINUE@\ \ \ \ \ CONTINUE@g" src.av/*/*.f
+
+
 #	sed -i "s@Z0000005C@Z\'0000005C\'@g" src.av/*/*.f
+	sed -i "s@Z7F@Z\'7F\'@g" src.av/*/*.F
+	sed -i "s@Z\ FE0000@Z\'FE0000\'@g" src.av/*/*.for
+	sed -i "s@Z\ FE@Z\'FE\'@g" src.av/*/*.for
+	
 	sed -i "s@Z0000005C@Z\'0000005C\'@g" src.av/*/*.F
 	sed -i "s@Z0000005C@Z\'0000005C\'@g" src.av/*/*.for
-#	sed -i "s@Z000000FF@Z\'000000FF\'@g" src.av/*/*.f
+	sed -i "s@ZFFFFFFFF@Z\'FFFFFFFF\'@g" src.av/*/*.f
 	sed -i "s@Z000000FF@Z\'000000FF\'@g" src.av/*/*.F
 	sed -i "s@Z000000FF@Z\'000000FF\'@g" src.av/*/*.for
 
@@ -226,12 +235,19 @@ $(JADELIBS):
 	sed -i "s@Z80000000@Z\'8000000\'@g" src.av/*/*.for
 
 
+	sed -i "s@Z1000000@Z\'100000\'@g" src.av/*/*.F
+	sed -i "s@Z1000000@Z\'100000\'@g" src.av/*/*.for
+
+	sed -i "s@Z100@Z\'100\'@g" src.av/*/*.F
+	sed -i "s@Z100@Z\'100\'@g" src.av/*/*.for
+
+
 	#Z00010000,Z00020000,Z00040000,Z00080000
 	@echo "...updating" $@
 	@mkdir -p $(LIBDIR)
 	@if [ $(tinit) = "yes" ]; then \
 	  echo "#" Temporary Makefile for library $@. Generation date = `date` 	>  $(SRCDIR)/$@/GNUmakefile ;\
-	  echo include $(ROOT)/GNUmake-rules 					>> $(SRCDIR)/$@/GNUmakefile ;\
+	  echo include $(ROOT)/GNUmake-rules.av 					>> $(SRCDIR)/$@/GNUmakefile ;\
 	  echo "#"							 	>> $(SRCDIR)/$@/GNUmakefile ;\
 	  echo $(LIBDIR)"/lib"$@".a : "$(LIBDIR)"/lib"$@".a( "$(OBJS_$@)" )"     	>> $(SRCDIR)/$@/GNUmakefile ;\
 	  echo "#"							 	>> $(SRCDIR)/$@/GNUmakefile ;\

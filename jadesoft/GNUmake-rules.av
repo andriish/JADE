@@ -39,5 +39,8 @@
 		   fi; \
 		fi; \
 	       	$(CPP) $(CPPFLAGS) $${file} $(<D)/TMP/$(<F)_cpp.f;\
+			sed -i "s@CONTINUE@\ \ \ \ \ CONTINUE@g" $(<D)/TMP/$(<F)_cpp.f;\
+			sed -i "s@FORMAT(@\ \ \ \ \ FORMAT(@g" $(<D)/TMP/$(<F)_cpp.f;\
+			sed -i "s@ CALL@\ \ \ \ \ CALL@g" $(<D)/TMP/$(<F)_cpp.f;\
 	       	$(FC) $(FFLAGS) -o $@ -c $(<D)/TMP/$(<F)_cpp.f
 # The End
