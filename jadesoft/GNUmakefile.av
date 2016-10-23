@@ -86,10 +86,10 @@
 
 ### Libraries
 
-# - JADE libs boslib interface grafix
-	  JADELIBS =  jadegs \
-		     vertex wertex jademus jmc patrecsr \
-		     source tagg toflib zlib # jadesr
+# - JADE libs boslib interface  vertex  wertex jmc patrecsr
+	  JADELIBS =   \
+		       \
+		     source tagg toflib zlib  jadegs jademus  grafix # jadesr
       JADELIBS_STD = interface patrecsr jmc source jadegs vertex boslib jademus
         JADELIBS_X = grafix interface patrecsr jmc source jadegs wertex boslib jademus toflib tagg
         JADELIBS_Z = interface jadegs boslib source zlib
@@ -238,8 +238,26 @@ $(JADELIBS):
 	sed -i "s@Z1000000@Z\'100000\'@g" src.av/*/*.F
 	sed -i "s@Z1000000@Z\'100000\'@g" src.av/*/*.for
 
+	sed -i "s@Z2000@Z\'2000\'@g" src.av/*/*.F
+	sed -i "s@Z10000@Z\'10000\'@g" src.av/*/*.F
+	sed -i "s@Z1000@Z\'1000\'@g" src.av/*/*.F
 	sed -i "s@Z100@Z\'100\'@g" src.av/*/*.F
 	sed -i "s@Z100@Z\'100\'@g" src.av/*/*.for
+	
+	sed -i "s@Z61CC@Z\'61CC\'@g" src.av/*/*.f
+	sed -i "s@Z600@Z\'600\'@g" src.av/*/*.F
+
+
+	sed -i "s@Z20000@Z\'20000\'@g" src.av/*/*.F
+	sed -i "s@Z2000@Z\'2000\'@g" src.av/*/*.F
+	sed -i "s@Z200@Z\'200\'@g" src.av/*/*.F
+
+
+	sed -i "s@Z30000@Z\'30000\'@g" src.av/*/*.F
+	sed -i "s@Z3000@Z\'3000\'@g" src.av/*/*.F
+	sed -i "s@Z300@Z\'300\'@g" src.av/*/*.F
+	
+	sed -i "s@ZFFFFEFFF@Z\'FFFFEFFF\'@g" src.av/*/*.F
 
 
 	#Z00010000,Z00020000,Z00040000,Z00080000

@@ -75,13 +75,13 @@ OBJS_wertex = \
 #	'wertex' is needed by the 'grafix' software.
 
 OBJS_jademus = \
-	muini.o  muana.o  mufini.o mucon.o  mureg.o  muanab.o muanac.o \
+	 muana.o  mufini.o mucon.o  mureg.o  muanab.o muanac.o \
 	mucuts.o mumess.o muerry.o mucoor.o mudump.o mufsta.o \
 	mu2pul.o tanthm.o muconw.o muanaf.o muffle.o muregm.o \
 	muregy.o musafe.o muregs.o mudchk.o mufflb.o muffls.o \
 	mufflr.o mufflt.o mufflz.o muffly.o mufflx.o muendp.o \
 	mufmat.o muloch.o mupic.o  xymud.o  muhit.o  muhits.o muhdsp.o \
-	muwire.o muons.o
+	muwire.o muons.o          muini.o 
 
 OBJS_jadesr =
 
