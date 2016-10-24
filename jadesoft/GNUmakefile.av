@@ -86,10 +86,10 @@
 
 ### Libraries
 
-# - JADE libs boslib interface  vertex  wertex jmc patrecsr
+# - JADE libs boslib interface  vertex  wertex jmc patrecsr  toflib  zlib source tagg jadegs   jademus 
 	  JADELIBS =   \
 		       \
-		     source tagg toflib zlib  jadegs jademus  grafix # jadesr
+		      grafix # jadesr
       JADELIBS_STD = interface patrecsr jmc source jadegs vertex boslib jademus
         JADELIBS_X = grafix interface patrecsr jmc source jadegs wertex boslib jademus toflib tagg
         JADELIBS_Z = interface jadegs boslib source zlib

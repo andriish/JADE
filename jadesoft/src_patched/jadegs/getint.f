@@ -8,10 +8,10 @@ C    AUTHOR:   R. RAMCKE     14/03/83 :  CONVERTS EBCDIC-CODE TO INTEGER
 C
 C-----------------------------------------------------------------------
 C
-      IMPLICIT CHARACTER*2 (H)
-      IMPLICIT INTEGER (I,J)
+      IMPLICIT integer*2 (H)
+      
 C     
-Ccharacter*2 HNR
+      character*2 HNR
       DIMENSION HNR(10)
 C
      
