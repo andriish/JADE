@@ -1,0 +1,4 @@
+C---------  MACRO CHSYM    SYMBOLS USED IN GRAPHICS WRITING -----
+      character*2 HSYM
+      COMMON /CHSYM/ HSYM(36)
+C------ END MACRO CHSYM
