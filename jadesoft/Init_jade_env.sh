@@ -45,6 +45,7 @@ if [ -z "$INIT_JADE_ENV" ]; then
    fi
    if [ -x /bin/arch ]; then 
        alias machine="echo `/bin/arch`"
+       echo "OK"
    fi
    if [ -z "$HARDWARE" ]; then 
        export HARDWARE="`machine`"
@@ -60,10 +61,6 @@ if [ -z "$INIT_JADE_ENV" ]; then
    if [ "$HARDWARE" = "i686" ]; then 
        export HARDWARE="pentium"
    fi
-   if [ "$HARDWARE" = "x86_64" ]; then 
-       export HARDWARE="amd"
-       export MACHTYPE="Linux"
-   fi
    if [ "$HARDWARE" = "AIX" ]; then 
        export HARDWARE="RS6000"
    fi
@@ -78,14 +75,19 @@ if [ -z "$INIT_JADE_ENV" ]; then
    if [ "$HARDWARE" = "RS6000" ]; then 
             BinPath="Rbin"
             LibPath="Rlib"
+            export CERN_ROOT=/cern/98
    fi
 
-# CERN library version
-   if [ "$HARDWARE" = "RS6000" ]; then
-     export CERN_ROOT=/cern/98
-   else
-     export CERN_ROOT=/cern/99
+   if [ "$HARDWARE" = "x86_64" ]; then 
+       export HARDWARE="amd"
+       export MACHTYPE="Linux"
+       export CERN_ROOT=/usr/lib/cernlib/2006
+       echo "OK!"
+       #NOTE: THESE ARE 32 bits CERNLIB BY AV!
    fi
+
+
+
 
 # JADE resources/binaries
 #export JADE_LIB=$JADE/${LibPath}

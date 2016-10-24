@@ -134,16 +134,20 @@ endif
 ifeq ("$(MACHTYPE)","Linux")
 		FC = /usr/bin/gfortran
 #	    FFLAGS = -g -qextname -qxlf77=leadzero -qctyplss -qintlog -qfullpath -qddim #-qxref=full -C
-	    FFLAGS =  -g -ffixed-line-length-none -fno-range-check
+	    FFLAGS = -m32 -g -ffixed-line-length-none -fno-range-check -fmax-stack-var-size=1996457920
 	    #-fno-range-check -fdollar-ok 
 	    #-qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl 
 	    #-qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog
 	       CPP = /usr/bin/cpp
 	  CPPFLAGS = -traditional -P $(patsubst %,-I%,$(subst :, ,$(subst $(LIBDIR):,,$(VPATH)))) 
-	   LDFLAGS = -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS))     -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) -Wl,-m,-bloadmap:MAIN.map,-bnoquiet
-       LDFLAGS_STD = -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_STD)) -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) -Wl,-m,-bloadmap:MAIN.map,-bnoquiet
-         LDFLAGS_Z = -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_Z))   -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) -Wl,-m,-bloadmap:MAIN.map,-bnoquiet
-	 LDFLAGS_X = -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_X))   -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) -Wl,-m,-bloadmap:MAIN.map,-bnoquiet
+	   LDFLAGS = -m32 -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS))     -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) 
+	   #-Wl,-m,-bloadmap:MAIN.map,-bnoquiet
+       LDFLAGS_STD = -m32 -L$(LIBDIR) -linterface -lpatrecsr -ljmc -lsource -ljadegs -lvertex -lboslib -ljademus -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) 
+       #-Wl,-m,-bloadmap:MAIN.map,-bnoquiet
+         LDFLAGS_Z = -m32 -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_Z))   -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) 
+         #-Wl,-m,-bloadmap:MAIN.map,-bnoquiet
+	 LDFLAGS_X = -m32 -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_X))   -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) 
+	 #-Wl,-m,-bloadmap:MAIN.map,-bnoquiet
 
 		AR = /usr/bin/ar
 	   ARFLAGS = rv
@@ -282,9 +286,10 @@ $(JADELIBS):
 ### Handling of the main programs
 main:	mcjade superv jadez ze4v
 
-mcjade:	lib_std $(MCJADE)/mcjade.o $(MCJADE)/mcuser.o $(MCJADE)/mcrand.o $(SUPERV)/showb.o
+mcjade:	lib_std $(MCJADE)/mcjade.o $(MCJADE)/mcuser.o $(MCJADE)/mcrand.o $(MCJADE)/mcmain.o $(SUPERV)/showb.o
 	@echo "...updating" $@; mkdir -p $(BINDIR); cd $(MCJADE); \
-	$(FC) $(LDFLAGS_STD) $(FFLAGS) -o $(BINDIR)/mcjade mcmain.f mcjade.o mcrand.o mcuser.o $(SUPERV)/showb.o >> MAIN.map
+	echo $(FC) $(FFLAGS) -o $(BINDIR)/mcjade $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o   $(LDFLAGS_STD)
+	$(FC) $(FFLAGS) -o $(BINDIR)/mcjade $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o   $(LDFLAGS_STD) >> MAIN.map
 
 superv:	lib_std $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o
 	@echo "...updating" $@; mkdir -p $(BINDIR); cd $(SUPERV); \
