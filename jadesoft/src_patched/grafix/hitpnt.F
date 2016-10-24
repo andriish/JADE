@@ -18,6 +18,7 @@ C
 C
 #include "chsym.for"
 C
+      character*2 HBUF
       DIMENSION HBUF(4)
 C
       character*2 HBLANK, HMINUS 

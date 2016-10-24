@@ -180,84 +180,84 @@ $(JADELIBS):
 
 
 #	sed -i "s@Z0000005C@Z\'0000005C\'@g" src.av/*/*.f
-	sed -i "s@Z7F@Z\'7F\'@g" src.av/*/*.F
-	sed -i "s@Z\ FE0000@Z\'FE0000\'@g" src.av/*/*.for
-	sed -i "s@Z\ FE@Z\'FE\'@g" src.av/*/*.for
+#	sed -i "s@Z7F@Z\'7F\'@g" src.av/*/*.F
+#	sed -i "s@Z\ FE0000@Z\'FE0000\'@g" src.av/*/*.for
+#	sed -i "s@Z\ FE@Z\'FE\'@g" src.av/*/*.for
 	
-	sed -i "s@Z0000005C@Z\'0000005C\'@g" src.av/*/*.F
-	sed -i "s@Z0000005C@Z\'0000005C\'@g" src.av/*/*.for
-	sed -i "s@ZFFFFFFFF@Z\'FFFFFFFF\'@g" src.av/*/*.f
-	sed -i "s@Z000000FF@Z\'000000FF\'@g" src.av/*/*.F
-	sed -i "s@Z000000FF@Z\'000000FF\'@g" src.av/*/*.for
+#	sed -i "s@Z0000005C@Z\'0000005C\'@g" src.av/*/*.F
+#	sed -i "s@Z0000005C@Z\'0000005C\'@g" src.av/*/*.for
+#	sed -i "s@ZFFFFFFFF@Z\'FFFFFFFF\'@g" src.av/*/*.f
+#	sed -i "s@Z000000FF@Z\'000000FF\'@g" src.av/*/*.F
+#	sed -i "s@Z000000FF@Z\'000000FF\'@g" src.av/*/*.for
 
-	sed -i "s@Z00000001@Z\'00000001\'@g" src.av/*/*.for
-	sed -i "s@Z00000002@Z\'00000002\'@g" src.av/*/*.for
-	sed -i "s@Z00000004@Z\'00000004\'@g" src.av/*/*.for
-	sed -i "s@Z00000008@Z\'00000008\'@g" src.av/*/*.for
-
-
-	sed -i "s@Z00000010@Z\'00000010\'@g" src.av/*/*.for
-	sed -i "s@Z00000020@Z\'00000020\'@g" src.av/*/*.for
-	sed -i "s@Z00000040@Z\'00000040\'@g" src.av/*/*.for
-	sed -i "s@Z00000080@Z\'00000080\'@g" src.av/*/*.for
+#	sed -i "s@Z00000001@Z\'00000001\'@g" src.av/*/*.for
+#	sed -i "s@Z00000002@Z\'00000002\'@g" src.av/*/*.for
+#	sed -i "s@Z00000004@Z\'00000004\'@g" src.av/*/*.for
+#	sed -i "s@Z00000008@Z\'00000008\'@g" src.av/*/*.for
 
 
-	sed -i "s@Z00000100@Z\'00000100\'@g" src.av/*/*.for
-	sed -i "s@Z00000200@Z\'00000200\'@g" src.av/*/*.for
-	sed -i "s@Z00000400@Z\'00000400\'@g" src.av/*/*.for
-	sed -i "s@Z00000800@Z\'00000800\'@g" src.av/*/*.for
+#	sed -i "s@Z00000010@Z\'00000010\'@g" src.av/*/*.for
+#	sed -i "s@Z00000020@Z\'00000020\'@g" src.av/*/*.for
+#	sed -i "s@Z00000040@Z\'00000040\'@g" src.av/*/*.for
+#	sed -i "s@Z00000080@Z\'00000080\'@g" src.av/*/*.for
 
 
-	sed -i "s@Z00001000@Z\'00001000\'@g" src.av/*/*.for
-	sed -i "s@Z00002000@Z\'00002000\'@g" src.av/*/*.for
-	sed -i "s@Z00004000@Z\'00004000\'@g" src.av/*/*.for
-	sed -i "s@Z00008000@Z\'00008000\'@g" src.av/*/*.for
+#	sed -i "s@Z00000100@Z\'00000100\'@g" src.av/*/*.for
+#	sed -i "s@Z00000200@Z\'00000200\'@g" src.av/*/*.for
+#	sed -i "s@Z00000400@Z\'00000400\'@g" src.av/*/*.for
+#	sed -i "s@Z00000800@Z\'00000800\'@g" src.av/*/*.for
 
 
-	sed -i "s@Z00010000@Z\'00010000\'@g" src.av/*/*.for
-	sed -i "s@Z00020000@Z\'00020000\'@g" src.av/*/*.for
-	sed -i "s@Z00040000@Z\'00040000\'@g" src.av/*/*.for
-	sed -i "s@Z00080000@Z\'00080000\'@g" src.av/*/*.for
-
-	sed -i "s@Z00100000@Z\'0010000\'@g" src.av/*/*.for
-	sed -i "s@Z00200000@Z\'0020000\'@g" src.av/*/*.for
-	sed -i "s@Z00400000@Z\'0040000\'@g" src.av/*/*.for
-	sed -i "s@Z00800000@Z\'0080000\'@g" src.av/*/*.for
-
-	sed -i "s@Z01000000@Z\'0100000\'@g" src.av/*/*.for
-	sed -i "s@Z02000000@Z\'0200000\'@g" src.av/*/*.for
-	sed -i "s@Z04000000@Z\'0400000\'@g" src.av/*/*.for
-	sed -i "s@Z08000000@Z\'0800000\'@g" src.av/*/*.for
-
-	sed -i "s@Z10000000@Z\'1000000\'@g" src.av/*/*.for
-	sed -i "s@Z20000000@Z\'2000000\'@g" src.av/*/*.for
-	sed -i "s@Z40000000@Z\'4000000\'@g" src.av/*/*.for
-	sed -i "s@Z80000000@Z\'8000000\'@g" src.av/*/*.for
+#	sed -i "s@Z00001000@Z\'00001000\'@g" src.av/*/*.for
+#	sed -i "s@Z00002000@Z\'00002000\'@g" src.av/*/*.for
+#	sed -i "s@Z00004000@Z\'00004000\'@g" src.av/*/*.for
+#	sed -i "s@Z00008000@Z\'00008000\'@g" src.av/*/*.for
 
 
-	sed -i "s@Z1000000@Z\'100000\'@g" src.av/*/*.F
-	sed -i "s@Z1000000@Z\'100000\'@g" src.av/*/*.for
+#	sed -i "s@Z00010000@Z\'00010000\'@g" src.av/*/*.for
+#	sed -i "s@Z00020000@Z\'00020000\'@g" src.av/*/*.for
+#	sed -i "s@Z00040000@Z\'00040000\'@g" src.av/*/*.for
+#	sed -i "s@Z00080000@Z\'00080000\'@g" src.av/*/*.for
 
-	sed -i "s@Z2000@Z\'2000\'@g" src.av/*/*.F
-	sed -i "s@Z10000@Z\'10000\'@g" src.av/*/*.F
-	sed -i "s@Z1000@Z\'1000\'@g" src.av/*/*.F
-	sed -i "s@Z100@Z\'100\'@g" src.av/*/*.F
-	sed -i "s@Z100@Z\'100\'@g" src.av/*/*.for
+#	sed -i "s@Z00100000@Z\'0010000\'@g" src.av/*/*.for
+#	sed -i "s@Z00200000@Z\'0020000\'@g" src.av/*/*.for
+#	sed -i "s@Z00400000@Z\'0040000\'@g" src.av/*/*.for
+#	sed -i "s@Z00800000@Z\'0080000\'@g" src.av/*/*.for
+
+#	sed -i "s@Z01000000@Z\'0100000\'@g" src.av/*/*.for
+#	sed -i "s@Z02000000@Z\'0200000\'@g" src.av/*/*.for
+#	sed -i "s@Z04000000@Z\'0400000\'@g" src.av/*/*.for
+#	sed -i "s@Z08000000@Z\'0800000\'@g" src.av/*/*.for
+
+#	sed -i "s@Z10000000@Z\'1000000\'@g" src.av/*/*.for
+#	sed -i "s@Z20000000@Z\'2000000\'@g" src.av/*/*.for
+#	sed -i "s@Z40000000@Z\'4000000\'@g" src.av/*/*.for
+#	sed -i "s@Z80000000@Z\'8000000\'@g" src.av/*/*.for
+
+
+#	sed -i "s@Z1000000@Z\'100000\'@g" src.av/*/*.F
+#	sed -i "s@Z1000000@Z\'100000\'@g" src.av/*/*.for
+
+#	sed -i "s@Z2000@Z\'2000\'@g" src.av/*/*.F
+#	sed -i "s@Z10000@Z\'10000\'@g" src.av/*/*.F
+#	sed -i "s@Z1000@Z\'1000\'@g" src.av/*/*.F
+#	sed -i "s@Z100@Z\'100\'@g" src.av/*/*.F
+#	sed -i "s@Z100@Z\'100\'@g" src.av/*/*.for
 	
-	sed -i "s@Z61CC@Z\'61CC\'@g" src.av/*/*.f
-	sed -i "s@Z600@Z\'600\'@g" src.av/*/*.F
+#	sed -i "s@Z61CC@Z\'61CC\'@g" src.av/*/*.f
+#	sed -i "s@Z600@Z\'600\'@g" src.av/*/*.F
 
 
-	sed -i "s@Z20000@Z\'20000\'@g" src.av/*/*.F
-	sed -i "s@Z2000@Z\'2000\'@g" src.av/*/*.F
-	sed -i "s@Z200@Z\'200\'@g" src.av/*/*.F
+#	sed -i "s@Z20000@Z\'20000\'@g" src.av/*/*.F
+#	sed -i "s@Z2000@Z\'2000\'@g" src.av/*/*.F
+#	sed -i "s@Z200@Z\'200\'@g" src.av/*/*.F
 
 
-	sed -i "s@Z30000@Z\'30000\'@g" src.av/*/*.F
-	sed -i "s@Z3000@Z\'3000\'@g" src.av/*/*.F
-	sed -i "s@Z300@Z\'300\'@g" src.av/*/*.F
+#	sed -i "s@Z30000@Z\'30000\'@g" src.av/*/*.F
+#	sed -i "s@Z3000@Z\'3000\'@g" src.av/*/*.F
+#	sed -i "s@Z300@Z\'300\'@g" src.av/*/*.F
 	
-	sed -i "s@ZFFFFEFFF@Z\'FFFFEFFF\'@g" src.av/*/*.F
+#	sed -i "s@ZFFFFEFFF@Z\'FFFFEFFF\'@g" src.av/*/*.F
 
 
 	#Z00010000,Z00020000,Z00040000,Z00080000

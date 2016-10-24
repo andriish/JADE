@@ -16,16 +16,16 @@ OBJS_interface = \
 
 OBJS_grafix = \
 	ralloc.o calloc.o welcme.o setupg.o clrcon.o setdef.o \
-	endmes.o defcmd.o profil.o prompt.o decide.o fyrint.o \
+	endmes.o defcmd.o profil.o prompt.o decide.o  \
 	idfun.o  walloc.o scannr.o setscl.o evdisp.o dispvc.o \
 	ficoor.o ficoov.o hitmrk.o rzhits.o rzdraw.o rzroll.o rztrck.o \
 	pbgrfi.o pbgrz.o  pbgcyl.o pbgsum.o hodrfi.o tr3dsp.o fwmuht.o \
 	fwchev.o phnumb.o jadisp.o drawbp.o drawer.o drawfd.o drawid.o \
 	drawmu.o drawpi.o drawvc.o drawzc.o drawlg.o fwmucn.o barsec.o  \
-	rsdisp.o bankls.o vxdisp.o gamdis.o fwdisp.o heldis.o lindis.o \
+	rsdisp.o bankls.o  gamdis.o fwdisp.o heldis.o lindis.o \
 	projec.o projvw.o croax.o  komman.o comwrd.o defwrd.o setcmd.o \
-	sepcmd.o jadcmd.o expmac.o resmac.o disply.o coment.o bankpr.o \
-	menu.o   cdst.o   tbgdis.o news.o   helpus.o retten.o dispzc.o plygon.o \
+	sepcmd.o jadcmd.o expmac.o resmac.o disply.o coment.o  \
+	menu.o     tbgdis.o news.o   helpus.o retten.o dispzc.o plygon.o \
 	hitscl.o hitdsp.o joys.o   spare.o  yamada.o saege.o  vcdo.o pick.o \
 	ctdist.o disaxi.o zinter.o tonum.o  trkhit.o trnumb.o drwhit.o \
         gvtxft.o muldsp.o dnum.o   drhatc.o diagin.o diaghn.o ternum.o \
@@ -41,7 +41,7 @@ OBJS_grafix = \
 	ecap.o   ecaps.o  ecapcy.o mur2ds.o blshow.o blnumb.o edvp.o \
 	mcgjet.o numbwr.o trig2.o  drvcrd.o efmass.o cirdis.o evtax.o \
 	dracap.o lgclst.o truth.o  xytag.o  trkrol.o drftim.o rutrck.o \
-	pardis.o trn4v.o  spthak.o trpvtx.o hitpnt.o xcalcor.o xsafchk.o vtx.o
+	pardis.o trn4v.o  spthak.o trpvtx.o hitpnt.o xcalcor.o xsafchk.o vtx.o fyrint.o vxdisp.o bankpr.o cdst.o 
 # 09/11/99 vtx.o added, containing vertex finding routines (special version, PRELIMINARY)
 
 OBJS_jadegs = \
