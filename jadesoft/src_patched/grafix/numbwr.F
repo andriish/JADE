@@ -10,7 +10,7 @@ C    IOPT LE 0 OR GT 36 WILL CAUSE THE NUMBER TO BE PRECEDED BY A BLANK
 C---
       IMPLICIT INTEGER*2 (H)
 #include "cgraph.for"
-      character*2 HMW
+      character*2 HMW, HSYM
       DIMENSION HMW(10)
 #include "chsym.for"
       character*2 HBLANK, HMINUS

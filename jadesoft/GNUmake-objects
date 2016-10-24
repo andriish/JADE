@@ -25,15 +25,15 @@ OBJS_grafix = \
 	rsdisp.o bankls.o  gamdis.o fwdisp.o heldis.o lindis.o \
 	projec.o projvw.o croax.o  komman.o comwrd.o defwrd.o setcmd.o \
 	sepcmd.o jadcmd.o expmac.o resmac.o disply.o coment.o  \
-	menu.o     tbgdis.o news.o   helpus.o retten.o dispzc.o plygon.o \
-	hitscl.o hitdsp.o joys.o   spare.o  yamada.o saege.o  vcdo.o pick.o \
-	ctdist.o disaxi.o zinter.o tonum.o  trkhit.o trnumb.o drwhit.o \
+	menu.o     tbgdis.o news.o   helpus.o dispzc.o plygon.o \
+	hitscl.o hitdsp.o joys.o   spare.o  yamada.o saege.o   pick.o \
+	ctdist.o zinter.o tonum.o  trkhit.o trnumb.o drwhit.o \
         gvtxft.o muldsp.o dnum.o   drhatc.o diagin.o diaghn.o ternum.o \
-	stplst.o predit.o credit.o trtext.o dedxds.o dedxv1.o dedxvw.o \
+	stplst.o predit.o  trtext.o dedxds.o dedxv1.o dedxvw.o \
 	qplots.o tofds.o  xtofvw.o axshow.o dsfadc.o ztrgvw.o newcal.o \
-	fampds.o fampft.o n50sds.o more.o   dsvac.o  defmac.o edimac.o \
+	fampds.o fampft.o n50sds.o more.o   dsvac.o edimac.o \
 	delmac.o renmac.o locmac.o dramov.o j68kds.o cricro.o ftdlho.o \
-	zfit.o   zfitds.o notice.o gmtext.o capmrk.o hemsym.o helpli.o \
+	zfit.o   zfitds.o notice.o gmtext.o  hemsym.o helpli.o \
 	hlpmac.o realnm.o ellips.o rectan.o vrxcir.o fw83.o   fwc83.o \
 	fwcap.o  fwnew.o  faddrw.o fadcax.o jadarg.o finwrd.o fincmd.o \
 	finabr.o prj68k.o prn50s.o prtpvx.o pratof.o prmprs.o prtpev.o \
@@ -41,7 +41,8 @@ OBJS_grafix = \
 	ecap.o   ecaps.o  ecapcy.o mur2ds.o blshow.o blnumb.o edvp.o \
 	mcgjet.o numbwr.o trig2.o  drvcrd.o efmass.o cirdis.o evtax.o \
 	dracap.o lgclst.o truth.o  xytag.o  trkrol.o drftim.o rutrck.o \
-	pardis.o trn4v.o  spthak.o trpvtx.o hitpnt.o xcalcor.o xsafchk.o vtx.o fyrint.o vxdisp.o bankpr.o cdst.o 
+	pardis.o trn4v.o  spthak.o trpvtx.o hitpnt.o xcalcor.o xsafchk.o vtx.o \
+	fyrint.o vxdisp.o bankpr.o cdst.o retten.o vcdo.o disaxi.o  credit.o  defmac.o  capmrk.o
 # 09/11/99 vtx.o added, containing vertex finding routines (special version, PRELIMINARY)
 
 OBJS_jadegs = \

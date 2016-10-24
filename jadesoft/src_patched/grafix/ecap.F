@@ -15,7 +15,7 @@ C     CENTRE POINT.
 C
 C-----------------------------------------------------------------------
 C
-      IMPLICIT INTEGER*2 (H)
+      IMPLICIT character*2 (H)
 C
       COMMON / CWORK1 / HWORK(40)
 C
