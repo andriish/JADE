@@ -10,6 +10,7 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
+      character*2 HSYM
       LOGICAL  FL18,FL22,FL24,DSPDTM
       LOGICAL  LERROR
       LOGICAL*1  CCMD,CDICTY

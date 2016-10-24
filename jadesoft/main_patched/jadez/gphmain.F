@@ -26,7 +26,7 @@ C
       IMPLICIT INTEGER*2 (H)
 C
       character*4 IHLP
-      
+      integer*2 HERR
       CHARACTER*8   DDN,VOLSR
       LOGICAL  OK
 C

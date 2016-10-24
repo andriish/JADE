@@ -146,9 +146,10 @@ ifeq ("$(MACHTYPE)","Linux")
        #LDFLAGS_STD = -m32 -L$(LIBDIR) -linterface -lpatrecsr -ljmc -lsource -ljadegs -lvertex -lboslib -ljademus -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) 
        LDFLAGS_STD = -m32 $(LIBDIR)/libinterface.a $(LIBDIR)/libpatrecsr.a $(LIBDIR)/libjmc.a $(LIBDIR)/libsource.a $(LIBDIR)/libjadegs.a $(LIBDIR)/libvertex.a $(LIBDIR)/libboslib.a $(LIBDIR)/libjademus.a -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) 
        #-Wl,-m,-bloadmap:MAIN.map,-bnoquiet
-         LDFLAGS_Z = -m32 -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_Z))   -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) 
+         LDFLAGS_X = $(LIBDIR)/libinterface.a $(LIBDIR)/libpatrecsr.a $(LIBDIR)/libjmc.a $(LIBDIR)/libsource.a $(LIBDIR)/libjadegs.a $(LIBDIR)/libwertex.a $(LIBDIR)/libboslib.a $(LIBDIR)/libjademus.a $(LIBDIR)/libgrafix.a $(LIBDIR)/libtoflib.a $(LIBDIR)/libtagg.a -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS))
+         #-m32 -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_Z))   -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) 
          #-Wl,-m,-bloadmap:MAIN.map,-bnoquiet
-	 LDFLAGS_X = -m32 -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_X))   -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) 
+	 LDFLAGS_Z = -m32 -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_X))   -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) 
 	 #-Wl,-m,-bloadmap:MAIN.map,-bnoquiet
 
 		AR = /usr/bin/ar
@@ -209,23 +210,26 @@ main:	 mcjade superv jadez ze4v
 
 
 
-mcjade:	lib docptxt main.av/patched.o $(MCJADE)/mcjade.o $(MCJADE)/mcuser.o $(MCJADE)/mcrand.o $(MCJADE)/mcmain.o $(SUPERV)/showb.o
+mcjade:	lib docptxt $(MAINDIR)/patched.o $(MCJADE)/mcjade.o $(MCJADE)/mcuser.o $(MCJADE)/mcrand.o $(MCJADE)/mcmain.o $(SUPERV)/showb.o
 	@echo "...updating" $@;  mkdir -p $(BINDIR); cd $(MCJADE); \
-	echo $(FC) $(FFLAGS) -o $(BINDIR)/mcjade main.av/patched.o $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o   $(LDFLAGS_STD)
+	echo $(FC) $(FFLAGS) -o $(BINDIR)/mcjade $(MAINDIR)/patched.o $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o   $(LDFLAGS_STD)
 	$(FC) $(FFLAGS) -o $(BINDIR)/mcjade  main.av/patched.o $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o   $(LDFLAGS_STD) -lgfortran >> MAIN.map
 
-superv:	lib docptxt main.av/patched.o $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o
+superv:	lib docptxt $(MAINDIR)/patched.o $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o
 	@echo "...updating"  $@; mkdir -p $(BINDIR); cd $(SUPERV); \
-	$(FC) $(LDFLAGS_STD) $(FFLAGS) -o $(BINDIR)/superv  main.av/patched.o $(MCJADE)/jdmain.f $(MCJADE)/ana.o $(MCJADE)/user.o $(MCJADE)/showb.o $(MCJADE)/mcrand.o >> MAIN.map
+	$(FC) $(LDFLAGS_STD) $(FFLAGS) -o $(BINDIR)/superv  $(MAINDIR)/patched.o $(MCJADE)/jdmain.f $(MCJADE)/ana.o $(MCJADE)/user.o $(MCJADE)/showb.o $(MCJADE)/mcrand.o $(LDFLAGS_STD) -lgfortran >> MAIN.map
 
 $(SUPERV)/ana.o:	$(SUPERV)/cana.for
 
-jadez:	lib docptxt $(JADEZ)/xuser.o
-	echo "...updating" $@; mkdir -p $(BINDIR); mkdir -p $(JADEZ)/TMP; cd $(JADEZ); \
-	$(CPP) $(CPPFLAGS) gphmain.F $(JADEZ)/TMP/gphmain.F_cpp.f ;\
-	$(FC) $(LDFLAGS_X) $(FFLAGS) -o $(BINDIR)/jadez $(JADEZ)/TMP/gphmain.F_cpp.f $(JADEZ)/xuser.o >> MAIN.map
+jadez:	 $(MAINDIR)/patched.o $(JADEZ)/xuser.o $(JADEZ)/gphmain.o
+	echo "...updating" $@; mkdir -p $(BINDIR); mkdir -p $(JADEZ)/TMP; 
+#cd $(JADEZ); \
+#	$(CPP) $(CPPFLAGS) gphmain.F $(JADEZ)/TMP/gphmain.F_cpp.f ;\
+#	echo $(FC)  $(FFLAGS) -o $(BINDIR)/jadez  $(MAINDIR)/patched.o $(JADEZ)/gphmain.o $(JADEZ)/xuser.o $(LDFLAGS_X) -lgfortran >> MAIN.map
+	$(FC) $(FFLAGS) -o $(BINDIR)/jadez  $(MAINDIR)/patched.o $(JADEZ)/gphmain.o $(JADEZ)/xuser.o $(LDFLAGS_X) -lgfortran >> MAIN.map
 
 $(JADEZ)/xuser.o:		$(JADEZ)/xuser.F cgraph.for cdata.for
+$(JADEZ)/gphmain.o: $(JADEZ)/gphmain.F
 
 ze4v:   lib $(MCJADE)/mcrand.o $(SUPERV)/showb.o
 	@echo "...updating" $@; cd $(ZE4V); \
