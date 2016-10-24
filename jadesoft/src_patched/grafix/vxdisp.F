@@ -24,6 +24,7 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
+      LOGICAL REMEMB, REMEMC
       LOGICAL TBIT
       LOGICAL FL18,FL22,FL24,DSPD14
       LOGICAL FLVCDO

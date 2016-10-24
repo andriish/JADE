@@ -82,6 +82,7 @@ C
       COMMON / CHEADR / HEAD(108)
       COMMON / CVX / NNPATR, NDUMM, NNJETC, NNVTXC
       DIMENSION IDUM(20),PSAVE(4,60)
+      character*2 HDM, HDL, HB1, HB2, HB3, HB4, HC
       DIMENSION HDM(5,6),HDL(5,2),HB1(5,8),HB2(5,8),HB3(5,12),HB4(5,10)
       DIMENSION HC(5)
       DATA HDM / 'D0','  ','  ','  ','  ', 'D0',' b','ar','  ','  ', 'D+

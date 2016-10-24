@@ -42,7 +42,7 @@ OBJS_grafix = \
 	mcgjet.o numbwr.o trig2.o  drvcrd.o efmass.o cirdis.o evtax.o \
 	dracap.o lgclst.o truth.o  xytag.o  trkrol.o drftim.o rutrck.o \
 	pardis.o trn4v.o  spthak.o trpvtx.o hitpnt.o xcalcor.o xsafchk.o vtx.o \
-	fyrint.o vxdisp.o bankpr.o cdst.o retten.o vcdo.o disaxi.o  credit.o  defmac.o  capmrk.o
+	fyrint.o vxdisp.o  cdst.o retten.o vcdo.o disaxi.o  credit.o    capmrk.o bankpr.o defmac.o
 # 09/11/99 vtx.o added, containing vertex finding routines (special version, PRELIMINARY)
 
 OBJS_jadegs = \

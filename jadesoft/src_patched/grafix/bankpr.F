@@ -45,12 +45,19 @@ C
 C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
+      character*2  HMINUS,  HPLUS, HTX, HBLANK
+Ccharacter*2  IEFA
+       INTEGER*2 MWR1,MWR2,MWR3
+C      character*2 NTR
+C      character*2 LAND
+      character*4 NAMES, NAMEB
+      CHARACTER*8 DESTPL
       LOGICAL TBIT
 C
       LOGICAL DSPDTM
 C
       REAL*8 DATE,TIME
-      REAL*8 DESTPL
+C      REAL*8 DESTPL
 C
 #include "cgraph.for"
 #include "cdata.for"
@@ -62,7 +69,7 @@ C
       COMMON / CHEADR / HEAD(108)
       COMMON / CGRAP2 / BCMD,DSPDTM(30),ISTVW,JTVW
 C
-      character*2 HTX
+      
       DIMENSION HDSPL(68),HSYM(10),HDATSV(22),HTX(6),HTM1(4),HTM2(4)
       DIMENSION NAMES(30), HELP(2)
       DIMENSION HBYTE(500)
@@ -85,7 +92,9 @@ C
      &             'FAMP','BPCH','VTXC','VTHT','VPAT',
      &             'VCVW','J68K','PALL','HWDS','HHTL'/
 C
-      DATA HSYM /'0 ','1 ','2 ','3 ','4 ','5 ','6 ','7 ','8 ','9 '/
+C      DATA HSYM /'0 ','1 ','2 ','3 ','4 ','5 ','6 ','7 ','8 ','9 '/
+      DATA HSYM /0 ,1 ,2 ,3 ,4 ,5 ,6 ,7 ,8 ,9 /
+      
       DATA HBLANK/'  '/,HMINUS/'- '/, NNAMES /30/
       
       DATA HTX /'DS','N ','DA','TE','TI','ME'/
@@ -141,9 +150,9 @@ C** CHECK IF MORE THAN ONE BANK WITH SAME NAME; IF SO, REQUEST NUMBER.
 C********************** WRITE CAPTION
       CALL HOME
       CALL CHRSIZ(4)
-      HWORK(1) = HTX(1)
-      HWORK(2) = HTX(2)
-      HWORK(3) = HBLANK
+CAV FIXME      HWORK(1) = HTX(1)
+CAV FIXME      HWORK(2) = HTX(2)
+CAV FIXME      HWORK(3) = HBLANK
       DO 90  I = 1,22
          HWORK(I+3) = HDATSV(I)
    90 CONTINUE
@@ -153,11 +162,11 @@ C********************** WRITE CAPTION
       IPHEAD = IDATA(IHEAD)
       IHHEAD = 2*IPHEAD
       DO 110 III = 1,3
-         IF( III .EQ. 1 ) NUMCAP = HDATA(IHHEAD+10)
-         IF( III .EQ. 2 ) NUMCAP = HDATA(IHHEAD+11)
-         IF( III .EQ. 3 ) NUMCAP = ICREC
+CAV FIXME         IF( III .EQ. 1 ) NUMCAP = HDATA(IHHEAD+10)
+CAV FIXME         IF( III .EQ. 2 ) NUMCAP = HDATA(IHHEAD+11)
+CAV FIXME         IF( III .EQ. 3 ) NUMCAP = ICREC
          IF( NUMCAP .LT. 0 ) KCNT = KCNT + 1
-         IF( NUMCAP .LT. 0 ) HWORK(KCNT) = HMINUS
+CAV FIXME            IF( NUMCAP .LT. 0 ) HWORK(KCNT) = HMINUS
          NUMCAP = IABS(NUMCAP)
          NDIG   = 1
          ACAP   = NUMCAP
@@ -172,24 +181,24 @@ C********************** WRITE CAPTION
   100    CONTINUE
          KCNT = KCNT + NDIG
          IF( III .LT. 3 ) KCNT = KCNT + 1
-         IF( III .LT. 3 ) HWORK(KCNT) = HBLANK
+CAV FIXME         IF( III .LT. 3 ) HWORK(KCNT) = HBLANK
   110 CONTINUE
       KCNT = 2*KCNT
       CALL NEWLIN
       CALL EOUTST( KCNT, HWORK )
 C WRITE DATE AND TIME
       CALL DAY( DATE, TIME )
-      HWORK(1) = HTX(3)
-      HWORK(2) = HTX(4)
-      HWORK(3) = HBLANK
+CAV FIXME      HWORK(1) = HTX(3)
+CAV FIXME      HWORK(2) = HTX(4)
+CAV FIXME      HWORK(3) = HBLANK
       DO 120  I = 1,4
          HWORK(I+3) = HTM1(I)
   120 CONTINUE
       CALL NEWLIN
       CALL EOUTST(14,HWORK)
-      HWORK(1) = HTX(5)
-      HWORK(2) = HTX(6)
-      HWORK(3) = HBLANK
+CAV FIXME      HWORK(1) = HTX(5)
+CAV FIXME      HWORK(2) = HTX(6)
+CAV FIXME      HWORK(3) = HBLANK
       DO 130  I = 1,4
          HWORK(I+3) = HTM2(I)
   130 CONTINUE

@@ -26,7 +26,7 @@ C     IESUM IS A DUMMY, HISTORICAL ARGUMENT
 C
 C-----------------------------------------------------------------------
 C
-      IMPLICIT CHARACTER*2 (H)
+      IMPLICIT integer*2 (H)
 C
 C       character*2 HBLANK, HPLUS, HMINUS, HSIGN
       REAL*8      DATE,TIME
@@ -39,6 +39,9 @@ C
 #include "cgeo1.for"
 #include "chsym.for"
 C
+       CHARACTER*2  HBLANK,HMINUS, HTX1,HTX, HSYM, HBUF,HDATSV
+        CHARACTER*2   HTX2, HTX3,HTEXT, HMW,HTM2,HTM1
+
       COMMON / CHEADR / HEAD(108)
       COMMON / CGRAP2 / BCMD,DSPDTM(30),ISTVW,JTVW
       COMMON / CWORK1 / R,FI,R1,FI1,X1,Y1,R2,FI2,X2,Y2,ZET,X3,Y3,X4,Y4,
