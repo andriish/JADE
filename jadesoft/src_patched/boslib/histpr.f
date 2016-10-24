@@ -14,7 +14,7 @@ C
       REAL*8 RPR(11)
       REAL*4 SP(11)
       COMMON/CCONVT/JM,PX(32,10)
-      INTEGER PX,BLANK/'    '/
+      INTEGER PX,BLANK/4H    /
       character*1 LX(128,10),XCH/'X'/
       EQUIVALENCE (LX(1,1),PX(1,1))
       XM=0.0

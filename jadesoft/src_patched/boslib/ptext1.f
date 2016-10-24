@@ -2,7 +2,7 @@ C   07/06/96 606071904  MEMBER NAME  PTEXT1   (S4)          FORTRAN
       SUBROUTINE PTEXT
       COMMON/BCS/IW(1)
       character*1 AR(1),LTEXT(60),DOLL/'$'/
-      INTEGER TEXT(15),BLANK/'    '/
+      INTEGER TEXT(15),BLANK/4H    /
       EQUIVALENCE (TEXT(1),LTEXT(1))
       character*8 TEXTE(6)/'UCOND   ','UTABL   ','UHIST   ','UCORR   ',
      1   'USTOR/S ','TEXT    '/

@@ -4,7 +4,7 @@ C     BOS SUBPROGRAM =1.16=
 #include "acs.for"
       COMMON/BCS/IW(1)
 #include "ccs.for"
-      INTEGER TEXT(4)/'IW()','LFDI','LFDK','NLST'/
+       character*4 TEXT(4)/'IW()','LFDI','LFDK','NLST'/
       character*4 TEXTB(10)
    10 WRITE(6,101) ICOND
       WRITE(6,102)

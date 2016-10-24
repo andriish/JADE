@@ -87,10 +87,9 @@
 ### Libraries
 
 # - JADE libs boslib interface  vertex  wertex jmc patrecsr  toflib  zlib source tagg jadegs   jademus  
-	  JADELIBS =   \
-		       \
-		    patrecsr  grafix # jadesr
-      JADELIBS_STD = interface patrecsr jmc source jadegs vertex boslib jademus
+	  JADELIBS = boslib interface grafix jadegs \
+		     vertex wertex jademus jmc patrecsr \
+		     source tagg toflib zlib # jadesr
         JADELIBS_X = grafix interface patrecsr jmc source jadegs wertex boslib jademus toflib tagg
         JADELIBS_Z = interface jadegs boslib source zlib
 
@@ -135,7 +134,8 @@ endif
 ifeq ("$(MACHTYPE)","Linux")
 		FC = /usr/bin/gfortran
 #	    FFLAGS = -g -qextname -qxlf77=leadzero -qctyplss -qintlog -qfullpath -qddim #-qxref=full -C
-	    FFLAGS =  -g -fno-range-check -fdollar-ok -ffixed-line-length-none
+	    FFLAGS =  -g -ffixed-line-length-none -fno-range-check
+	    #-fno-range-check -fdollar-ok 
 	    #-qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl 
 	    #-qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog
 	       CPP = /usr/bin/cpp
