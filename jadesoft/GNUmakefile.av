@@ -88,7 +88,8 @@
 
 # - JADE libs boslib interface  vertex  wertex jmc patrecsr  toflib  zlib source tagg jadegs   jademus  
 	  JADELIBS =  \
-		       patrecsr \
+		       boslib interface grafix jadegs \
+		     vertex wertex jademus jmc patrecsr \
 		     source tagg toflib zlib # jadesr
         JADELIBS_X = grafix interface patrecsr jmc source jadegs wertex boslib jademus toflib tagg
         JADELIBS_Z = interface jadegs boslib source zlib
@@ -142,7 +143,8 @@ ifeq ("$(MACHTYPE)","Linux")
 	  CPPFLAGS = -traditional -P $(patsubst %,-I%,$(subst :, ,$(subst $(LIBDIR):,,$(VPATH)))) 
 	   LDFLAGS = -m32 -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS))     -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) 
 	   #-Wl,-m,-bloadmap:MAIN.map,-bnoquiet
-       LDFLAGS_STD = -m32 -L$(LIBDIR) -linterface -lpatrecsr -ljmc -lsource -ljadegs -lvertex -lboslib -ljademus -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) 
+       #LDFLAGS_STD = -m32 -L$(LIBDIR) -linterface -lpatrecsr -ljmc -lsource -ljadegs -lvertex -lboslib -ljademus -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) 
+       LDFLAGS_STD = -m32 $(LIBDIR)/libnterface.a $(LIBDIR)/libpatrecsr.a $(LIBDIR)/libjmc.a $(LIBDIR)/libsource.a $(LIBDIR)/libjadegs.a $(LIBDIR)/libvertex.a $(LIBDIR)/libboslib.a $(LIBDIR)/libjademus.a -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) 
        #-Wl,-m,-bloadmap:MAIN.map,-bnoquiet
          LDFLAGS_Z = -m32 -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_Z))   -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) 
          #-Wl,-m,-bloadmap:MAIN.map,-bnoquiet
@@ -195,14 +197,19 @@ $(JADELIBS):
 	else \
 	   echo "Makefile for library $@ does not exist!" ;\
 	fi
+docp:
+	rm -rf main.av
+	mkdir -p main.av
+	cp -r main/* main.av
+	cp -r main_patched/* main.av 
 
 ### Handling of the main programs
-main:	mcjade superv jadez ze4v
+main:	docp mcjade superv jadez ze4v
 
-mcjade:	lib_std $(MCJADE)/mcjade.o $(MCJADE)/mcuser.o $(MCJADE)/mcrand.o $(MCJADE)/mcmain.o $(SUPERV)/showb.o
+mcjade:	lib_std main.av/patched.o $(MCJADE)/mcjade.o $(MCJADE)/mcuser.o $(MCJADE)/mcrand.o $(MCJADE)/mcmain.o $(SUPERV)/showb.o
 	@echo "...updating" $@; mkdir -p $(BINDIR); cd $(MCJADE); \
-	echo $(FC) $(FFLAGS) -o $(BINDIR)/mcjade $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o   $(LDFLAGS_STD)
-	$(FC) $(FFLAGS) -o $(BINDIR)/mcjade $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o   $(LDFLAGS_STD) >> MAIN.map
+	echo $(FC) $(FFLAGS) -o $(BINDIR)/mcjade main.av/patched.o $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o   $(LDFLAGS_STD)
+	$(FC) $(FFLAGS) -o $(BINDIR)/mcjade  main.av/patched.o $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o   $(LDFLAGS_STD) -lgfortran >> MAIN.map
 
 superv:	lib_std $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o
 	@echo "...updating" $@; mkdir -p $(BINDIR); cd $(SUPERV); \

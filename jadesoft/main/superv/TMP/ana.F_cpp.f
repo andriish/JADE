@@ -1,3 +1,14 @@
+
+
+
+
+
+
+
+
+
+
+
 **************************************************
 *     
 *     SUPERV analyses routines called
@@ -26,85 +37,85 @@ Code:
       DO L=2,9
 C VECT
       IF( L.EQ.2 ) THEN
-      CALL HBOOK1(ID('NNEU, VECT',-L)
+          CALL HBOOK1(ID('NNEU, VECT',-L)
      +     ,'No of neutr particles, VECT',100,0.,100.,0.)
-      CALL HBOOK1(ID('NCH, VECT',-L)
+          CALL HBOOK1(ID('NCH, VECT',-L)
      +     ,'No of chrgd particles, VECT',100,0.,100.,0.)
       ENDIF
 C ALGN
       IF( L.EQ.3 ) THEN
-      CALL HBOOK1(ID('LG TOT, ALGN',-L)
+          CALL HBOOK1(ID('LG TOT, ALGN',-L)
      +     ,'LG total energy, ALGN',50,0.,50.,0. )
-      CALL HBOOK1(ID('LG EC, ALGN',-L)
+          CALL HBOOK1(ID('LG EC, ALGN',-L)
      +     ,'LG end cap energy, ALGN',50,0.,50.,0. )
-      CALL HBOOK1(ID('LG BAR, ALGN',-L)
+          CALL HBOOK1(ID('LG BAR, ALGN',-L)
      +     ,'LG barrel energy, ALGN',50,0.,50.,0. )
       ENDIF
 C JETC
       IF( L.EQ.2 ) THEN
-      CALL HBOOK1(ID('ID HITS',-L)
+          CALL HBOOK1(ID('ID HITS',-L)
      +     ,'Number of I.D. hits, JETC',100,0.,1500.,0.)
       ENDIF
 C PATR
       IF( L.EQ.5 .OR. L.EQ.7) THEN
-      CALL HBOOK1(ID('PTOT, PATR',-L)
+          CALL HBOOK1(ID('PTOT, PATR',-L)
      +     ,'Sum ptot, PATR',50,0.,50.,0.)
-      CALL HBOOK1(ID('PT, PATR',-L)
+          CALL HBOOK1(ID('PT, PATR',-L)
      +     ,'Sum pt, PATR',50,0.,50.,0. )
-      CALL HBOOK1(ID('NCH, PATR',-L)
+          CALL HBOOK1(ID('NCH, PATR',-L)
      +     ,'Number of charged particles, PATR',100,0.,100.,0.)
       ENDIF
 C ZVTX
       IF( L.EQ.4 ) THEN
-      CALL HBOOK1(ID('FAST Z',-L)
+          CALL HBOOK1(ID('FAST Z',-L)
      +     ,'Fast z vertex, ZVTX',100,-300.,300.,0.)
-      CALL HBOOK1(ID('Z HITS',-L)
+          CALL HBOOK1(ID('Z HITS',-L)
      +     ,'Number of hits in z peak, ZVTX',100,0.,800.,0.)
       ENDIF
 C LGCL
       IF( L.EQ.6 .OR. L.EQ.7 ) THEN
-      CALL HBOOK1(ID('# CLUS TOT',-L)
+          CALL HBOOK1(ID('# CLUS TOT',-L)
      +     ,'Number of clusters, total, LGCL',80,0.,80.,0. )
-      CALL HBOOK1(ID('# CLUS BAR',-L)
+          CALL HBOOK1(ID('# CLUS BAR',-L)
      +     ,'Number of clusters, barrel, LGCL',80,0.,80.,0. )
-      CALL HBOOK1(ID('# CLUS +EC',-L)
+          CALL HBOOK1(ID('# CLUS +EC',-L)
      +     ,'Number of clusters, +z end cap, LGCL',80,0.,80.,0. )
-      CALL HBOOK1(ID('# CLUS -EC',-L)
+          CALL HBOOK1(ID('# CLUS -EC',-L)
      +     ,'Number of clusters, -z end cap, LGCL',80,0.,80.,0. )
       
-      CALL HBOOK1(ID('LG E TOT',-L)
+          CALL HBOOK1(ID('LG E TOT',-L)
      +     ,'LG total energy, LGCL',50,0.,50.,0. )
-      CALL HBOOK1(ID('LG E BAR',-L)
+          CALL HBOOK1(ID('LG E BAR',-L)
      +     ,'LG barrel energy, LGCL',50,0.,50.,0. )
-      CALL HBOOK1(ID('LG E +EC',-L)
+          CALL HBOOK1(ID('LG E +EC',-L)
      +     ,'LG +z end cap energy, LGCL',50,0.,50.,0. )
-      CALL HBOOK1(ID('LG E -EC',-L)
+          CALL HBOOK1(ID('LG E -EC',-L)
      +     ,'LG -z end cap energy, LGCL',50,0.,50.,0. )
 
-      CALL HBOOK1(ID('# CLUS, U',-L)
+          CALL HBOOK1(ID('# CLUS, U',-L)
      +     ,'Number of unassociated clusters, LGCL',40,0.,40.,0. )
-      CALL HBOOK1(ID('LG E TOT, U',-L)
+          CALL HBOOK1(ID('LG E TOT, U',-L)
      +     ,'Energy of unassociated clusters, total, LGCL'
      +     ,50,0.,50.,0. )
-      CALL HBOOK1(ID('LG E BAR, U',-L)
+          CALL HBOOK1(ID('LG E BAR, U',-L)
      +     ,'Energy of unassociated clusters, barrel, LGCL'
      +     ,50,0.,50.,0. )
-      CALL HBOOK1(ID('LG E +EC, U',-L)
+          CALL HBOOK1(ID('LG E +EC, U',-L)
      +     ,'Energy of unassociated clusters, +z end cap, LGCL'
      +     ,50,0.,50.,0. )
-      CALL HBOOK1(ID('LG E -EC, U',-L)
+          CALL HBOOK1(ID('LG E -EC, U',-L)
      +     ,'Energy of unassociated clusters, -z end cap, LGCL'
      +     ,50,0.,50.,0. )
-      CALL HBOOK1(ID('LG E MIN',-L)
+          CALL HBOOK1(ID('LG E MIN',-L)
      +     ,'LG minimum energy',100,0.,.5,0. )
       ENDIF
 C
       IF( L.EQ.8 ) THEN 
 C LGCL + PATR
-      CALL HBOOK1(ID('P+E, PATR LGCL',-L)
+          CALL HBOOK1(ID('P+E, PATR LGCL',-L)
      +     ,'Sum Ptot + Etot, PATR LGCL',50,0.,50.,0. )
 C ALGN + PATR
-      CALL HBOOK1(ID('P+E, PATR ALGN',-L)
+          CALL HBOOK1(ID('P+E, PATR ALGN',-L)
      +     ,'Sum Ptot + Etot, PATR ALGN',50,0.,50.,0. )
       ENDIF
 
@@ -148,20 +159,20 @@ C
       REAL EPATR(9),EALGN(9),ELGCL(9)
 Code:
       IF( INDX.LE.2 ) THEN
-         CALL VZERO(EPATR,9)
-         CALL VZERO(EALGN,9)
-         CALL VZERO(ELGCL,9)
-         CALL VZERO(LPATR,9)
-         CALL VZERO(LALGN,9)
-         CALL VZERO(LLGCL,9)
+             CALL VZERO(EPATR,9)
+             CALL VZERO(EALGN,9)
+             CALL VZERO(ELGCL,9)
+             CALL VZERO(LPATR,9)
+             CALL VZERO(LALGN,9)
+             CALL VZERO(LLGCL,9)
       ENDIF
 C VECT
 C...  # of input particles
       LDO= INDX.EQ.2
       IND = IW( IBLN('VECT') )
       IF( IND.NE.0 .AND. LDO ) THEN
-         CALL HHF1('NNEU, VECT',INDX, REAL( IW( IND +  6 ) ), 1. )
-         CALL HHF1('NCH, VECT' ,INDX, REAL( IW( IND +  5 ) ), 1. )
+             CALL HHF1('NNEU, VECT',INDX, REAL( IW( IND +  6 ) ), 1. )
+             CALL HHF1('NCH, VECT' ,INDX, REAL( IW( IND +  5 ) ), 1. )
       ENDIF
 C PATR
 C...  # of PATR tracks
@@ -169,7 +180,7 @@ C...  # of PATR tracks
       IND = IW( IBLN('PATR') )
       IPH = IW( IBLN('HEAD') )
       IF( IND .NE. 0 .AND. IPH .NE. 0 .AND. LDO) THEN
-         CALL HHF1('NCH, PATR',INDX, REAL( IW( IND +  2 ) ), 1. )
+             CALL HHF1('NCH, PATR',INDX, REAL( IW( IND +  2 ) ), 1. )
 C...  Momenta of PATR tracks
          BKGAUS = HW( IPH*2 + 30 ) * .001
          BKGAUS = ABS( BKGAUS )
@@ -183,8 +194,8 @@ C...  Momenta of PATR tracks
             PTRANS = .3E-4 * BKGAUS / AMAX1( ACURV, 1.E-6 )
             PT = PT + PTRANS
  1100       PTOT = PTOT + PTRANS * SQRT( 1. + RW(J+30)**2 )
-            CALL HHF1('PTOT, PATR',INDX, PTOT ,1. )
-            CALL HHF1('PT, PATR',INDX, PT ,1. )
+                CALL HHF1('PTOT, PATR',INDX, PTOT ,1. )
+                CALL HHF1('PT, PATR',INDX, PT ,1. )
 C... save results for later use
             LPATR(INDX)=.TRUE.
             EPATR(INDX)=PTOT
@@ -195,7 +206,7 @@ C...  # OF JETC HITS
       IND = IW( IBLN('JETC') )
       IF( IND .NE. 0 .AND. LDO ) THEN
          NHITS = ( HW(IND*2+99) - HW(IND*2+3) ) / 4
- 72      CALL HHF1('ID HITS',INDX, REAL(NHITS) ,1. )
+ 72          CALL HHF1('ID HITS',INDX, REAL(NHITS) ,1. )
       ENDIF
 C ZVTX
       LDO=INDX.EQ.4
@@ -203,8 +214,8 @@ C ZVTX
       IF( IND.NE.0 ) THEN
 c         write(*,'(A4,3I)') iw(ind-3),iw(ind-2),iw(ind-1),iw(ind)
 c         print *,rw(ind+1),rw(ind+4)
-         CALL HHF1('FAST Z',INDX, RW(IND+1), 1. )
-         CALL HHF1('Z HITS',INDX, RW(IND+4), 1. )
+             CALL HHF1('FAST Z',INDX, RW(IND+1), 1. )
+             CALL HHF1('Z HITS',INDX, RW(IND+4), 1. )
       ENDIF
 C ALGN
 C...  LG energy
@@ -223,9 +234,9 @@ C...  LG energy
          ECAP = ECAP * .001
          ETOT = ETOT * .001
 C
-         CALL HHF1('LG TOT, ALGN',INDX, ETOT, 1. )
-         CALL HHF1('LG EC, ALGN',INDX, ECAP, 1. )
-         CALL HHF1('LG BAR, ALGN',INDX, ETOT - ECAP, 1. )
+             CALL HHF1('LG TOT, ALGN',INDX, ETOT, 1. )
+             CALL HHF1('LG EC, ALGN',INDX, ECAP, 1. )
+             CALL HHF1('LG BAR, ALGN',INDX, ETOT - ECAP, 1. )
 C ... save for later use
          LALGN(INDX)=.TRUE.
          EALGN(INDX)=ETOT
@@ -240,22 +251,22 @@ C LGCL
          NCLST= IW( IND + IP1 + 2 )
          NWPCL= IW( IND + IP1 + 20 )
 C... No of Clusters
-         CALL HHF1('# CLUS TOT',INDX, REAL(IW( IND+IP1+2 )), 1. )
-         CALL HHF1('# CLUS BAR',INDX, REAL(IW( IND+IP1+3 )), 1. )
-         CALL HHF1('# CLUS -EC',INDX, REAL(IW( IND+IP1+4 )), 1. )
-         CALL HHF1('# CLUS +EC',INDX, REAL(IW( IND+IP1+5 )), 1. )
+             CALL HHF1('# CLUS TOT',INDX, REAL(IW( IND+IP1+2 )), 1. )
+             CALL HHF1('# CLUS BAR',INDX, REAL(IW( IND+IP1+3 )), 1. )
+             CALL HHF1('# CLUS -EC',INDX, REAL(IW( IND+IP1+4 )), 1. )
+             CALL HHF1('# CLUS +EC',INDX, REAL(IW( IND+IP1+5 )), 1. )
 C... Shower Energies
-         CALL HHF1('LG E TOT',INDX, RW( IND+IP1+6 ), 1. )
-         CALL HHF1('LG E BAR',INDX, RW( IND+IP1+7 ), 1. )
-         CALL HHF1('LG E -EC',INDX, RW( IND+IP1+8 ), 1. )
-         CALL HHF1('LG E +EC',INDX, RW( IND+IP1+9 ), 1. )
+             CALL HHF1('LG E TOT',INDX, RW( IND+IP1+6 ), 1. )
+             CALL HHF1('LG E BAR',INDX, RW( IND+IP1+7 ), 1. )
+             CALL HHF1('LG E -EC',INDX, RW( IND+IP1+8 ), 1. )
+             CALL HHF1('LG E +EC',INDX, RW( IND+IP1+9 ), 1. )
 C... No of "Photons" ( unassociated clusters )
-         CALL HHF1('# CLUS, U',INDX, REAL(IW( IND+IP1+10 )), 1. )
+             CALL HHF1('# CLUS, U',INDX, REAL(IW( IND+IP1+10 )), 1. )
 C... "Photon" Energies
-         CALL HHF1('LG E TOT, U',INDX, RW( IND+IP1+11 ), 1. )
-         CALL HHF1('LG E BAR, U',INDX, RW( IND+IP1+12 ), 1. )
-         CALL HHF1('LG E -EC, U',INDX, RW( IND+IP1+13 ), 1. )
-         CALL HHF1('LG E +EC, U',INDX, RW( IND+IP1+14 ), 1. )
+             CALL HHF1('LG E TOT, U',INDX, RW( IND+IP1+11 ), 1. )
+             CALL HHF1('LG E BAR, U',INDX, RW( IND+IP1+12 ), 1. )
+             CALL HHF1('LG E -EC, U',INDX, RW( IND+IP1+13 ), 1. )
+             CALL HHF1('LG E +EC, U',INDX, RW( IND+IP1+14 ), 1. )
 C... Loop over clusters
          LGMIN = 1.E9
          DO I=1, NCLST
@@ -263,7 +274,7 @@ C... Loop over clusters
 C... Minimal shower energy            
             IF( RW(IB+2) .LT. LGMIN ) LGMIN =  RW(IB+2) 
          ENDDO
-         CALL HHF1('LG E MIN',INDX, LGMIN, 1. )
+             CALL HHF1('LG E MIN',INDX, LGMIN, 1. )
 C... save for later user
          LLGCL(INDX)=.TRUE.
          ELGCL(INDX)= RW( IND+IP1+6 )
@@ -273,9 +284,9 @@ C TOTAL ENERGY ( TRACKS + CLUSTERS )
 
       IF( INDX.EQ.8 ) THEN
       IF(LALGN(3).AND.LPATR(5))
-     +     CALL HHF1('P+E, PATR ALGN',INDX, EPATR(5) + EALGN(3), 1. )
+     +         CALL HHF1('P+E, PATR ALGN',INDX, EPATR(5) + EALGN(3), 1. )
       IF(LLGCL(6).AND.LPATR(5))
-     +     CALL HHF1('P+E, PATR LGCL',INDX, EPATR(5) + ELGCL(6), 1. )
+     +         CALL HHF1('P+E, PATR LGCL',INDX, EPATR(5) + ELGCL(6), 1. )
       ENDIF
 C
  4000 RETURN
@@ -299,8 +310,8 @@ C PAW
       COMMON /PAWC/ HMEMOR(NWPAW)
 C
 Code:
-      CALL HCDIR('//PAWC',' ')
-      CALL HLDIR('//PAWC',' ')
+          CALL HCDIR('//PAWC',' ')
+          CALL HLDIR('//PAWC',' ')
 C
       RETURN
       END
@@ -326,7 +337,7 @@ C
       INTEGER IDEN,ID
 C
       IDEN=ID(CID,IND)
-      IF( IDEN.GT.0 ) CALL HF1(IDEN,X,W)
+      IF( IDEN.GT.0 )     CALL HF1(IDEN,X,W)
 C
       RETURN
       END
@@ -371,7 +382,7 @@ C
 Code:
       IF( CD.EQ.' '.OR. IND.EQ.1 ) THEN
          WRITE(*,901) CD,ID
- 901     FORMAT('*** ERROR IN ID: Illegal arguments: CD ='
+ 901          FORMAT('*** ERROR IN ID: Illegal arguments: CD ='
      +        ,A,' ID = ',I8)
          ID=0
          GOTO 800
@@ -382,7 +393,7 @@ Code:
             IF( HEXIST(ID) ) THEN
                IF( IND.GT.0 ) GOTO 999
                WRITE(*,903) CD,ID
- 903           FORMAT('*** ERROR IN ID: Histogram already exists:'
+ 903                FORMAT('*** ERROR IN ID: Histogram already exists:'
      +              ,/,' CD = ',A,' ID= ',I9)
                GOTO 800
             ELSE
@@ -393,7 +404,7 @@ Code:
          ELSE
             IF( IND.GT.0 .AND. I.EQ.ICODE ) THEN
                WRITE(*,904) CD
- 904           FORMAT('*** ERROR IN ID: Histogram corresponding to '
+ 904                FORMAT('*** ERROR IN ID: Histogram corresponding to '
      +              ,'CD = ',A,' is not defined yet.')
                GOTO 800
             ENDIF
@@ -401,7 +412,7 @@ Code:
       ENDDO
       IF(ICODE+1.GT.200) THEN
          WRITE(*,902) ICODE+1
- 902     FORMAT('*** ERROR IN ID: Maximum number of histograms'
+ 902          FORMAT('*** ERROR IN ID: Maximum number of histograms'
      +        ,' exceeded, ICODE=',I8)
          ID=0
          GOTO 800
