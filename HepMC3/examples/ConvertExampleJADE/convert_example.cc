@@ -1,6 +1,7 @@
 // -*- C++ -*-
 #define HEPMCCONVERT_EXTENSION_ROOTTREEOPAL
 #define HEPMCCONVERT_EXTENSION_HEPEVTZEUS
+#define HEPMCCONVERT_EXTENSION_JADE  
 #include "HepMC/GenEvent.h"
 #include "HepMC/Reader.h"
 #include "HepMC/Writer.h"
@@ -32,6 +33,10 @@
 #ifdef HEPMCCONVERT_EXTENSION_HEPEVTZEUS  
 #include "WriterHEPEVTZEUS.h"
 #endif
+#ifdef HEPMCCONVERT_EXTENSION_JADE  
+#include "WriterJADE.h"
+#endif
+
 
 
 #include <iostream>
@@ -53,6 +58,9 @@ enum formats {hepmc2, hepmc3, hpe
 #ifdef HEPMCCONVERT_EXTENSION_HEPEVTZEUS              
               ,hpezeus
 #endif
+#ifdef HEPMCCONVERT_EXTENSION_JADE              
+              ,jade
+#end
              };
 
 struct parsedoption
@@ -133,6 +141,9 @@ int main(int argc, char** argv)
 #ifdef HEPMCCONVERT_EXTENSION_HEPEVTZEUS
     format_map.insert(std::pair<std::string,formats> ( "hpezeus", hpezeus ));
 #endif
+#ifdef HEPMCCONVERT_EXTENSION_JADE
+    format_map.insert(std::pair<std::string,formats> ( "jade", jade ));
+#endif
 
     std::map<std::string,std::string> extention_map;
     extention_map.insert(std::pair<std::string,std::string> ( "hepmc2","hepmc2" ));
@@ -148,6 +159,9 @@ int main(int argc, char** argv)
 #endif
 #ifdef HEPMCCONVERT_EXTENSION_HEPEVTZEUS
     extention_map.insert(std::pair<std::string,std::string> ( "hpezeus", "zeusmc" ));
+#endif
+#ifdef HEPMCCONVERT_EXTENSION_JADE
+    extention_map.insert(std::pair<std::string,std::string> ( "jade", "jade" ));
 #endif
 
 
@@ -250,6 +264,11 @@ int main(int argc, char** argv)
 #ifdef HEPMCCONVERT_EXTENSION_HEPEVTZEUS
                 case hpezeus:
                     output_file=new WriterHEPEVTZEUS(convert_list[i].second);
+                    break;
+#endif
+#ifdef HEPMCCONVERT_EXTENSION_JADE
+                case jade:
+                    output_file=new WriterJADE(convert_list[i].second);
                     break;
 #endif
                 default:

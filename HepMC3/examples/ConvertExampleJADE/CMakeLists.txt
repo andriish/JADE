@@ -11,7 +11,10 @@ include_directories(${PROJECT_SOURCE_DIR}/rootIO/include ${CMAKE_CURRENT_SOURCE_
 add_executable(convert_example.exe
         ${CMAKE_CURRENT_SOURCE_DIR}/convert_example.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/src/WriterRootTreeOPAL.cc 
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/WriterHEPEVTZEUS.cc )
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/WriterHEPEVTZEUS.cc 
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/WriterJADE.cc 
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/jadeio.f
+        )
 target_link_libraries(convert_example.exe ${ROOT_LIBRARIES} HepMC HepMCrootIO)
 set_target_properties(convert_example.exe PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/outputs/${CMAKE_INSTALL_BINDIR})
 add_dependencies( convert_example.exe dictionary )
@@ -28,7 +31,10 @@ include_directories(${PROJECT_SOURCE_DIR}/rootIO/include ${CMAKE_CURRENT_SOURCE_
 #
 add_executable(convert_example.exe
         ${CMAKE_CURRENT_SOURCE_DIR}/convert_example.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/WriterHEPEVTZEUS.cc )
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/WriterHEPEVTZEUS.cc 
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/WriterJADE.cc 
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/jadeio.f
+        )
 target_link_libraries(convert_example.exe HepMC )
 set_target_properties(convert_example.exe PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/outputs/${CMAKE_INSTALL_BINDIR})
 add_dependencies( convert_example.exe dictionary )
