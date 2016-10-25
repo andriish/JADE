@@ -1,4 +1,4 @@
-CDECK  ID>, LEPAIR.
+CDECK  ID>, LEPAIR. 
       PROGRAM LEPAIR
       IMPLICIT NONE
 C
@@ -111,7 +111,7 @@ C Charges (e+e-, mu+mu-)
 C Flavour names
       CP(1)=LNAME(LTYP)(1:INDEX(LNAME(LTYP),' ')-1)//'-'
       CP(2)=LNAME(LTYP)(1:INDEX(LNAME(LTYP),' ')-1)//'+'
-C---  List of 'final' (stable)  particles 
+C---  List of 'final' (stable)  particles
 C     Number of charged/neutral particles
       NF=2
 C     Number of charged/neutral particles in the 'final' list
@@ -157,7 +157,7 @@ C     Write out common /CPROD/
 C     - Binary format (JADE 'CPROD' format)
             CALL WRCPRD(LUN,IERR)
             IF( IERR.NE.0 ) GOTO 90
-C     - Readable ASCII format 
+C     - Readable ASCII format
          ELSE IF(INDEX(COPT,'A').NE.0) THEN
             CALL PRCPRD(LUN,IERR)
             IF( IERR.NE.0 ) GOTO 90
@@ -173,12 +173,12 @@ C
      >               ,'...Will stop now!'
       STOP
       END
-CDECK  ID>, WRCPRD.
+CDECK  ID>, WRCPRD. 
       SUBROUTINE WRCPRD(LUN,IERR)
       IMPLICIT NONE
 *********************************************************************
 *.
-*.  Write out 4-vector information in a binary format 
+*.  Write out 4-vector information in a binary format
 *.  (JADE 'CPROD' format, see JADE Computer Note 69)
 *.
 *********************************************************************
@@ -195,7 +195,7 @@ C  (see JADE Computer Note 69)
       INTEGER I1,I2,I3,I4,I5,N,N2
       INTEGER LUN,IERR
 Code:
-      WRITE(UNIT=LUN,ERR=10,IOSTAT=IERR) 
+      WRITE(UNIT=LUN,ERR=10,IOSTAT=IERR)
      *     NEV, BEAM, PT, PHI, THETA, IFLAVR,
      *     NP, NC, NN, ( (PP(I4,N), I4=1,4), XM(N), JCH(N), JTP(N),
      *     (JP(N,I2), I2=1,2), N=1,NP),
@@ -206,12 +206,12 @@ Code:
       RETURN
       END
 C
-CDECK  ID>, PRCPRD.
+CDECK  ID>, PRCPRD. 
       SUBROUTINE PRCPRD(LUN,IERR)
       IMPLICIT NONE
 *********************************************************************
 *.
-*.  Print out 4-vector information in common /CPROD/ 
+*.  Print out 4-vector information in common /CPROD/
 *.  in a readable format.
 *.
 *********************************************************************
@@ -230,12 +230,12 @@ C  (see JADE Computer Note 69)
 Code:
       WRITE(LUN,'(/A,I8)') ' PRCPRD: Content of common /CPROD/ in event'
      *     ,NEV
-      WRITE(LUN,'(/A6,I7,A6,F6.2,A8,I2)') 
+      WRITE(LUN,'(/A6,I7,A6,F6.2,A8,I2)')
      *     ' NEV=',NEV,' BEAM=',BEAM,' IFLAVR=',IFLAVR
       WRITE(LUN,'(A14,3F7.4)') ' PT/PHI/THETA=',PT, PHI, THETA
       WRITE(LUN,'(/A15,A10,3I4)') ' All particles:'
      *     ,' NP/NC/NN=',NP, NC, NN
-      WRITE(LUN,'(T21,5A9,A5,A8,A6)') 
+      WRITE(LUN,'(T21,5A9,A5,A8,A6)')
      *     'PP(1,I)','PP(2,I)','PP(3,I)','PP(4,I)','PP(5,I)'
      *     ,'JCH','JTP','JP'
       WRITE(LUN,'(I3,A17,5F9.3,I5,I8,2I4)')
@@ -243,21 +243,21 @@ Code:
      *     (JP(N,I2), I2=1,2), N=1,NP)
       WRITE(LUN,'(/A23,A13,3I4)') ' Final state particles:'
      *     ,' NF/NCF/NNF=',NF, NCF, NNF
-      WRITE(LUN,'(T21,5A9,2A5,A21)') 
+      WRITE(LUN,'(T21,5A9,2A5,A21)')
      *     'PF(1,I)','PF(2,I)','PF(3,I)','PF(4,I)','PF(5,I)'
      *     ,'ICF','ITF','PSTRT-X -Y -Z'
       WRITE(LUN,'(I3,A17,5F9.3,2I5,3F9.3)')
      *     (N2,CF(N2),(PF(I4,N2),I4=1,4), XMF(N2), ICF(N2),ITF(N2),
      *     (PSTRT(I3,N2),I3=1,3),N2=1,NF)
-C     
+C
       RETURN
       END
-CDECK  ID>, INCPRD.
+CDECK  ID>, INCPRD. 
       SUBROUTINE INCPRD
       IMPLICIT NONE
 *********************************************************************
 *.
-*.  Initialization of common /CPROD/ 
+*.  Initialization of common /CPROD/
 *.
 *********************************************************************
 C  4-vector format for the JADE simulation program MCJADE
