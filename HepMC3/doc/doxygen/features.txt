@@ -1,0 +1,111 @@
+/**
+    @page features New features
+
+    The following is a list of the new features available in HepMC3
+
+    ###########################################################################
+    @section cmake Cmake build system
+    ###########################################################################
+
+    HepMC3 is built using CMake and is fully compatible with c++11.
+    Following options are available:
+
+    @code{.cpp}
+        cmake -DHEPMC_ENABLE_CPP11=ON
+              -DHEPMC_BUILD_EXAMPLES=ON
+              -DPYTHIA8_ROOT_DIR=<path_to_pythia8180_or_later>
+              -DROOT_DIR=<path_to_root_bin_dir>
+    @endcode
+
+    @note Path to pythia8 is used for examples only
+
+    @note Path to ROOT is optional. If not provided, CMake will attempt to find
+          default ROOT installation. If no installation is present, ROOT I/O
+          will not be available
+
+    @note cmake is set to detect c++11 support by default. If c++11 is not
+          supported CMake will attempt to use c++0x.
+
+    ###########################################################################
+    @section modules New modules
+    ###########################################################################
+
+    See <a href="modules.html">modules</a> section for descriptions of new
+    modules, such as ROOT I/O, Search Engine and Attributes.
+
+    ###########################################################################
+    @section gen_run GenRunInfo class
+    ###########################################################################
+
+    A new class has been provided to store run-level informations, such as
+    weight names, names and description of tools used to generate the event,
+    global attributes such as LHE run information or any other run information
+    provided by user. See HepMC::GenRunInfo class description for details.
+
+    @note This class can be serialized and parsed using ASCII I/O or ROOT I/O.
+
+    ###########################################################################
+    @section interfaces LHEF interface and new header-only HEPEVT wrapper
+    ###########################################################################
+
+    See <a href="examples.html">examples</a> section for examples of their use.
+
+    ###########################################################################
+    @section small Small enchantments
+    ###########################################################################
+    ###########################################################################
+    @subsection generated_mass Check if generated mass is set
+    ###########################################################################
+
+    To determine if field HepMC3::GenParticle::generated_mass() is set use:
+
+    @code{.cpp}
+        bool is_set = particle.is_generated_mass_set();
+
+        if(!is_set) particle.set_generated_mass(m);
+
+        cout<<particle.generated_mass()<<endl;
+    @endcode
+
+    Note that if HepMC3::GenParticle::generated_mass() is not set, call to this function
+    will return mass calculated from 4-momentum using HepMC3::FourVector.m()
+
+    ###########################################################################
+    @subsection iterators Iterators
+    ###########################################################################
+
+    GenEvent and GenVertex containers are now of std::vector type.
+    This greatly simplifies iteration over them
+
+    e.g. (c++11):
+
+    @code{.cpp}
+        foreach( const GenParticlePtr &p : event.particles() ) { {
+            ...
+        }
+
+        foreach( const GenParticlePtr &p : vertex.particles_in() ) { {
+            ...
+        }
+    @endcode
+
+    @note one can use macro FOREACH defined in HepMC/Common.h which uses
+          c++11 or tries to mimic it depending on the installation options
+
+    @code{.cpp}
+        #include "HepMC/Common.h"
+
+        ...
+
+        FOREACH( const GenParticlePtr &p, event.particles() ) { {
+            ...
+        }
+
+        FOREACH( const GenParticlePtr &p, vertex.particles_in() ) { {
+            ...
+        }
+    @endcode
+
+    <hr>
+    Last update 6 Apr 2016
+*/
