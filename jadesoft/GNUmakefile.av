@@ -135,7 +135,7 @@ endif
 ifeq ("$(MACHTYPE)","Linux")
 		FC = /usr/bin/gfortran
 #	    FFLAGS = -g -qextname -qxlf77=leadzero -qctyplss -qintlog -qfullpath -qddim #-qxref=full -C
-	    FFLAGS = -m32 -g -ffixed-line-length-none -fno-range-check -fmax-stack-var-size=1996457920
+	    FFLAGS = -m32 -g -ffixed-line-length-none -fno-range-check 
 	    #-fno-range-check -fdollar-ok 
 	    #-qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl 
 	    #-qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog
@@ -208,33 +208,46 @@ docptxt: GNUmakefile.av
 ### Handling of the main programs
 main:	 mcjade superv jadez ze4v
 
-
-
-mcjade:	lib docptxt $(MAINDIR)/patched.o $(MCJADE)/mcjade.o $(MCJADE)/mcuser.o $(MCJADE)/mcrand.o $(MCJADE)/mcmain.o $(SUPERV)/showb.o
+#lib docptxt
+#lib docptxt
+mcjade:	 docptxt $(MAINDIR)/patched.o $(MCJADE)/mcjade.o $(MCJADE)/mcuser.o $(MCJADE)/mcrand.o $(MCJADE)/mcmain.o $(SUPERV)/showb.o
 	@echo "...updating" $@;  mkdir -p $(BINDIR); cd $(MCJADE); \
 	echo $(FC) $(FFLAGS) -o $(BINDIR)/mcjade $(MAINDIR)/patched.o $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o   $(LDFLAGS_STD)
 	$(FC) $(FFLAGS) -o $(BINDIR)/mcjade  main.av/patched.o $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o   $(LDFLAGS_STD) -lgfortran >> MAIN.map
 
-superv:	lib docptxt $(MAINDIR)/patched.o $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o
+superv:	 docptxt $(MAINDIR)/patched.o $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o $(SUPERV)/jdmain.o
 	@echo "...updating"  $@; mkdir -p $(BINDIR); cd $(SUPERV); \
-	$(FC) $(LDFLAGS_STD) $(FFLAGS) -o $(BINDIR)/superv  $(MAINDIR)/patched.o $(MCJADE)/jdmain.f $(MCJADE)/ana.o $(MCJADE)/user.o $(MCJADE)/showb.o $(MCJADE)/mcrand.o $(LDFLAGS_STD) -lgfortran >> MAIN.map
+#	echo $(FC)  $(FFLAGS) -o $(BINDIR)/superv  $(LIBDIR)/libsource.a $(LIBDIR)/libjadegs.a  $(MAINDIR)/patched.o $(SUPERV)/jdmain.f $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o $(LDFLAGS_X) -lgfortran >> MAIN.map
+#	$(FC)  $(FFLAGS) -o $(BINDIR)/superv  $(LIBDIR)/libsource.a $(LIBDIR)/libjadegs.a  $(MAINDIR)/patched.o $(SUPERV)/jdmain.f $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o $(LDFLAGS_X) -lgfortran >> MAIN.map
+#	$(FC)  $(FFLAGS) -o $(BINDIR)/superv  $(MAINDIR)/patched.o $(SUPERV)/jdmain.o $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o \
+#	$(LDFLAGS_X) $(LIBDIR)/libpatrecsr.a   -lgfortran $(shell cernlib-static packlib mathlib graflib grafX11)  >> MAIN.map
+	$(FC)  $(FFLAGS) -o  $(BINDIR)/superv $(MAINDIR)/patched.o $(SUPERV)/jdmain.o $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o -Wl,--start-group -L$(LIBDIR) -lboslib -ljadegs -linterface -ljademus -lsource -lwertex -lpatrecsr    -lgfortran       $(shell cernlib-static kernlib packlib mathlib graflib grafX11)  -Wl,--end-group 
+
 
 $(SUPERV)/ana.o:	$(SUPERV)/cana.for
 
-jadez:	 $(MAINDIR)/patched.o $(JADEZ)/xuser.o $(JADEZ)/gphmain.o
+jadez:	docptxt $(MAINDIR)/patched.o $(JADEZ)/xuser.o $(JADEZ)/gphmain.o
 	echo "...updating" $@; mkdir -p $(BINDIR); mkdir -p $(JADEZ)/TMP; 
 #cd $(JADEZ); \
 #	$(CPP) $(CPPFLAGS) gphmain.F $(JADEZ)/TMP/gphmain.F_cpp.f ;\
 #	echo $(FC)  $(FFLAGS) -o $(BINDIR)/jadez  $(MAINDIR)/patched.o $(JADEZ)/gphmain.o $(JADEZ)/xuser.o $(LDFLAGS_X) -lgfortran >> MAIN.map
-	$(FC) $(FFLAGS) -o $(BINDIR)/jadez  $(MAINDIR)/patched.o $(JADEZ)/gphmain.o $(JADEZ)/xuser.o $(LDFLAGS_X) -lgfortran >> MAIN.map
+#	$(FC) $(FFLAGS) -o $(BINDIR)/jadez  $(MAINDIR)/patched.o $(JADEZ)/gphmain.o $(JADEZ)/xuser.o $(LDFLAGS_X) -lgfortran >> MAIN.map
+	$(FC)  $(FFLAGS)   -o $(BINDIR)/jadez  $(MAINDIR)/patched.o $(JADEZ)/gphmain.o $(JADEZ)/xuser.o \
+	 -Wl,--start-group -L$(LIBDIR) -lpatrecsr -ltoflib -ltagg -lboslib -ljadegs -linterface -ljademus -lsource -lwertex -lpatrecsr    -lgfortran  -lgrafix \
+	      $(shell cernlib-static kernlib packlib mathlib graflib grafX11)  -Wl,--end-group 
+
+#grafix interface patrecsr jmc source jadegs wertex boslib jademus toflib tagg
 
 $(JADEZ)/xuser.o:		$(JADEZ)/xuser.F cgraph.for cdata.for
 $(JADEZ)/gphmain.o: $(JADEZ)/gphmain.F
 
-ze4v:   lib $(MCJADE)/mcrand.o $(SUPERV)/showb.o
+ze4v: docptxt  $(MAINDIR)/patched.o  $(MCJADE)/mcrand.o $(SUPERV)/showb.o $(ZE4V)/ze4vjb.o
 	@echo "...updating" $@; cd $(ZE4V); \
-	$(FC) $(LDFLAGS_Z) $(FFLAGS) -o $(BINDIR)/ze4v ze4vjb.f  $(MCJADE)/mcrand.o $(SUPERV)/showb.o >> MAIN.map
+	$(FC)  $(FFLAGS) -o $(BINDIR)/ze4v $(MAINDIR)/patched.o  $(ZE4V)/ze4vjb.o $(MCJADE)/mcrand.o $(SUPERV)/showb.o \
+	  -Wl,--start-group  -L$(LIBDIR)    -linterface -ljadegs -lboslib -lsource -lzlib   $(shell cernlib-static kernlib packlib mathlib graflib grafX11)     -Wl,--end-group \
+	  >> MAIN.map
 
+$(ZE4V)/ze4vjb.o: $(ZE4V)/ze4vjb.f
 
 # Clean up
 .PHONEY : clean mclean aclean
