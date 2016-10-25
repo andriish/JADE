@@ -98,7 +98,7 @@ int main(int argc, char** argv)
             printf("\
      Usage: %s  <mode> <input_file.input_extension>    <output_file.output_extension>  [optional list of options]\n\
      Supported modes are: hepmc2_root hepmc3_root etc.\n\
-     List of options should be given as option1=value1:option2=value2:option3=value3 ...\nThe full list of modes:",argv[0]);
+     List of options should be given as option1=value1:option2=value2:option3=value3 ...\nThe full list of modes:\n",argv[0]);
      printf("%s\n%s\n%s\n","hepmc2","hepmc3", "hpe");
 #ifdef HEPMC_ROOTIO
               printf("%s\n%s\n","root","treeroot");
@@ -112,8 +112,7 @@ int main(int argc, char** argv)
 #endif
 #ifdef HEPMCCONVERT_EXTENSION_JADE              
               printf("%s\n","jade");
-#endif
-            
+#endif            
             exit(1);
         }
 

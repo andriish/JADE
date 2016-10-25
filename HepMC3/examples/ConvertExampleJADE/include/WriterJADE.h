@@ -22,7 +22,7 @@ struct JADEEVT
    int  JTP[500];
    int  JP[2][500];
    int  NF;
-   int  NFC;
+   int  NCF;
    int  NNF;
    float  PF[300][4];
    float  XMF[300];
@@ -44,7 +44,6 @@ struct JADEEVT
 
 extern "C" 
 {
-extern struct JADEEVT*  cprod_;
 void jfopen_(const char * filename,int &u, int &size);
 void jfclose_(int&);
 void jfwrite_(int&, int&);
@@ -55,6 +54,7 @@ namespace HepMC
 class WriterJADE : public  Writer
 {
 public:
+    struct JADEEVT*  fJ;
     int fUNIT;
     int fMODE;
     WriterJADE(const std::string &filename);
