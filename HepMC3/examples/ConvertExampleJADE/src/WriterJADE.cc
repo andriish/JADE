@@ -5,7 +5,9 @@ WriterJADE::WriterJADE(const std::string &filename)
 {
 fUNIT=100;
 fMODE=0;
-jfopen_(filename.c_str(),fUNIT,filename.length());
+const char* f=filename.c_str();
+int s=filename.length();
+jfopen_(f,fUNIT,s);
 
 }
 void WriterJADE::write_event(const GenEvent &evt)
@@ -20,7 +22,7 @@ void WriterJADE::write_event(const GenEvent &evt)
 	cprod_->NC=0;
 	cprod_->NN=0;
 	
-	for int (i=0;i<evt.particles().size();i++)
+	for (int  i=0;i<evt.particles().size();i++)
 	{
 	
 	}

@@ -2,7 +2,8 @@
       IMPLICIT NONE
       character*80 FILEN
       INTEGER U, I, L, IERR
-      OPEN (U, FILE=FILEN, STATUS='NEW', IERR)
+      OPEN (U, FILE=FILEN, STATUS='NEW')
+ 
       RETURN
       END
 
@@ -17,13 +18,13 @@
       IMPLICIT NONE      
       integer U,M, IERR
       
-      if ( M. EQ. 0 )
+      if ( M. EQ. 0 ) then 
       CALL WRCPRD(U,IERR)
       end if 
-      if ( M. EQ. 1 )
+      if ( M. EQ. 1 ) then 
       CALL PRCPRD(U,IERR)
       end if 
-      if (IERR .NE. 0)
+      if (IERR .NE. 0) then 
       WRITE(*,*)"ERROR IN WRITE ",IERR
       end if
       RETURN

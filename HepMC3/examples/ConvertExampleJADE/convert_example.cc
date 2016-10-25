@@ -60,7 +60,7 @@ enum formats {hepmc2, hepmc3, hpe
 #endif
 #ifdef HEPMCCONVERT_EXTENSION_JADE              
               ,jade
-#end
+#endif
              };
 
 struct parsedoption

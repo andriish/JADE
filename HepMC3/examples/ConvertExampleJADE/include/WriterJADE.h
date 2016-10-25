@@ -45,7 +45,7 @@ struct JADEEVT
 extern "C" 
 {
 extern struct JADEEVT*  cprod_;
-void jfopen_(char * filename,int &u, int &size);
+void jfopen_(const char * filename,int &u, int &size);
 void jfclose_(int&);
 void jfwrite_(int&, int&);
 }	
@@ -57,7 +57,12 @@ class WriterJADE : public  Writer
 public:
     int fUNIT;
     int fMODE;
-//    WriterJADE(const std::string &filename);
+    WriterJADE(const std::string &filename);
+
+bool failed();
+ void write_event(const GenEvent &evt);
+void close();
+
 };
 }
 #endif
