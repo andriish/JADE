@@ -31,6 +31,16 @@
       RETURN
       END
 
+      function locCHCPRD()
+      INTEGER locCHCPRD,A,B
+
+
+
+      COMMON/CHCPRD/ CP(500),CF(300)
+      CHARACTER*16 CP,CF
+       locCHCPRD=loc(CP)
+      end 
+      
       function LOCCPROD()
       INTEGER LOCCPROD,A,B
       
@@ -42,8 +52,7 @@
      *        NF,NCF,NNF,PF(4,300),XMF(300),ICF(300),ITF(300),
      *        PSTRT(3,300)
       COMMON/CHCPRD/ CP(500),CF(300)
-      
-      
+
       
       
       
@@ -74,6 +83,26 @@ C  (see JADE Computer Note 69)
       COMMON/CHCPRD/ CP(500),CF(300)
       INTEGER I1,I2,I3,I4,I5,N,N2
       INTEGER LUN,IERR
+
+
+
+
+      REAL XDUMMY(10),SVEC(3,3), ANG
+      INTEGER IER2
+      REAL RADDEG
+      PARAMETER( RADDEG=57.2958 )
+      PHI=0.
+      THETA=0.
+      CALL PXJSP3(NF,4,PF,XDUMMY,SVEC,IER2)
+      IF( IER2.EQ.0 ) THEN
+         THETA=ACOS(SVEC(3,3))*RADDEG
+         CALL PXANXY(SVEC(1,3),SVEC(3,3),ANG,IER2)
+         IF( IER2.EQ.0 ) THEN
+            PHI=ANG*RADDEG
+         ELSE
+            PHI=0.
+         ENDIF
+         ENDIF
 
       write(*,*) LUN,' np=', NP, ' Nev= ', NEV, BEAM
       
@@ -115,13 +144,33 @@ C  (see JADE Computer Note 69)
       INTEGER LUN,IERR
 Code:
 
+
+
+      REAL XDUMMY(10),SVEC(3,3), ANG
+      INTEGER IER2
+      REAL RADDEG
+      PARAMETER( RADDEG=57.2958 )
+      PHI=0.
+      THETA=0.
+      CALL PXJSP3(NF,4,PF,XDUMMY,SVEC,IER2)
+      IF( IER2.EQ.0 ) THEN
+         THETA=ACOS(SVEC(3,3))*RADDEG
+         CALL PXANXY(SVEC(1,3),SVEC(3,3),ANG,IER2)
+         IF( IER2.EQ.0 ) THEN
+            PHI=ANG*RADDEG
+         ELSE
+            PHI=0.
+         ENDIF
+         ENDIF
+
+
       write(*,*) LUN,' np=', NP, ' Nev= ', NEV, BEAM
 C
       do I1=1,500
-      CP(I1)=' add later      '
+C      CP(I1)=' kalet '
       end do
       do I1=1,300
-      CF(I1)=' add later      '
+      CF(I1)='jjjj ' 
       end do
 C
       WRITE(LUN,'(/A,I8)') ' PRCPRD: Content of common /CPROD/ in event'
@@ -149,7 +198,55 @@ C
       RETURN
       END
 
+      SUBROUTINE PXANXY (XX,YY,ANG,IERR)
+*.*********************************************************
+*. ------
+*. PXANXY
+*. ------
+*. SOURCE: Jetset7.1 (T. Sjostrand)
+*. Reconstruct the azimuthal angle of a vector,
+*. given the X and Y components of a vector
+*. Usage     :
+*.
+*.      INTEGER  IERR
+*.      REAL  XX,YY,ANG
+*.
+*.      CALL PXANXY (XX,YY,ANG,IERR)
+*.
+*. INPUT     : XX      The X component of a vector
+*. INPUT     : YY      The Y component of a vector
+*. OUTPUT    : ANG     The azimuthal angle
+*. OUTPUT    : IERR    = 0 if all is OK ;   = -1 otherwise
+*.
+*.*********************************************************
+      IMPLICIT NONE
+      REAL  PIII
+      PARAMETER  (PIII=3.1415927)
+      INTEGER  IERR
+      REAL  XX,YY,ANG
+      DOUBLE PRECISION  ULANGL,RRR,XXX,YYY
 
+      IERR = 0
+      XXX = XX
+      YYY = YY
+      RRR = DSQRT (XXX**2 + YYY**2)
+      IF (RRR.LT.1E-20) GO TO 990
+      IF ((DABS (XXX)/RRR).LT.0.8) THEN
+          ULANGL = DSIGN (DACOS (XXX/RRR),YYY)
+      ELSE
+          ULANGL = DASIN (YYY/RRR)
+          IF (XXX.LT.0..AND.ULANGL.GE.0.) THEN
+              ULANGL = PIII - ULANGL
+          ELSE IF (XXX.LT.0.) THEN
+              ULANGL = - PIII - ULANGL
+          END IF
+      END IF
+      ANG = ULANGL
+
+      RETURN
+ 990  IERR = -1
+      RETURN
+      END
 
 
 
@@ -224,260 +321,162 @@ CDECK  ID>, WRCPRD.
 
 
 
-c      SUBROUTINE PXJSP3(NTRAK,IPTK,PTRAK,SEVAL,ASEVEC,IERR)
-c*.*********************************************************
-c*. ------
-c*. PXJSP3
-c*. ------
-c*. Routine to calculate the eigenvectors and eigenvalues of the
-c*. momentum tensor. The eigenvectors of the momentum tensor are
-c*. the same as the eigenvectors of the Sphericity matrix;
-c*. the eigenvalues are related as noted below.
-c*. Usage     :
-c*.
-c*.      INTEGER  IPTK,NTRAK
-c*.      PARAMETER  (ITKDM.ge.3,NTRAK.gt.1)
-c*.      INTEGER NTRAK,IERR
-c*.      REAL  PTRAK (ITKDM,MXTRAK),
-c*.     +      SEVEC (3,3.or.more),
-c*.     +      SEVAL (3.or.more)
-c*.
-c*.      NTRAK = 1.to.MXTRAK
-c*.      CALL PXJSP3 (NTRAK,ITKDM,PTRAK,SEVAL,ASEVEC,IERR)
-c*. INPUT     : NTRAK    Total number of particles
-c*. INPUT     : IPTK     First dimension of PTRAK array
-c*. INPUT     : PTRAK    Particle 3-momentum array: Px,Py,Pz
-c*. OUTPUT    : SEVAL    Sphericity Eigenvalues
-c*. OUTPUT    : ASEVEC   Associated Sphericity Eigenvectors;
-c*. OUTPUT    : IERR     = 0 if all is OK ;   = -1 otherwise
-c*.
-c*. Note:
-c*. (i)    Sphericity  = (3./2.) * (SEVAL (1) + SEVAL (2))
-c*. (ii)   Aplanarity  = (3./2.) *  SEVAL (1)
-c*. (iii)  SEVAL (1) < SEVAL (2) < SEVAL (3)
-c*. (iv)   ASEVEC (*,3) is the principal sphericity axis
-c*.
-c*. CALLS     : DSYEV (in the LAPACK library that ships with CERNLIB)
-c*. CALLED    : By User
-c*.
-c*. AUTHOR    :  J.W.Gary
-c*. CREATED   :  18-Mar-88
-c*. LAST MOD  :  27-May-97
-c*.
-c*. Modification Log.
-c*.
-c*. 27-May-97 M.Schroder Preset IERR
-c*. 04-Apr-97 : Rewrote to use the LAPACK eigenvalue routine to fix the
-c*.             instability when differnece between eigenvalues is large.
-c*.             D. Hutchcroft
-c*.
-c*.*********************************************************
-c*
-c*
-c      INTEGER NTRAK
-c      INTEGER IPTK
-c      REAL PTRAK(IPTK,*)
-c      REAL SEVAL(*)
-c      REAL ASEVEC(3,*)
-c      INTEGER IERR
-c*
-c* Integers for the LAPACK routine
-c      INTEGER N
-c*     order of the matrix A
-c      INTEGER LDA
-c*     order of the first index of A
-c      INTEGER LWORK
-c*     no of elements in work (should be 64*N)
-c      INTEGER IFAIL
-c* returns <0 if inputs wrong, >0 if fails numerically
+      SUBROUTINE PXJSP3(NTRAK,IPTK,PTRAK,SEVAL,ASEVEC,IERR)
+*.*********************************************************
+*. ------
+*. PXJSP3
+*. ------
+*. Routine to calculate the eigenvectors and eigenvalues of the
+*. momentum tensor. The eigenvectors of the momentum tensor are
+*. the same as the eigenvectors of the Sphericity matrix;
+*. the eigenvalues are related as noted below.
+*. Usage     :
+*.
+*.      INTEGER  IPTK,NTRAK
+*.      PARAMETER  (ITKDM.ge.3,NTRAK.gt.1)
+*.      INTEGER NTRAK,IERR
+*.      REAL  PTRAK (ITKDM,MXTRAK),
+*.     +      SEVEC (3,3.or.more),
+*.     +      SEVAL (3.or.more)
+*.
+*.      NTRAK = 1.to.MXTRAK
+*.      CALL PXJSP3 (NTRAK,ITKDM,PTRAK,SEVAL,ASEVEC,IERR)
+*. INPUT     : NTRAK    Total number of particles
+*. INPUT     : IPTK     First dimension of PTRAK array
+*. INPUT     : PTRAK    Particle 3-momentum array: Px,Py,Pz
+*. OUTPUT    : SEVAL    Sphericity Eigenvalues
+*. OUTPUT    : ASEVEC   Associated Sphericity Eigenvectors;
+*. OUTPUT    : IERR     = 0 if all is OK ;   = -1 otherwise
+*.
+*. Note:
+*. (i)    Sphericity  = (3./2.) * (SEVAL (1) + SEVAL (2))
+*. (ii)   Aplanarity  = (3./2.) *  SEVAL (1)
+*. (iii)  SEVAL (1) < SEVAL (2) < SEVAL (3)
+*. (iv)   ASEVEC (*,3) is the principal sphericity axis
+*.
+*. CALLS     : DSYEV (in the LAPACK library that ships with CERNLIB)
+*. CALLED    : By User
+*.
+*. AUTHOR    :  J.W.Gary
+*. CREATED   :  18-Mar-88
+*. LAST MOD  :  27-May-97
+*.
+*. Modification Log.
+*.
+*. 27-May-97 M.Schroder Preset IERR
+*. 04-Apr-97 : Rewrote to use the LAPACK eigenvalue routine to fix the
+*.             instability when differnece between eigenvalues is large.
+*.             D. Hutchcroft
+*.
+*.*********************************************************
+*
+*
+      INTEGER NTRAK
+      INTEGER IPTK
+      REAL PTRAK(IPTK,*)
+      REAL SEVAL(*)
+      REAL ASEVEC(3,*)
+      INTEGER IERR
+*
+* Integers for the LAPACK routine
+      INTEGER N
+*     order of the matrix A
+      INTEGER LDA
+*     order of the first index of A
+      INTEGER LWORK
+*     no of elements in work (should be 64*N)
+      INTEGER IFAIL
+* returns <0 if inputs wrong, >0 if fails numerically
 
-c* Doubles for the LAPACK routine
-c      DOUBLE PRECISION A(3,3)
-c*     Matrix to be diagonialised
-c      DOUBLE PRECISION W(3)
-c*     Array of eigenvalues
-c      DOUBLE PRECISION WORK(192)
-c*     temp array
-c*
-c* Character strings for the LAPACK routine
-c      CHARACTER*1 JOBZ
-c*     'N' if only eigenvalues, 'V' if also calculates the eigenvectors
-c      CHARACTER*1 UPLO
-c*     'U' if uses upper diagonal, 'L' if lower
-c*
-c* routine
-c      EXTERNAL DSYEV
-c*
-c* local
-c      INTEGER I,J,K
-c      DOUBLE PRECISION PSQI
-c*
-c      IERR = 0
-c      IF (NTRAK.LE.1) THEN
-c          WRITE (6,FMT='('' PXLAJSP3: Error, NTRAK ='',I4)')
-c     +          NTRAK
-c          IERR = -1
-c          GO TO 990
-c      END IF
-c* Null the Sphericity Matrix
-c      DO 200 I=1,3
-c         DO 210 J=1,3
-c            A(I,J)=0.D0
-c 210     CONTINUE
-c 200  CONTINUE
-c* Fill sphereicity matrix
-c      PSQI=0.D0
-c      DO 220 I=1,NTRAK
-c         PSQI=PSQI+(PTRAK(1,I)**2+PTRAK(2,I)**2+PTRAK(3,I)**2)
-c         DO 230 J=1,3
-c            DO 240 K=1,3
-c               A(J,K)=A(J,K)+PTRAK(J,I)*PTRAK(K,I)
-c 240        CONTINUE
-c 230     CONTINUE
-c 220  CONTINUE
-c*
-c      DO 250 I=1,3
-c         DO 260 J=1,3
-c            A(I,J)=A(I,J)/PSQI
-c 260     CONTINUE
-c 250  CONTINUE
-c*
-c* Set up the input for a 3x3 matrix to dsyev
-c      N=3
-c      LDA=3
-c      LWORK=192
-c      IFAIL=0
-c      JOBZ='V'
-c      UPLO='U'
+* Doubles for the LAPACK routine
+      DOUBLE PRECISION A(3,3)
+*     Matrix to be diagonialised
+      DOUBLE PRECISION W(3)
+*     Array of eigenvalues
+      DOUBLE PRECISION WORK(192)
+*     temp array
+*
+* Character strings for the LAPACK routine
+      CHARACTER*1 JOBZ
+*     'N' if only eigenvalues, 'V' if also calculates the eigenvectors
+      CHARACTER*1 UPLO
+*     'U' if uses upper diagonal, 'L' if lower
+*
+* routine
+      EXTERNAL DSYEV
+*
+* local
+      INTEGER I,J,K
+      DOUBLE PRECISION PSQI
+*
+      IERR = 0
+      IF (NTRAK.LE.1) THEN
+          WRITE (6,FMT='('' PXLAJSP3: Error, NTRAK ='',I4)')
+     +          NTRAK
+          IERR = -1
+          GO TO 990
+      END IF
+* Null the Sphericity Matrix
+      DO 200 I=1,3
+         DO 210 J=1,3
+            A(I,J)=0.D0
+ 210     CONTINUE
+ 200  CONTINUE
+* Fill sphereicity matrix
+      PSQI=0.D0
+      DO 220 I=1,NTRAK
+         PSQI=PSQI+(PTRAK(1,I)**2+PTRAK(2,I)**2+PTRAK(3,I)**2)
+         DO 230 J=1,3
+            DO 240 K=1,3
+               A(J,K)=A(J,K)+PTRAK(J,I)*PTRAK(K,I)
+ 240        CONTINUE
+ 230     CONTINUE
+ 220  CONTINUE
+*
+      DO 250 I=1,3
+         DO 260 J=1,3
+            A(I,J)=A(I,J)/PSQI
+ 260     CONTINUE
+ 250  CONTINUE
+*
+* Set up the input for a 3x3 matrix to dsyev
+      N=3
+      LDA=3
+      LWORK=192
+      IFAIL=0
+      JOBZ='V'
+      UPLO='U'
 
-c      CALL DSYEV(JOBZ,UPLO,N,A,LDA,W,WORK,LWORK,IFAIL)
-c      IF (IFAIL.LT.0) THEN
-c         PRINT *,'ngjps3 ifail = 1 wrong arguments'
-c         IERR=1
-c         STOP
-c      ENDIF
-c      IF (IFAIL.GT.0) THEN
-c         PRINT *,'Diagonalisation failed numerically in PXLAJSP3'
-c         IERR=2
-c         GOTO 990
-c      ENDIF
-c*
-c* copy eigenvalues to seval
-c      DO 270 I=1,3
-c         SEVAL(I)=REAL(W(I))
-c 270  CONTINUE
-c* copt eigenvectors to asevec
-c      DO 280 I=1,3
-c         DO 290 J=1,3
-c            ASEVEC(I,J)=REAL(A(I,J))
-c 290     CONTINUE
-c 280  CONTINUE
-c 990  CONTINUE
+      CALL DSYEV(JOBZ,UPLO,N,A,LDA,W,WORK,LWORK,IFAIL)
+      IF (IFAIL.LT.0) THEN
+         PRINT *,'ngjps3 ifail = 1 wrong arguments'
+         IERR=1
+         STOP
+      ENDIF
+      IF (IFAIL.GT.0) THEN
+         PRINT *,'Diagonalisation failed numerically in PXLAJSP3'
+         IERR=2
+         GOTO 990
+      ENDIF
+*
+* copy eigenvalues to seval
+      DO 270 I=1,3
+         SEVAL(I)=REAL(W(I))
+ 270  CONTINUE
+* copt eigenvectors to asevec
+      DO 280 I=1,3
+         DO 290 J=1,3
+            ASEVEC(I,J)=REAL(A(I,J))
+ 290     CONTINUE
+ 280  CONTINUE
+ 990  CONTINUE
 
-c      END
-
-
+      END
 
 
 
 
 
-
-
-
-
-
-
-c      SUBROUTINE MYTYPE(ITYPE)
-c      IMPLICIT NONE
-c*. WWTYPE   Determines event type for WW or Z/gamma events.
-c*.
-c*. INPUT     :
-c*. OUTPUT    :  ITYPE = 1  Z  --> hadrons
-c*.                      2  Z  --> leptons
-c*.                      3  WW --> jjjj
-c*.                      4  WW --> jjll
-c*.                      5  WW --> llll
-c*.                      6  ZZ --> jjjj
-c*.                      7  ZZ --> jjll
-c*.                      8  ZZ --> llll
-c*.                      0  anything else
-c*.
-c*.**********************************************************************
-c*.
-c      INTEGER  NLUPDM,NPLBUF
-c      PARAMETER  (NLUPDM=4000,NPLBUF=5)
-c      COMMON/GUJETS/N,K(NLUPDM,5),P(NLUPDM,NPLBUF),V(NLUPDM,5)
-c      INTEGER  N,K
-c      REAL  P,V
-c      SAVE /GUJETS/
-c      INTEGER ITYPE,NW,NZ,NQQ,ITREE,IID,NPAR,IPAR(2)
-c*
-c      ITYPE = 0
-c      NPAR  = 0
-c      IPAR(1) = 0
-c      IPAR(2) = 0
-c*
-c*--- Find number of Ws and Zs, and determine if they decay to quarks
-c*--- or leptons..
-c*
-c      NW = 0
-c      NZ = 0
-c      NQQ = 0
-c      DO 10 ITREE = 1,N
-c        IID = ABS(K(ITREE,2))
-c        IF(K(ITREE,3).NE.0) GO TO 10
-c        IF(IID.LT.23 .OR. IID.GT.24) GO TO 10
-c        NPAR = NPAR + 1
-c        IPAR(NPAR) = ITREE
-c        IF(IID.EQ.23) THEN
-c          NZ = NZ + 1
-c        ELSE
-c          NW = NW + 1
-c        ENDIF
-c   10 CONTINUE
-c      DO 20 ITREE = 1,N
-c        IID = ABS(K(ITREE,2))
-c        IF(K(ITREE,3).EQ.0) GO TO 20
-c        IF(K(ITREE,3).NE.IPAR(1) .AND. K(ITREE,3).NE.IPAR(2)) GO TO 20
-c        IF(IID.GE.1.AND.IID.LE.8) NQQ = NQQ + 1
-c   20 CONTINUE
-c      IF(NW.EQ.0 .AND. NZ.EQ.0) GO TO 999
-c*
-c*--- Classify event.
-c*
-c      IF(NW.EQ.2) THEN
-c        IF(NQQ.EQ.4) THEN
-c          ITYPE = 3
-c        ELSEIF(NQQ.EQ.2) THEN
-c          ITYPE = 4
-c        ELSEIF(NQQ.EQ.0) THEN
-c          ITYPE = 5
-c        ELSE
-c          ITYPE = 0
-c        ENDIF
-c      ELSEIF(NZ.EQ.2) THEN
-c        IF(NQQ.EQ.4) THEN
-c          ITYPE = 6
-c        ELSEIF(NQQ.EQ.2) THEN
-c          ITYPE = 7
-c        ELSEIF(NQQ.EQ.0) THEN
-c          ITYPE = 8
-c        ELSE
-c          ITYPE = 0
-c        ENDIF
-c      ELSEIF(NZ.EQ.1) THEN
-c        IF(NQQ.EQ.2) THEN
-c          ITYPE = 1
-c        ELSEIF(NQQ.EQ.0) THEN
-c          ITYPE = 2
-c        ELSE
-c          ITYPE = 0
-c        ENDIF
-c      ENDIF
-c*
-c  999 RETURN
-c      END
 
 
 

@@ -5,6 +5,7 @@
 extern "C"
 {
  struct JADEEVT* loccprod_();
+ struct JADENAMES* locchcprd_();
  int jadeco_(int& a);
 }
 
@@ -41,6 +42,7 @@ WriterJADE::WriterJADE(const std::string &filename)
 fUNIT=100;
 fMODE=1;
 fJ=loccprod_();
+fN=locchcprd_();
 const char* f=filename.c_str();
 int s=filename.length();
 jfopen_(f,fUNIT,s);
@@ -50,8 +52,8 @@ void WriterJADE::write_event(const GenEvent &evt)
 	fJ->NEV=evt.event_number();
 	fJ->BEAM=std::abs(evt.particles().at(0)->momentum().e())/1000.0;
 	fJ->PT=0;
-	fJ->PHI=0;     /* FIXME we need to call fortran code to get it */
-	fJ->THETA=0;    /* FIXME we need to call fortran code to get it */
+	fJ->PHI=0;     /* Calculated later */
+	fJ->THETA=0;    /* Calculated later */
 	fJ->IFLAVR=1;  /* FIXME  code of LO quark */
 	
 	fJ->NP=0;
@@ -70,8 +72,11 @@ void WriterJADE::write_event(const GenEvent &evt)
 	int q= charge(evt.particles().at(i)->pid());
 	if (q==0) fJ->NN=fJ->NN+1; else fJ->NC=fJ->NC+1;
 	int KF=evt.particles().at(i)->pid();
-	fJ->JP[0][i]=0;//FIXME  PARENT 
-	fJ->JP[1][i]=1;//FIXME  DAUGH
+	
+	sprintf(&(fN->CP[i][0]),"%s",                "ff             d");
+	if (KF==11) sprintf(&(fN->CP[i][0]),"%s",    "E-              ");
+	if (KF==-11) sprintf(&(fN->CP[i][0]),"%s",   "E+              ");
+	
 	fJ->JCH[i]=q;
 	fJ->JTP[i]=jadeco_(KF);
 	fJ->PP[i][0]=evt.particles().at(i)->momentum().px();
@@ -80,8 +85,15 @@ void WriterJADE::write_event(const GenEvent &evt)
 	fJ->PP[i][3]=evt.particles().at(i)->momentum().e();
 	fJ->XM[i]=evt.particles().at(i)->momentum().m();
 	
-	
+		
 	if (evt.particles().at(i)->status()!=1) { i++; continue;}
+
+
+	sprintf(&(fN->CF[j][0]),"%s",                "ff              ");
+	if (KF==11) sprintf(&(fN->CF[j][0]),"%s",    "E-              ");
+	if (KF==-11) sprintf(&(fN->CF[j][0]),"%s",   "E+              ");
+
+
 	fJ->ICF[j]=fJ->JCH[i];
 	fJ->PF[j][0]=fJ->PP[i][0];
 	fJ->PF[j][1]=fJ->PP[i][1];
@@ -90,14 +102,32 @@ void WriterJADE::write_event(const GenEvent &evt)
 	fJ->XMF[j]=fJ->XM[i];
 	fJ->ICF[j]=q;
 	fJ->ITF[j]=jadeco_(KF);;
+	
+	
 	if (q==0) fJ->NCF=fJ->NCF+1; else fJ->NNF=fJ->NNF+1;
 	
-	GenVertexPtr V=evt.particles().at(i)->production_vertex();
-	if (V)
+	GenVertexPtr VP=evt.particles().at(i)->production_vertex();
+	GenVertexPtr VE=evt.particles().at(i)->end_vertex();
+	
+	int dmax=0;
+	int pmin=evt.particles().size();
+	if (VE)
+	for (int y=0;y<evt.particles().size();y++)
+	if (evt.particles().at(y)->production_vertex()==VE) dmax=std::max(dmax,y);
+	
+
+	if (VP)
+	for (int y=0;y<evt.particles().size();y++)
+	if (evt.particles().at(y)->end_vertex()==VP) pmin=std::min(pmin,y);
+
+	fJ->JP[0][i]=pmin;
+	fJ->JP[1][i]=dmax;
+
+	if (VP)
 	{
-	fJ->PSTR[j][1]=V->position().x();
-	fJ->PSTR[j][2]=V->position().y();
-	fJ->PSTR[j][3]=V->position().z();
+	fJ->PSTR[j][1]=VP->position().x();
+	fJ->PSTR[j][2]=VP->position().y();
+	fJ->PSTR[j][3]=VP->position().z();
 	
     }
     else

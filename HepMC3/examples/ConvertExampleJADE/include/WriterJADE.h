@@ -4,6 +4,13 @@
 #include "HepMC/GenEvent.h"
 #include "HepMC/GenParticle.h"
 #include "HepMC/Data/GenEventData.h"
+struct JADENAMES
+{
+char CP[500][16];	
+char CF[300][16];	
+	
+}	;
+
 
 struct JADEEVT
 {
@@ -55,6 +62,7 @@ class WriterJADE : public  Writer
 {
 public:
     struct JADEEVT*  fJ;
+    struct JADENAMES*  fN;
     int fUNIT;
     int fMODE;
     WriterJADE(const std::string &filename);
