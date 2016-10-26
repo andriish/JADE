@@ -198,7 +198,7 @@ $(JADELIBS):
 	else \
 	   echo "Makefile for library $@ does not exist!" ;\
 	fi
-docptxt: GNUmakefile.av
+docptxt:
 	rm -rf main.av
 	mkdir -p main.av
 	cp -r main/* main.av
@@ -215,7 +215,7 @@ mcjade:	 docptxt $(MAINDIR)/patched.o $(MCJADE)/mcjade.o $(MCJADE)/mcuser.o $(MC
 	echo $(FC) $(FFLAGS) -o $(BINDIR)/mcjade $(MAINDIR)/patched.o $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o   $(LDFLAGS_STD)
 	$(FC) $(FFLAGS) -o $(BINDIR)/mcjade  main.av/patched.o $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o   $(LDFLAGS_STD) -lgfortran >> MAIN.map
 
-superv:	 docptxt $(MAINDIR)/patched.o $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o $(SUPERV)/jdmain.o
+superv:	 docptxt lib  $(MAINDIR)/patched.o $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o $(SUPERV)/jdmain.o
 	@echo "...updating"  $@; mkdir -p $(BINDIR); cd $(SUPERV); \
 #	echo $(FC)  $(FFLAGS) -o $(BINDIR)/superv  $(LIBDIR)/libsource.a $(LIBDIR)/libjadegs.a  $(MAINDIR)/patched.o $(SUPERV)/jdmain.f $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o $(LDFLAGS_X) -lgfortran >> MAIN.map
 #	$(FC)  $(FFLAGS) -o $(BINDIR)/superv  $(LIBDIR)/libsource.a $(LIBDIR)/libjadegs.a  $(MAINDIR)/patched.o $(SUPERV)/jdmain.f $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o $(LDFLAGS_X) -lgfortran >> MAIN.map
