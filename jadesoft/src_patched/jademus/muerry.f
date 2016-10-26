@@ -21,11 +21,11 @@ C
       character*1 MESS(1)
       character*1 BAR/'^'/
 C
-      character*2 NAME(3)
-      character*2 NANAC(3)/'MU','AN','AC'/,
-     *          NCOOR(3)/'MU','CO','OR'/,
-     *          NANAF(3)/'MU','AN','AF'/,
-     *          NCUTS(3)/'MU','CU','TS'/
+      INTEGER*2 NAME(3)
+      INTEGER*2 NANAC(3)/2HMU,2HAN,2HAC/,
+     *          NCOOR(3)/2HMU,2HCO,2HOR/,
+     *          NANAF(3)/2HMU,2HAN,2HAF/,
+     *          NCUTS(3)/2HMU,2HCU,2HTS/
 C
       COMMON /CMUPRN/ MUPRIN,MUHPR,IANAC,ICOOR,IANAF,LANAC,LCOOR,LANAF,
      +                ITOTAL,LTOTAL,ICUTS,LCUTS

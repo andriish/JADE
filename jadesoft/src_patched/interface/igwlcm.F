@@ -28,8 +28,8 @@ C - print title
       CALL ISCHH(50.)
       CALL ISTXAL(1,3)
       CALL ITX(XDOWN*1.3,YUP*.76,' Original version: 17/10/88')
-CAVFIXME      CALL ITX(XDOWN*1.3,YUP*.72,' Modified for use on RS6000/AIX'
-CAVFIXME     + //' platforms: 18/11/99 (Pedro Movilla Fernandez)')
+      CALL ITX(XDOWN*1.3,YUP*.72,' Modified for use on RS6000/AIX'
+     + //' platforms: 18/11/99 (Pedro Movilla Fernandez)')
       CALL ISTXAL(3,0)
       CALL ISCHH(40.)
 

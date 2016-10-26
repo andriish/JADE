@@ -47,7 +47,7 @@ C                        - = 96
 C                        . = 75
 C
 C-----------------------------------------------------------------------
-      character*4 BLANK4/'    '/
+      REAL*4 BLANK4/4H    /
       integer*1 QZERO/Z'00'/,QONE/Z'01'/,QTHREE/Z'03'/
       LOGICAL*1 QWORD1(80),QB1(80),QTHIS(2)
       EQUIVALENCE (QWORD1(1),REPLY(1)) , (HCHAR,QTHIS(1))
@@ -57,8 +57,7 @@ C     ----------
       NREPLY = 0
       DO 10 IPOSN=1,20
       QREPLY(IPOSN) = QZERO
-CAV        REPLY(IPOSN) = BLANK4
-  10  CONTINUE
+  10  REPLY(IPOSN) = BLANK4
       IPOSN = 0
       HCHAR  = 0
       HSIGN  = 1

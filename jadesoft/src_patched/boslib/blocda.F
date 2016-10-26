@@ -29,7 +29,6 @@ C
       CALL PODA(1,LISTE,1)
       IF(IW(INDA+20).NE.0) GOTO 100
       IF(INDT.EQ.0) GOTO 100
-C     
       CALL CHDIR('.')
       NPT=IW(INDT+3)
       CALL DADA(2,&50)
@@ -51,7 +50,6 @@ C
       CALL PODA(1,LISTE,1)
       IF(IW(INDA+20).NE.0) GOTO 100
       IF(IW(INDA+7)+2+IW(INDAR)/1610.GT.IW(INDA+6)) GOTO 60
-C
       CALL CHDIR('.')
       ICO=1
       IF(INDT.EQ.0) GOTO 20

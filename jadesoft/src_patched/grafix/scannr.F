@@ -77,11 +77,9 @@ C
       COMMON / CHEADR / HEAD(108)
       COMMON / CSTANV / HDISPN, HCSTV2, HCSTV3
 C
-      character*4 JETC, NAME
       EQUIVALENCE (NAME,A1)
 C
-      
-      DATA  JETC/ 'JETC' /
+      DATA  JETC/ 4HJETC /
       DATA  HREVT/ 0 /, IENTW/ 0 /
 C
 C

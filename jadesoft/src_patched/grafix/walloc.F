@@ -21,14 +21,10 @@ C
 C
       COMMON / CBSTR  / MODE,MAXRL
       COMMON / CSVCW1 / NDDSVE,NRWR
-      character*4 IOUTSV
       COMMON / CWALLK / IOUTSV(11)
-      character*4 IDATAL,HVOLSR
       DIMENSION IDATAL(11),HVOLSR(4)
-      character*4 ICONT
-      DATA ICONT /'CONT'/
-      character*2 HBLANK
-      DATA HBLANK/'  '/
+      DATA ICONT /4HCONT/
+      DATA HBLANK/2H  /
 *** PMF 02/12/99
       INTEGER LI
       CHARACTER CDATAL*44

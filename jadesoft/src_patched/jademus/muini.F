@@ -82,30 +82,28 @@ C-----------------------------------------------------------------------
 C
 C DATA INITIALISATION STATEMENTS.
 C
-C     character*8 MUT1(50),MUT2(50)
-
       DATA MUT1    /
-     1 'MUCOOR  ','ALL HITS','NO HITS ','NO MUR1I','NO MUR20',
-     2 'NO MUR2I','HITS>400','HMU LEN.','HMU BAD ','NO MUR10',
-     3 'MU EVENT','MU TYP 1','MU TYP 5','MU TYP 9','    ..  ',
-     4 '    ..  ','    ..  ','    ..  ','    ..  ','BAD DRFT',
-     5 'BAD LONG','X PULLED','Z PULLED','MULT-PUL','HIT REC.',
-     6 'HIT SEQ1','HIT SEQ2','HIT# ERR','NEW CH? ','SING ERR',
-     7 '    ..  ','    ..  ','    ..  ','    ..  ','    ..  ',
-     8 '    ..  ','    ..  ','    ..  ','    ..  ','DC-->HIT',
-     9 'BAD CH# ','CH ORDER','CH-/->CR','SING BAD','    ..  ',
-     A '    ..  ','    ..  ','    ..  ','    ..  ','    ..  '  /
+     1 8HMUCOOR  ,8HALL HITS,8HNO HITS ,8HNO MUR1I,8HNO MUR20,
+     2 8HNO MUR2I,8HHITS>400,8HHMU LEN.,8HHMU BAD ,8HNO MUR10,
+     3 8HMU EVENT,8HMU TYP 1,8HMU TYP 5,8HMU TYP 9,8H    ..  ,
+     4 8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,8HBAD DRFT,
+     5 8HBAD LONG,8HX PULLED,8HZ PULLED,8HMULT-PUL,8HHIT REC.,
+     6 8HHIT SEQ1,8HHIT SEQ2,8HHIT# ERR,8HNEW CH? ,8HSING ERR,
+     7 8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,
+     8 8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,8HDC-->HIT,
+     9 8HBAD CH# ,8HCH ORDER,8HCH-/->CR,8HSING BAD,8H    ..  ,
+     A 8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,8H    ..    /
       DATA MUT2    /
-     1 '    ..  ','    ..  ','    ..  ','    ..  ','    ..  ',
-     2 '    ..  ','    ..  ','    ..  ','    ..  ','BAD CR# ',
-     3 'CR ORDER','NO T.REF','EOC REC.','CR. MARK','EOC ERR.',
-     4 '    ..  ','    ..  ','    ..  ','    ..  ','    ..  ',
-     5 'MCRATE 1','MCRATE 2','MCRATE 3','MCRATE 4','MCRATE 5',
-     6 'MCRATE 6','MCRATE 7','MCRATE 8','MCRATE 9','MCRATE10',
-     7 'MCRATE11','MCRATE12','MCRATE13','MCRATE14','NO EOC 1',
-     8 'NO EOC 2','NO EOC 3','NO EOC 4','NO EOC 5','NO EOC 6',
-     9 'NO EOC 7','NO EOC 8','NO EOC 9','NO EOC10','NO EOC11',
-     A 'NO EOC12','NO EOC13','NO EOC14','    ..  ','    ..  '  /
+     1 8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,
+     2 8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,8HBAD CR# ,
+     3 8HCR ORDER,8HNO T.REF,8HEOC REC.,8HCR. MARK,8HEOC ERR.,
+     4 8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,
+     5 8HMCRATE 1,8HMCRATE 2,8HMCRATE 3,8HMCRATE 4,8HMCRATE 5,
+     6 8HMCRATE 6,8HMCRATE 7,8HMCRATE 8,8HMCRATE 9,8HMCRATE10,
+     7 8HMCRATE11,8HMCRATE12,8HMCRATE13,8HMCRATE14,8HNO EOC 1,
+     8 8HNO EOC 2,8HNO EOC 3,8HNO EOC 4,8HNO EOC 5,8HNO EOC 6,
+     9 8HNO EOC 7,8HNO EOC 8,8HNO EOC 9,8HNO EOC10,8HNO EOC11,
+     A 8HNO EOC12,8HNO EOC13,8HNO EOC14,8H    ..  ,8H    ..    /
 C
 C-----------------------------------------------------------------------
 C

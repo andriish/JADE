@@ -23,11 +23,10 @@ C
 C------------------------
       SUBROUTINE NUMCOD(NUMBER,HBUF,K)
       IMPLICIT INTEGER*2 (H)
-      character*2 HCH, HBUF, HBL
       DIMENSION ITENS(6),HBUF(6),HCH(10)
 C
-      DATA ITENS/100000,10000,1000,100,10,1/, HBL/' '/
-      DATA HCH/'0','1','2','3','4','5','6','7','8','9'/
+      DATA ITENS/100000,10000,1000,100,10,1/, HBL/1H /
+      DATA HCH/1H0,1H1,1H2,1H3,1H4,1H5,1H6,1H7,1H8,1H9/
 C
       K=0
       IND=0

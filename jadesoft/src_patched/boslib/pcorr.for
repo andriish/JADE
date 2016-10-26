@@ -2,10 +2,10 @@ C   07/06/96 606071902  MEMBER NAME  PCORR    (S4)          FORTG1
       SUBROUTINE PCORR(KA)
       REAL S(5),T(5)
       COMMON/BCS/IW(1)
-      real*8 RW(1)
+      REAL RW(1)
       EQUIVALENCE (RW(1),IW(1))
       EQUIVALENCE (JW,WJ),(K,RK)
-      character*1 LL(100),LCH(2)/' ','X'/
+      LOGICAL*1 LL(100),LCH(2)/1H ,1HX/
       INTEGER IP2(32)
      1  /Z'00000001',Z'00000002',Z'00000004',Z'00000008',
      2   Z'00000010',Z'00000020',Z'00000040',Z'00000080',
@@ -18,10 +18,9 @@ C   07/06/96 606071902  MEMBER NAME  PCORR    (S4)          FORTG1
       REAL RP2(32)
       EQUIVALENCE (IP2(1),RP2(1))
       INTEGER EINS/1/
-      character*4 BLK/'    '/
-      real*8 RS(11),TA
+      REAL BLK/4H    /,RS(11),TA
       REAL*8 TS(11),TH
-      character*1 VP,CHI/'I'/,CHT/'T'/
+      LOGICAL*1 VP,CHI/1HI/,CHT/1HT/
       REAL AND
       EXTERNAL AND
       IF(KA.NE.0) GOTO 11

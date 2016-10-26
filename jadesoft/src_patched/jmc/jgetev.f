@@ -51,7 +51,6 @@ C PMF, 21/12/00: IFORM tells us the endian format of the CPROD file
 C
 C------------------  C O D E  -----------------------------------------
 C
-      write(*,*)  KIEV,IEVMIN,IEVMAX
       ICALL = ICALL + 1
       IF(ICALL.NE.1) GO TO 95
       IEV = 0

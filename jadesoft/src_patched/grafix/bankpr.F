@@ -45,19 +45,12 @@ C
 C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
-      character*2  HMINUS,  HPLUS, HTX, HBLANK
-Ccharacter*2  IEFA
-       INTEGER*2 MWR1,MWR2,MWR3
-C      character*2 NTR
-C      character*2 LAND
-      character*4 NAMES, NAMEB
-      CHARACTER*8 DESTPL
       LOGICAL TBIT
 C
       LOGICAL DSPDTM
 C
       REAL*8 DATE,TIME
-C      REAL*8 DESTPL
+      REAL*8 DESTPL
 C
 #include "cgraph.for"
 #include "cdata.for"
@@ -69,7 +62,6 @@ C
       COMMON / CHEADR / HEAD(108)
       COMMON / CGRAP2 / BCMD,DSPDTM(30),ISTVW,JTVW
 C
-      
       DIMENSION HDSPL(68),HSYM(10),HDATSV(22),HTX(6),HTM1(4),HTM2(4)
       DIMENSION NAMES(30), HELP(2)
       DIMENSION HBYTE(500)
@@ -82,22 +74,19 @@ C
 C
       DIMENSION DESTPL(7)
 C
-      DATA DESTPL  / 'L1      ','L2      ','L3      ','L4      ',
-     &               'L5      ','PLOTTER ','EXTPLOTT' /
+      DATA DESTPL  / 8HL1      ,8HL2      ,8HL3      ,8HL4      ,
+     &               8HL5      ,8HPLOTTER ,8HEXTPLOTT/
 C
-      DATA NAMES  /'JETC','PATR','TAGC','JHTL','ZETC',
-     &             'GVTX','DEDX','ZVTX','LGCL','TOFR',
-     &             'TPEV','TPTR','ATOF','TPVX','VECT',
-     &             'TRIG','N50S','MPRS','BK17','ZTRG',
-     &             'FAMP','BPCH','VTXC','VTHT','VPAT',
-     &             'VCVW','J68K','PALL','HWDS','HHTL'/
+      DATA NAMES  /4HJETC,4HPATR,4HTAGC,4HJHTL,4HZETC,
+     &             4HGVTX,4HDEDX,4HZVTX,4HLGCL,4HTOFR,
+     &             4HTPEV,4HTPTR,4HATOF,4HTPVX,4HVECT,
+     &             4HTRIG,4HN50S,4HMPRS,4HBK17,4HZTRG,
+     &             4HFAMP,4HBPCH,4HVTXC,4HVTHT,4HVPAT,
+     &             4HVCVW,4HJ68K,4HPALL,4HHWDS,4HHHTL/
 C
-C      DATA HSYM /'0 ','1 ','2 ','3 ','4 ','5 ','6 ','7 ','8 ','9 '/
-      DATA HSYM /0 ,1 ,2 ,3 ,4 ,5 ,6 ,7 ,8 ,9 /
-      
-      DATA HBLANK/'  '/,HMINUS/'- '/, NNAMES /30/
-      
-      DATA HTX /'DS','N ','DA','TE','TI','ME'/
+      DATA HSYM /1H0 ,1H1 ,1H2 ,1H3 ,1H4 ,1H5 ,1H6 ,1H7 ,1H8 ,1H9 /
+      DATA HBLANK/2H  /,HMINUS/2H- /, NNAMES /30/
+      DATA HTX /2HDS,2HN ,2HDA,2HTE,2HTI,2HME/
 *** PMF 17/11/99: add variables needed for emulation of DESYLIB routine 'CORE'  
       CHARACTER cHWORK*140,cHDSPL*136,cfmt*7
       EQUIVALENCE (cHWORK,HWORK(1)),(cHDSPL,HDSPL(1))
@@ -150,9 +139,9 @@ C** CHECK IF MORE THAN ONE BANK WITH SAME NAME; IF SO, REQUEST NUMBER.
 C********************** WRITE CAPTION
       CALL HOME
       CALL CHRSIZ(4)
-CAV FIXME      HWORK(1) = HTX(1)
-CAV FIXME      HWORK(2) = HTX(2)
-CAV FIXME      HWORK(3) = HBLANK
+      HWORK(1) = HTX(1)
+      HWORK(2) = HTX(2)
+      HWORK(3) = HBLANK
       DO 90  I = 1,22
          HWORK(I+3) = HDATSV(I)
    90 CONTINUE
@@ -162,11 +151,11 @@ CAV FIXME      HWORK(3) = HBLANK
       IPHEAD = IDATA(IHEAD)
       IHHEAD = 2*IPHEAD
       DO 110 III = 1,3
-CAV FIXME         IF( III .EQ. 1 ) NUMCAP = HDATA(IHHEAD+10)
-CAV FIXME         IF( III .EQ. 2 ) NUMCAP = HDATA(IHHEAD+11)
-CAV FIXME         IF( III .EQ. 3 ) NUMCAP = ICREC
+         IF( III .EQ. 1 ) NUMCAP = HDATA(IHHEAD+10)
+         IF( III .EQ. 2 ) NUMCAP = HDATA(IHHEAD+11)
+         IF( III .EQ. 3 ) NUMCAP = ICREC
          IF( NUMCAP .LT. 0 ) KCNT = KCNT + 1
-CAV FIXME            IF( NUMCAP .LT. 0 ) HWORK(KCNT) = HMINUS
+         IF( NUMCAP .LT. 0 ) HWORK(KCNT) = HMINUS
          NUMCAP = IABS(NUMCAP)
          NDIG   = 1
          ACAP   = NUMCAP
@@ -181,24 +170,24 @@ CAV FIXME            IF( NUMCAP .LT. 0 ) HWORK(KCNT) = HMINUS
   100    CONTINUE
          KCNT = KCNT + NDIG
          IF( III .LT. 3 ) KCNT = KCNT + 1
-CAV FIXME         IF( III .LT. 3 ) HWORK(KCNT) = HBLANK
+         IF( III .LT. 3 ) HWORK(KCNT) = HBLANK
   110 CONTINUE
       KCNT = 2*KCNT
       CALL NEWLIN
       CALL EOUTST( KCNT, HWORK )
 C WRITE DATE AND TIME
       CALL DAY( DATE, TIME )
-CAV FIXME      HWORK(1) = HTX(3)
-CAV FIXME      HWORK(2) = HTX(4)
-CAV FIXME      HWORK(3) = HBLANK
+      HWORK(1) = HTX(3)
+      HWORK(2) = HTX(4)
+      HWORK(3) = HBLANK
       DO 120  I = 1,4
          HWORK(I+3) = HTM1(I)
   120 CONTINUE
       CALL NEWLIN
       CALL EOUTST(14,HWORK)
-CAV FIXME      HWORK(1) = HTX(5)
-CAV FIXME      HWORK(2) = HTX(6)
-CAV FIXME      HWORK(3) = HBLANK
+      HWORK(1) = HTX(5)
+      HWORK(2) = HTX(6)
+      HWORK(3) = HBLANK
       DO 130  I = 1,4
          HWORK(I+3) = HTM2(I)
   130 CONTINUE

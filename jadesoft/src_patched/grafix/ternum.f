@@ -2,11 +2,11 @@ C   24/11/78 C9032101   MEMBER NAME  TERNUM   (JADEGS)      FORTRAN
       FUNCTION TERNUM(DUMMY)
       IMPLICIT INTEGER*2 (H)
       COMMON/CWORK1/HINN(5)
-      character*1 BLANK,POINT,MINUS,TNN(10)
+      integer*1 BLANK,POINT,MINUS,TNN(10)
       EQUIVALENCE(HINN(1),TNN(1))
-      DATA BLANK/' '/
-      DATA POINT/'.'/
-      DATA MINUS/'-'/
+      DATA BLANK/1H /
+      DATA POINT/1H./
+      DATA MINUS/1H-/
     4 CONTINUE
       CALL TRMIN(10,HINN)
       NBP=0
@@ -20,10 +20,9 @@ C   24/11/78 C9032101   MEMBER NAME  TERNUM   (JADEGS)      FORTRAN
       IF(TNN(I).NE.POINT) GO TO 2
       NREL=1
       GO TO 1
-    2 CONTINUE 
-CAV FIXME      IF(TNN(I).LT.240-192) GO TO 3 !PMF 19/11/99: substract 192 ( EBCDIC-> ASCII Code for numbers)
-CAV FIXME      IF(TNN(I).GT.249-192) GO TO 3 !PMF 19/11/99: substract 192
-CAV FIXME      INTD=TNN(I)-240+192         !PMF 19/11/99: substract 192
+    2 IF(TNN(I).LT.240-192) GO TO 3 !PMF 19/11/99: substract 192 ( EBCDIC-> ASCII Code for numbers)
+      IF(TNN(I).GT.249-192) GO TO 3 !PMF 19/11/99: substract 192
+      INTD=TNN(I)-240+192         !PMF 19/11/99: substract 192
       A=10.*A+INTD
       NBP=NBP+NREL
     1 CONTINUE

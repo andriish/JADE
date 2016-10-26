@@ -15,20 +15,20 @@ C
       DIMENSION IVTXST(1)
 C
 C
-      character*8 DTEXT(27)
+      REAL*8 DTEXT(27)
       DIMENSION NSTART(10)
 C
       DATA NSTART / 1, 4, 5, 6, 8, 14, 19, 24, 25, 28 /
       DATA DTEXT /
-     &'NV < 1 O','R NV > 2','0       ',
-     &'NT  <= 0',
-     &'NTR <= 0',
-     &'DET = 0.','0       ',
-     &'NTR < 2 ','AFTER RE','JECTING ','TRACK WI','TH DS/R ','> 90 DEG',
-     &'ERROR OF',' VERTEXC','OORDINAT','E(S) = 0','.0      ',
-     &'NTR < 2 ','AFTER RE','JECTING ','BAD TRAC','K       ',
-     &'NTR = 1 ',
-     &'COLLINEA','R 2-PRON','G       ' /
+     &8HNV < 1 O,8HR NV > 2,8H0       ,
+     &8HNT  <= 0,
+     &8HNTR <= 0,
+     &8HDET = 0.,8H0       ,
+     &8HNTR < 2 ,8HAFTER RE,8HJECTING ,8HTRACK WI,8HTH DS/R ,8H> 90 DEG,
+     &8HERROR OF,8H VERTEXC,8HOORDINAT,8HE(S) = 0,8H.0      ,
+     &8HNTR < 2 ,8HAFTER RE,8HJECTING ,8HBAD TRAC,8HK       ,
+     &8HNTR = 1 ,
+     &8HCOLLINEA,8HR 2-PRON,8HG        /
 C
       IF ((IERR.LT.1).OR.(IERR.GT.9)) GOTO 100
 C        IF (HVTXST(4+IERR).GT.0)

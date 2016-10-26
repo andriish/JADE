@@ -1,11 +1,11 @@
 C   07/06/96 606071904  MEMBER NAME  PTEXT1   (S4)          FORTRAN
       SUBROUTINE PTEXT
       COMMON/BCS/IW(1)
-      character*1 AR(1),LTEXT(60),DOLL/'$'/
+      CHARACTER*1 AR(1),LTEXT(60),DOLL/1H$/
       INTEGER TEXT(15),BLANK/4H    /
       EQUIVALENCE (TEXT(1),LTEXT(1))
-      character*8 TEXTE(6)/'UCOND   ','UTABL   ','UHIST   ','UCORR   ',
-     1   'USTOR/S ','TEXT    '/
+      REAL*8 TEXTE(6)/8HUCOND   ,8HUTABL   ,8HUHIST   ,8HUCORR   ,
+     1   8HUSTOR/S ,8HTEXT    /
       CALL BPOS('TEX*')
       LK=0
   10  CALL BNXT(IND,&100)

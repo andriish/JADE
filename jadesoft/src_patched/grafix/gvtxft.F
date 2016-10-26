@@ -51,17 +51,16 @@ C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #include "mvertex1.for"
 #include "mvertex2.for"
 C
-      character*2 HTEXT, HMW
       DIMENSION HTEXT(5,7),RLIMS(2,6),HNNN(50),ITR(4)
 C
       DIMENSION HMW(5) ! PMF 26/10/99 DIMENSION statement added
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 C
       DATA ZDEEP /5800./,DER/20./
-      DATA HTEXT /'  ','  ','  ','  ','  ','BE','AM','-P','IP','E ',
-     +            'BP','-C','OU','NT','ER','ID','-T','AN','K ','  ',
-     +            'RO','HA','CE','LL',' 1','RO','HA','CE','LL',' 2',
-     +            'RO','HA','CE','LL',' 3'/
+      DATA HTEXT /2H  ,2H  ,2H  ,2H  ,2H  ,2HBE,2HAM,2H-P,2HIP,2HE ,
+     +            2HBP,2H-C,2HOU,2HNT,2HER,2HID,2H-T,2HAN,2HK ,2H  ,
+     +            2HRO,2HHA,2HCE,2HLL,2H 1,2HRO,2HHA,2HCE,2HLL,2H 2,
+     +            2HRO,2HHA,2HCE,2HLL,2H 3/
       DATA RLIMS /115.,127.,127.,167.,167.,174.,174.,195.,370.,410.,
      +            580.,625./
 C

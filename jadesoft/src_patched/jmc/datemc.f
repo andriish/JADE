@@ -8,8 +8,8 @@ C  SEQUENCE IS SS, MM, HH, DD, MM, YY.
 C----------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
-C      REAL*8 X1,X2
-      DOUBLE PRECISION X1,X2
+      REAL*8 X1,X2
+C      DOUBLE PRECISION X1,X2
       DIMENSION HDAT(6)
 *PMF Byteorder from subroutine MACHINE:
       INTEGER ITYPE,IST

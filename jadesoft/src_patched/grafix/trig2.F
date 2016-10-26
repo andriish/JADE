@@ -22,13 +22,12 @@ C
       COMMON / CJTRIG / PI, TWOPI
       COMMON / CJCELL / NCELL(3), NWIRES(3)
 C
-      character*1 HCHAR,HWRIT
       DIMENSION  RAD(5),IPOINT(5),HCHAR(5),HWORD(2)
 C
       EQUIVALENCE (IWORD,HWORD(1))
 C
       DATA  IPOINT / 2,2,1,3,4 /
-      DATA  HCHAR / 'O','O','O','A','F' /
+      DATA  HCHAR / 1HO,1HO,1HO,1HA,1HF /
       DATA  ICALL / 0 /
 C
 C------------------  C O D E  ------------------------------------------

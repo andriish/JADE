@@ -10,11 +10,9 @@ C    IOPT LE 0 OR GT 36 WILL CAUSE THE NUMBER TO BE PRECEDED BY A BLANK
 C---
       IMPLICIT INTEGER*2 (H)
 #include "cgraph.for"
-      character*2 HMW, HSYM
       DIMENSION HMW(10)
 #include "chsym.for"
-      character*2 HBLANK, HMINUS
-      DATA HBLANK /'  '/,HMINUS/'- '/
+      DATA HBLANK /2H  /,HMINUS/2H- /
 C---
       KCNT = 1
       IF(IOPT.GT.0.AND.IOPT.LE.36) GO TO 1

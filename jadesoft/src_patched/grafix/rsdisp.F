@@ -45,9 +45,8 @@ C
 #include "cgeo1.for"
 #include "cdata.for"
 #include "mccomf.for"
-C 
-      character*4 INAME
-      DATA INAME  / 'PATR' /
+C
+      DATA INAME  / 4HPATR /
 C
 C-----------------------------------------------------------------------
 C

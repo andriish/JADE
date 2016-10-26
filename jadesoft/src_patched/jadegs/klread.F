@@ -105,15 +105,14 @@ C
       COMMON /CLGPRM/ ITH,MAXCLS,IRLTHD,IRLTH2,IRLTH3, ZVRTX,DZVRTX
      $               ,IDUMM(2),ICALFL
 C
-       CHARACTER*4 NAME, NAMEBN
       COMMON /CMCCAL/ LBMC(17)  ! PMF 28/10/99 LBMC(16)->LBMC(17)
       DIMENSION NAME(18),LENG(18),MAXL(18)
 C
       DATA NBANKS /17/
-      DATA NAME/'MUCA','LGMA','TAGS','JTPL','JTAB',
-     1          'TOFC','LGST','DEDX','SPTG','RVTX',
-     2          'ZCAL','TAGF','IDJS','VTXC','VTXR',
-     3          'VTXB','VTXF','    ' /
+      DATA NAME/4HMUCA,4HLGMA,4HTAGS,4HJTPL,4HJTAB,
+     1          4HTOFC,4HLGST,4HDEDX,4HSPTG,4HRVTX,
+     2          4HZCAL,4HTAGF,4HIDJS,4HVTXC,4HVTXR,
+     3          4HVTXB,4HVTXF,4H     /
       DATA LENG /2,2,2,2,4,  4,2,2,2,4,  4,2,4,4,4,  4,4,0 /
       DATA MAXL/  4185,  2880,   192, 4608,  1344,
      1             546,   500,  1841,  193,     6,
@@ -312,7 +311,6 @@ C---
 C     IF(ICALO.EQ.1) PRINT 8756
 C8756 FORMAT(' XV ENLARGED BY .1')
       IEVTIM=KTMCON(ITIME,NOW,LASTIM)
-      write(*,*)' TIMEDBG ',IEVTIM, ITIME,NOW,LASTIM
 C
 C                          CHECK IF EVENT TIME IN RANGE OF CONSTANTS
       IF(IEVTIM.LT.LSTIME(1)) GOTO 9001
@@ -349,8 +347,6 @@ C---     SINCE THE LAST EVENT, OR THIS IS THE FIRST CALL.
 C---
          INTERV=NINTER
          LUNIT=LUNITA(NINTER)
-        write(*,*)' fcall     ',  LUNIT,NINTER
-
 C     PRINT 2003, LUNIT
          REWIND LUNIT
          READ(LUNIT,ERR=320,END=321) NDUUM
@@ -503,7 +499,7 @@ C                      *******************  EOF ON CALIBR. FILE
 C                      *******************  GENERATE DUMMY RECORD
 C                      *******************  WITH YEAR = 2000
          NWORDS  = 9
-CAVFIXME JBUF(1) = NAME(2)
+         JBUF(1) = NAME(2)
          JBUF(2) = 1
          JBUF(3) = 1
          JBUF(4) = 0

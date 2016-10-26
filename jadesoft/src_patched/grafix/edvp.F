@@ -10,7 +10,6 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
-      character*2 HYES, HBLK, HCD
       LOGICAL DSPDTM
       LOGICAL FL18,FL22,FL24
 C
@@ -26,8 +25,8 @@ C
       DIMENSION IDATUM(5)
       DIMENSION IPHT(7), HTEMP(246)
 C
-      DATA HYES / 'Y ' /
-      DATA HBLK / '  ' /
+      DATA HYES / 2HY  /
+      DATA HBLK / 2H   /
 C
 C
 C------------------  C O D E  ------------------------------------------

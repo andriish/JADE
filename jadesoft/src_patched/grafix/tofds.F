@@ -6,7 +6,6 @@ C--     TOF DISPLAY FOR JADE LEAD GLASS, USES YAMADA PROGRAM LGBTOF
 C--     14.05.80       LAST CHANGE 28.05.82          J.OLSSON
 C---
       IMPLICIT INTEGER*2 (H)
-            character*2 HTYP ,HBLANK, HMW
       LOGICAL FL18,FL22,FL24
       COMMON /CHEADR/ HEAD(108)
       COMMON /CWORK1/ HMW(112)
@@ -17,9 +16,9 @@ C---
       EQUIVALENCE (RE(1,1),IR(1,1))
 #include "cgraph.for"
 #include "cdata.for"
-      DATA HTYP /'  ','PR','OT','ON','  ','  ','KA','ON',
-     $           '  ','  ','PI','ON','EL','EC','TR','ON'/
-      DATA HBLANK /'  '/
+      DATA HTYP /2H  ,2HPR,2HOT,2HON,2H  ,2H  ,2HKA,2HON,
+     $           2H  ,2H  ,2HPI,2HON,2HEL,2HEC,2HTR,2HON/
+      DATA HBLANK /2H  /
 C----------------------------------------
       NN = ACMD
       IF(NN.EQ.-3) GO TO 2110

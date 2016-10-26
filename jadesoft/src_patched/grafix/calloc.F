@@ -11,9 +11,8 @@ C     ALLOCATES THE CALIBRATION DATASETS TO VARIABLE LUNS.
 C     OK = .TRUE. IF THE ALLOCATION WAS SUCCESSFUL.
 C
 C-----------------------------------------------------------------------
-C 
-         IMPLICIT INTEGER*2 (H)
-C      IMPLICIT NONE
+C
+      IMPLICIT INTEGER*2 (H)
 C
       REAL*8   DDN
       LOGICAL  OK
@@ -23,15 +22,13 @@ C
 C
       COMMON / CNWCAL / IFILE
 C
-      
-      CHARACTER*1 LUNC(11,4)
+      DIMENSION LUNC(11,4)
 C
-       character*2 HBLANK, HCAL, HDUM
-      DATA  HBLANK/'  '/, HCAL/'CC'/
-      DATA  LUNC /'F11L','HO.B','UPDA','T0  ','    ','    ',5*'    ',
-     +            'F11L','HO.B','UPDA','T1  ','    ','    ',5*'    ',
-     +            'F11L','HO.A','UPDA','T1  ','    ','    ',5*'    ',
-     +            'F11L','HO.K','ALWR','K0  ','    ','    ',5*'    '/
+      DATA  HBLANK/2H  /, HCAL/2HCC/
+      DATA  LUNC /4HF11L,4HHO.B,4HUPDA,4HT0  ,4H    ,4H    ,5*4H    ,
+     +            4HF11L,4HHO.B,4HUPDA,4HT1  ,4H    ,4H    ,5*4H    ,
+     +            4HF11L,4HHO.A,4HUPDA,4HT1  ,4H    ,4H    ,5*4H    ,
+     +            4HF11L,4HHO.K,4HALWR,4HK0  ,4H    ,4H    ,5*4H    /
 C
 C
 C------------------  C O D E  -----------------------------------------
@@ -76,11 +73,9 @@ C
       IF( NCALI .EQ. 2 ) GO TO 150
       GO TO 105
 C
- 120  CONTINUE
-      NCALI = 2
+ 120  NCALI = 2
 C
- 130   CONTINUE
-       IFILE = 1
+ 130  IFILE = 1
 C
       DO  140  II = 1,2
         IPDS = II

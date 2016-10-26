@@ -1137,8 +1137,8 @@ C      to ensure equidistant character output !!!
             CALL ITX(XS+W,YS+H,CSTR(I)) ! normal text
          ELSE
             CALL ISTXFP(0,2)
-CAVFIXME            CALL ITX(XS+W,YS+H
-CAVFIXME     +           ,CSTR4(I)(1:INDEX(CSTR4(I)//' ',' ')-1)) ! special symbols
+            CALL ITX(XS+W,YS+H
+     +           ,CSTR4(I)(1:INDEX(CSTR4(I)//' ',' ')-1)) ! special symbols
             CALL ISTXFP(IFNT,IPRC) ! restore font
          ENDIF
          XS=XS+DX

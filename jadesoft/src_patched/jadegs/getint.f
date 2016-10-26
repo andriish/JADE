@@ -8,15 +8,12 @@ C    AUTHOR:   R. RAMCKE     14/03/83 :  CONVERTS EBCDIC-CODE TO INTEGER
 C
 C-----------------------------------------------------------------------
 C
-      IMPLICIT integer*2 (H)
-      
-C     
-      character*2 HNR
+      IMPLICIT INTEGER*2 (H)
+C
       DIMENSION HNR(10)
 C
-     
       DATA IML / 255 /
-      DATA HNR / ' 0',' 1',' 2',' 3',' 4',' 5',' 6',' 7',' 8',' 9' /
+      DATA HNR / 2H 0,2H 1,2H 2,2H 3,2H 4,2H 5,2H 6,2H 7,2H 8,2H 9 /
 C
 C-----------------  C O D E  -------------------------------------------
 C

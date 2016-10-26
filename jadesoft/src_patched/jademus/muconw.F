@@ -38,15 +38,14 @@ C
 #include "cmued.for"
 C
       DIMENSION IHED(9)
-      character*4 NAME , MUNAME 
       DIMENSION NAME(12) , NUMBER(12) , LENGTH(12)
 C
 C                            DATA INITIALISATION STATEMENTS.
 C
       DATA NBANKS /   12   /
-      DATA MUNAME / 'MUCA' /
-      DATA NAME/'MUCO','MUCD','MUOV','MFFI','MCFI','MFSU',
-     +          'MCSU','MCEL','MCST','MUFI','MUYO','MUEN'/
+      DATA MUNAME / 4HMUCA /
+      DATA NAME/4HMUCO,4HMUCD,4HMUOV,4HMFFI,4HMCFI,4HMFSU,
+     +          4HMCSU,4HMCEL,4HMCST,4HMUFI,4HMUYO,4HMUEN/
       DATA NUMBER/  1, 0,0,  2,  3,  4,  5,   6,  7, 8, 9,10 /
       DATA LENGTH/100,16,3,370,318,246,634,2220,317,36,10,15 /
       DATA IHED(2)/0/,IHED(3)/0/,IHED(4)/0/,IHED(5)/0/,IHED(8)/0/,
@@ -54,8 +53,7 @@ C
 C
 C------------------  C O D E  ------------------------------------------
 C
-CAV FIXME
-C      IHED(1)=MUNAME
+      IHED(1)=MUNAME
       IHED(6)=KTIME
       IHED(7)=IFLAG
 C

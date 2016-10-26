@@ -25,11 +25,11 @@ C
       IMPLICIT INTEGER*2 (H)
 C
       CHARACTER*1 JNAME,BLANK
-      CHARACTER*8 DDN,VOLSR
+      REAL*8 DDN,VOLSR
 C
       DIMENSION JNAME(44)
 C
-      DATA BLANK/' '/,VOLSR/'        '/
+      DATA BLANK/1H /,VOLSR/8H        /
 C
 C------------------  C O D E  ------------------------------------------
 C

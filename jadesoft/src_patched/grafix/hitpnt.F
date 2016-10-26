@@ -18,12 +18,10 @@ C
 C
 #include "chsym.for"
 C
-      character*2 HBUF, HSYM
       DIMENSION HBUF(4)
 C
-      character*2 HBLANK, HMINUS 
-      DATA HBLANK   /'  '/
-      DATA HMINUS   /'- '/
+      DATA HBLANK   /2H  /
+      DATA HMINUS   /2H- /
 C
 C-----------------  C O D E  -------------------------------------------
 C

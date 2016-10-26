@@ -26,12 +26,9 @@ C
       COMMON / CPROJ /XMINR,XMAXR,YMINR,YMAXR,IPRJC,FL18,FL22,FL24,KPROJ
 #include "cgraph.for"
 C
-      character*2 HTX
       DIMENSION  ISGN(4,3),IPER(4,3),HTX(4)
-C       
-
-      
-      DATA HTX /'X ','Y ','Z ','  '/
+C
+      DATA HTX /2HX ,2HY ,2HZ ,2H  /
       DATA ISGN / 1,1,1,1,1,-1,1,-1,-1,1,1,1 /
       DATA IPER / 2,1,2,2,3,2,1,3,1,3,3,1 /
       DATA FSCA1 /25./, F1,F2,F3 /3.5,1.,2.5/,FX,FY /.08,.05/,FFX /.05/
@@ -66,7 +63,7 @@ C
 170   CALL CHRSIZ(4)
       IF( INDEX .EQ. 20 ) GO TO 50
       IF( INDEX .GT. 3  .AND.  INDEX .NE. 14 .AND.INDEX.NE.17) GO TO 100
-C      AVFIXME 00005900
+C      line? 00005900
 C
 C                            RFI-VIEWS
 C

@@ -26,11 +26,9 @@ C
       COMMON / CJTRIG / PI,TWOPI
 C
       DATA VELH /.2998E-4/
-       character*4 INAME,  JNAME
-       character*2 HPLUS, HMINUS, HSIGN
-      DATA INAME /'BK17'/
-      DATA JNAME /'FAMP'/
-      DATA HPLUS/'+ '/,HMINUS/'- '/
+      DATA INAME /4HBK17/
+      DATA JNAME /4HFAMP/
+      DATA HPLUS/2H+ /,HMINUS/2H- /
 *** PMF 17/11/99: add variables needed for emulation of DESYLIB routine 'CORE'  
       CHARACTER cHWORK*160
       EQUIVALENCE (cHWORK,HWORK(1))

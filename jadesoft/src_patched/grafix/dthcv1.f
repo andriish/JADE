@@ -15,7 +15,7 @@ C     DRAW "THEORETICAL" DE/DX CURVES FROM K. AMBRUS
 C
 C-----------------------------------------------------------------------
 C
-      IMPLICIT CHARACTER*2 (H)
+      IMPLICIT INTEGER*2 (H)
 C
       LOGICAL  SMALL, LARGE, DSPDTM
 C
@@ -27,7 +27,7 @@ C
 C
 C                       LOWER CASE 'e', BLANK, BLANK, K, LOWER CASE p
 C
-      DATA HLABEL / 'e ', '  ', '  ', 'K ', 'p ', '  '/
+      DATA HLABEL / 2He , 2H  , 2H  , 2HK , 2Hp , 2H  /
 C
 C------------------  C O D E  ------------------------------------------
 C

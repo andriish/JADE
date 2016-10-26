@@ -54,7 +54,6 @@ C
      +                  HMASK(16,3),HDEADC(10),HACC1,HACC2,HACC3,
      +                  HACC4,HACCM,HDUM6,IWIDT2,IDUM4(10)
 C
-      character*4 NAMV, NAM1
       DIMENSION NAM1(3), NAMV(2)
 C
 C
@@ -62,8 +61,8 @@ C
       EQUIVALENCE (TSTAT1(1),IHIST(1)), (TSTAT2(1), NDEAD)
       EQUIVALENCE ( ABIN(1), TIME(1) )
 C
-      DATA NAM1  / 'MTCO', 'MJET', 'MGEO' /
-      DATA NAMV  / 'MVCC', 'MGEV' /
+      DATA NAM1  / 4HMTCO, 4HMJET, 4HMGEO /
+      DATA NAMV  / 4HMVCC, 4HMGEV /
       DATA LMTCO,LGEO,LJET / 159, 66, 34 /
       DATA LVCC, LGEV  / 15, 13 /
       DATA IENTW /0/

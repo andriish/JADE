@@ -24,10 +24,8 @@ C
      $,PMOM,PZ,PTRANS,RMS,NHTF,RAD,RAD1,THE,PHI,DUM(6),HSIGN,HDUM,NTRRES
      $,IW52
 C
-      character*2 HPLCFT, HMICFT,HBLANK, HPLUS, HMINUS, HSIGN
-      DATA HBLANK/'  '/, HPLUS/'+ '/,HMINUS/'- '/
-      
-      DATA HPLCFT/'+¢'/, HMICFT/'-¢'/
+      DATA HBLANK/2H  /, HPLUS/2H+ /,HMINUS/2H- /    
+      DATA HPLCFT/2H+¢/, HMICFT/2H-¢/
 *** PMF 17/11/99: add variables needed for emulation of DESYLIB routine 'CORE'  
       CHARACTER cHWORK*80
       EQUIVALENCE (cHWORK,HWORK(1))

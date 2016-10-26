@@ -6,15 +6,11 @@ C--
 C--                                   LATEST CHANGE 06.09.81, (J.OLSSON)
 C--
       IMPLICIT INTEGER*2 (H)
-      CHARACTER HLAND
-      character*2 HBLANK, HPLUS, HMINUS, HSIGN, HPOINT,HINN, HWORD
-      character*1 hnumb
       DIMENSION HNUMB(10),HWORD(2)
       COMMON/CWORK1/HWORK(40),HINN(80)
       EQUIVALENCE(HWORD(1),IWORD)
-      
-      DATA HBLANK/'  '/,HPOINT/' .'/,HMINUS/' -'/
-      DATA HNUMB/' 0',' 1',' 2',' 3',' 4',' 5',' 6',' 7',' 8',' 9'/
+      DATA HBLANK/2H  /,HPOINT/2H ./,HMINUS/2H -/
+      DATA HNUMB/2H 0,2H 1,2H 2,2H 3,2H 4,2H 5,2H 6,2H 7,2H 8,2H 9/
       DATA IHIGH/Z'FF000000'/,HHIGH/Z'FF00'/,HLOW/Z'00FF'/,ICALL/0/
 *** PMF 01/12/99
       CHARACTER CHWORK*160
@@ -45,7 +41,7 @@ C---
     1 CONTINUE
 C---
  15   CALL TRMIN(80,cHWORK)
-CAVFIXME      HWORD(1)=0
+      HWORD(1)=0
       DO 5 I=1,70
 C---
 C---     PACK BYTES INTO THE LOW ORDER BYTES OF INTEGER*2 VARIABLES

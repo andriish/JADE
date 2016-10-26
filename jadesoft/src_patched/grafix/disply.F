@@ -45,7 +45,7 @@ C
       LOGICAL FL18,FL22,FL24,DSPDTM
       LOGICAL LPRINT,FLVCDO
 C
-      character*8 DESTLP
+      REAL*8 DESTLP
 C
 #include "cgraph.for"
 #include "cgeo1.for"
@@ -58,14 +58,12 @@ C
       COMMON / CVX    / NNPATR,NDUMM,NNJETC,NNVTXC
       COMMON / CGVCDO / FLVCDO(20)
 C
-
-      
       DIMENSION DESTLP(5), IARRAY(2,10)
 C
-      DATA DESTLP  / 'L1      ','L2      ','L3      ','L4      ',
-     &               'L5      '/
-      character*8 DESTIN  / 'PLOTTER ' /
-      character*8 DESTEX  / 'EXTPLOTT' /
+      DATA DESTLP  / 2HL1      ,2HL2      ,2HL3      ,2HL4      ,
+     &               2HL5      /
+      REAL*8 DESTIN  / 8HPLOTTER  /
+      REAL*8 DESTEX  / 8HEXTPLOTT /
 C
       DATA  HDCL /0/
 C

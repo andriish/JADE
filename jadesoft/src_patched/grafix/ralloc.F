@@ -25,7 +25,8 @@ C
 C                            ALLOCATE FORTRAN LUN TO INPUT DATA SET.
 C
       NDDINN = 0
-      CALL GETDS(NDDINN,'Please enter FULL ',IDATSV,HERR)
+      CALL GETDS(NDDINN,'Please enter FULL NAME of the Dataset with the
+     +Events  (without apostrophes)^',IDATSV,HERR)
 C
       IF( HERR .EQ. 0 ) GO TO 85
 C
@@ -38,8 +39,7 @@ C
 C
 C                            SUCCESSFULLY ALLOCATED DATA SET.
 C
-  85  CONTINUE
-      MAXREC = 0
+  85  MAXREC = 0
 C
 C                            NDDOUT SET TO ZERO HERE. IS SET TO O/P
 C                            LUN AFTER FIRST CALL TO S/R WRIT.

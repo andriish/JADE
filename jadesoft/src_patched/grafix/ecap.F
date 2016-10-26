@@ -15,22 +15,21 @@ C     CENTRE POINT.
 C
 C-----------------------------------------------------------------------
 C
-      IMPLICIT character*2 (H)
+      IMPLICIT INTEGER*2 (H)
 C
       COMMON / CWORK1 / HWORK(40)
 C
 #include "cgeo1.for"
 #include "cgraph.for"
 C
-      character*1 HMES
       DIMENSION HMES(36)
 C
-      DATA HMES/'-','Z',' ',' ',' ',' '
-     +         ,'0',' ',' ',' ',' ',' '
-     +         ,'+','Z',' ',' ',' ',' '
-     +         ,'F','I',' ','0',' ',' '
-     +         ,'F','I',' ','P','I',' '
-     +         ,'F','I',' ','2','P','I'/
+      DATA HMES/1H-,1HZ,1H ,1H ,1H ,1H 
+     +         ,1H0,1H ,1H ,1H ,1H ,1H 
+     +         ,1H+,1HZ,1H ,1H ,1H ,1H 
+     +         ,1HF,1HI,1H ,1H0,1H ,1H 
+     +         ,1HF,1HI,1H ,1HP,1HI,1H 
+     +         ,1HF,1HI,1H ,1H2,1HP,1HI/
 C
 C------------------  C O D E  ------------------------------------------
 C

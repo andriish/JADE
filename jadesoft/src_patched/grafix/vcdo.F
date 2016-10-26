@@ -28,8 +28,7 @@ C
      +                  OPTDO4(18,5)
       COMMON / CVCPV  / ICD, DFX, DFY, IRC, PTOTCT
 C
-      character*4 HYES, HCD
-      DATA HYES  / 'Y ' /
+      DATA HYES  / 2HY  /
 C
 C------------------  C O D E  ------------------------------------------
 C

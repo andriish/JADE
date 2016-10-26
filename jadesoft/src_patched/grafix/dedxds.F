@@ -20,7 +20,6 @@ C---     DEDX -6       CHANGE VARIABLE NHFCUT: MIN. NR OF HITS ON TRACK.
 C---                     ALSO VARIABLE PMCUT: MIN. MOMENTUM OF TRACK.
 C---
       IMPLICIT INTEGER*2 (H)
-      character*2 HTYP ,HBLANK, HMW
       LOGICAL FL18,FL22,FL24
       COMMON/CPROJ/XMINR,XMAXR,YMINR,YMAXR,IPRJC,FL18,FL22,FL24
       COMMON/CWORK1/IER,NTR,TRES(10,60)
@@ -30,7 +29,6 @@ C---
 #include "cgeo1.for"
 #include "cgraph.for"
 #include "cdata.for"
-
       COMMON / CDEDXU / NHFCUT,PMCUT
       COMMON / CGRAP2 / BCMD,DSPDTM(30),ISTVW,JTVW
       LOGICAL DSPDTM
@@ -38,11 +36,11 @@ C     DATA HTYP /'  ','PR','OT','ON','  ','K ','PL','US',
 C    $           'PI',' P','LU','S ','PO','SI','TR','ON',
 C    $           'A-','PR','OT','ON',' K',' M','IN','US',
 C    $           'PI',' M','IN','US','EL','EC','TR','ON'/
-      DATA HTYP /'PR','OT','ON','  ',' K',' +',
-     $           '  ','PI',' +','  ',' E',' +',
-     $           'AN','TI','-P','  ',' K',' -',
-     $           '  ','PI',' -','  ',' E',' -'/
-      DATA HBLANK /'  '/
+      DATA HTYP /2HPR,2HOT,2HON,2H  ,2H K,2H +,
+     $           2H  ,2HPI,2H +,2H  ,2H E,2H +,
+     $           2HAN,2HTI,2H-P,2H  ,2H K,2H -,
+     $           2H  ,2HPI,2H -,2H  ,2H E,2H -/
+      DATA HBLANK /2H  /
 C                                           FLAG TO REQUEST DATA FOR
 C                                           SINGLE TRACK
       COMMON /CDXSIN/ ISNGTR

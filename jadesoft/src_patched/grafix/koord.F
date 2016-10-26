@@ -18,8 +18,6 @@ C
       IMPLICIT INTEGER*2 (H)
 C
       LOGICAL LSEP, LDIF, LVIEW
-      character*2 HTX, HCELL,  HBPCH, HVCVW, HDIFF, HZETM , HZETP, HBANK 
-      character*2 HMW, HDATSV, HMES
 C
 #include "cgraph.for"
 #include "cdata.for"
@@ -40,14 +38,14 @@ C
       EQUIVALENCE ( HDATSV(1), IDATSV(1) )
 C
       DATA KANAL / 48, 49, 50, 51, 52, 53, 54, 55, 56, 57 /
-      DATA HTX   / 'DS', 'N ' /
-      DATA HCELL / 'Ce', 'll' /
-      DATA HBPCH / 'BP', 'CH' /
-      DATA HVCVW / 'VC', 'VW' /
-      DATA HDIFF / 'di','ff','er','en','ci','at','ed',' p','ul',
-     &             'se','s ' /
-      DATA HZETM / ' -',' Z' /
-      DATA HZETP / ' +',' Z' /
+      DATA HTX   / 2HDS, 2HN  /
+      DATA HCELL / 2HCe, 2Hll /
+      DATA HBPCH / 2HBP, 2HCH /
+      DATA HVCVW / 2HVC, 2HVW /
+      DATA HDIFF / 2Hdi,2Hff,2Her,2Hen,2Hci,2Hat,2Hed,2H p,2Hul,
+     &             2Hse,2Hs  /
+      DATA HZETM / 2H -,2H Z /
+      DATA HZETP / 2H +,2H Z /
 C
 C-----------------  C O D E  -------------------------------------------
 C

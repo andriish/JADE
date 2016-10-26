@@ -66,8 +66,6 @@ C
 C
 #include "cdededx.for"
 C
-
-      
       INTEGER  NPVECT(0:1)
       INTEGER ONE / 1 /, ZFLAG
       INTEGER RUN2PR(20) /

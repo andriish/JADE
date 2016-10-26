@@ -38,17 +38,16 @@ C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #include "mvertex2.for"
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 C
-      character*2 HTEXT, HMW
       DIMENSION PP(6),IPOIN(20),HTEXT(5,7),RLIMS(2,6)
       DIMENSION HNNN(20),HNTP(20),PAR(20,4),PSAM(4),XMAS(20),ARMAS(6)
 C
       DIMENSION HMW(5) ! PMF 26/10/99 DIMENSION statement added
 C
       DATA ARMAS /0.0,.000511,.105659,.139567,.49367,.93828/
-      DATA HTEXT /'  ','  ','  ','  ','  ','BE','AM','-P','IP','E ',
-     $            'BP','-Z','AE','HL','ER','ID','-T','AN','K ','  ',
-     $            'RO','HA','CE','LL',' 1','RO','HA','CE','LL',' 2',
-     $            'RO','HA','CE','LL',' 3'/
+      DATA HTEXT /2H  ,2H  ,2H  ,2H  ,2H  ,2HBE,2HAM,2H-P,2HIP,2HE ,
+     $            2HBP,2H-Z,2HAE,2HHL,2HER,2HID,2H-T,2HAN,2HK ,2H  ,
+     $            2HRO,2HHA,2HCE,2HLL,2H 1,2HRO,2HHA,2HCE,2HLL,2H 2,
+     $            2HRO,2HHA,2HCE,2HLL,2H 3/
       DATA RLIMS /115.,127.,127.,167.,167.,174.,174.,195.,370.,410.,
      $            580.,625./
 C

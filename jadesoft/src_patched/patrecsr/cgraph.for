@@ -4,7 +4,6 @@ C-----------------------------------------------------------------------
 C
       LOGICAL DSPDTL,SSTPS,PSTPS,FREEZE
 C
-      character*2 IDATSV
       COMMON / CGRAPH / JUSCRN,NDDINN,NDDOUT,IDATSV(11),ICREC,MAXREC,
      +                  LSTCMD,ACMD,LASTVW,ISTANV,
      +                  SXIN,SXAX,SYIN,SYAX,XMIN,XMAX,YMIN,YMAX,

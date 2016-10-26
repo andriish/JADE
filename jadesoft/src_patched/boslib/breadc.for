@@ -4,12 +4,10 @@ C     BOS SUBPROGRAM =3.1=
       COMMON/BCS/IW(1)
       REAL RW(1)
       EQUIVALENCE (IW(1),RW(1))
-      character*4  LABL
       COMMON/CONTEX/LABL,NSL,NF,FR(36),NB,LBT(72)
       REAL*8 LCD(10)
-      CHARACTER*1 LC(80),LBT,PAL/'('/,PAR/')'/,DOLL/'$'/,LH(4)
-      INTEGER NFR(36)
-      character*4 LIST(4)/'ENDQ','POFF','PON ','UNIT'/,BLK/'    '/
+      CHARACTER*1 LC(80),LBT,PAL/1H(/,PAR/1H)/,DOLL/1H$/,LH(4)
+      INTEGER NFR(36),LIST(4)/4HENDQ,4HPOFF,4HPON ,4HUNIT/,BLK/4H    /
       EQUIVALENCE (LCD(1),LC(1)),(NFR(1),FR(1)),(LABL,LH(1))
       IUN=5
       IPR=1

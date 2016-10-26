@@ -12,11 +12,12 @@ C PMF 03.11.98
 C
 #include "cdata.for"
 C
-      character*8 DTEXT(14)
+      REAL*8 DTEXT(14)
 C
-      DATA DTEXT / 'PRETEST ', 'TANKWALL', 'BEAMPIPE', 'PAR.TEST',
-     & 'CHAMBER ', 'CHARGE  ', 'D(PHI)  ', 'D(THETA)', 'D(XY)   ',
-     & 'D(Z)    ', 'INTRSECT', 'EXTRAP.S', 'INTERP.S', 'RADIUS  ' /
+      DATA DTEXT / 8HPRETEST , 8HTANKWALL, 8HBEAMPIPE, 8HPAR.TEST,
+
+     & 8HCHAMBER , 8HCHARGE  , 8HD(PHI)  , 8HD(THETA), 8HD(XY)   ,
+     & 8HD(Z)    , 8HINTRSECT, 8HEXTRAP.S, 8HINTERP.S, 8HRADIUS   /
 C
       IF (ITEST.EQ.0) GOTO 600
 C

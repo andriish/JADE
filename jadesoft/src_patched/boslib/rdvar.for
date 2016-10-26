@@ -3,8 +3,8 @@ C   07/06/96 606071906  MEMBER NAME  RDVAR    (S4)          FORTG1
       INTEGER ARRAY(1),INI/0/,NRD/0/,NWR/0/
       COMMON/CIBCOM/IRFLG
 ***PMF      REAL*8 TEXTA(4)/' IBCOMR ',' IBWRD  ',' IBARR  '/
-      character*8 TEXTA(4)/' IBCOMR ',' IBWRD  ',' IBARR  ','        '/
-      character*8 TEXTB(3)/'        ',' IHN213 ',' IHN218 '/
+      REAL*8 TEXTA(4)/8H IBCOMR ,8H IBWRD  ,8H IBARR  ,8H        /
+      REAL*8 TEXTB(3)/8H        ,8H IHN213 ,8H IHN218 /
 C
       IF(INI.EQ.0) CALL IBCERR
 C

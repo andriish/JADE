@@ -1,7 +1,7 @@
 C   07/06/96 606071857  MEMBER NAME  MSGPR    (S4)          FORTG1
       SUBROUTINE MSGPR
-      character*8 WORD,LINE(16),BLANK/'        '/
-      character*1 ALIST(9),LWORD(8),BLK/' '/,LIST(9,10)/90*' '/
+      REAL*8 WORD,LINE(16),BLANK/8H        /
+      LOGICAL*1 ALIST(9),LWORD(8),BLK/1H /,LIST(9,10)/90*1H /
       EQUIVALENCE (WORD,LWORD(1))
       INTEGER NL/0/
       IF(NL.EQ.0) GOTO 100

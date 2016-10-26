@@ -21,7 +21,6 @@ C
 C
 #include "cgraph.for"
 C
-      character*2  HWORK, HNAM, HTM2, HTM1
       COMMON / CWORK  / DATE, TIME, DUMMY, ITIME, HWORK(40), HNAM(8)
       COMMON / CSVCW1 / NDDSVE,NRWR
 C
@@ -33,8 +32,7 @@ C
 C
       EQUIVALENCE  ( HNAM(1), HNAME(1) )
 C
-       character*2 HBLANK
-      DATA  HBLANK /'  '/
+      DATA  HBLANK /2H  /
 C
 C------------------  C O D E  -----------------------------------------
 C

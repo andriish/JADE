@@ -10,7 +10,6 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
-      character*2 HSYM
       LOGICAL  FL18,FL22,FL24,DSPDTM
       LOGICAL  LERROR
       LOGICAL*1  CCMD,CDICTY
@@ -35,9 +34,9 @@ C
 C
 C------------------  D A T A  ------------------------------------------
 C
-      DATA HSYM /'0 ','1 ','2 ','3 ','4 ','5 ','6 ','7 ','8 ','9 ','A ',
-     + 'B ','C ','D ','E ','F ','G ','H ','I ','J ','K ','L ','M ','N ',
-     + 'O ','P ','Q ','R ','S ','T ','U ','V ','W ','X ','Y ','Z '/
+      DATA HSYM /2H0 ,2H1 ,2H2 ,2H3 ,2H4 ,2H5 ,2H6 ,2H7 ,2H8 ,2H9 ,2HA ,
+     + 2HB ,2HC ,2HD ,2HE ,2HF ,2HG ,2HH ,2HI ,2HJ ,2HK ,2HL ,2HM ,2HN ,
+     + 2HO ,2HP ,2HQ ,2HR ,2HS ,2HT ,2HU ,2HV ,2HW ,2HX ,2HY ,2HZ /
 C
       DATA  FL18,FL22,FL24  / 3*.FALSE. /, KPROJ / 0 /
       DATA  DSPDTM / .TRUE. ,.TRUE. ,.FALSE.,.FALSE.,.FALSE.,

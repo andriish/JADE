@@ -9,7 +9,6 @@ C     *   WRITTEN BY H.E.MILLS  LAST UPDATED ON 12-AUG-78 AT 16.10.    *
 C     ******************************************************************
 C
       IMPLICIT INTEGER*2 (H)
-      character*1  HLETS, HJ, HBUF
       DIMENSION HBUF(1),HKLM(2)
       DIMENSION HPTRS(40),HCORDS(167),HCORD1(94),HCORD2(73)
       DIMENSION HLETS(40)
@@ -61,11 +60,10 @@ C
      -            1124,-20480,
      -            -23552,
      -            1615,22366,23884,19283,4689,18762,21168/
-      
-      DATA HLETS/'0','1','2','3','4','5','6','7','8','9',
-     -           'A','B','C','D','E','F','G','H','I','J',
-     -           'K','L','M','N','O','P','Q','R','S','T',
-     -           'U','V','W','X','Y','Z','+','-',' ','?'/
+      DATA HLETS/1H0,1H1,1H2,1H3,1H4,1H5,1H6,1H7,1H8,1H9,
+     -           1HA,1HB,1HC,1HD,1HE,1HF,1HG,1HH,1HI,1HJ,
+     -           1HK,1HL,1HM,1HN,1HO,1HP,1HQ,1HR,1HS,1HT,
+     -           1HU,1HV,1HW,1HX,1HY,1HZ,1H+,1H-,1H ,1H?/
       DATA HPTRS/1,6,9,14,19,22,27,34,36,45,
      -           52,55,62,67,71,75,78,84,88,92,
      -           95,99,101,104,107,112,116,122,127,134,

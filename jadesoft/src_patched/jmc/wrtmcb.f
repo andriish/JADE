@@ -49,13 +49,12 @@ C        LFLAG(5) = .TRUE.   -->  WITH VERTEX CHAMBER TRACKING
 C        LFLAG(5) = .FALSE.  -->  WITHOUT VERTEX CHAMBER TRACKING
 C                                 BUT OLD BEAM PIPE GEOMETRY
 C
-      CHARacter*4 NAM1, NAMV
       DIMENSION NAM1(3), NAMV(2), HW(1)
 C
       EQUIVALENCE ( IW(1) , HW(1) )
 C
-      DATA NAM1                    / 'MTCO', 'MJET', 'MGEO' /
-      DATA NAMV                    / 'MVCC', 'MGEV' /
+      DATA NAM1                    / 4HMTCO, 4HMJET, 4HMGEO /
+      DATA NAMV                    / 4HMVCC, 4HMGEV /
       DATA LGEO, LJET, LVCC, LGEV  / 66, 34, 15, 13 /
       DATA ICALL                   / 0 /
 C-----------------------------------------------------------------------

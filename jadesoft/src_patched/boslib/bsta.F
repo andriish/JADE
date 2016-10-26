@@ -3,7 +3,7 @@ C   07/06/96 606071836  MEMBER NAME  BSTA     (S4)          FORTG1
 C     BOS SUBPROGRAM =1.17=
 #include "acs.for"
       COMMON/BCS/IW(1)
-      CHARACTER*4 IDES(10),IBLK/'    '/,IODS(3)/' -I ',' --O',' -IO'/
+      INTEGER IDES(10),IBLK/4H    /,IODS(3)/4H -I ,4H --O,4H -IO/
       NZTA=NZT-NTIME(DUMMY)
       MINT=NZTA/6000
       NZTA=NZTA-6000*MINT

@@ -3,10 +3,12 @@ C   24/11/78 C9080401   MEMBER NAME  TONUM    (JADEGS)      FORTRAN
 C
 C     **********  FETCH PAIR OF NUMBERS FROM OPERATOR  **********
 C
-      CHARACTER*1 BLANK,POINT,MINUS,TNN(20),ZW
-      DATA BLANK/' '/
-      DATA POINT/'.'/
-      DATA MINUS/'-'/
+      IMPLICIT INTEGER*2 (H)
+      INTEGER*1 BLANK,POINT,MINUS
+      INTEGER*1 TNN(20),ZW, INTD
+      DATA BLANK/1H /
+      DATA POINT/1H./
+      DATA MINUS/1H-/
 *** PMF 20/11/99: Variables added to avoid problems 
 *   when calling TRMIN/TRMOUT with logical arguments
       CHARACTER CTNN*20
@@ -26,11 +28,9 @@ C                                       GET INTEGER NUMBER
         IF(ZW.NE.MINUS) GOTO 22
         ISIGN = -1
         GOTO 20
-   22   CONTINUE
-CAV FIXME        IF(ZW.LT.240-192 .OR. ZW.GT.249-192) GOTO 60!PMF 20/11/99: substract 192 ( EBCDIC-> ASCII Code for numbers)
+   22   IF(ZW.LT.(240-192) .OR. ZW.GT.(249-192)) GOTO 60!PMF 20/11/99: substract 192 ( EBCDIC-> ASCII Code for numbers)
         NUM1 = NUM1 + 1
-      
-CAV FIXME        INTD = ZW-240+192!PMF 20/11/99: substract 192
+        INTD = ZW-240+192!PMF 20/11/99: substract 192
         INT = 10*INT + INTD
    20 CONTINUE
 C                                       CHECK IF MORE THAN 1 NUMBER
@@ -53,11 +53,10 @@ C                                       GET REAL NUMBER
    32   IF(ZW.NE.POINT) GOTO 34
         NREL=1
         GOTO 40
-   34   CONTINUE
-CAV FIXME   IF(ZW.LT.240-192 .OR. ZW.GT.249-192) GOTO 60!PMF 20/11/99: substract 192
+   34   IF(ZW.LT.240-192 .OR. ZW.GT.249-192) GOTO 60!PMF 20/11/99: substract 192
         NUM2 = NUM2 + 1
         NBP=NBP+NREL
-CAV FIXME        INTD=ZW-240+192!PMF 20/11/99: substract 192
+        INTD=ZW-240+192!PMF 20/11/99: substract 192
         FLP = 10.*FLP + INTD
    40 CONTINUE
 C

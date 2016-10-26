@@ -18,10 +18,8 @@ C
       REAL*8    DATE,TIME
       INTEGER*4 BINTIM
 C
-      character*2 hblank, HNAM, HWORK, HTM2, HTM1
       COMMON / CGAMOD / MODEGA, GAHEX
       COMMON / CWORK  / DATE, TIME, DUMMY, ITIME, HWORK(40), HNAM(8)
-      
 C
       DIMENSION  HTM1(4), HTM2(4)
       DIMENSION  HNAME(4)
@@ -30,9 +28,8 @@ C
       EQUIVALENCE  ( TIME, HTM2(1) )
 C
       EQUIVALENCE  ( HNAM(1), HNAME(1) )
-C 
-      
-      DATA  HBLANK /'  '/
+C
+      DATA  HBLANK /2H  /
 C
 C------------------  C O D E  -----------------------------------------
 C

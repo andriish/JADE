@@ -8,7 +8,7 @@ C   07/06/96 606071902  MEMBER NAME  PHIST    (S4)          FORTG1
       REAL*4 SP(11)
       COMMON/CCONVT/JM,PX(32,10)
       INTEGER PX
-      character*1 LX(128,10),XCH/'X'/
+      LOGICAL*1 LX(128,10),XCH/1HX/
       EQUIVALENCE (LX(1,1),PX(1,1))
       NAA=NA
       IF(NA.NE.0) GOTO 4
