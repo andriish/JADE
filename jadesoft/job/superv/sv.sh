@@ -28,8 +28,8 @@ MCBOS=`pwd`/mc_t86-05-17.bos
 
 # Set calibration file: Use either AUPDAT1 or ( BUPDAT0 and BUPDAT1 )
 AUPDAT0=$JADE_CAL/aupdat1.b
-BUPDAT0=$JADE_CAL/bupdat0.b
-BUPDAT1=$JADE_CAL/bupdat1.b
+#BUPDAT0=$JADE_CAL/bupdat0.b
+#BUPDAT1=$JADE_CAL/bupdat1.b
 
 # Set the name of the .hist, .bos and .bnk ouput files for this run
 NAME=sv_t86-05-17
