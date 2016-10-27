@@ -45,7 +45,6 @@ if [ -z "$INIT_JADE_ENV" ]; then
    fi
    if [ -x /bin/arch ]; then 
        alias machine="echo `/bin/arch`"
-       echo "OK"
    fi
    if [ -z "$HARDWARE" ]; then 
        export HARDWARE="`machine`"
@@ -82,7 +81,6 @@ if [ -z "$INIT_JADE_ENV" ]; then
        export HARDWARE="amd"
        export MACHTYPE="Linux"
        export CERN_ROOT=/usr/lib/cernlib/2006
-       echo "OK!"
        #NOTE: THESE ARE 32 bits CERNLIB BY AV!
    fi
 

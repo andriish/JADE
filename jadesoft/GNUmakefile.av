@@ -214,7 +214,7 @@ main:	 mcjade superv jadez ze4v
 mcjade:	 docptxt  $(MCJADE)/mcjade.o $(MCJADE)/mcuser.o $(MCJADE)/mcrand.o $(MCJADE)/mcmain.o $(SUPERV)/showb.o
 	@echo "...updating" $@;  mkdir -p $(BINDIR); cd $(MCJADE); \
 	echo $(FC) $(FFLAGS) -o $(BINDIR)/mcjade  $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o   $(LDFLAGS_STD)
-	$(FC) $(FFLAGS) -o $(BINDIR)/mcjade  main.av/patched.o $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o   $(LDFLAGS_STD) -lgfortran >> MAIN.map
+	$(FC) $(FFLAGS) -o $(BINDIR)/mcjade  $(MCJADE)/mcmain.o $(MCJADE)/mcjade.o $(MCJADE)/mcrand.o $(MCJADE)/mcuser.o $(SUPERV)/showb.o -Wl,--start-group  -L$(LIBDIR) -ljmc -lboslib -ljadegs -linterface -ljademus -lsource -lwertex -lpatrecsr    -lgfortran       $(shell cernlib-static kernlib packlib mathlib graflib grafX11)  -Wl,--end-group  >> MAIN.map
 
 superv:	 docptxt lib   $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o $(SUPERV)/jdmain.o
 	@echo "...updating"  $@; mkdir -p $(BINDIR); cd $(SUPERV); \
