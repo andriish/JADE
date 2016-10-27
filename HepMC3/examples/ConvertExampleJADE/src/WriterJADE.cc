@@ -2,6 +2,8 @@
 #include "HepMC/GenVertex.h"
 #include "HepMC/GenParticle.h"
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 extern "C"
 {
  struct JADEEVT* loccprod_();
@@ -65,6 +67,7 @@ void WriterJADE::write_event(const GenEvent &evt)
 	
 	fJ->NCF=0;
 	fJ->NNF=0;
+    char buf[10];
 
 	int i=0,j=0,k;                            
 	for (  k=0;(k<evt.particles().size())&&(i<500)&&(j<300);k++)
@@ -72,10 +75,12 @@ void WriterJADE::write_event(const GenEvent &evt)
 	int q= charge(evt.particles().at(i)->pid());
 	if (q==0) fJ->NN=fJ->NN+1; else fJ->NC=fJ->NC+1;
 	int KF=evt.particles().at(i)->pid();
-	
-	sprintf(&(fN->CP[i][0]),"%s",                "ff             d");
-	if (KF==11) sprintf(&(fN->CP[i][0]),"%s",    "E-              ");
-	if (KF==-11) sprintf(&(fN->CP[i][0]),"%s",   "E+              ");
+	    sprintf(buf,"%d",KF);
+	sprintf(&(fN->CP[i][0]),"%.16s",                (std::string("PDGID=")+std::string(buf)+std::string("                ")).c_str());
+	//sprintf(&(fN->CP[i][0]),"%.16s",    "E-              ");
+	if (KF==11) sprintf(&(fN->CP[i][0]),"%.16s",    "E-              ");
+	if (KF==-11) sprintf(&(fN->CP[i][0]),"%.16s",   "E+              ");
+	if (KF==21) sprintf(&(fN->CP[i][0]),"%.16s",   "g               ");
 	
 	fJ->JCH[i]=q;
 	fJ->JTP[i]=jadeco_(KF);
@@ -89,10 +94,11 @@ void WriterJADE::write_event(const GenEvent &evt)
 	if (evt.particles().at(i)->status()!=1) { i++; continue;}
 
 
-	sprintf(&(fN->CF[j][0]),"%s",                "ff              ");
-	if (KF==11) sprintf(&(fN->CF[j][0]),"%s",    "E-              ");
-	if (KF==-11) sprintf(&(fN->CF[j][0]),"%s",   "E+              ");
-
+	sprintf(&(fN->CF[j][0]),"%.16s",                (std::string("PDGID=")+std::string(buf)+std::string("                ")).c_str());
+	//sprintf(&(fN->CF[j][0]),"%.16s",    "E-              ");
+	if (KF==11) sprintf(&(fN->CF[j][0]),"%.16s",    "E-              ");
+	if (KF==-11) sprintf(&(fN->CF[j][0]),"%.16s",   "E+              ");
+   if (KF==21) sprintf(&(fN->CF[j][0]),"%.16s",   "g               ");
 
 	fJ->ICF[j]=fJ->JCH[i];
 	fJ->PF[j][0]=fJ->PP[i][0];

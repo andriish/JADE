@@ -696,16 +696,11 @@ C
 C
 C                       SET CORRECT STANDARD DEVIATIONS IN PATR BANK
 C
-       write(*,*) 'DEBUG 200' 
       CALL RDPATR
-       write(*,*) 'DEBUG 201' 
 C                       CREATE TRIGGER BANKS
 7788  CALL RDTRG1
-       write(*,*) 'DEBUG 202' 
       CALL RDTRG2
-       write(*,*) 'DEBUG 203' 
 C                       DELETE LG-BLOCKS BELOW READOUT THRESHOLD IPHALG
       CALL RDALGN
-       write(*,*) 'DEBUG 204' 
       RETURN
       END

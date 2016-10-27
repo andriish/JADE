@@ -226,9 +226,7 @@ C                            READ  NEXT  EVENT,  HANDLING  MONTE  CARLO
 C                            CALIBRATION IF RELEVANT. IRET = 2 ON EOF.
 C                            READ ERRORS ARE NOT RETURNED.
 C
-      write(*,*)'DEBUG 7' 
       CALL EVREAD(IUNIT,IRET)
-      write(*,*)'DEBUG 8 ',   IUNIT,IRET
 C
       IF(IRET.EQ.2) GO TO 100
       ICREC = ICREC + 1
@@ -247,7 +245,6 @@ C
       IACT=HDATA(IPH2+27)
       IF(NDDINN.NE.0) IACT=0
 
-      write(*,*)'DEBUG 800000001 ',   IUNIT,IRET
 C
 C                            ARE THERE PATR AND JHTL BANKS?
 C
@@ -272,7 +269,6 @@ C
       CALL KALIBR
       write(*,*)'DEBUG 800000003 ',   IUNIT,IRET
       CALL INPATC
-      write(*,*)'DEBUG 800000004 ',   IUNIT,IRET
 C
       IF( NRUN .EQ. LASTRN ) GO TO 2
 C
@@ -284,7 +280,6 @@ C                            VERY  FIRST   EVENT.   INITIALISE   PATREC
 C                            CONSTANTS BY CALL TO INPATR.
 C
       CALL INPATR
-      write(*,*)'DEBUG 800000005 ',   IUNIT,IRET
 C
   110 LASTRN = NRUN
       INDUSR = 1

@@ -338,6 +338,10 @@ C---
             NINTER=I
     4    CONTINUE
     5 CONTINUE
+    
+CFIXME !
+       ! NINTER=2  !RANDOM VALUE
+    
       IF(NINTER.EQ.INTERV) GOTO 6
 C                                       REWIND OLD UNIT
          REWIND LUNIT
@@ -349,9 +353,10 @@ C---
          LUNIT=LUNITA(NINTER)
 C     PRINT 2003, LUNIT
          REWIND LUNIT
+CFIXME  
          READ(LUNIT,ERR=320,END=321) NDUUM
          IREAD=1
-        write(*,*)' fcall2     ',  LUNIT,NINTER, NDUUM
+        write(*,*)' fcall2     ',  LUNIT,NINTER,  NCALI
     6 CONTINUE
 C---
 C---     NOW READ FIRST RECORD OF THE CURRENT UPDATES FILE AND CHECK
@@ -361,10 +366,14 @@ CCCCC
 C PMF 16/11/98: Read the first word before begin of the record, i.e. the length NWORD
 C               of the record, go back in the record by one unit and then CALL EVREA1
 C               in order to read the record. Otherwise EVREA1 does not work correctly.
-      IF(IREAD.EQ.1) THEN
-         READ(LUNIT,ERR=320,END=321) NWORDS
-         BACKSPACE (LUNIT)
-      ENDIF
+CAVFIXME      IF(IREAD.EQ.1) THEN
+CAVFIXME         READ(LUNIT,ERR=320,END=321) NWORDS
+CAVFIXME         BACKSPACE (LUNIT)
+CAVFIXME      ENDIF
+      
+      
+      
+      
 CCCCC
       IF(IREAD.EQ.1) CALL EVREA1(LUNIT,NWORDS,JBUF,IRET)
       IREAD=0

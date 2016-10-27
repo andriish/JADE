@@ -90,26 +90,18 @@ C                                            CADMIN FLAG
 C
 C                            MAIN READ STATEMENT.
 C
-          write(*,*) 'DEBUG 70' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
-
  1000 CALL BSLT
-          write(*,*) 'DEBUG 71' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
       CALL BDLG
-          write(*,*) 'DEBUG 72' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
       NRECS = NRECS + 1
       CALL BREAD(NUNIT,&60,&70)
-          write(*,*) 'DEBUG 73 ', NUNIT
       CALL USER(20)              ! PMF 07/07/99 added for additional checks
                                 !     14/06/00 set MC smearing veto in user routine
-          write(*,*) 'DEBUG 75' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
 C
 C                            DO WE HAVE A 'HEAD' BANK I.E. AN EVENT ?
 C                            IF NOT THEN SKIP NEXT SECTION
 C
 
-              write(*,*) 'DEBUG 100,  ', LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
    1  IF( IDATA(IHEAD) .LE. 0 ) GO TO 10
-          write(*,*) 'DEBUG 76' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
         IHD  = IDATA( IHEAD )
         IRUN = HDATA( IHD*2 + 10 )
 C

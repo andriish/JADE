@@ -19,7 +19,7 @@ C
       CALL RUNFIX
 C
       write(*,*)   'here was kal'
-C      CALL KLREAD
+      CALL KLREAD
       CALL CNEWID(0)
 C
       CALL MUREG(0)
