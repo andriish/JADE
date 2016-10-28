@@ -28,31 +28,92 @@ std::vector<int> code(int i)
 
 int charge (int i)
 {
+	int q=-2;
+
+  
+	switch (i){
+
+	case 21: q=0; break;
+	case 22: q=0; break;
+	case 23: q=0; break;
+	case 111: q=0; break;
+	case 130: q=0; break;
+	case 310: q=0; break;
+	case 311: q=0; break;
+	case 421: q=0; break;
+	case 2112: q=0; break;
+	case 3112: q=0; break;
+	case 12: q=0; break;
+	case 14: q=0; break;
+	case 16: q=0; break;
+	case -12: q=0; break;
+	case -14: q=0; break;
+	case -16: q=0; break;
+
+
+	
+	case 1:  q=-1; break;
+	case -2:  q=-1; break;
+	case 3:  q=-1; break;
+	case -4:  q=-1; break;
+	case 5:  q=-1; break;
+	case 11:  q=-1; break;
+	case 13:  q=-1; break;
+	case 15:  q=-1; break;
+	
+	case -211:  q=-1; break;
+	case -321:  q=-1; break;
+	case -411:  q=-1; break;
+	case -2212:  q=-1; break;
+	case -431:  q=-1; break;
+	
+
+	
+	case -1:  q=1; break;
+	case 2:  q=1; break;
+	case -3:  q=1; break;
+	case 4:  q=1; break;
+	case -5:  q=1; break;
+	case -11:  q=1; break;
+	case -13:  q=1; break;
+	case -15:  q=1; break;
+
+	case 211:  q=1; break;
+	case 321:  q=1; break;
+	case 411:  q=1; break;
+	case 2212:  q=1; break;
+	case 431:  q=1; break;
+    default: break;
+ 
+}
+if (q!=-2) return q;
+
 int QQ[7]={0,-1,2,-1,2,-1,2};
 std::vector<int> r=code(i);
-int q=0;
+
 if (r[3]<6&&r[4]<6&&r[5]<6)
 q=(int)((QQ[r[3]]+QQ[r[4]]+QQ[r[5]])/3);
 if (i<0) q*=(-1);
+printf("TRY CHARGE FOR  %i: %i\n",i,q);
 return q;
 }
 
 namespace HepMC
 {
-WriterJADE::WriterJADE(const std::string &filename)
+WriterJADE::WriterJADE(const std::string &filename, int mode)
 {
 fUNIT=100;
-fMODE=1;
+fMODE=mode;/// BINARY OR TEXT
 fJ=loccprod_();
 fN=locchcprd_();
 const char* f=filename.c_str();
 int s=filename.length();
-jfopen_(f,fUNIT,s);
+jfopen_(f,fUNIT,fMODE,s);
 }
 void WriterJADE::write_event(const GenEvent &evt)
 {
 	fJ->NEV=evt.event_number();
-	fJ->BEAM=std::abs(evt.particles().at(0)->momentum().e())/1000.0;
+	fJ->BEAM=std::abs(evt.particles().at(0)->momentum().e());
 	fJ->PT=0;
 	fJ->PHI=0;     /* Calculated later */
 	fJ->THETA=0;    /* Calculated later */
@@ -89,9 +150,10 @@ void WriterJADE::write_event(const GenEvent &evt)
 	fJ->PP[i][2]=evt.particles().at(i)->momentum().pz();
 	fJ->PP[i][3]=evt.particles().at(i)->momentum().e();
 	fJ->XM[i]=evt.particles().at(i)->momentum().m();
+	if (fJ->XM[i]<0.000001) fJ->XM[i]=0.0;
 	
 		
-	if (evt.particles().at(i)->status()!=1) { i++; continue;}
+	if (evt.particles().at(i)->status()!=1||(std::abs(KF)==12)||(std::abs(KF)==14)||(std::abs(KF)==16)) { i++; continue;}
 
 
 	sprintf(&(fN->CF[j][0]),"%.16s",                (std::string("PDGID=")+std::string(buf)+std::string("                ")).c_str());

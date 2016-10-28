@@ -17,31 +17,23 @@ C      DOUBLE PRECISION X1,X2
 *PMF (end)
       CALL DAY( X1, X2 )
       IF( ITYPE.EQ.0 ) CALL MACHINE
-      write(*,*)'DATEMC( HDAT )  ', I1, I2, X1, X2
       ITYPE=1
 *PMF 22/10/98 : ALPHA/DEC VERSION
       IF( ITYPE.EQ.1 ) THEN
       CALL MVC(  I1,  0, X2, 7, 1 )
       CALL MVC( I10,  0, X2, 6, 1 )
       HDAT(1) =  LAND( I10, 15 ) * 10 + LAND( I1, 15 )
-      write(*,*)'A1 DATEMC( HDAT )  ', I1, I2, X1, X2
       CALL MVC(  I1,  0, X2, 4, 1 )
       CALL MVC( I10,  0, X2, 3, 1 )
       HDAT(2) =  LAND( I10, 15 ) * 10 + LAND( I1, 15 )
       CALL MVC(  I1,  0, X2, 1, 1 )
       CALL MVC( I10,  0, X2, 0, 1 )
-
-      write(*,*)'A2 DATEMC( HDAT )  ', I1, I2, X1, X2
-
       HDAT(3) =  LAND( I10, 15 ) * 10 + LAND( I1, 15 )
       CALL MVC(  I1,  0, X1, 1, 1 )
       CALL MVC( I10,  0, X1, 0, 1 )
       HDAT(4) =  LAND( I10, 15 ) * 10 + LAND( I1, 15 )
       CALL MVC(  I1,  0, X1, 4, 1 )
       CALL MVC( I10,  0, X1, 3, 1 )
-      
-      write(*,*)'A3 DATEMC( HDAT )  ', I1, I2, X1, X2
-      
       HDAT(5) =  LAND( I10, 15 ) * 10 + LAND( I1, 15 )
       CALL MVC(  I1,  0, X1, 7, 1 )
       CALL MVC( I10,  0, X1, 6, 1 )

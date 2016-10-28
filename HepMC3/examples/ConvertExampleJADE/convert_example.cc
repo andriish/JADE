@@ -282,7 +282,14 @@ int main(int argc, char** argv)
 #endif
 #ifdef HEPMCCONVERT_EXTENSION_JADE
                 case jade:
-                    output_file=new WriterJADE(convert_list[i].second);
+                    
+                    if (options.find("Mode")!=options.end()) 
+                    output_file=new WriterJADE(convert_list[i].second,options.at("Mode").fint);
+                    else
+                    {
+                    printf("This format requires one option  Mode=0 (binary) or Mode=1 (ASCII)!\n");
+                    exit (1);
+                    }
                     break;
 #endif
                 default:

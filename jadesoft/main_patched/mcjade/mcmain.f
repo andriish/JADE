@@ -322,6 +322,7 @@ C Read first words of the record
       NREAD=8
       CALL CFGET(IUIN,0,NREAD,NREAD,N,IOS)
 C Check words 1,7,8
+      write(*,*)'---->', N(1), N(7), N(8)
       IF(  N(1).LE.LIM.AND.N(7).LE.LIM.AND.N(8).LE.LIM ) THEN
          ENDIAN=.TRUE.
       ELSEIF( .NOT.( N(1).LE.LIM.AND.N(7).LE.LIM.AND.N(8).LE.LIM) ) THEN

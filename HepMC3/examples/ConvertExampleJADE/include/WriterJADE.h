@@ -51,7 +51,7 @@ struct JADEEVT
 
 extern "C" 
 {
-void jfopen_(const char * filename,int &u, int &size);
+void jfopen_(const char * filename,int &u, int &O,int &size);
 void jfclose_(int&);
 void jfwrite_(int&, int&);
 }	
@@ -65,7 +65,7 @@ public:
     struct JADENAMES*  fN;
     int fUNIT;
     int fMODE;
-    WriterJADE(const std::string &filename);
+    WriterJADE(const std::string &filename, int mode);
 
 bool failed();
  void write_event(const GenEvent &evt);

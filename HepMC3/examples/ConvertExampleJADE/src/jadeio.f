@@ -1,10 +1,13 @@
-      SUBROUTINE JFOPEN(FILEN,U,L)
+      SUBROUTINE JFOPEN(FILEN,U,O,L)
       IMPLICIT NONE
       character*80 FILEN
-      INTEGER U, I, L, IERR
+      INTEGER U, I, L, IERR, O
       write(*,*)U, FILEN(1:L)
-      OPEN (U, FILE=FILEN(1:L), STATUS='REPLACE')
- 
+      if (O.eQ. 0) then
+      OPEN (U, FILE=FILEN(1:L), STATUS='REPLACE',form='unformatted')
+      else
+      OPEN (U, FILE=FILEN(1:L), STATUS='REPLACE',form='formatted')
+      end if
       RETURN
       END
 
