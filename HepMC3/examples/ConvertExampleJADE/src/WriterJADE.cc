@@ -37,10 +37,29 @@ int charge (int i)
 	case 22: q=0; break;
 	case 23: q=0; break;
 	case 111: q=0; break;
+	case 113: q=0; break;
 	case 130: q=0; break;
+	case 221: q=0; break;
+	case 223: q=0; break;
+	case 225: q=0; break;
+	case 331: q=0; break;
+	case 333: q=0; break;
+	case 335: q=0; break;
 	case 310: q=0; break;
 	case 311: q=0; break;
+	case -311: q=0; break;
+	case 313: q=0; break;
+	case -313: q=0; break;
+	
+	
 	case 421: q=0; break;
+	case 441: q=0; break;
+	case 443: q=0; break;
+	case 521: q=0; break;
+	case 523: q=0; break;
+	case 551: q=0; break;
+	case 553: q=0; break;
+	
 	case 2112: q=0; break;
 	case 3112: q=0; break;
 	case 12: q=0; break;
@@ -62,8 +81,13 @@ int charge (int i)
 	case 15:  q=-1; break;
 	
 	case -211:  q=-1; break;
+	case -213:  q=-1; break;
 	case -321:  q=-1; break;
+	case -325:  q=-1; break;
 	case -411:  q=-1; break;
+	case -413:  q=-1; break;
+	case -521:  q=-1; break;
+	case -523:  q=-1; break;
 	case -2212:  q=-1; break;
 	case -431:  q=-1; break;
 	
@@ -79,8 +103,13 @@ int charge (int i)
 	case -15:  q=1; break;
 
 	case 211:  q=1; break;
+	case 213:  q=1; break;
 	case 321:  q=1; break;
+	case 325:  q=1; break;
 	case 411:  q=1; break;
+	case 413:  q=1; break;
+	case 511:  q=1; break;
+	case 513:  q=1; break;
 	case 2212:  q=1; break;
 	case 431:  q=1; break;
     default: break;
@@ -117,7 +146,25 @@ void WriterJADE::write_event(const GenEvent &evt)
 	fJ->PT=0;
 	fJ->PHI=0;     /* Calculated later */
 	fJ->THETA=0;    /* Calculated later */
-	fJ->IFLAVR=1;  /* FIXME  code of LO quark */
+	fJ->IFLAVR=0; 
+	
+	std::vector<std::pair<double,int > > quarks;
+	
+	/*Flavour: collect hard quarks */
+	for (  k=0;k<evt.particles().size();k++)
+	{
+	if (std::abs(charge(evt.particles().at(k)->pid()<6&&(evt.particles().at(k)->momentum().e()>0.1*fJ->BEAM))
+	quarks.push_back(std::pair(evt.particles().at(k)->momentum().e(),k));
+	}
+	if (quarks.size()<2)fJ->IFLAVR=0;
+	if (quarks.size()>2)
+	{
+	std::sort(quarks.begin(),quarks.end());	
+	if (   evt.particles().at(quarks.at(0).second)->pid()==-evt.particles().at(quarks.at(1).second)->pid())
+	fJ->IFLAVR=std::abs(evt.particles().at(quarks.at(0).second)->pid());
+	else
+	fJ->IFLAVR=0;
+	}
 	
 	fJ->NP=0;
 	fJ->NF=0;
@@ -136,9 +183,8 @@ void WriterJADE::write_event(const GenEvent &evt)
 	int q= charge(evt.particles().at(i)->pid());
 	if (q==0) fJ->NN=fJ->NN+1; else fJ->NC=fJ->NC+1;
 	int KF=evt.particles().at(i)->pid();
-	    sprintf(buf,"%d",KF);
+	sprintf(buf,"%d",KF);
 	sprintf(&(fN->CP[i][0]),"%.16s",                (std::string("PDGID=")+std::string(buf)+std::string("                ")).c_str());
-	//sprintf(&(fN->CP[i][0]),"%.16s",    "E-              ");
 	if (KF==11) sprintf(&(fN->CP[i][0]),"%.16s",    "E-              ");
 	if (KF==-11) sprintf(&(fN->CP[i][0]),"%.16s",   "E+              ");
 	if (KF==21) sprintf(&(fN->CP[i][0]),"%.16s",   "g               ");
@@ -152,15 +198,13 @@ void WriterJADE::write_event(const GenEvent &evt)
 	fJ->XM[i]=evt.particles().at(i)->momentum().m();
 	if (fJ->XM[i]<0.000001) fJ->XM[i]=0.0;
 	
-		
 	if (evt.particles().at(i)->status()!=1||(std::abs(KF)==12)||(std::abs(KF)==14)||(std::abs(KF)==16)) { i++; continue;}
 
 
 	sprintf(&(fN->CF[j][0]),"%.16s",                (std::string("PDGID=")+std::string(buf)+std::string("                ")).c_str());
-	//sprintf(&(fN->CF[j][0]),"%.16s",    "E-              ");
 	if (KF==11) sprintf(&(fN->CF[j][0]),"%.16s",    "E-              ");
 	if (KF==-11) sprintf(&(fN->CF[j][0]),"%.16s",   "E+              ");
-   if (KF==21) sprintf(&(fN->CF[j][0]),"%.16s",   "g               ");
+    if (KF==21) sprintf(&(fN->CF[j][0]),"%.16s",   "g               ");
 
 	fJ->ICF[j]=fJ->JCH[i];
 	fJ->PF[j][0]=fJ->PP[i][0];

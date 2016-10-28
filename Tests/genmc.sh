@@ -14,9 +14,10 @@ cd ../Tests
 ../HepMC3/outputs/bin/convert_example_JADE.exe hepmc2_jade  sherpa34gev.hepmc2   bsherpa34gev.jade Mode=0
 ../HepMC3/outputs/bin/convert_example_JADE.exe hepmc2_jade  sherpa34gev.hepmc2   asherpa34gev.jade Mode=1
 cd ../jadesoft
-make  clean -f GNUmakefile.av
-make  lib -f GNUmakefile.av
-make  mcjade -f GNUmakefile.av
+#make  clean -f GNUmakefile.av
+#make  lib -f GNUmakefile.av
+#make  mcjade -f GNUmakefile.av
 cd  ../Tests
 cat mcjadecard.txt | mcjade
 h2root sherpa34gev.hist
+cat supervcard.txt | superv

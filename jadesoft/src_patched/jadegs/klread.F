@@ -360,10 +360,10 @@ CCCCC
 C PMF 16/11/98: Read the first word before begin of the record, i.e. the length NWORD
 C               of the record, go back in the record by one unit and then CALL EVREA1
 C               in order to read the record. Otherwise EVREA1 does not work correctly.
-      IF(IREAD.EQ.1) THEN
-         READ(LUNIT,ERR=320,END=321) NWORDS
-         BACKSPACE (LUNIT)
-      ENDIF
+CAVFIXME?      IF(IREAD.EQ.1) THEN
+CAVFIXME?         READ(LUNIT,ERR=320,END=321) NWORDS
+CAVFIXME?         BACKSPACE (LUNIT)
+CAVFIXME?      ENDIF
 CCCCC
       IF(IREAD.EQ.1) CALL EVREA1(LUNIT,NWORDS,JBUF,IRET)
       IREAD=0

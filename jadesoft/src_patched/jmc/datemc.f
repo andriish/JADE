@@ -15,9 +15,11 @@ C      DOUBLE PRECISION X1,X2
       INTEGER ITYPE,IST
       COMMON / CIST / ITYPE,IST(4)
 *PMF (end)
+      write(*,*)      'BEGDB'
       CALL DAY( X1, X2 )
       IF( ITYPE.EQ.0 ) CALL MACHINE
       ITYPE=1
+      
 *PMF 22/10/98 : ALPHA/DEC VERSION
       IF( ITYPE.EQ.1 ) THEN
       CALL MVC(  I1,  0, X2, 7, 1 )
@@ -62,5 +64,6 @@ C      DOUBLE PRECISION X1,X2
       PRINT *,'DATEMC: ITYPE=',ITYPE
       STOP
       ENDIF
+      write(*,*)      'EDB'
       RETURN
       END
