@@ -38,7 +38,6 @@ add_executable(convert_example_JADE.exe
         ${CMAKE_CURRENT_SOURCE_DIR}/src/jadeio.f
         )
 
-
 #IF YOU WANT TO PUT ANOTHER LAPACK LIB HERE -- GO AND DEAL WITH CMAKE BY YOURSELF
 target_link_libraries(convert_example_JADE.exe HepMC /usr/lib/liblapack.so.3 )
 set_target_properties(convert_example_JADE.exe PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/outputs/${CMAKE_INSTALL_BINDIR})
