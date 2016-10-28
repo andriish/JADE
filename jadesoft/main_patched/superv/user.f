@@ -603,6 +603,8 @@ C---------------------------------------------------------------------
 C
 20000 CONTINUE
 C Suppress smearing of MC until first event to process is read
+      
+      write(*,*)'nosmear flag ',  ICOUNT,IEVTF-1
       IF( ICOUNT.LT.IEVTF-1 ) THEN
          NOSMEAR=.TRUE.
       ELSE

@@ -677,7 +677,8 @@ C
 C
 C                       NOW SMEAR TIME AND Z-COORD VALUES
 C
- 401  CALL RDRESO( BINMC )
+ 401    CONTINUE 
+        CALL RDRESO( BINMC )
 C
             write(*,*)'After RDRESO'
       IF( IPJ .LE. 0 ) CALL BCRE( IPJ, 'JETC', 8, 50, &7788, IE )

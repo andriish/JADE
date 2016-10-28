@@ -36,7 +36,7 @@ C
       JHITS = 0
       JNEW  = 1
 C     
-      write(*,*) 'RDMERG 1'
+      write(*,*) 'RDMERG |',IL1,IL2,IH1,IH2,ILN,N1,N2
   100 IF( ILN .GT. IH2 ) RETURN
 C
 C                       CHECK IF DATA LEFT IN H2

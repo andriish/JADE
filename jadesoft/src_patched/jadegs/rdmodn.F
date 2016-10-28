@@ -65,9 +65,10 @@ C
       GO TO 2
 C
 C                       GENERATE RANDOM HITS IN END SECTION OF HWORK
+  6   CONTINUE
       write(*,*)' RDM 1', 'NHITS= ', NHITS
 C
-    6 CALL RDRDMH( IRAN, HWORK(NHITS*4+1) )
+      CALL RDRDMH( IRAN, HWORK(NHITS*4+1) )
 C
 C                       MERGE ALL HITS IN HWORK
 C                       'JETC' HAS  100 HEADER WORDS.

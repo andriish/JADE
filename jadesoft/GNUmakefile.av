@@ -135,8 +135,8 @@ endif
 ifeq ("$(MACHTYPE)","Linux")
 		FC = /usr/bin/gfortran
 #	    FFLAGS = -g -qextname -qxlf77=leadzero -qctyplss -qintlog -qfullpath -qddim #-qxref=full -C
-	    FFLAGS = -m32 -g -ffixed-line-length-none -finit-local-zero   -fno-automatic
-	    #-fno-range-check  
+	    FFLAGS = -m32 -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons
+	    #-fno-range-check   -fdefault-integer-8
 	    #-fno-range-check -fdollar-ok 
 	    #-qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl 
 	    #-qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog
