@@ -23,7 +23,7 @@ C
       COMMON / CWORK  / HWORK(20000)
       COMMON / CWORK1 / JHITS, H4VJH(4000), H4VMRG(5000)
 C
-      DIMENSION H1(1), H2(1)
+      DIMENSION H1(5000), H2(5000)
 C
 C-----------------------  C O D E  -------------------------------------
 C
