@@ -33,7 +33,7 @@ MCNPRI  100
 
 C Name of the 4-vector input file
 MCVECT
-'sherpa34gev.jade'
+'bsherpa34gev.jade'
 C Name of the bos banks output file
 MCBOS 'sherpa34gev.bos'
 
