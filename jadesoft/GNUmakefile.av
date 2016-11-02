@@ -88,7 +88,7 @@
 
 # - JADE libs boslib interface  vertex  wertex jmc patrecsr  toflib  zlib source tagg jadegs   jademus  
 	  JADELIBS =  \
-		       boslib interface grafix jadegs \
+		         grafix jadegs \
 		     vertex wertex jademus jmc patrecsr \
 		     source tagg toflib zlib # jadesr
         JADELIBS_X = grafix interface patrecsr jmc source jadegs wertex boslib jademus toflib tagg
@@ -131,6 +131,22 @@ ifeq ("$(MACHTYPE)","rs6000")
 	   ARFLAGS = rv
 endif
 
+ifeq ("$(MACHTYPE)","Linuxppc")
+		FC = /usr/bin/xlf
+#	    FFLAGS = -g -qextname -qxlf77=leadzero -qctyplss -qintlog -qfullpath -qddim #-qxref=full -C
+	    FFLAGS = -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog
+	       CPP = /lib/cpp
+	  CPPFLAGS = -traditional -P $(patsubst %,-I%,$(subst :, ,$(subst $(LIBDIR):,,$(VPATH)))) 
+	   LDFLAGS = -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS))     -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) -Wl,-m,-bloadmap:MAIN.map,-bnoquiet
+       LDFLAGS_STD = -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_STD)) -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) -Wl,-m,-bloadmap:MAIN.map,-bnoquiet
+         LDFLAGS_Z = -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_Z))   -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) -Wl,-m,-bloadmap:MAIN.map,-bnoquiet
+	 LDFLAGS_X = -L$(LIBDIR) $(patsubst %,-l%,$(JADELIBS_X))   -L$(CERN_ROOT)/lib $(patsubst %,-l%,$(CERNLIBS)) -Wl,-m,-bloadmap:MAIN.map,-bnoquiet
+
+		AR = /usr/bin/ar
+	   ARFLAGS = rv
+include GNUmake-rules.av.ppc
+endif
+
 
 ifeq ("$(MACHTYPE)","Linux")
 		FC = /usr/bin/gfortran
@@ -155,11 +171,12 @@ ifeq ("$(MACHTYPE)","Linux")
 
 		AR = /usr/bin/ar
 	   ARFLAGS = rv
+include GNUmake-rules.av
 endif
 
 
 ### Rules to compile the FORTRAN code
-include GNUmake-rules.av
+#include GNUmake-rules.av
 
 ### Help
 help:	
@@ -181,8 +198,10 @@ $(JADELIBS):
 	rm -rf src.av
 	mkdir -p src.av
 	cp -r src/* src.av
-	cp -r src_patched/* src.av
-	rm -rf 
+#	cp -r src_patched/* src.av
+	rm -rf main.av/*/TMP/
+	cp -r src_patched_ppc_xlf/* src.av
+	rm -rf src.av/*/TMP/*
 	@echo "...updating" $@
 	@mkdir -p $(LIBDIR)
 	@if [ $(tinit) = "yes" ]; then \

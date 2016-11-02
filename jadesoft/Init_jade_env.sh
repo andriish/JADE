@@ -85,6 +85,14 @@ if [ -z "$INIT_JADE_ENV" ]; then
    fi
 
 
+   if [ "$HARDWARE" = "ppc64" ]; then 
+       export HARDWARE="amd"
+       export MACHTYPE="Linuxppc"
+       export CERN_ROOT=/usr/lib/cernlib/2006
+       #NOTE: THESE ARE 32 bits CERNLIB BY AV!
+   fi
+
+
 
 
 # JADE resources/binaries

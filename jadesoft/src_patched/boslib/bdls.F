@@ -5,7 +5,7 @@ C     BOS SUBPROGRAM =1.13=
       COMMON/BCS/IW(1)
 *** PMF      INTEGER IHELP(2)/'BNK '/
 *** PMF 07/05/99
-      INTEGER IHELP(2)/4HBNK ,4H    /
+      INTEGER IHELP(2)/4HBNK ,'    '/
 *** PMF (end)
 #include "star.for"
       IW(INAMV)=NAME
