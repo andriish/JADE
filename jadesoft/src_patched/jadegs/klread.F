@@ -246,8 +246,8 @@ C---
          ICALIB(1)=100
          DO 2 I=1,NBANKS
             ICALIB(I+1) = ICALIB(I) + MAXL(I)
-C           WRITE(6,9501) I, ICALIB(I), MAXL(I), ICALIB(I+1)
-C9501       FORMAT(1X,4I10)
+           WRITE(6,9501) I, ICALIB(I), MAXL(I), ICALIB(I+1)
+9501       FORMAT(1X,4I10)
     2    CONTINUE
 C---
 C---     CLEAR ALL BANKS EXCEPT MUCA.
@@ -270,10 +270,12 @@ C---     FILES. "KUNITA" AND "LUNITA" ARE LISTS OF FORTRAN UNIT NUMBERS
 C---     FOR THE STARTING AND UPDATE FILES RESPECTIVELY.
 C---
          ITP = NCALI
+         write(*,*)ITP , NCALI
          DO 30 I=1,NCALI
             LUNIT=LUNITA(ITP)
-C     PRINT 2002, LUNIT
-            READ(LUNIT,ERR=304,END=305) NDUUM,ITM1
+          write(*,*) LUNIT
+            READ(LUNIT,ERR=304) NDUUM,ITM1
+C            READ(LUNIT,ERR=304,END=305) NDUUM,ITM1
             REWIND LUNIT
 C                                       CHECK IF ONLY ONE FILE
 C                                       DATE(LAST FILE) = 1. DATE ?
@@ -312,6 +314,7 @@ C     IF(ICALO.EQ.1) PRINT 8756
 C8756 FORMAT(' XV ENLARGED BY .1')
       IEVTIM=KTMCON(ITIME,NOW,LASTIM)
 C
+
 C                          CHECK IF EVENT TIME IN RANGE OF CONSTANTS
       IF(IEVTIM.LT.LSTIME(1)) GOTO 9001
 C
@@ -331,7 +334,7 @@ C---
 C---  IN WHICH TIME INTERVAL ARE WE, I.E. WHICH STARTING VALUES
 C---  FILE IS APPLICABLE?
 C---
-      NINTER=1
+
       IF(NCALI.LT.2) GOTO 5
          DO 4 I=2,NCALI
             IF(LSTIME(I).GT.IEVTIM) GOTO 5
@@ -349,7 +352,8 @@ C---
          LUNIT=LUNITA(NINTER)
 C     PRINT 2003, LUNIT
          REWIND LUNIT
-         READ(LUNIT,ERR=320,END=321) NDUUM
+C         READ(LUNIT,ERR=320,END=321) NDUUM
+         READ(LUNIT,ERR=320) NDUUM
          IREAD=1
     6 CONTINUE
 C---
@@ -360,10 +364,15 @@ CCCCC
 C PMF 16/11/98: Read the first word before begin of the record, i.e. the length NWORD
 C               of the record, go back in the record by one unit and then CALL EVREA1
 C               in order to read the record. Otherwise EVREA1 does not work correctly.
-CAVFIXME?      IF(IREAD.EQ.1) THEN
-CAVFIXME?         READ(LUNIT,ERR=320,END=321) NWORDS
-CAVFIXME?         BACKSPACE (LUNIT)
-CAVFIXME?      ENDIF
+         
+         
+       REWIND LUNIT  
+       IF(IREAD.EQ.1) THEN
+C         READ(LUNIT,ERR=320,END=321) NWORDS
+         READ(LUNIT,ERR=320) NWORDS
+         BACKSPACE (LUNIT)
+         write(*,*) 'NWORDS=    ',NWORDS
+       ENDIF
 CCCCC
       IF(IREAD.EQ.1) CALL EVREA1(LUNIT,NWORDS,JBUF,IRET)
       IREAD=0

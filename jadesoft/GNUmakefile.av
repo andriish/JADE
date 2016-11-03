@@ -242,7 +242,8 @@ superv:	 docptxt lib   $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJA
 #	$(FC)  $(FFLAGS) -o $(BINDIR)/superv  $(LIBDIR)/libsource.a $(LIBDIR)/libjadegs.a   $(SUPERV)/jdmain.f $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o $(LDFLAGS_X) -lgfortran >> MAIN.map
 #	$(FC)  $(FFLAGS) -o $(BINDIR)/superv   $(SUPERV)/jdmain.o $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o \
 #	$(LDFLAGS_X) $(LIBDIR)/libpatrecsr.a   -lgfortran $(shell cernlib-static packlib mathlib graflib grafX11)  >> MAIN.map
-	$(FC)  $(FFLAGS) -o  $(BINDIR)/superv  $(SUPERV)/jdmain.o $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o -Wl,--start-group -L$(LIBDIR) -lboslib -ljadegs -linterface -ljademus -lsource -lwertex -lpatrecsr    -lgfortran       $(shell cernlib-static kernlib packlib mathlib graflib grafX11)  -Wl,--end-group 
+	$(FC)  $(FFLAGS) -o  $(BINDIR)/superv  $(SUPERV)/jdmain.o $(SUPERV)/ana.o $(SUPERV)/user.o $(SUPERV)/showb.o $(MCJADE)/mcrand.o -Wl,--start-group -L$(LIBDIR) -lboslib -ljadegs -linterface -ljademus -lsource -lwertex -lpatrecsr    -lgfortran      
+	# $(shell cernlib-static kernlib packlib mathlib graflib grafX11)  -Wl,--end-group 
 
 
 $(SUPERV)/ana.o:	$(SUPERV)/cana.for

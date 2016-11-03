@@ -250,10 +250,17 @@ C... Set calibration constants reading options
             LBMC(I)=0
          ENDIF
       ENDDO
+      
+      CCALF(1)='/home/andriish/superv/aupdat1.b'
+      CCALF(2)='/home/andriish/superv/bupdat0.b'
+      CCALF(3)='/home/andriish/superv/bupdat1.b'
+      CMCBOSF='/home/andriish/superv/mc_t86-05-17.bos'
+      
 C... Input file with events in BOS format
       INQUIRE(FILE=CMCBOSF,EXIST=LEXIST)
       IF( LEXIST ) THEN
-         OPEN(IUNIT,FILE=CMCBOSF,STATUS='UNKNOWN',FORM='UNFORMATTED')
+         OPEN(IUNIT,FILE=CMCBOSF(1:LENOCC(CMCBOSF))
+     +,STATUS='UNKNOWN',FORM='UNFORMATTED')
       ELSE
          WRITE(*,'(A)') 'USER: Input BOS file does not exist!'
          WRITE(*,'(A)') '... will stop now!'
@@ -268,8 +275,10 @@ C... Calibration files
          IF( I.EQ.1 ) LEX(I)=(INDEX(CCALFU,'AUPDAT1').NE.0)
          IF( I.EQ.2 ) LEX(I)=(INDEX(CCALFU,'BUPDAT0').NE.0)
          IF( I.EQ.3 ) LEX(I)=(INDEX(CCALFU,'BUPDAT1').NE.0)
-         IF( LEX(I) ) INQUIRE(FILE=CCALF(I)(1:LENOCC(CCALF(I)))
+C         IF( LEX(I) ) 
+         INQUIRE(FILE=CCALF(I)(1:LENOCC(CCALF(I)))
      +,EXIST=LEX(I))
+       LEX(I)=.TRUE.
       ENDDO
 C  - Get constants from AUPDAT1
       IF( LEX(1) ) THEN

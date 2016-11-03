@@ -1,0 +1,189 @@
+
+\documentclass[a4paper,10pt]{article}
+\usepackage[left= 3cm, right=3cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{placeins}
+\usepackage[titletoc,title]{appendix}
+\usepackage{authblk}
+\usepackage{lineno}
+\usepackage{hyperref}
+\usepackage[centertags,intlimits]{amsmath}
+\usepackage{amssymb,amscd}
+\usepackage{calc}
+%\usepackage{showframe}
+\usepackage{supertabular}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{ifthen}
+\usepackage{titlesec}
+\usepackage{longtable}
+\usepackage{ifthen}
+\usepackage{import}
+\usepackage{xspace}
+\usepackage{authblk}
+\usepackage{ifthen}
+\usepackage{tikz}
+\usepackage{setspace}
+\usepackage{multirow}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.10} 
+%\usepackage[export]{adjustbox}
+
+\renewcommand{\floatpagefraction}{1.99}
+%opening
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\eVdist}{\kern-0.06667em}
+\newcommand{\GeV}{{\,\text{Ge}\eVdist\text{V\/}}}
+\newcommand{\TeV}{{\,\text{Te}\eVdist\text{V\/}}}
+\newcommand{\Mev}{{\,\text{Me}\eVdist\text{V\/}}}
+\newcommand{\cm}{{\,\text{cm}}}
+\newcommand{\epem}{$e^+e^-\,$}
+\newcommand{\ep}{$e^{\pm}p\,$}
+
+\newcommand{\PYTHIA}{P}
+\newcommand{\TAUOLA}{T}
+\newcommand{\KKTF}{K}
+\newcommand{\ARIADNE}{A}
+\newcommand{\HERWIG}{H}
+\newcommand{\GRCFF}{G}
+\newcommand{\KORALW}{KW}
+\newcommand{\JETSET}{J}
+
+\newcommand{\durham}{Durham\xspace}
+\newcommand{\eekt}{Durham\xspace}
+\newcommand{\antikt}{anti-$k_T$\xspace}
+\newcommand{\eeantikt}{\antikt\xspace}
+\newcommand{\meantikt}{\antikt\xspace}
+\newcommand{\siscone}{SiScone\xspace}
+\newcommand{\miscone}{SiScone\xspace}
+\newcommand{\pxcone}{PxCone\xspace}
+\newcommand{\jade}{Jade\xspace}
+\newcommand{\ca}{Cambridge-Aachen\xspace}
+\newcommand{\eecambridge}{\ca}
+\newcommand{\durhamcut}{$y_{cut}$}
+\newcommand{\eeantiktcut}{$E_{cut}$,\GeV}
+\newcommand{\sisconecut}{$E_{cut}$,\GeV}
+\newcommand{\pxconecut}{$E_{cut}$,\GeV}
+\newcommand{\jadecut}{$y_{cut}$}
+\newcommand{\cacut}{$y_{cut}$}
+\newcommand{\eecambridgecut}{$sd_{cut}$}
+
+
+\newcommand{\herwig}{Herwig\xspace}
+\newcommand{\pythiasix}{Pythia6\xspace}
+\newcommand{\pythiaeight}{Pythia8\xspace}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\subsection{Porting to Linux}
+
+So, we have to consider the following systems:
+\begin{itemize}
+\item AIX? on RS6000  -- not available, the system where the job was done in 2003
+\item {
+AIX4.3 on RS6000, one machine in MPP. 
+\begin{itemize}
+\item Big ending, 32? bit
+\item g77
+\item IBM xlf
+\item CERNLIB ?
+\item unknown performance 
+\end{itemize}
+}
+\item {
+CentOS7 on AMD/Intels x8664, many  real machines, virtual machines  x8664 Virtual Box, x8664 qemu
+\begin{itemize}
+\item Litle ending, 32 and 64 bit
+\item gfortran
+\item CERNLIB2006 32 bit/gfortran
+\item various peeformance, full compilation less than 3 minutes
+\item purpose the target 
+\end{itemize}
+}
+
+\item {
+CentOS7 ppc64, one  virtual machine x8664 qemu
+\begin{itemize}
+\item Big ending, 32 and 64 bit
+\item gfortran
+\item IBM xlf (free trial 60 days), available on request/registration
+\item xbae  and  CERNLIB2006 32 bit/gfortran should be compiled, 32 bits Xlibs are present in repos
+\item Slow, full compilation less takes 15 minutes
+\item purpose use for comparison of xlf and gfortran in native BE  environment 
+\end{itemize}
+}
+
+\item {
+CentOS7 ppc64le, one  virtual machine x8664 qemu
+\begin{itemize}
+\item Litle ending, 32 and 64 bit
+\item gfortran
+\item IBM xlf  (free trial 60 days), free download
+\item CERNLIB2006 32 bit/gfortran??? Not clear how to compile and how many libraries
+\item Slow, full compilation less takes 15 minutes
+\item purpose: test endieness issues for the LE x8664 porting
+
+\end{itemize}
+}
+Tested:
+x8664+gfortran +CERNLIB,32bit:  
+ppc64+gfortran +CERNLIB,32bit:  
+ppc64le+gfortran +CERNLIB,32bit:  
+ppc64+xlf +CERNLIB,32bit
+ppc64le+xlf +CERNLIB,32bit
+
+Because of cernlib issues everything was tested in 32 bit mode.
+For all cases hepmc3 works well.
+Maybe that would worth to copy the needed cernlib routines to have them separately?
+Will minicernlib work?
+
+The best config would be 
+x8664+gfortran, no cernlib, 64bit
+
+The best strategy is to split steps of migration
+\item {
+\begin{itemize}
+\item move from  xlf to gfortran
+\item move from  big ending to litle ending
+\item move from  pcc to x8664
+\item move from 32 bit to 64 bit
+\item move from cernlib to nocernlib
+\end{itemize}
+}
+However, to reduce the amount of efforts, some steps will be combined.
+E.g. it is not visible to get ppc64le+gfortran +CERNLIB,32bit, as it will require to compile a lot of ppc packages
+Most likely it will be 
+ppc64+xlf+CERNLIB32
+ppc64+gfortran+CERNLIB32
+x8664+gfortran+CERNLIB32
+It is likely nocernlib will not happen.
+However, there are very few places where cenlib is used for computing.
+The hardest part is graphics.
+\end{itemize}
+
+DEPS:
+to compile xbae, install ALL *devel* packages and run
+%LDFLAGS=' -L/usr/lib   -Wl,-z -Wl,relro' CC='gcc -m32 ' CXX='g++ -m32 '   rpmbuild --target=ppc  --rebuild xbae-4.60.4-12.el6.src.rpm -D'_lib lib' -D'libdir /usr/lib'
+No idea if %-L/usr/lib 
+is really needed with all packages, but it runs!
+
+In addition, a brute force trick is to replace /usr/bin/gfortran with a wrapper with explicit -m32 -L/usr/lib flags.
+
+
+The slowness issue can be solved, maybe, with qemu-2.7 with multitreading emulation.
+Maybe the earlier versions have it as well. No idea.
+
+
+In the same way cernlib is compiled
+
+
+
+
+
+
+
+
+
+\end{document}
