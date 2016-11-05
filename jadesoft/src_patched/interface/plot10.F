@@ -442,8 +442,8 @@ C get current beam position in the respective window coordinates
 C - Calculate target position
 C ... from relative coordinates
       IF( SYS.EQ.'R' ) THEN
-C   - Perform transformation of the relative moving vector
-C      if forced by subroutines RROTAT,RSCALE
+C       Perform transformation of the relative moving   v_e_c_t_o_r 
+C       if forced by subroutines RROTAT,RSCALE
          IF( LROTAT ) THEN
             X(2)=COS(ANGLE)*XGO-SIN(ANGLE)*YGO
             Y(2)=SIN(ANGLE)*XGO+COS(ANGLE)*YGO

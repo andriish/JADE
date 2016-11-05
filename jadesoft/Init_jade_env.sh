@@ -87,7 +87,7 @@ if [ -z "$INIT_JADE_ENV" ]; then
 
    if [ "$HARDWARE" = "ppc64" ]; then 
        export HARDWARE="amd"
-       export MACHTYPE="Linuxppc"
+       export MACHTYPE="Linuxppcgfortran"
        export CERN_ROOT=/usr/lib/cernlib/2006
        #NOTE: THESE ARE 32 bits CERNLIB BY AV!
    fi

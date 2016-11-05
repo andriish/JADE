@@ -23,31 +23,24 @@
 		$(FC) $(FFLAGS) -o $@ -c $${file}
 
 .F.o:
-		@echo "---" $<; file=$<; \
-		TEST2=$(filter 0,$(shell grep -c '&' $< )); \
+		@echo "---" $<; file=$<;\
+	 	TEST1=$(filter 0,$(shell grep -c '^     #' $< )) ;\
+		TEST2=$(filter 0,$(shell grep -c '&' $< )) ;\
+		mkdir -p $(<D)/TMP; \
+		if [ "x$${TEST1}" != "x0" ]; then \
+		   file=$(<D)/TMP/$(<F)_cont.F; sed "s/^     #/     +/" $< > $${file};\
+		fi ; \
 		if [ "x$${TEST2}" != "x0" ]; then \
-		   mkdir -p $(<D)/TMP; file=$(<D)/TMP/$(<F)_amp.f; sed "s/&/*/g" $< > $${file};\
+		   if [ "x$${TEST1}" != "x0" ]; then \
+		      sed "s/&/*/g" $${file} > $${file}_amp.F ;\
+		      file=$${file}_amp.F; \
+		   else \
+		      file=$(<D)/TMP/$(<F)_amp.f; sed "s/&/*/g" $< > $${file};\
+		   fi; \
 		fi; \
-		$(FC) $(FFLAGS) -o $@ -c $${file}
-
-#		@echo "---" $<; file=$<;\
-#	 	TEST1=$(filter 0,$(shell grep -c '^     #' $< )) ;\
-#		TEST2=$(filter 0,$(shell grep -c '&' $< )) ;\
-#		mkdir -p $(<D)/TMP; \
-#		if [ "x$${TEST1}" != "x0" ]; then \
-#		   file=$(<D)/TMP/$(<F)_cont.F; sed "s/^     #/     +/" $< > $${file};\
-#		fi ; \
-#		if [ "x$${TEST2}" != "x0" ]; then \
-#		   if [ "x$${TEST1}" != "x0" ]; then \
-#		      sed "s/&/*/g" $${file} > $${file}_amp.F ;\
-#		      file=$${file}_amp.F; \
-#		   else \
-#		      file=$(<D)/TMP/$(<F)_amp.f; sed "s/&/*/g" $< > $${file};\
-#		   fi; \
-#		fi; \
-#	       	$(CPP) $(CPPFLAGS) $${file} $(<D)/TMP/$(<F)_cpp.f;\
-#			sed -i "s@CONTINUE@\ \ \ \ \ CONTINUE@g" $(<D)/TMP/$(<F)_cpp.f;\
-#			sed -i "s@FORMAT(@\ \ \ \ \ FORMAT(@g" $(<D)/TMP/$(<F)_cpp.f;\
-#			sed -i "s@ CALL@\ \ \ \ \ CALL@g" $(<D)/TMP/$(<F)_cpp.f;\
-#	       	$(FC) $(FFLAGS) -o $@ -c $(<D)/TMP/$(<F)_cpp.f
+	       	$(CPP) $(CPPFLAGS) $${file} $(<D)/TMP/$(<F)_cpp.f;\
+			sed -i "s@CONTINUE@\ \ \ \ \ CONTINUE@g" $(<D)/TMP/$(<F)_cpp.f;\
+			sed -i "s@FORMAT(@\ \ \ \ \ FORMAT(@g" $(<D)/TMP/$(<F)_cpp.f;\
+			sed -i "s@ CALL@\ \ \ \ \ CALL@g" $(<D)/TMP/$(<F)_cpp.f;\
+	       	$(FC) $(FFLAGS) -o $@ -c $(<D)/TMP/$(<F)_cpp.f
 # The End

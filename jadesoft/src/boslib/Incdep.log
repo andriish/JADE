@@ -1,4 +1,4 @@
-Current directory is/home/andriish/Projects/JADE.git/trunk/jadesoft/src/boslib
+Current directory is/home/jade/JADE.git/trunk/jadesoft/src/boslib
 
 Dependencies:
 -------------
@@ -60,6 +60,6 @@ star.for: brnm.F bcre.F ccre.F bchm.F bdls.F binp.F
 
 Library members sorted by include-files:
 ------- ------- ------ -- -------------
-/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libboslib.a( bint.o ibln.o brnm.o bcre.o ccre.o bloc.o cloc.o bchm.o bdar.o bpos.o bnxt.o cnxt.o bmlt.o bsaw.o bdls.o bdlm.o bdlg.o bgar.o bdmp.o bsta.o bchl.o cchl.o bsls.o indar.o brds.o bwrs.o binp.o boutp.o bseq.o ) :\t acs.for
-/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libboslib.a( bint.o bdmp.o blocda.o binlda.o bloada.o poda.o dada.o rdda.o bpasda.o ) :\t ccs.for
-/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libboslib.a( brnm.o bcre.o ccre.o bchm.o bdls.o binp.o ) :\t star.for
+/home/jade/JADE.git/trunk/jadesoft/lib/libboslib.a( bint.o ibln.o brnm.o bcre.o ccre.o bloc.o cloc.o bchm.o bdar.o bpos.o bnxt.o cnxt.o bmlt.o bsaw.o bdls.o bdlm.o bdlg.o bgar.o bdmp.o bsta.o bchl.o cchl.o bsls.o indar.o brds.o bwrs.o binp.o boutp.o bseq.o ) :\t acs.for
+/home/jade/JADE.git/trunk/jadesoft/lib/libboslib.a( bint.o bdmp.o blocda.o binlda.o bloada.o poda.o dada.o rdda.o bpasda.o ) :\t ccs.for
+/home/jade/JADE.git/trunk/jadesoft/lib/libboslib.a( brnm.o bcre.o ccre.o bchm.o bdls.o binp.o ) :\t star.for

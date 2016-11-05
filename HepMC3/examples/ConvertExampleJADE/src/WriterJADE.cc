@@ -4,6 +4,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <algorithm>
 extern "C"
 {
  struct JADEEVT* loccprod_();
@@ -147,7 +148,7 @@ void WriterJADE::write_event(const GenEvent &evt)
 	fJ->PHI=0;     /* Calculated later */
 	fJ->THETA=0;    /* Calculated later */
 	fJ->IFLAVR=0; 
-	
+	int k;
 	std::vector<std::pair<double,int > > quarks;
 	
 	/*Flavour: collect hard quarks */
@@ -177,7 +178,7 @@ void WriterJADE::write_event(const GenEvent &evt)
 	fJ->NNF=0;
     char buf[10];
 
-	int i=0,j=0,k;                            
+	int i=0,j=0;                            
 	for (  k=0;(k<evt.particles().size())&&(i<500)&&(j<300);k++)
 	{
 	int q= charge(evt.particles().at(i)->pid());
