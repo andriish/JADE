@@ -1,7 +1,4 @@
-# bar library
-#ls *.* | sort | sed 's@^@\${SRCBOSLIB}/@g'> 2.txt
-#cat GNUmake-objects | head -n 14 | grep "\.f" | tr -d '\' | tr -s ' ' | tr -d '\t' | tr ' ' '\n' | grep o | sort >1
-SET(BOSLIB_src 
+SET(BOSLIB_src
 ${SRCBOSLIB}/asrd.f
 ${SRCBOSLIB}/bchl.F
 ${SRCBOSLIB}/bchm.F

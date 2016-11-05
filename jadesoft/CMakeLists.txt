@@ -54,6 +54,21 @@ SET_COMPILE_FLAG(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}" Fortran
 
 # Define the library name
 SET(BOSLIB boslib)
+SET(GRAFIX          grafix)
+SET(INTERFACE         interface)
+SET(JADEGS         jadegs)
+SET(JADEMUS         jademus)
+SET(JADESR         jadesr)
+SET(JMC         jmc)
+SET(PATRECSR         patrecsr)
+SET(SOURCE         source)
+SET(TAGG         tagg)
+SET(TOFLIB         toflib)
+SET(VERTEX         vertex)
+SET(WERTEX         wertex)
+SET(ZLIB         zlib)
+
+
 
 # Define some directories
 SET(SRC ${CMAKE_SOURCE_DIR}/src2016)
@@ -61,13 +76,37 @@ SET(LIB ${CMAKE_SOURCE_DIR}/lib)
 SET(BIN ${CMAKE_SOURCE_DIR}/bin)
 #SET(SRCFOO ${SRC}/foo)
 SET(SRCBOSLIB ${SRC}/boslib)
-
+SET(SRCGRAFIX          ${SRC}/grafix)
+SET(SRCINTERFACE         ${SRC}/interface)
+SET(SRCJADEGS         ${SRC}/jadegs)
+SET(SRCJADEMUS         ${SRC}/jademus)
+SET(SRCJADESR         ${SRC}/jadesr)
+SET(SRCJMC         ${SRC}/jmc)
+SET(SRCPATRECSR         ${SRC}/patrecsr)
+SET(SRCSOURCE         ${SRC}/source)
+SET(SRCTAGG         ${SRC}/tagg)
+SET(SRCTOFLIB         ${SRC}/toflib)
+SET(SRCVERTEX         ${SRC}/vertex)
+SET(SRCWERTEX         ${SRC}/wertex)
+SET(SRCZLIB         ${SRC}/zlib)
 # Have the .mod files placed in the lib folder
 SET(CMAKE_Fortran_MODULE_DIRECTORY ${LIB})
 
 # The source for the BAR library and have it placed in the lib folder
 ADD_SUBDIRECTORY(${SRCBOSLIB} ${LIB})
-
+ADD_SUBDIRECTORY(${GRAFIX}      ${LIB})
+ADD_SUBDIRECTORY(${INTERFACE}         ${LIB})
+ADD_SUBDIRECTORY(${JADEGS}          ${LIB})
+ADD_SUBDIRECTORY(${JADEMUS}         ${LIB})
+ADD_SUBDIRECTORY(${JADESR}         ${LIB})
+ADD_SUBDIRECTORY(${JMC}          ${LIB})
+ADD_SUBDIRECTORY(${PATRECSR}          ${LIB})
+ADD_SUBDIRECTORY(${SOURCE}          ${LIB})
+ADD_SUBDIRECTORY(${TAGG}         ${LIB})
+ADD_SUBDIRECTORY(${TOFLIB}         ${LIB})
+ADD_SUBDIRECTORY(${VERTEX}         ${LIB})
+ADD_SUBDIRECTORY(${WERTEX}         ${LIB})
+ADD_SUBDIRECTORY(${ZLIB}         ${LIB})
 # The source for the FOO binary and have it placed in the bin folder
 #ADD_SUBDIRECTORY(${SRCFOO} ${BIN})
 

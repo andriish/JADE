@@ -1,0 +1,27 @@
+SET(TOFLIB_src
+${SRCTOFLIB}/agrpr.f
+${SRCTOFLIB}/atfugr.f
+${SRCTOFLIB}/atofrw.f
+${SRCTOFLIB}/atofun.F
+${SRCTOFLIB}/cmass.f
+${SRCTOFLIB}/corcst.f
+${SRCTOFLIB}/mocard.F
+${SRCTOFLIB}/rd0880.F
+${SRCTOFLIB}/tfarnw.F
+${SRCTOFLIB}/tfctd1.F
+${SRCTOFLIB}/tfstor.f
+${SRCTOFLIB}/tofar2.F
+${SRCTOFLIB}/tofard.F
+${SRCTOFLIB}/tofbra.f
+${SRCTOFLIB}/tofcl2.f
+${SRCTOFLIB}/tofclc.F
+${SRCTOFLIB}/tofcor.f
+${SRCTOFLIB}/tofin2.F
+${SRCTOFLIB}/tofint.F
+${SRCTOFLIB}/tofma2.f
+${SRCTOFLIB}/tofmas.F
+${SRCTOFLIB}/tofsm2.f
+${SRCTOFLIB}/tofsm3.F
+${SRCTOFLIB}/tofsmp.F
+)
+ADD_LIBRARY(${TOFLIBLIB} STATIC ${TOFLIB_src})
