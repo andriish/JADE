@@ -5,7 +5,7 @@ C   07/06/96 606071902  MEMBER NAME  PFUN     (S4)          FORTG1
       EQUIVALENCE (RW(1),IW(1))
       REAL X(31),Y(31)
       YY=BFUN(M,0.0)
-      CALL BLOC(IND,'+FUN',M,&100)
+      CALL BLOC(IND,'+FUN',M,*100)
       XL=RW(IND+1)
       NW=IW(IND)
       XH=RW(IND+NW-4)

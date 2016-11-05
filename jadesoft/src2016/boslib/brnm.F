@@ -6,11 +6,11 @@ C     BOS SUBPROGRAM =1.1=
       REAL RW(1)
       EQUIVALENCE (RW(1),IW(1))
 #include "star.for"
-      CALL BLOC(IND,NA,NB,&100)
+      CALL BLOC(IND,NA,NB,*100)
       KK=LFDK
       IS=IW(KK-1)
       IW(KK-1)=IW(LFDI-1)
-      CALL BLOC(JND,NC,ND,&20)
+      CALL BLOC(JND,NC,ND,*20)
       IW(KK-1)=IS
       GOTO 100
    20 IW(IND-1)=IW(LFDK-1)

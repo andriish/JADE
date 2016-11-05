@@ -11,13 +11,13 @@ C
       IF(LRN.EQ.0) CALL VZERO(IPAR,32)
       IRB=0
       IEV=0
-      CALL BLOC(IHD,'HEAD',0,&100)
+      CALL BLOC(IHD,'HEAD',0,*100)
       IRN=IW(IHD+1)
       IEV=IW(IHD+4)
       IF(IRN.EQ.LRN) GOTO 100
       LRN=IRN
       CALL BSPC(IA,LB,IDUM1,IDUM2)
-      CALL GETRUN(LRN,IPAR,IW(IA),&10,&10)
+      CALL GETRUN(LRN,IPAR,IW(IA),*10,*10)
       IRB=IRN
       J=MOD(IJ,16)
       I=IJ/16

@@ -42,6 +42,9 @@ IF(FCNAME STREQUAL "pgf90")
     UNSET(CMAKE_SHARED_LIBRARY_LINK_Fortran_FLAGS)
 ENDIF(FCNAME STREQUAL "pgf90")
 
+SET_COMPILE_FLAG(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}" Fortran 
+"-m32 -std=legacy -m32 -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons")
+
 ############################################################
 # Define the actual files and folders that make up the build
 ############################################################

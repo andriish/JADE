@@ -55,7 +55,7 @@ C
 C     OPEN DATA SET
       TEXT=TEXTL(IPAR(2))
       WRITE(6,101) IPAR(1),TEXT
-*xxx 10.01.98     CALL RVOPEN(IPAR(1),&74)
+*xxx 10.01.98     CALL RVOPEN(IPAR(1),*74)
       PRINT *,'CALL RVOPEN: STOP'
       STOP
 *xxx
@@ -67,7 +67,7 @@ C
 C     VB=RECORDS
    30 NCC=NB
       IF(NB.GE.32768) NCC=32767
-*xxx 10.01.98     CALL RV(NCC,BUF(1),&80,&71,&74)
+*xxx 10.01.98     CALL RV(NCC,BUF(1),*80,*71,*74)
       PRINT *,'CALL RV: STOP'
       STOP
 *xxx  
@@ -77,7 +77,7 @@ C     VB=RECORDS
 C     VBS-RECORDS
    40 NCC=NB
       IF(NB.GE.32768) NCC=32767
-*xxx 10.01.98      CALL RVS(NCC,BUF(1),NS,&80,&71,&74)
+*xxx 10.01.98      CALL RVS(NCC,BUF(1),NS,*80,*71,*74)
       PRINT *,'CALL RVS: STOP'
       STOP
 *xxx
@@ -88,7 +88,7 @@ C     VBS-RECORDS
    50 NB =NB-NCC
       NCC=NB
       IF(NB.GE.32768) NCC=32767
-*xxx 10.01.98      CALL RVS(NCC,BUF(1+NBT),NS,&80,&71,&74)
+*xxx 10.01.98      CALL RVS(NCC,BUF(1+NBT),NS,*80,*71,*74)
       PRINT *,'CALL RVS: STOP'
       STOP
 *xxx

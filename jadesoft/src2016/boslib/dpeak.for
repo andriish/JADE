@@ -3,9 +3,9 @@ C   07/06/96 606071843  MEMBER NAME  DPEAK    (S4)          FORTG1
       COMMON/BCS/IW(1)
       REAL RW(1)
       EQUIVALENCE (RW(1),IW(1))
-      CALL BLOC(IND,'PEA*',NA,&1)
+      CALL BLOC(IND,'PEA*',NA,*1)
       GOTO 100
-    1 CALL BCRE(IND,'PEA*',NA,10,&100,IER)
+    1 CALL BCRE(IND,'PEA*',NA,10,*100,IER)
       FWHM=2.35482*SIG
       X1=AMIN1(XA,XZ)-FWHM*2.0
       X2=AMAX1(XA,XZ)+FWHM*2.0
@@ -27,14 +27,14 @@ C
       IW(IND+8)=-1
 C
       NW=(NB+2)*(KA+1)
-      CALL BCHL(NW,&100)
+      CALL BCHL(NW,*100)
       IW(IND+8)=KA
       CALL VZERO(IW(IND+11),NW)
       GOTO 100
 C
       ENTRY UPEAK(NA,KA,X)
       IF(KA.LT.0) GOTO 100
-      CALL BLOC(IND,'PEA*',NA,&100)
+      CALL BLOC(IND,'PEA*',NA,*100)
       IF(IW(IND+8).LT.KA) GOTO 100
       K=(X-RW(IND+5))/RW(IND+6)+1.0
       IF(K.GT.IW(IND+7)) K=IW(IND+7)+2

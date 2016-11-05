@@ -10,7 +10,7 @@ C   07/06/96 606071906  MEMBER NAME  QPEAK    (S4)          FORTG1
       DO 4 J=1,3
     4 Q(I,J)=0.0
       IF(KA.LT.0) GOTO 100
-      CALL BLOC(IND,'PEA*',NA,&100)
+      CALL BLOC(IND,'PEA*',NA,*100)
       KAMAX=IW(IND+8)
       IF(KA.GT.KAMAX) GOTO 100
       AW=RW(IND+5)

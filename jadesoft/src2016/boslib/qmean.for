@@ -9,7 +9,7 @@ C   07/06/96 606071905  MEMBER NAME  QMEAN    (S4)          FORTG1
       DO 10 I=1,10
    10 Q(I)=0.0
       IF(KA.LT.0) GOTO 100
-      CALL BLOC(IND,'MEA*',NA,&100)
+      CALL BLOC(IND,'MEA*',NA,*100)
       INDK=IND+50*KA
       IF(INDK.GE.IND+IW(IND)) GOTO 100
       N=IW(INDK+1)

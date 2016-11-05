@@ -17,7 +17,7 @@ C
       IOE=0
       IOT=0
       CALL BPOS('+BUF')
-   30 CALL BNXT(IND,&37)
+   30 CALL BNXT(IND,*37)
       IF(IW(IND+1).LT.1.OR.IW(IND+1).GT.2) GOTO 30
       IF(IO.EQ.0) WRITE(6,102)
       IO=IW(IND+1)
@@ -70,7 +70,7 @@ C
       WRITE(6,106)
 C
    50 CALL BPOS('+DIR')
-   52 CALL BNXT(INDA,&60)
+   52 CALL BNXT(INDA,*60)
       IUND=IW(INDA-2)
       WRITE(6,109) IUND,IW(INDA+6),IW(INDA+7),(IW(INDA+J),J=21,35)
       GOTO 52
