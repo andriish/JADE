@@ -73,6 +73,10 @@ endif()
 
 # Define the executable name
 #SET(FOOEXE foo)
+SET(MCJADEEXE mcjade)
+SET(SUPERVEXE superv)
+SET(JADEZEXE jadez)
+SET(ZE4VEXE ze4v)
 
 # Define the library name
 SET(BOSLIB boslib)
@@ -94,12 +98,20 @@ SET(ZLIB         zlib)
 
 # Define some directories
 SET(SRC ${CMAKE_SOURCE_DIR}/src2016)
+SET(SRCMAIN ${CMAKE_SOURCE_DIR}/main2016)
 SET(LIB ${CMAKE_SOURCE_DIR}/lib)
 SET(BIN ${CMAKE_SOURCE_DIR}/bin)
 
 include_directories( ${SRC}/boslib ${SRC}/grafix ${SRC}/interface ${SRC}/jadegs ${SRC}/jademus ${SRC}/jadesr ${SRC}/jmc ${SRC}/patrecsr ${SRC}/source ${SRC}/tagg  ${SRC}/toflib ${SRC}/vertex ${SRC}/wertex ${SRC}/zlib  )
 
 #SET(SRCFOO ${SRC}/foo)
+SET(SRCMCJADE ${SRCMAIN}/mcjade)
+SET(SRCSUPERV ${SRCMAIN}/superv)
+SET(SRCJADEZ ${SRCMAIN}/jadez)
+SET(SRCZE4V ${SRCMAIN}/ze4v)
+
+
+
 SET(SRCBOSLIB ${SRC}/boslib)
 SET(SRCGRAFIX          ${SRC}/grafix)
 SET(SRCINTERFACE         ${SRC}/interface)
@@ -134,6 +146,12 @@ ADD_SUBDIRECTORY(${SRCWERTEX}         )
 ADD_SUBDIRECTORY(${SRCZLIB}         )
 # The source for the FOO binary and have it placed in the bin folder
 #ADD_SUBDIRECTORY(${SRCFOO} ${BIN})
+
+ADD_SUBDIRECTORY(${SRCMCJADE} )
+ADD_SUBDIRECTORY(${SRCSUPERV} )
+ADD_SUBDIRECTORY(${SRCJADEZ} )
+ADD_SUBDIRECTORY(${SRCZE4V} )
+
 
 # Add a distclean target to the Makefile
 ADD_CUSTOM_TARGET(distclean 
