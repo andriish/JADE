@@ -1,0 +1,37 @@
+Current directory is/home/pcl2483/pedro/jadesoft/src/jmc
+
+Dependencies:
+-------------
+mctagm.F ... cmctag.for
+mctagm.F ... cmctag.for
+mctagi.F ... cmctag.for
+brvect.F ... cprod.for
+trlgsh.F ... cgeo1.for
+trlgs6.F ... cgeo1.for
+statag.F ... cmctag.for
+mcvali.F ... cprod.for
+stvect.F ... cprod.for
+stpall.F ... cprod.for
+limint.F ... cgeo1.for
+limint.F ... cgeo1.for
+errmsg.F ... cheadr.for
+tags2h.F ... cwktag.for
+mctagr.F ... cmctag.for
+mctags.F ... cmctag.for
+tags2h.F ... cwktag.for
+
+.F files sorted by include-files:
+-- ----- ------ -- --------------
+cgeo1.for: trlgsh.F trlgs6.F limint.F
+cheadr.for: errmsg.F
+cmctag.for: mctagm.F mctagi.F statag.F mctagr.F mctags.F
+cprod.for: brvect.F mcvali.F stvect.F stpall.F
+cwktag.for: tags2h.F
+
+Library members sorted by include-files:
+------- ------- ------ -- -------------
+/home/pcl2483/pedro/jadesoft/lib/libjmc.a( trlgsh.o trlgs6.o limint.o ) :	 cgeo1.for
+/home/pcl2483/pedro/jadesoft/lib/libjmc.a( errmsg.o ) :	 cheadr.for
+/home/pcl2483/pedro/jadesoft/lib/libjmc.a( mctagm.o mctagi.o statag.o mctagr.o mctags.o ) :	 cmctag.for
+/home/pcl2483/pedro/jadesoft/lib/libjmc.a( brvect.o mcvali.o stvect.o stpall.o ) :	 cprod.for
+/home/pcl2483/pedro/jadesoft/lib/libjmc.a( tags2h.o ) :	 cwktag.for

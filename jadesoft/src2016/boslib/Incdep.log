@@ -1,0 +1,65 @@
+Current directory is/home/jade/JADE.git/trunk/jadesoft/src/boslib
+
+Dependencies:
+-------------
+bint.F ... acs.for
+bint.F ... ccs.for
+bint.F ... acs.for
+bint.F ... acs.for
+bint.F ... ccs.for
+bint.F ... acs.for
+ibln.F ... acs.for
+brnm.F ... acs.for
+brnm.F ... star.for
+bcre.F ... acs.for
+bcre.F ... star.for
+ccre.F ... acs.for
+ccre.F ... star.for
+bloc.F ... acs.for
+cloc.F ... acs.for
+bchm.F ... acs.for
+bchm.F ... star.for
+bdar.F ... acs.for
+bpos.F ... acs.for
+bnxt.F ... acs.for
+cnxt.F ... acs.for
+bmlt.F ... acs.for
+bsaw.F ... acs.for
+bdls.F ... acs.for
+bdls.F ... star.for
+bdlm.F ... acs.for
+bdlg.F ... acs.for
+bgar.F ... acs.for
+bdmp.F ... acs.for
+bdmp.F ... ccs.for
+bsta.F ... acs.for
+bchl.F ... acs.for
+cchl.F ... acs.for
+bsls.F ... acs.for
+indar.F ... acs.for
+brds.F ... acs.for
+bwrs.F ... acs.for
+binp.F ... acs.for
+binp.F ... star.for
+binp.F ... star.for
+boutp.F ... acs.for
+bseq.F ... acs.for
+blocda.F ... ccs.for
+binlda.F ... ccs.for
+bloada.F ... ccs.for
+poda.F ... ccs.for
+dada.F ... ccs.for
+rdda.F ... ccs.for
+bpasda.F ... ccs.for
+
+.F files sorted by include-files:
+-- ----- ------ -- --------------
+acs.for: bint.F ibln.F brnm.F bcre.F ccre.F bloc.F cloc.F bchm.F bdar.F bpos.F bnxt.F cnxt.F bmlt.F bsaw.F bdls.F bdlm.F bdlg.F bgar.F bdmp.F bsta.F bchl.F cchl.F bsls.F indar.F brds.F bwrs.F binp.F boutp.F bseq.F
+ccs.for: bint.F bdmp.F blocda.F binlda.F bloada.F poda.F dada.F rdda.F bpasda.F
+star.for: brnm.F bcre.F ccre.F bchm.F bdls.F binp.F
+
+Library members sorted by include-files:
+------- ------- ------ -- -------------
+/home/jade/JADE.git/trunk/jadesoft/lib/libboslib.a( bint.o ibln.o brnm.o bcre.o ccre.o bloc.o cloc.o bchm.o bdar.o bpos.o bnxt.o cnxt.o bmlt.o bsaw.o bdls.o bdlm.o bdlg.o bgar.o bdmp.o bsta.o bchl.o cchl.o bsls.o indar.o brds.o bwrs.o binp.o boutp.o bseq.o ) :\t acs.for
+/home/jade/JADE.git/trunk/jadesoft/lib/libboslib.a( bint.o bdmp.o blocda.o binlda.o bloada.o poda.o dada.o rdda.o bpasda.o ) :\t ccs.for
+/home/jade/JADE.git/trunk/jadesoft/lib/libboslib.a( brnm.o bcre.o ccre.o bchm.o bdls.o binp.o ) :\t star.for

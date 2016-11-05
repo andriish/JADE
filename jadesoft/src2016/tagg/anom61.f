@@ -1,0 +1,346 @@
+C   09/10/79 910180035  MEMBER NAME  ANOM61   (S)           FORTRAN
+      SUBROUTINE ANOM61(IRUN)
+C---  ANOMALIES OF RUNS 1497 - 1559
+C---  15.25 GEV      SEPTEMBER 1979
+C
+C     H.WRIEDT    27.07.79     02:20
+C     LAST MODIFICATION     18.10.79     00:25
+C
+      IMPLICIT INTEGER*2 (H)
+C
+      COMMON /CPHASE/ LIMEVT,KCONST(192),LIMIT(192),LCHANN(192),
+     &                LTHRES(192),LDEAD(192),LSUB(240)
+      LOGICAL LCHANN,LTHRES,LDEAD,LSUB
+C
+C---  LCHANN:  CHANNELS WITH CONSTANT PEDESTALS
+C---  LDEAD:   CHANNELS WHICH MUST BE SET TO 0 (E.G. FOR MISSING BITS
+C              IN THE ADC
+C---  KCONST:  CHANNELS FOR WHICH THE SUBTRACTION CONSTANT MUST BE
+C              HIGHER (-1) OR LOWER (+1) THAN THE PROGRAM WOULD
+C              AUTOMATICALLY CALCULATE
+C---  LIMIT:   GIVES THE LOWER BOUND OF THE SUBTRACTION CONSTANT
+C---  LTHRES:  CHANNELS FOR WHICH THE LOWER CUT BOUND IS SET TO 100
+C              INSTEAD OF 50
+C
+      GOTO (1497,1498,1499,13,1501,1502,1503,1504,1505,1506,1507,1508,
+     &      1509,13,1511,1512,1513,13,1515,1516,1517,1518,1519,1520,
+     &      1521,1522,1523,1524,1525,13,1527,1528,1529,1530,1531,1532,
+     &      1533,1534,1535,13,1537,1538,13,1540,1541,13,1543,13,1545,
+     &      13,1547,13,13,13,13,13,13,13,13,13,13,1558,1559),IRUN
+   13 RETURN
+C
+ 1497 LCHANN(79) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      RETURN
+C
+ 1498 LCHANN(79) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      RETURN
+C
+ 1499 LCHANN(79) = .TRUE.
+C
+      RETURN
+C
+ 1501 LCHANN(79) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      KCONST(97) = -1
+      LIMIT(97) = 75
+      KCONST(150) = -1
+      LIMIT(150) = 60
+      KCONST(154) = -1
+      LIMIT(154) = 75
+      KCONST(155) = -1
+      LIMIT(155) = 60
+      KCONST(171) = -1
+      LIMIT(171) = 45
+C
+      RETURN
+C
+ 1502 LCHANN(79) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      RETURN
+C
+ 1503 LCHANN(79) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      RETURN
+C
+ 1504 LCHANN(79) = .TRUE.
+C
+      RETURN
+C
+ 1505 LCHANN(79) = .TRUE.
+C
+      KCONST(97) = -1
+      LIMIT(97) = 105
+      KCONST(150) = -1
+      LIMIT(150) = 60
+      KCONST(155) = -1
+      LIMIT(155) = 60
+      KCONST(171) = -1
+      LIMIT(171) = 30
+C
+      RETURN
+C
+ 1506 LCHANN(79) = .TRUE.
+C
+      KCONST(101) = -1
+      LIMIT(101) = 45
+C
+      RETURN
+C
+ 1507 LCHANN(79) = .TRUE.
+C
+      KCONST(154) = -1
+      LIMIT(154) = 105
+C
+      RETURN
+C
+ 1508 LCHANN(79) = .TRUE.
+C
+      KCONST(101) = -1
+      LIMIT(101) = 60
+C
+      RETURN
+C
+ 1509 LCHANN(79) = .TRUE.
+C
+      KCONST(97) = -1
+      LIMIT(97) = 120
+      KCONST(150) = -1
+      LIMIT(150) = 150
+      KCONST(155) = -1
+      LIMIT(155) = 135
+      KCONST(171) = -1
+      LIMIT(171) = 120
+C
+      RETURN
+C
+ 1511 LCHANN(79) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      KCONST(101) = -1
+      LIMIT(101) = 75
+C
+      RETURN
+C
+ 1512 LCHANN(79) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      KCONST(97) = -1
+      LIMIT(97) = 90
+C
+      RETURN
+C
+ 1513 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      KCONST(97) = -1
+      LIMIT(97) = 45
+      KCONST(169) = -1
+      LIMIT(169) = 45
+C
+      RETURN
+C
+ 1515 LCHANN(79) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      KCONST(97) = -1
+      LIMIT(97) = 45
+      KCONST(101) = -1
+      LIMIT(101) = 75
+      KCONST(150) = -1
+      LIMIT(150) = 15
+      KCONST(155) = -1
+      LIMIT(155) = 15
+C
+      RETURN
+C
+ 1516 LCHANN(79) = .TRUE.
+C
+      RETURN
+C
+ 1517 LCHANN(79) = .TRUE.
+C
+      KCONST(97) = -1
+      LIMIT(97) = 150
+      KCONST(101) = -1
+      LIMIT(101) = 75
+      KCONST(148) = -1
+      LIMIT(148) = 45
+      KCONST(150) = -1
+      LIMIT(150) = 135
+      KCONST(155) = -1
+      LIMIT(155) = 135
+      KCONST(171) = -1
+      LIMIT(171) = 120
+C
+      RETURN
+C
+ 1518 CONTINUE
+C
+      RETURN
+C
+ 1519 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+C
+      RETURN
+C
+ 1520 CONTINUE
+C
+      RETURN
+C
+ 1521 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      RETURN
+C
+ 1522 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+C
+      RETURN
+C
+ 1523 LCHANN(79) = .TRUE.
+C
+      RETURN
+C
+ 1524 LCHANN(79) = .TRUE.
+C
+      RETURN
+C
+ 1525 LCHANN(79) = .TRUE.
+C
+      RETURN
+C
+ 1527 LCHANN(79) = .TRUE.
+C
+      KCONST(101) = -1
+      LIMIT(101) = 60
+C
+      RETURN
+C
+ 1528 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+C
+      RETURN
+C
+ 1529 LCHANN(79) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      RETURN
+C
+ 1530 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      KCONST(101) = -1
+      LIMIT(101) = 45
+C
+      RETURN
+C
+ 1531 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      RETURN
+C
+ 1532 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+C
+      RETURN
+C
+ 1533 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      KCONST(97) = -1
+      LIMIT(97) = 45
+C
+      RETURN
+C
+ 1534 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+C
+      RETURN
+C
+ 1535 LCHANN(79) = .TRUE.
+C
+      RETURN
+C
+ 1537 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      KCONST(101) = -1
+      LIMIT(101) = 60
+C
+      RETURN
+C
+ 1538 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+C
+      RETURN
+C
+ 1540 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      RETURN
+C
+ 1541 LCHANN(79) = .TRUE.
+C
+      RETURN
+C
+ 1543 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+C
+      KCONST(97) = -1
+      LIMIT(97) = 30
+C
+      RETURN
+C
+ 1545 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+C
+      KCONST(101) = -1
+      LIMIT(101) = 45
+C
+      RETURN
+C
+ 1547 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+C
+      KCONST(97) = -1
+      LIMIT(97) = 60
+      KCONST(101) = -1
+      LIMIT(101) = 75
+C
+      RETURN
+C
+ 1558 LCHANN(79) = .TRUE.
+C
+      KCONST(140) = -1
+      LIMIT(140) = 60
+      KCONST(166) = -1
+      LIMIT(166) = 60
+C
+      RETURN
+C
+ 1559 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+C
+      KCONST(97) = -1
+      LIMIT(97) = 30
+      KCONST(101) = -1
+      LIMIT(101) = 60
+C
+      RETURN
+C
+      END

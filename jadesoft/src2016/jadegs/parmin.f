@@ -1,0 +1,45 @@
+C   09/07/79 002172012  MEMBER NAME  PARMIN   (JADEGS)      FORTRAN
+      SUBROUTINE PARMIN(A,B,C,D,RP,ITYP)
+C---
+C---    FIND MINIMUM DISTANCE RP OF PARABOLA (A B C D) FROM ORIGIN
+C---    THE PARAMETERS ARE: A = ANGLE BETWEEN LOCAL X-AXIS AND DETECTOR
+C---                        B = X COORDINATE OF LOCAL MINIMUM POINT.
+C---                        C = Y COORDINATE OF LOCAL MINIMUM POINT.
+C---                        D = PARABOLA PARAMETER IN  Y = D * X*X
+C---     J.OLSSON         09.07.79       LAST CHANGE 19.08.79
+C---
+      IMPLICIT INTEGER*2 (H)
+C---
+      IF(ITYP.NE.2) GO TO 1009
+C--PARABOLA FIT
+      COSA = COS(A)
+      SINA = SIN(A)
+C--
+C-- FIND POINT OF CLOSEST APPROACH TO ORIGIN, BY SOLVING 3D DEGREE EQUA-
+C-- TION ARISING FROM THE CONDITION D/DX (DIST)  =  0
+C--
+      RP = 10000.
+      Q = -B*COSA - C*SINA
+      P =  B*SINA - C*COSA
+      P = (1. - 2.*D*P)/(6.*D*D)
+      Q = - Q/(4.*D*D)
+      DET = Q*Q + P*P*P
+      IF(DET.LE.0.) GO TO 10
+      DET = SQRT(DET)
+      SIGN = 1.
+      IF(-Q+DET.LT.0.) SIGN = -1.
+      U = (((-Q+DET)*SIGN)**.3333333)*SIGN
+      SIGN = 1.
+      IF(-Q-DET.LT.0.) SIGN = -1.
+      V = (((-Q-DET)*SIGN)**.3333333)*SIGN
+      XPB = U+V
+      YPB = D*XPB*XPB
+      XP = (XPB)*COSA - (YPB)*SINA + B
+      YP = (XPB)*SINA + (YPB)*COSA + C
+      RP = SQRT(XP*XP + YP*YP)
+10    RETURN
+1009  CONTINUE
+C  CIRCLE FIT
+      RP = ABS(B)
+      RETURN
+      END

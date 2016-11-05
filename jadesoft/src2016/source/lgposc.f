@@ -1,0 +1,48 @@
+C   17/08/80 009150308  MEMBER NAME  LGPOSC   (SOURCE)      FORTRAN
+      SUBROUTINE LGPOSC(ADATA,DEP)
+C       ROUGH ENERGY CORRECTION OF POS. DEPENDENCE FOR BARREL
+C                               17/08/80  Y.WATANABE
+      IMPLICIT INTEGER * 2 (H)
+      COMMON /CLGDMS/  X0,RADIUS(6)
+      DIMENSION ADATA(16)
+      EQUIVALENCE (IBE,BE)
+      DATA INIT/0/
+      IF(INIT.GT.0) GO TO 10
+      INIT=1
+      DPHI=3.14159266/42.
+10    CONTINUE
+C
+      BE=ADATA(1)
+      IF(IBE.NE.0) GO TO 40
+C     (0 FOR BARREL LG)
+      E=ADATA(2)
+      IF(E.LT.3.) GO TO 40
+C
+C     Z=ADATA(5)
+      Z=1400.*ADATA(5)/(RADIUS(3)+DEP)
+      IZ=(Z+1707.2)/106.7+1
+      IF(IZ.LT.1 ) IZ=1
+      IF(IZ.GT.32) IZ=32
+      DZ=Z+1707.2-106.7*(IZ-0.5)
+      IF(ABS(DZ).GT.40.) DZ=40.
+C
+      PHI=ADATA(4)
+      IPHI=PHI/DPHI+1
+      IF(IPHI.LT.1) IPHI=1
+      IF(IPHI.GT.84) IPHI=84
+      PHI=PHI-(IPHI-0.5)*DPHI
+      PHI=PHI*1250.
+      IF(ABS(PHI).GT.30.) PHI=30.
+      A=4.5E-5
+      IF(IZ.GT.16) IZ=33-IZ
+      IF(IZ.LT.10) A=A*(0.5+0.05*IZ)
+      CF=1.-A*PHI*PHI
+C
+      IF(IZ.LE.6) GO TO 30
+      A=3.51E-6*(IZ-6)
+      CF=CF*(1.-A*DZ*DZ)
+30    ADATA(2)=E/CF
+C
+40    CONTINUE
+      RETURN
+      END

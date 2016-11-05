@@ -1,0 +1,16 @@
+C   07/06/96 606071803  MEMBER NAME  BCHL     (S4)          FORTG1
+      SUBROUTINE BCHL(NW,*)
+C     BOS SUBPROGRAM =1.19=
+#include "acs.for"
+      COMMON/BCS/IW(1)
+      CALL BCHM(LIND,NW,IER)
+      GOTO 100
+C
+      ENTRY BMVE(NW,*)
+      CALL BCHM(NW,0,IER)
+      LIND=NW
+C
+  100 IF(IER.EQ.2) GOTO 101
+      RETURN
+  101 RETURN 1
+      END

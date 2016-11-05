@@ -1,0 +1,15 @@
+Current directory is/home/pcl2483/pedro/jadesoft/src/vertex
+
+Dependencies:
+-------------
+vtxbnk.F ... cdata.for
+vtxbnk.F ... cdata.for
+vtxpre.F ... cdata.for
+
+.F files sorted by include-files:
+-- ----- ------ -- --------------
+cdata.for: vtxbnk.F vtxpre.F
+
+Library members sorted by include-files:
+------- ------- ------ -- -------------
+/home/pcl2483/pedro/jadesoft/lib/libvertex.a( vtxbnk.o vtxpre.o ) :	 cdata.for

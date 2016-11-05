@@ -1,0 +1,65 @@
+C   20/12/78 008221828  MEMBER NAME  GGBLNO                 FORTRAN
+      SUBROUTINE GGBLNO(XPBGL,YPBGL,NOBL)
+C---  OBTAIN PB-GLASS BLOCK NUMBER CORRESPONDING TO X-Y-POSITION
+C---  INPUT:  X- AND Y-COORDINATES (IN MM)
+C
+C     H.WRIEDT      12.12.78      15:30
+C     LAST MODIFICATION     18.01.79       15:00
+C
+      COMMON /CPARTC/ PRTCIN,PRTCL,EMEV,AMASS2,ISIGNZ
+      DIMENSION PRTCIN(9), PRTCL(9)
+      DIMENSION NBLIST(11,6)
+      DATA NBLIST /4*0,1,2,3,4*0,
+     1             2*0,4,5,6,7,8,9,10,2*0,
+     2             0,11,12,13,14,15,16,17,18,19,0,
+     3             20,21,22,23,24,25,26,27,28,29,30,
+     4             31,32,33,34,3*0,35,36,37,38,
+     5             39,40,41,42,3*0,43,44,45,46/
+      N= 0
+C---  +Z-DIRECTION (TOWARDS MARK J)
+      X0 = XPBGL
+      Y0 = YPBGL
+      IF (ISIGNZ.GT.0) GOTO 5
+C---  -Z-DIRECTION (TOWARDS PLUTO & CELLO)
+      X0 = -XPBGL
+      Y0 = -YPBGL
+C
+  5   X = X0
+      Y = Y0
+      IF (X0) 10,11,11
+ 10   X = -X0
+ 11   IF (ABS(Y0).LT.121.5) X = X+20.
+      IF (Y0) 20,21,21
+ 20   Y = -Y0
+ 21   IF (X.LT.81.) Y = Y-30.
+C
+      NX = X/81.
+      IF (NX.GE.6) GOTO 100
+      NX = 6-NX
+      NY = (Y+40.5)/81.
+      IF (NY.GE.6) GOTO 100
+      IF (X0) 40,30,30
+C---  BLOCK ADDRESSES 1 TO 46
+ 30   IF (Y0) 31,32,32
+ 31   NY = 6-NY
+      GOTO 35
+ 32   NY = 6+NY
+ 35   N = NBLIST(NY,NX)
+      IF (N.EQ.0) GOTO 100
+C---  BLOCK ADDRESSES 97 TO 142
+      IF (ISIGNZ.GT.0) N = N+96
+      GOTO 100
+C---  BLOCK ADDRESSES 49 TO 94
+ 40   IF (Y0) 41,42,42
+ 41   NY = 6+NY
+      GOTO 45
+ 42   NY = 6-NY
+ 45   N = NBLIST(NY,NX)
+      IF (N.EQ.0) GOTO 100
+      N = 95-N
+C---  BLOCK ADDRESSES 145 TO 190
+      IF (ISIGNZ.GT.0) N = N+96
+C
+ 100  NOBL = N
+      RETURN
+      END

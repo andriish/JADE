@@ -1,0 +1,54 @@
+C   07/06/96 606071832  MEMBER NAME  BSAW     (S4)          FORTG1
+      SUBROUTINE BSAW(NL,LIST)
+C     BOS SUBPROGRAM =1.12=
+#include "acs.for"
+      COMMON/BCS/IW(1)
+C
+      INTEGER LIST(1)
+C
+C
+      MARK=1
+      GOTO 30
+      ENTRY BSAT(NL,LIST)
+      MARK=0
+C
+   30 IF(NL.LE.0) GOTO 100
+      DO 70 LN=1,NL
+      IB=IBLN(LIST(LN))
+      IF(NS.EQ.0) GOTO 50
+      DO 40 I=1,NS
+      IF(IB.EQ.IW(ISLST+I)) GOTO 60
+   40 CONTINUE
+      IF(NS.GE.NLIST) CALL BDMPA(30)
+   50 NS=NS+1
+      I =NS
+      IW(ISLST+I)=IB
+   60 IW(IMLST+I)=MARK
+   70 CONTINUE
+      GOTO 100
+C
+      ENTRY BDEF(NL,LIST)
+      IF(NL.LE.0) GOTO 100
+      DO 75 I=1,NL
+   75 IDUM=IBLN(LIST(I))
+      GOTO 100
+C
+      ENTRY BSAD(NL,LIST)
+      IF(NL.LE.0) GOTO 100
+      DO 90 LN=1,NL
+      IB=IBLN(LIST(LN))
+      IF(NS.EQ.0) GOTO 100
+      DO 82 I=1,NS
+      IF(IB.EQ.IW(ISLST+I)) GOTO 84
+   82 CONTINUE
+      GOTO 90
+   84 IS=I+1
+      IF(IS.GT.NS) GOTO 88
+      DO 86 I=IS,NS
+      IW(ISLST+I-1)=IW(ISLST+I)
+   86 IW(IMLST+I-1)=IW(IMLST+I)
+   88 NS=NS-1
+   90 CONTINUE
+C
+  100 RETURN
+      END

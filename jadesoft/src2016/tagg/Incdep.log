@@ -1,0 +1,71 @@
+Current directory is/home/pcl2483/pedro/jadesoft/src/tagg
+
+Dependencies:
+-------------
+tags2h.F ... cwktag.for
+tags2h.F ... cwktag.for
+tagan.F ... cdata.for
+tagan.F ... comtag.for
+tagan.F ... cwktag.for
+tagan.F ... ctaggo.for
+tagint.F ... cgraph.for
+tagint.F ... comtag.for
+tagint.F ... cwktag.for
+anatag.F ... cwktag.for
+tagadc.F ... cdata.for
+tagadc.F ... cgraph.for
+tagadc.F ... comtag.for
+tagadc.F ... cwktag.for
+tagped.F ... cwktag.for
+tagkal.F ... cdata.for
+tagkal.F ... cwktag.for
+tagkal.F ... calibr.for
+tagpd1.F ... cwktag.for
+tagpd2.F ... cwktag.for
+tagraw.F ... cdata.for
+tagraw.F ... cgraph.for
+tagraw.F ... cwktag.for
+tagh2s.F ... cwktag.for
+tagh2s.F ... cdata.for
+taggtp.F ... cdata.for
+taggtp.F ... comtag.for
+taggtp.F ... cwktag.for
+taggtp.F ... ctaggo.for
+tagpos.F ... cwktag.for
+tagsum.F ... cgraph.for
+tagsum.F ... cwktag.for
+tagsr1.F ... cwktag.for
+tagsr2.F ... comtag.for
+tagsr2.F ... cwktag.for
+tagcol.F ... ctaggo.for
+tagps1.F ... cwktag.for
+tagps1.F ... comtag.for
+tagcls.F ... comtag.for
+tagcls.F ... cwktag.for
+tagfit.F ... cwktag.for
+tagfit.F ... comtag.for
+tagmrk.F ... cdata.for
+tagmrk.F ... cwktag.for
+tagmrk.F ... cgraph.for
+tagchk.F ... cdata.for
+tagchk.F ... cwktag.for
+tagneb.F ... comtag.for
+tags2h.F ... cwktag.for
+
+.F files sorted by include-files:
+-- ----- ------ -- --------------
+calibr.for: tagkal.F
+cdata.for: tagan.F tagadc.F tagkal.F tagraw.F tagh2s.F taggtp.F tagmrk.F tagchk.F
+cgraph.for: tagint.F tagadc.F tagraw.F tagsum.F tagmrk.F
+comtag.for: tagan.F tagint.F tagadc.F taggtp.F tagsr2.F tagps1.F tagcls.F tagfit.F tagneb.F
+ctaggo.for: tagan.F taggtp.F tagcol.F
+cwktag.for: tags2h.F tagan.F tagint.F anatag.F tagadc.F tagped.F tagkal.F tagpd1.F tagpd2.F tagraw.F tagh2s.F taggtp.F tagpos.F tagsum.F tagsr1.F tagsr2.F tagps1.F tagcls.F tagfit.F tagmrk.F tagchk.F tags2h.F
+
+Library members sorted by include-files:
+------- ------- ------ -- -------------
+/home/pcl2483/pedro/jadesoft/lib/libtagg.a( tagkal.o ) :	 calibr.for
+/home/pcl2483/pedro/jadesoft/lib/libtagg.a( tagan.o tagadc.o tagkal.o tagraw.o tagh2s.o taggtp.o tagmrk.o tagchk.o ) :	 cdata.for
+/home/pcl2483/pedro/jadesoft/lib/libtagg.a( tagint.o tagadc.o tagraw.o tagsum.o tagmrk.o ) :	 cgraph.for
+/home/pcl2483/pedro/jadesoft/lib/libtagg.a( tagan.o tagint.o tagadc.o taggtp.o tagsr2.o tagps1.o tagcls.o tagfit.o tagneb.o ) :	 comtag.for
+/home/pcl2483/pedro/jadesoft/lib/libtagg.a( tagan.o taggtp.o tagcol.o ) :	 ctaggo.for
+/home/pcl2483/pedro/jadesoft/lib/libtagg.a( tags2h.o tagan.o tagint.o anatag.o tagadc.o tagped.o tagkal.o tagpd1.o tagpd2.o tagraw.o tagh2s.o taggtp.o tagpos.o tagsum.o tagsr1.o tagsr2.o tagps1.o tagcls.o tagfit.o tagmrk.o tagchk.o tags2h.o ) :	 cwktag.for

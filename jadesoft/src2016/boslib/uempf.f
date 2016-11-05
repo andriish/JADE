@@ -1,0 +1,55 @@
+C   07/06/96 606071916  MEMBER NAME  UEMPF    (S4)          FORTG1
+      SUBROUTINE UEMPF(NA,Y,X)
+      COMMON/BCS/IW(1)
+      REAL RW(1)
+      EQUIVALENCE (RW(1),IW(1))
+      REAL Q(10)
+      EXTERNAL LBN
+      CALL BLOC(IND,'EMP*',NA,&100)
+      LB=LLBN(IND+2,X)
+      CALL UMEAN(NA,LB,Y)
+      GOTO 100
+C
+      ENTRY DEMPF(NA,NX)
+      CALL BLOC(IND,'EMP*',NA,&2)
+      GOTO 100
+    2 CALL BLOC(J,'$BIN',NX,&100)
+      NJ=IW(J)+2
+      CALL BCRE(IND,'EMP*',NA,NJ,&100,IER)
+      IW(IND+1)=NX
+      CALL BSTR(IND+1,IW(J),NJ-1)
+      CALL VLBN(NX,1,XL,XH,NB)
+      CALL DMEAN(NA,NB+1)
+      GOTO 100
+C
+      ENTRY PEMPF(NA)
+      CALL BLOC(IND,'EMP*',NA,&100)
+      NXX=IW(IND+1)
+      WRITE(6,101) NA
+      CALL PMEAN(NA)
+      CALL VLBN(NXX,1,XL,XH,NB)
+      IF(NB.LE.0) GOTO 100
+      I=0
+      DO 10 LB=1,NB
+      CALL QMEAN(NA,LB,Q)
+      IF(Q(1).LE.2.0) GOTO 10
+      I=I+1
+      CALL VLBN(NXX,LB,XL,XH,NT)
+      XQ=0.5*(XL+XH)
+      YQ=Q(3)
+      IF(I.NE.1) GOTO 5
+      CALL BCRE(IND,'$FUN',NA,0,&10,IER)
+    5 CALL BCHM(IND,2,JER)
+      IF(IER+JER.NE.0) GOTO 10
+      RW(IND+2*I-1)=YQ
+      RW(IND+2*I  )=XQ
+   10 CONTINUE
+      II=I+I
+      WRITE(6,102) NA
+      WRITE(6,103) (RW(IND+I),I=1,II)
+C
+  100 RETURN
+  101 FORMAT(' UEMPF',I6)
+  102 FORMAT(' CONTENT OF BANK  $FUN,',I9/)
+  103 FORMAT(5(1X,2G12.4,1X))
+      END

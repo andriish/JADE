@@ -1,0 +1,39 @@
+C   18/05/79 002210634  MEMBER NAME  LGESUM   (SOURCE)      FORTRAN
+      SUBROUTINE LGESUM(ETOTLG)
+C
+C     S.YAMADA   18-05-79  12:50
+C     LAST MODIFICATI0N  18-05-79  13:25
+C
+C---- LG ENERGY IS SUMMED FOR EACH PART.
+C
+      IMPLICIT INTEGER *2 (H)
+C
+#include "cdata.for"
+C
+      DIMENSION ETOTLG(3)
+C
+      DATA INITP/0/
+      IF(INITP.GT.0) GO TO 5
+      INITP=1
+      IP= IBLN('ALGN')
+5     CONTINUE
+      ETOTLG(1) = -1.0
+C     CALL CLOC( NP, 'ALGN',1 )
+      NP=IDATA(IP)
+      IF(NP.LE.0) GO TO 100
+C
+      NNP = NP+NP
+      NNPADC = NNP+7
+C
+        DO 1 K=1,3
+        ISUM = 0
+        NS = HDATA(NNP+2+K)
+        NE = HDATA(NNP+3+K)-2
+        IF( NE-NS ) 3,2,2
+    2     DO 20 NH=NS,NE,2
+   20     ISUM = ISUM+HDATA(NNPADC+NH)
+    3   ETOTLG(K) = 0.001*ISUM
+    1   CONTINUE
+C
+  100 RETURN
+      END

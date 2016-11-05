@@ -1,0 +1,81 @@
+Current directory is/home/andriish/Projects/JADE.git/trunk/jadesoft/src/interface
+
+Dependencies:
+-------------
+plot10.F ... cplot10.for
+plot10.F ... cpltcol.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cpltcol.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cpltcol.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cpltcol.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+plot10.F ... cplot10.for
+setcol.F ... cplot10.for
+setcol.F ... cpltcol.for
+igwlcm.F ... cplot10.for
+
+.F files sorted by include-files:
+-- ----- ------ -- --------------
+cplot10.for: plot10.F setcol.F igwlcm.F
+cpltcol.for: plot10.F setcol.F
+
+Library members sorted by include-files:
+------- ------- ------ -- -------------
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libinterface.a( plot10.o setcol.o igwlcm.o ) :\t cplot10.for
+/home/andriish/Projects/JADE.git/trunk/jadesoft/lib/libinterface.a( plot10.o setcol.o ) :\t cpltcol.for

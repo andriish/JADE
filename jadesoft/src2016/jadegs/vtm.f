@@ -1,0 +1,13 @@
+C   26/03/80 003261950  MEMBER NAME  VTM      (JADEGS)      FORTRAN
+       SUBROUTINE VTM(V,A,N,MS)
+C
+C        CHANGE FROM VECTOR TO ARRAY STORAGE
+C
+       DIMENSION V(1),A(N,N)
+       DO 5 I=1,N
+       DO 5 J=1,N
+       CALL LOC(I,J,K,N,N,MS)
+       A(J,I)=V(K)
+    5 CONTINUE
+       RETURN
+       END

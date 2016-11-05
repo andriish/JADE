@@ -1,0 +1,36 @@
+C   24/11/78 C9032101   MEMBER NAME  TERNUM   (JADEGS)      FORTRAN
+      FUNCTION TERNUM(DUMMY)
+      IMPLICIT INTEGER*2 (H)
+      COMMON/CWORK1/HINN(5)
+      integer*1 BLANK,POINT,MINUS,TNN(10)
+      EQUIVALENCE(HINN(1),TNN(1))
+      DATA BLANK/1H /
+      DATA POINT/1H./
+      DATA MINUS/1H-/
+    4 CONTINUE
+      CALL TRMIN(10,HINN)
+      NBP=0
+      NREL=0
+      SIGN=1.
+      A=0.
+      DO 1 I=1,10
+      IF(TNN(I).EQ.BLANK) GO TO 1
+      IF(TNN(I).EQ.MINUS) SIGN=-1.
+      IF(TNN(I).EQ.MINUS) GO TO 1
+      IF(TNN(I).NE.POINT) GO TO 2
+      NREL=1
+      GO TO 1
+    2 IF(TNN(I).LT.240-192) GO TO 3 !PMF 19/11/99: substract 192 ( EBCDIC-> ASCII Code for numbers)
+      IF(TNN(I).GT.249-192) GO TO 3 !PMF 19/11/99: substract 192
+      INTD=TNN(I)-240+192         !PMF 19/11/99: substract 192
+      A=10.*A+INTD
+      NBP=NBP+NREL
+    1 CONTINUE
+      TERNUM=A/(10.**NBP)*SIGN
+      GO TO 5
+    3 CALL TRMOUT(80,'ILLEGAL CHARACTER. TRY AGAIN. STRING WAS:^')
+      CALL TRMOUT(10,HINN)
+      GO TO 4
+    5 CONTINUE
+      RETURN
+      END

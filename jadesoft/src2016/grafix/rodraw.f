@@ -1,0 +1,16 @@
+C   25/04/79 C9042501   MEMBER NAME  RODRAW   (JADEGS)      FORTRAN
+      SUBROUTINE RODRAW(X0,Y0,X10,Y10,X20,Y20,COSN,SISN)
+      IMPLICIT INTEGER*2 (H)
+C---
+C---     DRAWS LINE SEGMENT ROTATED ABOUT FIXED POINT.
+C---                                   L.H. O'NEILL
+C---                                   WEDNESDAY, APRIL 25,1979
+C---
+      X1 = COSN*X10 - SISN*Y10 + X0
+      Y1 = SISN*X10 + COSN*Y10 + Y0
+      X2 = COSN*X20 - SISN*Y20 + X0
+      Y2 = SISN*X20 + COSN*Y20 + Y0
+      CALL MOVEA(X1,Y1)
+      CALL DRAWA(X2,Y2)
+      RETURN
+      END

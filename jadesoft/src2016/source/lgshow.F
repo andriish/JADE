@@ -1,0 +1,165 @@
+C   07/02/79 912060320  MEMBER NAME  LGSHOW   (SOURCE)      FORTRAN
+      SUBROUTINE LGSHOW
+C
+C    S.YAMADA      03-01-79    21:10  COPIED FROM LGSOURCE(LGSHOW)
+C     LAST MODIFICATION   30-05-79  21:15
+C     MODIFIED FOR IBM  09-08-78  10:55
+C
+C---- DISPLAY LEAD-GLASS PULSE HEIGHTS TO LP
+C     PULSE HEIGHT IS INDICATED BY A CHARACTER FROM 0 TO Z.
+C     * STANDS FOR A OVERFLOW,I.E. .GT.12589.
+C
+      IMPLICIT INTEGER *2 (H)
+#include "clgwork1.for"
+      COMMON /CLGDMS/ X0,RADIUS(6),RADSX0(6),THX0(4),
+     1                ZEND(2),ZENDX0(2),ZWID(2),ZGAP(2),PHWID(2)
+C
+C PMF 06/11/98
+C      LOGICAL *1 LAB(37)/'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ*'/
+      LOGICAL *1 LAB(37)/'0','1','2','3','4','5','6','7','8','9'
+     +     ,'A','B','C','D','E','F','G','H','I','J','K','L','M','N'
+     +     ,'O','P','Q','R','S','T','U','V','W','X','Y','Z','*'/
+      LOGICAL *1 LPAT(84,32),LPATEC(96,2)
+      LOGICAL *1 LPOINT(84)/':',20*'.',':',20*'.',':',20*'.',':',20*'.'/
+C
+      REAL RPAT(21,32),POINT(21), RPATEC(48)
+      EQUIVALENCE (RPAT(1,1),LPAT(1,1)), (POINT(1),LPOINT(1))
+      EQUIVALENCE (POINT(2),SPOINT),(RPATEC(1),LPATEC(1,1))
+      INTEGER *2 MARK10(8)/10,20,30,40,50,60,70,80/
+C
+C---- CONVERSION TABLE OF COUNTER POSITION NAME TO SEQUENCE NO.
+      INTEGER *2 HSEQTB(48)/ 53,61,71,70,54,62,72,81,80,55,63,73,
+     1                       82,90,89,56,64,74,84,83,92,91,96,95,
+     2                       69,68,60,52,79,78,67,59,51,88,87,77,
+     3                       66,58,50,94,93,86,85,76,75,65,57,49/
+C
+      COMMON/ CLGVRN/ NVRSN(20)
+      DATA NVCODE/278102016/
+      NVRSN(15) = NVCODE
+C
+      ND = LNG-3
+      IF(ND.LE.0) GO TO 90
+      NER = 0
+C
+C---- CLEAR LPAT
+        DO 400 K=1,32
+          DO 401 KK=1,21
+  401     RPAT(KK,K) = POINT(KK)
+  400   CONTINUE
+C---- ENDCAP PART
+        DO 402 K=1,48
+  402   RPATEC(K) = SPOINT
+C
+C---- FILL ADC DATA INTO LPAT
+        DO 2 K=1,ND
+        IPOS = HLGADC(1,K)
+        MPULH = HLGADC(2,K)
+        IF(MPULH.GT.10) GO TO 4
+        M = (MPULH+1)/2
+        IF(M.LT.1) M = 1
+        GO TO 5
+    4   PULH = MPULH
+        M = ALOG10(PULH)*10.-4.
+    5   IF(M.GT.37) M = 37
+        IF(IPOS.LT.0) GO TO 3
+        IF(IPOS.GE.2688) GO TO 1000
+        IPHI = IPOS/32
+        IZ = IPOS-32*IPHI+1
+        IPHI = IPHI+1
+        LPAT(IPHI,IZ) = LAB(M)
+        GO TO 2
+C
+C----   ENDCAP PART
+ 1000   CONTINUE
+        ITB = 1
+        IPOS = IPOS-2687
+        IF(IPOS.LE.96) GO TO 1001
+        ITB = 2
+        IPOS = IPOS-96
+        IF(IPOS.GT.96) GO TO 3
+ 1001   CONTINUE
+C----   CONVERT IPOS TO ISEQ(COUNTER SEQUENCE NO.TO BE DISPLAYED).
+        IBELOW = 0
+        IF(IPOS.LE.48) GO TO 1002
+        IPOS = IPOS-48
+        IBELOW = 1
+ 1002   ISEQ = HSEQTB(IPOS)
+        IF(IBELOW.GT.0) ISEQ = 97-ISEQ
+        LPATEC(ISEQ,ITB) = LAB(M)
+        GO TO 2
+C-----  ERROR COUNT
+    3   NER = NER+1
+    2   CONTINUE
+C
+      WRITE(6,600) MARK10
+  600 FORMAT('1 PHI-0',8(8X,I2),11X,'MARK   PULSE HEIGHT',
+     1       /'   Z  ',8(1HI,9X),'I    THETA   0  (    1--    2)')
+      ZSTEP = ZWID(1)+ZGAP(1)
+      ZC = ZEND(2)+0.5*ZSTEP
+        DO 10 K=1,32
+        K1 = K+1
+        KR = 33-K
+        K1R = KR-1
+        ZC = ZC-ZSTEP
+        THETA = 57.2958*ATAN2(RADIUS(1),ZC)
+        IF(K.GE.5) GO TO 14
+        K100 = 2*K+2
+        K00 = K100-1
+        GO TO 15
+   14   AK = 0.1*(K+5)
+        K00 = 10.**AK+1.001
+        K100 = 10.**(AK+0.1)
+   15   WRITE(6,601) K1R,(LPAT(KK,KR),KK=1,84),THETA,LAB(K1),K00,K100
+  601   FORMAT(' ',I3,2X,84A1,F6.1,3X,A1,'  (',I5,'--',I5,')')
+   10   CONTINUE
+C
+      K00 = 6310
+      K100 = 7943
+      WRITE(6,608) LAB(34),K00,K100
+  608 FORMAT(' ',98X,A1,'  (',I5,'--',I5,')')
+C
+C---- PRINT ENDCAP PART
+      K00 = 7944
+      K100 = 10000
+      WRITE(6,609) LAB(35),K00,K100
+  609 FORMAT('    ENDCAP     Z<0',29X,'Z>0',49X,A1,'  (',I5,'--',I5,')')
+C
+      K00 = 10001
+      K100 = 12589
+      WRITE(6,610) ((LPATEC(K,J),K=93,96),J=1,2),LAB(36),K00,K100
+  610 FORMAT(' ',14X,4A1,28X,4A1,48X,A1,'  (',I5,'--',I5,')')
+C
+      K00 = 12590
+      WRITE(6,611) ((LPATEC(K,J),K=85,92),J=1,2),LAB(37),K00
+  611 FORMAT(' ',12X,8A1,24X,8A1,46X,A1,'  (',I5,'--     )')
+C
+      WRITE(6,612) ((LPATEC(K,J),K=75,84),J=1,2)
+  612 FORMAT(' ',11X,10A1,22X,10A1)
+      WRITE(6,612) ((LPATEC(K,J),K=65,74),J=1,2)
+        DO 1010 KK=1,4
+        K1 = 65-8*KK
+        K2 = K1+7
+        IF(KK.EQ.3) GO TO 1011
+        WRITE(6,613) ((LPATEC(K,J),K=K1,K2),J=1,2)
+  613   FORMAT(' ',2(10X,4A1,4X,4A1,10X))
+        GO TO 1010
+ 1011   WRITE(6,614) ((LPATEC(K,J),K=K1,K2),J=1,2)
+  614   FORMAT(' ',2(10X,4A1,4X,4A1,' --->X',4X))
+ 1010   CONTINUE
+      WRITE(6,612) ((LPATEC(K,J),K=23,32),J=1,2)
+      WRITE(6,612) ((LPATEC(K,J),K=13,22),J=1,2)
+      WRITE(6,611) ((LPATEC(K,J),K=5,12),J=1,2)
+      WRITE(6,610) ((LPATEC(K,J),K=1,4),J=1,2)
+      WRITE(6,615)
+  615 FORMAT(' ')
+C
+      IF(NER)  900,100,900
+C
+C---- SOME ERROR IN DATA FORMAT
+  900 WRITE(6,690) NER
+  690 FORMAT('0***** NO.OF FORMAT ERROR=',I10,' ****')
+      RETURN
+   90 WRITE(6,691)
+  691 FORMAT('0 (LHSHOW)  LEAD-GLASS ADCS ARE EMPTY.',/)
+  100 RETURN
+      END

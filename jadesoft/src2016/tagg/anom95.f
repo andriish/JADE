@@ -1,0 +1,226 @@
+C   22/10/79 001232336  MEMBER NAME  ANOM95   (S)           FORTRAN
+      SUBROUTINE ANOM95(IRUN)
+C---  ANOMALIES OF RUNS 1920 - 1928
+C---  15.56 GEV      OCTOBER 1979
+C
+C     H.WRIEDT    27.07.79     02:20
+C     LAST MODIFICATION     23.01.80     23:35
+C
+      IMPLICIT INTEGER*2 (H)
+C
+      COMMON /CPHASE/ LIMEVT,KCONST(192),LIMIT(192),LCHANN(192),
+     &                LTHRES(192),LDEAD(192),LSUB(240)
+      LOGICAL LCHANN,LTHRES,LDEAD,LSUB
+C
+C---  LCHANN:  CHANNELS WITH CONSTANT PEDESTALS
+C---  LDEAD:   CHANNELS WHICH MUST BE SET TO 0 (E.G. FOR MISSING BITS
+C              IN THE ADC
+C---  KCONST:  CHANNELS FOR WHICH THE SUBTRACTION CONSTANT MUST BE
+C              HIGHER (-1) OR LOWER (+1) THAN THE PROGRAM WOULD
+C              AUTOMATICALLY CALCULATE
+C---  LIMIT:   GIVES THE LOWER BOUND OF THE SUBTRACTION CONSTANT
+C---  LTHRES:  CHANNELS FOR WHICH THE LOWER CUT BOUND IS SET TO 100
+C              INSTEAD OF 50
+C
+      GOTO (1920,1921,1922,1923,1924,1925,1926,1927,1928),IRUN
+   13 RETURN
+C
+ 1920 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+      LCHANN(181) = .TRUE.
+C
+      KCONST(79) = +1
+      LIMIT(79) = 390
+      KCONST(107) = +1
+      LIMIT(107) = 345
+      KCONST(116) = -1
+      LIMIT(116) = 120
+      KCONST(166) = -1
+      LIMIT(166) = 360
+      KCONST(173) = +1
+      LIMIT(173) = 450
+C
+      LTHRES(7) = .TRUE.
+      LTHRES(49) = .TRUE.
+      LTHRES(67) = .TRUE.
+C
+      RETURN
+C
+C1921 PRELIMINARY
+ 1921 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+      LCHANN(181) = .TRUE.
+C
+      KCONST(79) = +1
+      LIMIT(79) = 390
+      KCONST(107) = +1
+      LIMIT(107) = 345
+      KCONST(166) = -1
+      LIMIT(166) = 360
+      KCONST(173) = +1
+      LIMIT(173) = 450
+C
+      LTHRES(7) = .TRUE.
+      LTHRES(49) = .TRUE.
+      LTHRES(67) = .TRUE.
+C
+      RETURN
+C
+ 1922 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+      LCHANN(181) = .TRUE.
+C
+      KCONST(166) = -1
+      LIMIT(166) = 360
+      KCONST(185) = -1
+      LIMIT(185) = 300
+      KCONST(187) = -1
+      LIMIT(187) = 300
+C
+      LTHRES(7) = .TRUE.
+      LTHRES(35) = .TRUE.
+      LTHRES(49) = .TRUE.
+      LTHRES(67) = .TRUE.
+C
+      RETURN
+C
+C1923 PRELIMINARY
+ 1923 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+      LCHANN(181) = .TRUE.
+C
+      KCONST(116) = -1
+      LIMIT(116) = 120
+      KCONST(162) = -1
+      LIMIT(162) = 75
+      KCONST(166) = -1
+      LIMIT(166) = 375
+      KCONST(168) = -1
+      LIMIT(168) = 120
+      KCONST(190) = -1
+      LIMIT(190) = 135
+C
+      LTHRES(7) = .TRUE.
+      LTHRES(35) = .TRUE.
+      LTHRES(49) = .TRUE.
+      LTHRES(67) = .TRUE.
+C
+      RETURN
+C
+C1924 PRELIMINARY
+ 1924 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+      LCHANN(181) = .TRUE.
+C
+      KCONST(166) = -1
+      LIMIT(166) = 360
+      KCONST(185) = -1
+      LIMIT(185) = 300
+      KCONST(187) = -1
+      LIMIT(187) = 300
+C
+      LTHRES(7) = .TRUE.
+      LTHRES(35) = .TRUE.
+      LTHRES(49) = .TRUE.
+      LTHRES(67) = .TRUE.
+C
+      RETURN
+C
+C1925 PRELIMINARY
+ 1925 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+      LCHANN(181) = .TRUE.
+C
+      KCONST(166) = -1
+      LIMIT(166) = 360
+      KCONST(185) = -1
+      LIMIT(185) = 300
+      KCONST(187) = -1
+      LIMIT(187) = 300
+C
+      LTHRES(7) = .TRUE.
+      LTHRES(35) = .TRUE.
+      LTHRES(49) = .TRUE.
+      LTHRES(67) = .TRUE.
+C
+      RETURN
+C
+C1926 PRELIMINARY
+ 1926 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+      LCHANN(181) = .TRUE.
+C
+      KCONST(116) = -1
+      LIMIT(116) = 120
+      KCONST(166) = -1
+      LIMIT(166) = 375
+      KCONST(168) = -1
+      LIMIT(168) = 120
+      KCONST(178) = -1
+      LIMIT(178) = 135
+      KCONST(184) = -1
+      LIMIT(184) = 120
+      KCONST(185) = -1
+      LIMIT(185) = 315
+      KCONST(190) = -1
+      LIMIT(190) = 135
+C
+      LTHRES(7) = .TRUE.
+      LTHRES(35) = .TRUE.
+      LTHRES(49) = .TRUE.
+      LTHRES(67) = .TRUE.
+C
+      RETURN
+C
+C1927 PRELIMINARY
+ 1927 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+      LCHANN(181) = .TRUE.
+C
+      KCONST(116) = -1
+      LIMIT(116) = 120
+      KCONST(166) = -1
+      LIMIT(166) = 375
+      KCONST(185) = -1
+      LIMIT(185) = 315
+      KCONST(187) = -1
+      LIMIT(187) = 315
+C
+      LTHRES(7) = .TRUE.
+      LTHRES(35) = .TRUE.
+      LTHRES(49) = .TRUE.
+      LTHRES(67) = .TRUE.
+C
+      RETURN
+C
+C1928 PRELIMINARY
+ 1928 LCHANN(79) = .TRUE.
+      LCHANN(107) = .TRUE.
+      LCHANN(173) = .TRUE.
+      LCHANN(181) = .TRUE.
+C
+      KCONST(116) = -1
+      LIMIT(116) = 120
+      KCONST(166) = -1
+      LIMIT(166) = 375
+      KCONST(185) = -1
+      LIMIT(185) = 315
+      KCONST(187) = -1
+      LIMIT(187) = 315
+C
+      LTHRES(7) = .TRUE.
+      LTHRES(35) = .TRUE.
+      LTHRES(49) = .TRUE.
+      LTHRES(67) = .TRUE.
+C
+      RETURN
+C
+      END

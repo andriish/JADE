@@ -1,0 +1,91 @@
+C   13/04/78 C8110801   MEMBER NAME  ENDCLG   (S)           FORTRAN
+      SUBROUTINE ENDCLG(R,NBL,*)
+C  *--------------------------------------------------------
+C  *
+C  *   VERSION OF 10/07/78
+C  *   THIS ROUTINE COMPUTES BLOCK NUMBERS IN THE END CAP
+C  *   R = R(3) THREE DIM VECTOR TO A POINT IN THE LG ARRAYS
+C  *   NBL = BLOCK NUMBER ON RETURN
+C  *   NBL = 0    MEANS NO BLOCK IS HIT
+C  *   IF NBL = 0 RETURN 1 EXIT IS USED
+C  *   NBL RANGES FROM 2689 TO 2880
+C  *   NBL = 2689 TO 2784  FOR R3 LT 0
+C  *   NBL = 2785 TO 2880 FOR R3 GT 0
+C  *--------------------------------------------------------
+C
+      COMMON/CGEO1/BKGAUS, RPIP,DRPIP,XRLPIP, RBPC,DRBPC,XRLBPC,
+     *             RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
+     *             R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
+     *             R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
+     *             RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
+     *             ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
+     *             ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
+     *             ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
+     *             XRJETC,
+     *             RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
+     *             BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
+     *             XHOL1,XHOL2,YHOL1,YHOL2,BLPHI
+*** PMF 15/10/99      DIMENSION R(1)
+      DIMENSION R(*)
+*** PMF (end)
+      INTEGER NB1(5,5)/0,2,6,11,17,3,7,12,18,0,8,13,20,19,0,14,22,21,0,
+     *                 0,23,0,0,0,0/
+      INTEGER NB2(4)  /1,5,10,16/
+      INTEGER NB3(4)  /4,9,15,24/
+      INTEGER MIRROR(24)/28,27,26,25,33,32,31,30,29,39,38,37,36,35,34,
+     *                   48,47,46,45,44,43,42,41,40/
+C
+      NBL=0
+      NBL0 = 2688
+      X=R(1)
+      Y=R(2)
+      Z=R(3)
+      XX=ABS(X)
+      YY=ABS(Y)
+      ZZ=ABS(Z)
+C
+C     CHECK Z COORDINATE (ASSUME + - Z SYMMETRY)
+C
+      IF(ZZ.LT.ZENDPL-5. .OR. ZZ.GT.ZENDPL+DEPEND+5.) RETURN 1
+C
+      IF(YY.LE.YHOL1) GO TO 1
+      IF(XX.LE.XHOL1) GO TO 2
+C
+      NCOL=(XX-XHOL1)/XHOL1+1
+      IF(NCOL.GT.5) GO TO 90
+      NROW=(YY-YHOL1)/YHOL1+1
+      IF(NROW.GT.5) GO TO 90
+      NBL=NB1(NCOL,NROW)
+      IF(NBL.EQ.0) RETURN 1
+      GO TO 3
+C
+    1 NCOL=(XX-XHOL2)/XHOL1+1
+      IF(NCOL.LT.1) GO TO 90
+      IF(NCOL.GT.4) GO TO 90
+      NBL=NB2(NCOL)
+      GO TO 3
+C
+    2 NROW=(YY-YHOL2)/YHOL1+1
+      IF(NROW.LT.1) GO TO 90
+      IF(NROW.GT.4) GO TO 90
+      NBL=NB3(NROW)
+C
+C
+    3 CONTINUE
+      IF(X.GE.0. .AND. Y.GE.0.) GO TO 5
+      IF(X.LT.0. .AND. Y.LT.0.) GO TO 4
+C
+      NBL=MIRROR(NBL)
+      IF(X.LT.0. .AND. Y.GE.0.) GO TO 5
+C
+    4 NBL=NBL+48
+C
+    5 NBL = NBL + NBL0
+C
+      IF(Z.LT.0) RETURN
+      NBL=NBL+96
+      RETURN
+C
+   90 NBL=0
+      RETURN 1
+      END

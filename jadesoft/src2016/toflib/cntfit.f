@@ -1,0 +1,83 @@
+C   30/04/81 311061022  MEMBER NAME  CNTFIT   (S)           FORTRAN
+      SUBROUTINE CNTFIT(IENTRY,I,TM,TP,T)
+C
+      COMMON/EVRUN/NRUN,IEV,ITYP,NEV,IMISS
+      COMMON/MNVAL/STDC(130),STDC2(130),SNTDC(130)
+C
+      DATA IBUG/ 0/
+      DATA TAUR/3.07/,TCUT/50./
+C
+      GOTO  (10,20,30), IENTRY
+   20 CONTINUE
+      IBUG = IBUG + 1
+      IF(IBUG.LE.10) PRINT 305,I,TM,TP,T
+  305 FORMAT(' CNTFIT ',I5,3F12.0)
+      IF(ABS(TM).GT.TCUT)  GOTO  61
+      STDC(2*I-1) = STDC(2*I-1) + TM
+      STDC2(2*I-1) = STDC2(2*I-1) + TM*TM
+      SNTDC(2*I-1) = SNTDC(2*I-1) + 1.
+   61 IF(ABS(TP).GT.TCUT)  GOTO  62
+      STDC(2*I) = STDC(2*I) + TP
+      STDC2(2*I) = STDC2(2*I) + TP*TP
+      SNTDC(2*I) = SNTDC(2*I) + 1.
+      M = 84+I
+   62 IF(ABS(T).GT.TCUT)  GOTO  63
+      STDC(M) = STDC(M) + T
+      STDC2(M) = STDC2(M) + T*T
+      SNTDC(M) = SNTDC(M) + 1.
+   63 IF(ABS(TM).GT.TCUT)  GOTO  64
+      STDC(127) = STDC(127) + TM
+      STDC2(127) = STDC2(127) + TM*TM
+      SNTDC(127) = SNTDC(127) + 1.
+   64 IF(ABS(TP).GT.TCUT)  GOTO  65
+      STDC(128) = STDC(128) + TP
+      STDC2(128) = STDC2(128) + TP*TP
+      SNTDC(128) = SNTDC(128) + 1.
+      M = 129
+   65 IF(ABS(T).GT.TCUT)  RETURN
+      STDC(M) = STDC(M) + T
+      STDC2(M) = STDC2(M) + T*T
+      SNTDC(M) = SNTDC(M) + 1.
+      RETURN
+C
+   30 CONTINUE
+      CALL HBOOK2(60,15HDTM TP        $,100,0.,100.,40,-1.,1.)
+      CALL HBOOK2(70,15HDT            $, 50,0.,100.,40,-1.,1.)
+      CALL HBOOK2(61,15HDTM TP RMS    $,100,0.,100.,40,0.,2.)
+      CALL HBOOK2(71,15HDT     RMS    $, 50,0.,100.,40,0.,2.)
+C
+      DO   1   I=1,130
+      IF(SNTDC(I).LT.1.) GOTO  4
+      STDC(I) = STDC(I)/SNTDC(I)
+      STDC2(I) = SQRT(ABS(STDC(I)*STDC(I)-STDC2(I)/SNTDC(I)))
+      M = I
+      ID = 0
+      IF(I.GT.42) M = I+7
+      IF(I.GT.84) M = I-84
+      IF(I.GT.84) ID = 10
+      CALL HFILL(60+ID,FLOAT(M),STDC(I),1.)
+      CALL HFILL(61+ID,FLOAT(M),STDC2(I),1.)
+      GOTO  1
+    4 STDC(I) = 0.
+      STDC2(I) = 0.
+    1 CONTINUE
+      PRINT 102
+      PRINT 120
+  120 FORMAT('  STDC  '/)
+  101 FORMAT(1X,12F10.2)
+  102 FORMAT(//)
+      PRINT 102
+      PRINT 101,SNTDC
+      PRINT 102
+      PRINT 101,STDC
+      PRINT 102
+      PRINT 101,STDC2
+      PRINT 102
+      PRINT 122
+  122 FORMAT(' NOW WRITING ON 18')
+      WRITE(18) STDC,STDC2
+      RETURN
+   10 CONTINUE
+      CALL SETSL(STDC,0,130*12,0)
+      RETURN
+      END

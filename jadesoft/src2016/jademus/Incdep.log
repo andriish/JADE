@@ -1,0 +1,110 @@
+Current directory is/home/pcl2483/pedro/jadesoft/src/jademus
+
+Dependencies:
+-------------
+muini.F ... cmustat.for
+muini.F ... cmuanp.for
+muini.F ... cmustat.for
+muini.F ... cmuanp.for
+mufini.F ... cmustat.for
+mucon.F ... cmubcs.for
+mucon.F ... cmucalib.for
+mureg.F ... cmucalib.for
+mureg.F ... cmureg.for
+mureg.F ... cmubcs.for
+mureg.F ... cadmin.for
+muanab.F ... cmubcs.for
+muanac.F ... cmubcs.for
+muanac.F ... cmucalib.for
+mucuts.F ... cmubcs.for
+mucuts.F ... cmustat.for
+mucoor.F ... cmucalib.for
+mucoor.F ... cmustat.for
+mucoor.F ... cmubcs.for
+mudump.F ... cmubcs.for
+mufsta.F ... cmucalib.for
+tanthm.F ... cmucalib.for
+muconw.F ... cmubcs.for
+muconw.F ... cmucalib.for
+muconw.F ... cmuedwrk.for
+muconw.F ... cmued.for
+muanaf.F ... cmubcs.for
+muanaf.F ... cmureg.for
+muanaf.F ... cmucalib.for
+muanaf.F ... cmufwork.for
+muanaf.F ... cmustat.for
+muanaf.F ... cmuffl.for
+muffle.F ... cmucalib.for
+muffle.F ... cmuffl.for
+muffle.F ... cmufwork.for
+muffle.F ... cmureg.for
+muffle.F ... cmuffl.for
+muregy.F ... cmtemp.for
+muregy.F ... cmureg.for
+mudchk.F ... cmufwork.for
+mufflb.F ... cmufwork.for
+mufflb.F ... cmuffl.for
+muffls.F ... cmuffl.for
+muffls.F ... cmufwork.for
+mufflr.F ... cmufwork.for
+mufflt.F ... cmuffl.for
+mufflt.F ... cmufwork.for
+mufflt.F ... cmureg.for
+mufflt.F ... cmucalib.for
+mufflz.F ... cmucalib.for
+mufflz.F ... cmuffl.for
+mufflz.F ... cmufwork.for
+mufflz.F ... cmureg.for
+muffly.F ... cmuffl.for
+muffly.F ... cmufwork.for
+muffly.F ... cmureg.for
+muffly.F ... cmucalib.for
+mufflx.F ... cmufwork.for
+muendp.F ... cmuffl.for
+muendp.F ... cmufwork.for
+muendp.F ... cmureg.for
+muendp.F ... cmucalib.for
+mufmat.F ... cmufwork.for
+muloch.F ... cmufwork.for
+muloch.F ... cmureg.for
+muloch.F ... cmucalib.for
+mupic.F ... cmubcs.for
+mupic.F ... cgraph.for
+mupic.F ... cmucalib.for
+xymud.F ... cgraph.for
+muhit.F ... cmubcs.for
+muhits.F ... cmubcs.for
+muhdsp.F ... cgraph.for
+muhdsp.F ... cmubcs.for
+muwire.F ... cmucalib.for
+muons.F ... cmubcs.for
+
+.F files sorted by include-files:
+-- ----- ------ -- --------------
+cadmin.for: mureg.F
+cgraph.for: mupic.F xymud.F muhdsp.F
+cmtemp.for: muregy.F
+cmuanp.for: muini.F
+cmubcs.for: mucon.F mureg.F muanab.F muanac.F mucuts.F mucoor.F mudump.F muconw.F muanaf.F mupic.F muhit.F muhits.F muhdsp.F muons.F
+cmucalib.for: mucon.F mureg.F muanac.F mucoor.F mufsta.F tanthm.F muconw.F muanaf.F muffle.F mufflt.F mufflz.F muffly.F muendp.F muloch.F mupic.F muwire.F
+cmued.for: muconw.F
+cmuedwrk.for: muconw.F
+cmuffl.for: muanaf.F muffle.F mufflb.F muffls.F mufflt.F mufflz.F muffly.F muendp.F
+cmufwork.for: muanaf.F muffle.F mudchk.F mufflb.F muffls.F mufflr.F mufflt.F mufflz.F muffly.F mufflx.F muendp.F mufmat.F muloch.F
+cmureg.for: mureg.F muanaf.F muffle.F muregy.F mufflt.F mufflz.F muffly.F muendp.F muloch.F
+cmustat.for: muini.F mufini.F mucuts.F mucoor.F muanaf.F
+
+Library members sorted by include-files:
+------- ------- ------ -- -------------
+/home/pcl2483/pedro/jadesoft/lib/libjademus.a( mureg.o ) :	 cadmin.for
+/home/pcl2483/pedro/jadesoft/lib/libjademus.a( mupic.o xymud.o muhdsp.o ) :	 cgraph.for
+/home/pcl2483/pedro/jadesoft/lib/libjademus.a( muregy.o ) :	 cmtemp.for
+/home/pcl2483/pedro/jadesoft/lib/libjademus.a( muini.o ) :	 cmuanp.for
+/home/pcl2483/pedro/jadesoft/lib/libjademus.a( mucon.o mureg.o muanab.o muanac.o mucuts.o mucoor.o mudump.o muconw.o muanaf.o mupic.o muhit.o muhits.o muhdsp.o muons.o ) :	 cmubcs.for
+/home/pcl2483/pedro/jadesoft/lib/libjademus.a( mucon.o mureg.o muanac.o mucoor.o mufsta.o tanthm.o muconw.o muanaf.o muffle.o mufflt.o mufflz.o muffly.o muendp.o muloch.o mupic.o muwire.o ) :	 cmucalib.for
+/home/pcl2483/pedro/jadesoft/lib/libjademus.a( muconw.o ) :	 cmued.for
+/home/pcl2483/pedro/jadesoft/lib/libjademus.a( muconw.o ) :	 cmuedwrk.for
+/home/pcl2483/pedro/jadesoft/lib/libjademus.a( muanaf.o muffle.o mufflb.o muffls.o mufflt.o mufflz.o muffly.o muendp.o ) :	 cmuffl.for
+/home/pcl2483/pedro/jadesoft/lib/libjademus.a( muanaf.o muffle.o mudchk.o mufflb.o muffls.o mufflr.o mufflt.o mufflz.o muffly.o mufflx.o muendp.o mufmat.o muloch.o ) :	 cmufwork.for
+/home/pcl2483/pedro/jadesoft/lib/libjademus.a( mureg.o muanaf.o muffle.o muregy.o mufflt.o mufflz.o muffly.o muendp.o muloch.o ) :	 cmureg.for
+/home/pcl2483/pedro/jadesoft/lib/libjademus.a( muini.o mufini.o mucuts.o mucoor.o muanaf.o ) :	 cmustat.for

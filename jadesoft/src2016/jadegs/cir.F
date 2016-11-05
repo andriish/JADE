@@ -1,0 +1,193 @@
+C   02/07/79 403132255  MEMBER NAME  CIRDIS   (JADEGS)      FORTRAN
+C
+C-----------------------------------------------------------------------
+      SUBROUTINE CIRDIS(NN,CURV,RMIN,PHM,XB,YB,XE,YE,A,B,ITYP,XCE,YCE)
+C-----------------------------------------------------------------------
+C
+C        DRAWS A CIRCLE SEGMENT FROM XB,YB TO XE,YE OF THE CIRCLE WITH
+C        PARAMETERS CURV,RMIN,PHM.    NN IS THE SEGMENTATION OF THE
+C        POLYGON APPROXIMATION.
+C        XCE,YCE IS THE POINT TO WHICH CLOSEST APPROACH IS FOUND
+C        THE CIRCLE IS "PROJECTED" ACCORDING TO THE Z-COORDINATE, TO
+C        AGREE WITH THE PERSPECTIVE "CYLINDER" VIEW.
+C        THE Z-COORDINATE IS GOTTEN FROM THE R-Z FIT:  Z = A + B*R
+C                        OR FROM THE Z-FI(HELIX) FIT:  Z = A + B*FI
+C        J.OLSSON         01.03.79         LAST CHANGE 10.02.84
+C        IF DSPDTL(19) = TRUE, TRACKS ARE PROLONGED TO CLOSEST APPROACH
+C                              TO ORIGIN.
+C        IF DSPDTL(23) = TRUE, TRACKS ARE PROLONGED TO TOF OR LEAD GLASS
+C                              RADIUS LIMIT.
+C
+C-----------------------------------------------------------------------
+C
+      IMPLICIT INTEGER*2 (H)
+#include "cgraph.for"
+#include "cgeo1.for"
+      COMMON /CJTRIG/ PI,TWOPI
+      COMMON/CWORK2/HWORK(40),JNDEX,NTR,LTR,ITR,IPO,ICNT,NBK,NCLST,NWPCL
+      DATA ZDEEP /5800./
+C     MUMAX,MUMAYP,MUMAYN / 3320.,3320.,-3020./
+C
+C-----------------------------------------------------------------------
+C
+      IF(ABS(CURV).GT.1.E-08) GO TO 500
+      CALL TRMOUT(44,'CURVATURE ZERO ENCOUNTERED IN CIRCLE DISPLAY')
+      RETURN
+500   RAD = ABS(1./CURV)
+      YC = RAD + RMIN
+      XC = YC*COS(PHM)
+      YC = YC*SIN(PHM)
+      RTS = RLG
+      ZZPL = ZLGPL
+      ZZMI = ZLGMI
+      IF(LASTVW.EQ.1) RTS = RTOF
+      IF(LASTVW.EQ.79) RTS = .33*(XMAX-XMIN)
+      IF(LASTVW.EQ.79) ZZPL = RTS
+      IF(LASTVW.EQ.79) ZZMI = RTS
+C--
+C     FI1 = PHM - PI
+      PHMIT = ATAN2(YC-YCE,XC-XCE)
+      FI1 = PHMIT - PI
+      IF(.NOT.DSPDTL(19).AND.LSTCMD.NE.61) FI1 = ATAN2(YB-YC,XB-XC)
+      FI2 = ATAN2(YE-YC,XE-XC)
+      IF(FI1.LT.-PI) FI1= FI1 + TWOPI
+      IF(ITYP.EQ.1) GO TO 455
+      FISTRT = ATAN2(YB-YC,XB-XC)
+      IF(FISTRT.LT.0.) FISTRT = FISTRT + TWOPI
+      FIHEL1 = PHM + PI
+      IF(FIHEL1.GT.TWOPI) FIHEL1 = FIHEL1 - TWOPI
+      FISTRT = ABS(FISTRT - FIHEL1)
+455   FIB = FI1
+      ARC = ARCMIN(FI2-FI1)
+      IF(ARC*CURV.GT.0.) ARC = SIGN(TWOPI-ABS(ARC),-ARC)
+      DEFI = ARC/NN
+      IF(LASTVW.GT.78.AND.LASTVW.LT.82) DEFI = DEFI * .01
+      XP = - XC - RAD*COS(FI1)
+      YP = YC + RAD*SIN(FI1)
+      RP = SQRT(XP*XP + YP*YP)
+      IF(ITYP.EQ.1) GO TO 233
+      FIHEL = FI1
+      IF(FIHEL.LT.0.) FIHEL = FIHEL + TWOPI
+      FIHEL = ABS(FIHEL - FIHEL1) - FISTRT
+      ZP = B*FIHEL + A
+      ZDEL = B*ABS(DEFI)
+      GO TO 235
+233   ZP = A + B*RP
+235   IF(LASTVW.NE.14) GO TO 499
+      FP = (ZDEEP - ZP)/(ZDEEP + ZLGPL)
+      XP = FP*XP
+      YP = FP*YP
+499   CALL MOVEA(XP,YP)
+      DO 501  I = 1,NN
+        FI1 = FI1 + DEFI
+        XP = - XC - RAD*COS(FI1)
+        YP =   YC + RAD*SIN(FI1)
+        RP = SQRT(XP*XP + YP*YP)
+        IF(ITYP.EQ.1) GO TO 236
+C       FIHEL = FI1
+C       IF(FIHEL.LT.0.) FIHEL = FIHEL + TWOPI
+C       FIHEL = ABS(FIHEL - FIHEL1) - FISTRT
+C       ZP = B*FIHEL + A
+        ZP = ZP + ZDEL
+        GO TO 237
+236     ZP = A + B*RP
+237     IF(LASTVW.NE.14) GO TO 507
+        FP = (ZDEEP - ZP)/(ZDEEP + ZLGPL)
+        XP = FP*XP
+        YP = FP*YP
+507     IF(RP.GT.RTS) GO TO 508
+        CALL DRAWA(XP,YP)
+C
+C                            IF 2 POINTS FROM END OF CURVE, WRITE
+C                            TRACK NUMBER (N.B. -VE X IS JADE COORD.)
+C
+        IF( I .NE. NN - 2 ) GO TO 501
+          CALL TRNUMB(ITR,0,-XP,YP,ZP)
+          CALL MOVEA(XP,YP)
+501   CONTINUE
+508   IF(.NOT.DSPDTL(23))  RETURN
+C---------- SECTION FOR EXTENSION TO TOF OR PBG LIMIT
+      IFLGX = 0
+      NNN = 0
+      R2 = RP
+      Z2 = ZP
+551   FI1 = FI1 + DEFI
+      NNN = NNN + 1
+      IF(NNN.GT.200.OR.ABS(ARCMIN(FI1-PHM)).LT.ABS(DEFI)) RETURN
+C     IF(NNN.GT.200.OR.(ABS(FI1-FIB).LT.TWOPI+2.*DEFI.AND.ABS(FI1-FIB)
+C    $.GT.TWOPI-2.*DEFI)) RETURN
+555   XP = - XC - RAD*COS(FI1)
+      YP =   YC + RAD*SIN(FI1)
+      RP = SQRT(XP*XP + YP*YP)
+      IF(RP.LT.RITNK) RETURN
+      IF(ITYP.EQ.1) GO TO 238
+C     FIHEL = FI1
+C     IF(FIHEL.LT.0.) FIHEL = FIHEL + TWOPI
+C     FIHEL = ABS(FIHEL - FIHEL1) - FISTRT
+C     ZP = B*FIHEL + A
+      ZP = ZP + ZDEL
+      GO TO 239
+238   ZP = A + B*RP
+239   IF(IFLGX.NE.0) GO TO 553
+CHECK LIMITS
+      IF(ABS(ZP).LT.ZZPL) GO TO 554
+      IFLGX = 1
+      FAT = ABS((ABS(ZP) - ZLGPL)/(ZP - Z2))
+552   FI1 = FI1 - FAT*DEFI
+      IF(ITYP.EQ.2) ZDEL = -FAT*ZDEL
+      GO TO 555
+554   IF(RP.LT.RTS) GO TO 553
+      IFLGX = 2
+      FAT = (RP-RTS)/(RP-R2)
+      GO TO 552
+553   IF(LASTVW.NE.14) GO TO 557
+      FP = (ZDEEP - ZP)/(ZDEEP + ZLGPL)
+      XP = FP*XP
+      YP = FP*YP
+557   R2 = RP
+      Z2 = ZP
+      CALL DRAWA(XP,YP)
+      IF(IFLGX.EQ.0) GO TO 551
+      IF(IFLGX.EQ.1) CALL PLYGON(6,10.,XP,YP,0)
+C** EXTEND TO MUFILTER
+      RETURN
+C     IF(LASTVW.NE.3) RETURN
+C     CALL MOVEA(XP,YP)
+C     XP = - XP
+C     ALF = ATAN2(XC-XP,YP-YC)
+C     IF(CURV.LT.0.) ALF = ALF + PI
+C     IF(ALF.GT.PI) ALF = ALF - TWOPI
+C     TGA = TAN(ALF)
+C- STRAIGHT LINE :     Y = YP + TGA*(X - XP)
+C     XP1 = MUMAX
+C     IF(ABS(ALF).GT.PI*.5) XP1 = - MUMAX
+C     YP1 = YP + TGA*(XP1 - XP)
+C     IF(YP1.LT.MUMAYP.AND.YP1.GT.MUMAYN) GO TO 661
+C     YP1 = MUMAYP
+C     IF(ALF.LT.0.) YP1 = MUMAYN
+C     XP1 = (YP1 - YP + TGA*XP)/TGA
+C661   CALL DRAWA(-XP1,YP1)
+C      RETURN
+      END
+C*****************************
+      FUNCTION ARCMIN(A)
+C
+C THIS IS A ROUTINE USED IN PLUTO PATREC. IT FINDS THE SHORTEST ARC
+C     BETWEEN TWO ANGLES.
+C
+      COMMON/CJTRIG/ PI,TWOPI
+C
+      ARCMIN=A
+      IF (ABS(A).LE.PI) GOTO 2
+      ARCMIN=AMOD (A+5.*PI,TWOPI)-PI
+    2 RETURN
+      END
+      DOUBLE PRECISION FUNCTION DRCMIN(AA)
+      COMMON/CJTRIG/ PI,ZWEIPI
+      REAL*8 AA
+      DRCMIN=AA
+      IF (DABS(AA).LE.PI) GOTO 3
+      ARGUM = AA + 2.*ZWEIPI + PI
+      DRCMIN=AMOD (ARGUM,ZWEIPI)-PI
+    3 RETURN
+      END

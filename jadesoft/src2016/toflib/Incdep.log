@@ -1,0 +1,48 @@
+Current directory is/home/pcl2483/pedro/jadesoft/src/toflib
+
+Dependencies:
+-------------
+tofint.F ... ddata.for
+tofint.F ... chead.for
+tofint.F ... ddata.for
+tofint.F ... chead.for
+tofmas.F ... tcalcm1.for
+tofmas.F ... tfprm.for
+tofmas.F ... ddata.for
+tofmas.F ... tfadc.for
+tofmas.F ... chead.for
+tfctd1.F ... ddata.for
+tofard.F ... ddata.for
+tofard.F ... tfprm.for
+tofard.F ... tfadc.for
+rd0880.F ... tfprm.for
+rd0880.F ... tfadc.for
+tofin2.F ... ddata.for
+tfarnw.F ... tfprm.for
+tfarnw.F ... tfadc.for
+tofsmp.F ... tfprm.for
+tofsmp.F ... tfadc.for
+tofsmp.F ... chead.for
+tofsm3.F ... tfprm.for
+tofsm3.F ... tfadc.for
+tofar2.F ... ddata.for
+atofun.F ... chead.for
+atofun.F ... ddata.for
+tofclc.F ... tfprm.for
+mocard.F ... ddata.for
+
+.F files sorted by include-files:
+-- ----- ------ -- --------------
+chead.for: tofint.F tofmas.F tofsmp.F atofun.F
+ddata.for: tofint.F tofmas.F tfctd1.F tofard.F tofin2.F tofar2.F atofun.F mocard.F
+tcalcm1.for: tofmas.F
+tfadc.for: tofmas.F tofard.F rd0880.F tfarnw.F tofsmp.F tofsm3.F
+tfprm.for: tofmas.F tofard.F rd0880.F tfarnw.F tofsmp.F tofsm3.F tofclc.F
+
+Library members sorted by include-files:
+------- ------- ------ -- -------------
+/home/pcl2483/pedro/jadesoft/lib/libtoflib.a( tofint.o tofmas.o tofsmp.o atofun.o ) :	 chead.for
+/home/pcl2483/pedro/jadesoft/lib/libtoflib.a( tofint.o tofmas.o tfctd1.o tofard.o tofin2.o tofar2.o atofun.o mocard.o ) :	 ddata.for
+/home/pcl2483/pedro/jadesoft/lib/libtoflib.a( tofmas.o ) :	 tcalcm1.for
+/home/pcl2483/pedro/jadesoft/lib/libtoflib.a( tofmas.o tofard.o rd0880.o tfarnw.o tofsmp.o tofsm3.o ) :	 tfadc.for
+/home/pcl2483/pedro/jadesoft/lib/libtoflib.a( tofmas.o tofard.o rd0880.o tfarnw.o tofsmp.o tofsm3.o tofclc.o ) :	 tfprm.for
