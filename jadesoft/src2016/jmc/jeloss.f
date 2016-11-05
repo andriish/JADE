@@ -51,7 +51,7 @@ C
       BETA = P(6) / P(4)
       BETA2 = AMIN1( BETA * BETA, .9409 )
       DE = 2.*D*ZARO/BETA2* ( ALOG( 1.022E6/POT * BETA2/ (1.- BETA2 ) )
-     *                                  - BETA2 ) * STRAC
+     +                                  - BETA2 ) * STRAC
 C
 C
 C                                           DETERMINE TYPE OF LOSS

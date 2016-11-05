@@ -183,10 +183,10 @@ C                            NOTE THAT TIMDEL IS ALWAYS OVERWRITTEN
       DATA TIMDEL / 6*0.005 /
 C
       DATA ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL
-     *            / 1180., -10., 1., 1000., 2687., 10. /
+     +            / 1180., -10., 1., 1000., 2687., 10. /
       DATA DRIDEV /-0.349066 /,
-     *     DRICOS / 0.939693 /,
-     *     DRISIN /-0.342020 /
+     +     DRICOS / 0.939693 /,
+     +     DRISIN /-0.342020 /
 C                           PEDES IS UNUSED
       DATA PEDES  / 50.  /
       DATA TZERO  / 3*0. /
@@ -201,18 +201,18 @@ C
 C- - - - - - - - -   CJIONI  - - - - - - - - - - - - - - - - - - - - - -
 C
       COMMON / CJIONI / POTBEA, ZAROBE,
-     *                  POTTRI, ZAROTR,
-     *                  POTIVE, ZAROIV,
-     *                  POTRH0, ZAROR0,
-     *                  POTJET, ZAROJE,
-     *                  POTRH1, ZAROR1,
-     *                  POTRH2, ZAROR2,
-     *                  POTRH3, ZAROR3,
-     *                  POTOVE, ZAROOV,
-     *                  POTTOF, ZAROTO,
-     *                  POTVES, ZARVES,
-     *                  POTZJL, ZAROJL,
-     *                  POTZJR, ZAROJR
+     +                  POTTRI, ZAROTR,
+     +                  POTIVE, ZAROIV,
+     +                  POTRH0, ZAROR0,
+     +                  POTJET, ZAROJE,
+     +                  POTRH1, ZAROR1,
+     +                  POTRH2, ZAROR2,
+     +                  POTRH3, ZAROR3,
+     +                  POTOVE, ZAROOV,
+     +                  POTTOF, ZAROTO,
+     +                  POTVES, ZARVES,
+     +                  POTZJL, ZAROJL,
+     +                  POTZJR, ZAROJR
 C
 C                            GIVES  AVERAGE  IONISATION  POTENTIAL  AND
 C                            VALUE FOR Z*RHO/A FOR BETHE BLOCH  FORMULA
@@ -505,7 +505,7 @@ C
 C- - - - - - - - -   CIJONV  - - - - - - - - - - - - - - - - - - - - - -
 C
       COMMON / CIJONV / POTVXC, ZAROVC,
-     *                  POTVGA, ZAROVG
+     +                  POTVGA, ZAROVG
 C
 C                            GIVES AVERAGE IONISATION POTENTIAL
 C                            AND VALUE FOR Z*RHO/A IN
@@ -649,16 +649,16 @@ C  FOLLOWING LINE CHANGED 20/5/88  J.H./ E.E.
 CCCC  DATA AZSRS0 / 4., 4., 13. /, AZSRSA / 4480., 7000., 10000. /
       DATA AZSRS0 / 10., 10., 13. /, AZSRSA / 4480., 7000., 10000. /
       DATA AZSCT1 / 140., 140., 225. /,
-     *     AZSCT2 / 100., 100., 150. /,
-     *     AZSCT3 / 100., 100., 150. /,
-     *     AZSCT4 / 100., 100., 180. /,
-     *     AZSSHT /12.3, .183, .011 , .365, .106,
-     *             7.5, .045, .0015, .200, .055 ,
-     *             7.5, .045, .0015, .200, .055 /,
-     *     AZSSHD / 3., 3., 2. /,
-     *     AZSSAV / 19., 19., 32. /,
+     +     AZSCT2 / 100., 100., 150. /,
+     +     AZSCT3 / 100., 100., 150. /,
+     +     AZSCT4 / 100., 100., 180. /,
+     +     AZSSHT /12.3, .183, .011 , .365, .106,
+     +             7.5, .045, .0015, .200, .055 ,
+     +             7.5, .045, .0015, .200, .055 /,
+     +     AZSSHD / 3., 3., 2. /,
+     +     AZSSAV / 19., 19., 32. /,
 CCCC *     AZSSAV / 13., 17., 32. /,  CHANGED 20/5/88  J.H./E.E.
-     *     LZSPDF / .FALSE. /
+     +     LZSPDF / .FALSE. /
 C
 C- - - - - - - - -   CZGEO, CZCAL, CZMKON   - - - - - - - - - - - - - -
 C

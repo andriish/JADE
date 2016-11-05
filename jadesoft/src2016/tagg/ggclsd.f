@@ -14,10 +14,10 @@ C
       IMPLICIT INTEGER*2 (H)
 C
       COMMON /CWORK/ IWORK1(500),
-     *               ID,HTRACK(3),HCLST,HCLBEC(2),HNCLST,HCOL,HTYPE,HER,
-     *               HCORR,HPBLAT,HDUMIN(2),HSCAL(36),HWORD(2),ACOLAN,
-     *               ETOT(3),ENTOT(3),IWORK3(16),HCLMAP(2,51),
-     *               CLSPRP(13,51)
+     +               ID,HTRACK(3),HCLST,HCLBEC(2),HNCLST,HCOL,HTYPE,HER,
+     +               HCORR,HPBLAT,HDUMIN(2),HSCAL(36),HWORD(2),ACOLAN,
+     +               ETOT(3),ENTOT(3),IWORK3(16),HCLMAP(2,51),
+     +               CLSPRP(13,51)
 C***  COMMON /CGGCLS/ NCLST,NCLBEC(2),HCLMAP(2,51),CLSPRP(10,51),ACOLAN,
 C*** *                LCOLIN
       DIMENSION HCLSPR(26,51)
@@ -61,7 +61,7 @@ C
         GOTO 1
   2     WRITE(6,605) N,LNG,HCLSPR(2,N)
   605   FORMAT(' ',I2,2I5,5X,'*****   WHOLE CLUSTER CONSISTS OF ILLEGAL'
-     *             ,' COMPONENT NUMBERS   *****')
+     +             ,' COMPONENT NUMBERS   *****')
     1   CONTINUE
       ACORAD = 1.E+3*ACOLAN
       WRITE(6,604) ACORAD

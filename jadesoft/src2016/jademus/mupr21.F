@@ -54,17 +54,17 @@ C
       ICH=INT(CHARGE)
       IF (I.EQ.1) WRITE (6,610)
   610 FORMAT('0 MUR2/1    MUON INFO FOR I.D. TRACKS'/
-     *    '                     MUHIT      CHI2   ENERGY #ABS-  PI-MU',
-     *    '   PI     K-MU   MUON    PION     FAKE-PROB-(GOOD-MU)',
-     *    ' FAKE-PROB-(ANY-MU) '/
-     *    '    TR# CHG MOMENTM MSNLAH QUAL PROBAB   LOSS LENGTH  PROB',
-     *    '  SNEAK   PROB   PROB    PROB      PI    K    P   -P ',
-     *    '  PI    K    P   -P ')
+     +    '                     MUHIT      CHI2   ENERGY #ABS-  PI-MU',
+     +    '   PI     K-MU   MUON    PION     FAKE-PROB-(GOOD-MU)',
+     +    ' FAKE-PROB-(ANY-MU) '/
+     +    '    TR# CHG MOMENTM MSNLAH QUAL PROBAB   LOSS LENGTH  PROB',
+     +    '  SNEAK   PROB   PROB    PROB      PI    K    P   -P ',
+     +    '  PI    K    P   -P ')
       WRITE(6,620)IDATA(J+1),ICH,P,IDATA(J+4),IDATA(J+6),ADATA(J+11),
-     *        ADATA(J+14),ADATA(J+15),ADATA(J+21),ADATA(J+22),
-     *        (ADATA(J+II),II=24,26),(ADATA(J+JJ),JJ=30,37)
+     +        ADATA(J+14),ADATA(J+15),ADATA(J+21),ADATA(J+22),
+     +        (ADATA(J+II),II=24,26),(ADATA(J+JJ),JJ=30,37)
   620 FORMAT(' ',I5,I4,F9.2,I7,I5,F7.4,F7.3,F6.3,F7.3,F7.4,
-     *        F7.3,F8.3,F8.4,3X,8F5.2)
+     +        F7.3,F8.3,F8.4,3X,8F5.2)
       J=J+NMUW
       J2=2*J
       IPT=IPT+NWTRK

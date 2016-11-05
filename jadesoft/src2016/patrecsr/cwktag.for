@@ -4,10 +4,10 @@ C------------ C O M M O N    C W O R K   F O R   T A G A N -------------
 C
 C
        COMMON/CWORK/MARK,IFLMRK,IMC,NCLST,NNEI,
-     *              ISTMZ,ISTPZ,IENDMZ,IENDPZ,
-     *              SIGX,SIGY,SIGEN,
-     *              CAND(3),CLUS(9,2),CMAP(10,9),
-     *              SADC(32,2),CATAG(192)
+     +              ISTMZ,ISTPZ,IENDMZ,IENDPZ,
+     +              SIGX,SIGY,SIGEN,
+     +              CAND(3),CLUS(9,2),CMAP(10,9),
+     +              SADC(32,2),CATAG(192)
 C
 C
 C CWORK - WORKSPACE USED ONLY ONCE PER EVENT FOR INTERNAL PROCESSING

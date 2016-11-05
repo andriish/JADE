@@ -18,9 +18,9 @@ C
       EQUIVALENCE (ID,HID(1))
 C
       COMMON /CWORK/ IWORK1(42),LNG,HPOINT(4),HGGADC(2,192),IWORK2(263),
-     *               HINF(54),RINF(7),IWORK3(16),GCLMAP(51),
-     *               CLSPRP(13,51),IWORK4(16),GLUMON(10),IWORK5(10),
-     *               TRACK(10,51)
+     +               HINF(54),RINF(7),IWORK3(16),GCLMAP(51),
+     +               CLSPRP(13,51),IWORK4(16),GLUMON(10),IWORK5(10),
+     +               TRACK(10,51)
 C
       DIMENSION GGADC(195)
       EQUIVALENCE (GGADC(4),HGGADC(1,1))

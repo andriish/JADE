@@ -496,7 +496,7 @@
           Y0 = 1000000.
           DY = Y2 - Y1
           IF(ABS(DY).GT..01)
-     *       Y0 = ((X2-X1)*(X2+X1)/DY + Y2+Y1)*.5
+     +       Y0 = ((X2-X1)*(X2+X1)/DY + Y2+Y1)*.5
           T  = Y0 - YC
           R0 = ABS(T)
           CHARGE = SIGN(1.,T)

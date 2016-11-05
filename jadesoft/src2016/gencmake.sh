@@ -20,6 +20,6 @@ fi
 done
 
 echo ")" >> CMakeLists.txt
-echo 'ADD_LIBRARY(${'$LB'LIB} STATIC ${'$LB'_src})'>> CMakeLists.txt
+echo 'ADD_LIBRARY(${'$LB'LIB} '$dir' ${'$LB'_src})'>> CMakeLists.txt
 cd ..
 done

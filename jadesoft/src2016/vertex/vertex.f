@@ -81,13 +81,13 @@ C*       THIS ROUTINE CALLS SUBROUTINE SMINVD FOR SOLVING THE       *
 C*       MATRIX EQUATION                                            *
 C********************************************************************
       COMMON /CWORK1/ NT,T(1500),NV,V(200),A(55),B(10),NTIND(7),S(7),
-     *                CHITR(7)
+     +                CHITR(7)
       DIMENSION IT(2),IV(2)
       EQUIVALENCE (T(1),IT(1)),(V(1),IV(1))
       REAL*8 A,B,DET
 C        CONSTANTS
       COMMON /CVTXC/ XB,YB,ZB,RTANK,DTANK,X0INN,SIGX0,SIGZ0,PNTMIN,
-     *               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR
+     +               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR
 C
       IF(NV.LE.0 .OR. NV.GT.20) RETURN
       LV = (NV-1)*10
@@ -127,7 +127,7 @@ C        CHECK IF COLLINEAR 2-PRONG
       J1 = NTIND(1)
       J2 = NTIND(2)
       COSW = T(J1+24)*T(J2+24) * (T(J1+21)*T(J2+21)+T(J1+22)*T(J2+22))
-     *     + SIN(T(J1+4))*SIN(T(J2+4))
+     +     + SIN(T(J1+4))*SIN(T(J2+4))
       COSW = ABS(COSW)
       IF(COSW.GT.COLL2) GOTO 50
 C****

@@ -33,7 +33,7 @@ C
 C
       WRITE(6,600)
   600 FORMAT('0 MUR2/2    ASSOCIATED I.D. TRACKS FOR EACH HIT'/
-     *       '    HIT#   1ST 2ND 3RD 4TH TRACK#')
+     +       '    HIT#   1ST 2ND 3RD 4TH TRACK#')
 C
 C  LOOP ROUND HITS.
       NP1=1

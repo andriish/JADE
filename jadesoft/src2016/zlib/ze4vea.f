@@ -46,7 +46,7 @@ C                                      NO CANDIDATE
               ihelp= HW((NPZE4V+NREL)*2+8)
               IF( MOD( ihelp, 100 ) .EQ. 2 )
 *** PMF(end)
-     *          HW((NPZE4V+NREL)*2+8) = HW((NPZE4V+NREL)*2+8)/100*100
+     +          HW((NPZE4V+NREL)*2+8) = HW((NPZE4V+NREL)*2+8)/100*100
             ENDIF
             CALL EAFLST( JCAND, RW(NPZE4V+NREL+3) )
           ENDIF

@@ -57,7 +57,7 @@ C----------------------------------------------------------------------+
       EQUIVALENCE (IW(1),RW(1)),(IW(1),HW(1))
       COMMON /MAXCLS/EIG1,EIG2,EIGSUM,EIGDIV,MAXHIT,ECMAX,MAXCL
       COMMON /EIGAB/CSD(2),CSA(2),CSB(2),
-     *        EIGA1,EIGA2,EIGB1,EIGB2,ENEA,ENEB,NA,NB,DNOR
+     +        EIGA1,EIGA2,EIGB1,EIGB2,ENEA,ENEB,NA,NB,DNOR
       DIMENSION EAB(2,3),COSD(2),COSA(2),COSB(2)
 #include "clgwork1.for"
 C-----------------------------------------------------------------------

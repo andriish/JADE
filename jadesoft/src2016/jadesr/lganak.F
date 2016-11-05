@@ -19,7 +19,7 @@ C
 C------------------------------- ADDED BY S.K. --- 07-11-79 ------------
       COMMON /MAXCLS/EIG1,EIG2,EIGSUM,EIGDIV,MAXHIT,ECMAX,MAXCL
       COMMON /EIGAB/COSD(2),COSA(2),COSB(2),
-     *          EIGA1,EIGA2,EIGB1,EIGB2,ENEA,ENEB,NHITA,NHITB,DNORM
+     +          EIGA1,EIGA2,EIGB1,EIGB2,ENEA,ENEB,NHITA,NHITB,DNORM
 C     COMMON /CLVEC/V11,V12,V21,V22
 C-----------------------------------------------------------------------
 C---- NCLST = NO.OF THE LOCATED CLUSTERS.

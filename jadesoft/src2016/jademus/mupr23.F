@@ -38,7 +38,7 @@ C
 C
       WRITE(6,600)
   600 FORMAT('0 MUR2/3    MUON HIT AMBIGUITY FLAG FOR EACH ENTRY IN',
-     *       ' MUR2/2'/'    HIT#   1ST 2ND 3RD 4TH TRACK')
+     +       ' MUR2/2'/'    HIT#   1ST 2ND 3RD 4TH TRACK')
 C
 C  LOOP ROUND HITS.
       NP1=1

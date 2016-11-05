@@ -24,35 +24,35 @@ C
       DIMENSION X(3), P(7)
 C
       COMMON / CJIONI / POTBEA, ZAROBE,
-     *                  POTTRI, ZAROTR,
-     *                  POTIVE, ZAROIV,
-     *                  POTRH0, ZAROR0,
-     *                  POTJET, ZAROJE,
-     *                  POTRH1, ZAROR1,
-     *                  POTRH2, ZAROR2,
-     *                  POTRH3, ZAROR3,
-     *                  POTOVE, ZAROOV,
-     *                  POTTOF, ZAROTO,
-     *                  POTVES, ZARVES,
-     *                  POTZJL, ZAROJL,
-     *                  POTZJR, ZAROJR
+     +                  POTTRI, ZAROTR,
+     +                  POTIVE, ZAROIV,
+     +                  POTRH0, ZAROR0,
+     +                  POTJET, ZAROJE,
+     +                  POTRH1, ZAROR1,
+     +                  POTRH2, ZAROR2,
+     +                  POTRH3, ZAROR3,
+     +                  POTOVE, ZAROOV,
+     +                  POTTOF, ZAROTO,
+     +                  POTVES, ZARVES,
+     +                  POTZJL, ZAROJL,
+     +                  POTZJR, ZAROJR
       COMMON/CGEO1/BKGAUS, RPIP,DRPIP,XRLPIP, RBPC,DRBPC,XRLBPC,
-     *             RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
-     *             R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
-     *             R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
-     *             RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
-     *             ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
-     *             ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
-     *             ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
-     *             XRJETC,
-     *             RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
-     *             BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     *             XHOL1,XHOL2,YHOL1,YHOL2
+     +             RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
+     +             R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
+     +             R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
+     +             RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
+     +             ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
+     +             ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
+     +             ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
+     +             XRJETC,
+     +             RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
+     +             BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
+     +             XHOL1,XHOL2,YHOL1,YHOL2
 C
       COMMON / CJXDAT / XSLOPE, YSLOPE, XL(3), XH(3), R3P, RD3P,
-     *                  S, S2,
-     *                  XSL3L, X3L, XSL3H, X3H, YSL3L, Y3L, YSL3H,
-     *                  YHWIDT, SINHLF, COSHLF, DRITAN
+     +                  S, S2,
+     +                  XSL3L, X3L, XSL3H, X3H, YSL3L, Y3L, YSL3H,
+     +                  YHWIDT, SINHLF, COSHLF, DRITAN
 C
       DATA EPSIL0, EPSIL1 / 1.E-3 , 5.E-3 /
 C
@@ -83,8 +83,8 @@ C
                           RETURN 1
   130 IF( ABS(X(2)) .GE. YHWIDT - EPSIL1 ) GO TO 30
             CALL JTRAPZ( 3, X, P, XL(3), R3P, ZJM, ZJP,
-     *                   POTRH3, ZAROR3, DR3ROH/XR3ROH, IRETRN,
-     *                   CA, SA )
+     +                   POTRH3, ZAROR3, DR3ROH/XR3ROH, IRETRN,
+     +                   CA, SA )
                  IF( IRETRN .EQ. 5 ) RETURN
                  RETURN 1
 C

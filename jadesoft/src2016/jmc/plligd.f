@@ -72,8 +72,8 @@ C
 C
 CCC   WRITE(6,600) XR1,YR1,ZR1,XR2,YR2,ZR2
   600 FORMAT(1H ,'**** AFTER COORDINATE TRANSFORMATION ****'/
-     *       1H ,'XR1,YR1,ZR1 = ',3E15.7/
-     *       1H ,'XR2,YR2,ZR2 = ',3E15.7)
+     +       1H ,'XR1,YR1,ZR1 = ',3E15.7/
+     +       1H ,'XR2,YR2,ZR2 = ',3E15.7)
 C
       A=ZR2-ZR1
       B=XR1-XR2
@@ -83,7 +83,7 @@ C
 C
 CCC   WRITE(6,680) A,B,C,D
   680 FORMAT(1H ,'A,B,C = ',3E15.7/
-     *       1H ,'D     = ',E15.7)
+     +       1H ,'D     = ',E15.7)
 C
       IF(D.LE.0.) RETURN
 C
@@ -97,11 +97,11 @@ C
 C
 CCC   WRITE(6,620) XCRS1,YCRS1,ZCRS1,XCRS2,YCRS2,ZCRS2
   620 FORMAT(1H ,'**** SOLUTION !!! ****'/
-     *       1H ,'XCRS1,YCRS1,ZCRS1 = ',3E15.7/
-     *       1H ,'XCRS2,YCRS2,ZCRS2 = ',3E15.7)
+     +       1H ,'XCRS1,YCRS1,ZCRS1 = ',3E15.7/
+     +       1H ,'XCRS2,YCRS2,ZCRS2 = ',3E15.7)
 C
       IF((YCRS1.LT.0. .AND. YCRS2.LT.0.) .OR.
-     *   (YCRS1.GT.ALLIGD .AND. YCRS2.GT.ALLIGD)) RETURN
+     +   (YCRS1.GT.ALLIGD .AND. YCRS2.GT.ALLIGD)) RETURN
 C
       IF(YCRS1.LE.YCRS2) GO TO 100
       XTMP=XCRS1

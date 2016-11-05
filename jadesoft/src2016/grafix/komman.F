@@ -124,7 +124,7 @@ C
       IF( LSTCMD .NE. 112 .OR. .NOT.LCARET ) GO TO 23
           WRITE(6,22)
   22      FORMAT(' Command WRIT will not be repeated if only CR was ente
-     *red!')
+     +red!')
           GO TO 10
   23  IF( LSTCMD .GT. 0 ) GO TO 30
 C

@@ -21,7 +21,7 @@ C    *                YSTART,ZSTART,PSTART,TRKL(2,50),TRITER,EBITER,
 C    *                PMAG,NNEW,NENEW,NLIST(40),ENEW,ICHARG(40,20),
 C    +                NBLO,MEICL(50),NEICL(50)
       COMMON /LISE/   IBLCSE,NBSK,NBSE,XSI,YSI,ZSI,XSF,YSF,ZSF,XSTAST,
-     *                YSTAST,ZSTAST,PSTAST,TRSE(3,50),TRISE
+     +                YSTAST,ZSTAST,PSTAST,TRSE(3,50),TRISE
       DIMENSION IRSE(3,50)
       EQUIVALENCE(IRSE(1,1),TRSE(1,1))
       DIMENSION ALIST(3,50),BLIST(3,50),TSURF(3,12)
@@ -32,7 +32,7 @@ C    +                NBLO,MEICL(50),NEICL(50)
       DATA PI/3.14159/, TWOPI/6.283185/
       DATA SIGX,SIGY,SIGZ,SIGP /160.,160.,160.,.08/
       DATA POS1,POS2 /5*0.,5*1.,5*-1.,5*2.,5*-2.,0.,-2.,-1.,1.,2.,0.,
-     *-2.,-1.,1.,2.,0.,-2.,-1.,1.,2.,0.,-2.,-1.,1.,2.,0.,-2.,-1.,1.,2./
+     +-2.,-1.,1.,2.,0.,-2.,-1.,1.,2.,0.,-2.,-1.,1.,2.,0.,-2.,-1.,1.,2./
 C
       DATA ICALL/0/
       IF(ICALL.NE.0) GO TO 9999

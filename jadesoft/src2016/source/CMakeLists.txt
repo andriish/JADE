@@ -51,4 +51,4 @@ ${SRCSOURCE}/thcofa.F
 ${SRCSOURCE}/thcorr.F
 ${SRCSOURCE}/tpcnst.F
 )
-ADD_LIBRARY(${SOURCELIB} STATIC ${SOURCE_src})
+ADD_LIBRARY(${SOURCELIB} source ${SOURCE_src})

@@ -12,9 +12,9 @@ C
       EQUIVALENCE (HCLSPR(1,1),CLSPRP(1,1))
 C
       COMMON /CGGDMS/ X0,ZECAP(4),ZECAPX(4),THECPX(2),
-     *                ECXLST(46),ECYLST(46),
-     *                XANL(8),XANU(8),YANL(8),YANU(8),
-     *                XBNL(8),XBNU(8),YBNL(8),YBNU(8)
+     +                ECXLST(46),ECYLST(46),
+     +                XANL(8),XANU(8),YANL(8),YANU(8),
+     +                XBNL(8),XBNU(8),YBNL(8),YBNU(8)
 C
       DIMENSION XA(3),XB(3)
 C
@@ -59,7 +59,7 @@ C---  WHICH COUNTER HAS BEEN HIT?
         DO 20 II = 1,4
         I = II + IDIR
         IF (XR.GT.XANL(I).AND.XR.LT.XANU(I).AND.YR.GT.YANL(I).AND.YR
-     *      .LT.YANU(I)) K = I
+     +      .LT.YANU(I)) K = I
         IF (K.GT.0) GOTO 21
    20   CONTINUE
       GOTO 25
@@ -74,7 +74,7 @@ C---  WHICH COUNTER HAS BEEN HIT?
         DO 30 II = 1,4
         I = II + IDIR
         IF (XR.GT.XBNL(I).AND.XR.LT.XBNU(I).AND.YR.GT.YBNL(I).AND.YR
-     *      .LT.YBNU(I)) K = I
+     +      .LT.YBNU(I)) K = I
         IF (K.GT.0) GOTO 31
    30   CONTINUE
       RETURN

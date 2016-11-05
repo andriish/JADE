@@ -8,4 +8,4 @@ ${SRCVERTEX}/vtxpnt.f
 ${SRCVERTEX}/vtxpre.F
 ${SRCVERTEX}/vtxsrc.f
 )
-ADD_LIBRARY(${VERTEXLIB} STATIC ${VERTEX_src})
+ADD_LIBRARY(${VERTEXLIB} vertex ${VERTEX_src})

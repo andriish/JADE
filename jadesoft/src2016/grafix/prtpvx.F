@@ -32,7 +32,7 @@ C
       YS = YS - DEL
       CALL CORE(HWORK,108)
       WRITE(cHWORK,2) (ADATA(LIM2+1+I),I=1,7),IDATA(LIM2+9), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     *                 ADATA(LIM2+10)
+     +                 ADATA(LIM2+10)
     2 FORMAT(' ',3E12.4,2X,3E12.4,2X,E12.4,I4,3X,E12.4)
       CALL SYSSYM(XS,YS,SIZE,HWORK,108,0.)
       YS = YS - DEL

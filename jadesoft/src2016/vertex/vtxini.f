@@ -7,9 +7,9 @@ C*                                                                 *
 C*       TO BE CALLED ONCE AND BEFORE FIRST CALL TO VTXPRE, VERTEX *
 C*******************************************************************
       COMMON /CVTXC/ XB,YB,ZB,RTANK,DTANK,X0INN,SIGX0,SIGZ0,PNTMIN,
-     *               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
-     *               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
-     *               EEXYMX,PHEMAX,SIG1,SIG2,SIG3,CSECV
+     +               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
+     +               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
+     +               EEXYMX,PHEMAX,SIG1,SIG2,SIG3,CSECV
 C
 C        MEAN VERTEX COORDINATES
       XB = 0.

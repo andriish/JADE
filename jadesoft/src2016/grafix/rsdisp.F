@@ -128,7 +128,7 @@ C                           **************************
       VERVAL = -100.0
       IF( LTR .GT. 62 ) VERVAL = ABS(ADATA(IPO+51))
       IF(TBIT(ICD,19) .AND. LTR.EQ.64 .AND. VERVAL.GT.0.01)
-     *                  ICD = IBITON(ICD,15)
+     +                  ICD = IBITON(ICD,15)
       IF( TBIT(ICD,15) .AND. LTR .GE. 64 ) IRC = IDATA(IPO + 62)
       PARAM1 = ADATA(IPO+20)
       PARAM2 = ADATA(IPO+21)
@@ -140,8 +140,8 @@ C                           **************************
       PTOT = ABS(AH03/(CRV*CST))
       IF( FLVCDO(9) .AND. PTOT.LT.PTOTCT ) GOTO 200
       IF( FLVCDO(9) .AND. PTOTCT.LT.0.0 .AND.
-     *    ((TBIT(ICD,15) .AND. IRC.NE.0 ).OR.
-     *     .NOT.TBIT(ICD,15)) ) GOTO 200
+     +    ((TBIT(ICD,15) .AND. IRC.NE.0 ).OR.
+     +     .NOT.TBIT(ICD,15)) ) GOTO 200
 C** DISPLAY TRACKS
       call setcol('TRCK') ! PMF 23/11/99: set colour
       ITYPLI = IDATA(IPO+29)

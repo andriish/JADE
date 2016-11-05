@@ -2,7 +2,7 @@ C   01/11/84            MEMBER NAME  HITDSP   (S)           FORTRAN
 C
 C-----------------------------------------------------------------------
       SUBROUTINE HITDSP(IKTRAR,LISTLB,MIRROR,LBSYM,TRHIT,TLHT,JNDEX,
-     *                  REMEMB,REMB1,IQQ)
+     +                  REMEMB,REMB1,IQQ)
 C-----------------------------------------------------------------------
 C
 C    AUTHOR:   J. OLSSON     10/10/79 :  HIT DISPLAY IN EDITING PROGRAM

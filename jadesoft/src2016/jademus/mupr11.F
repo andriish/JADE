@@ -63,9 +63,9 @@ C  FIND MUR1/1 * MUR1/2.
       IF (I.EQ.1) WRITE(6,100)
       WRITE(6,101)I,ICHAM,IHIT,ITD,ITL,IZ,IY,IX,JZ,JY,JX,IFOUR
   100 FORMAT('0 MUR1/1    MUON COORDINATES'/
-     * ' ',19X,'       ....VALIDITY OF....       NORMAL COOR 1.HIT'/
-     * '    HIT# CHAMBER HIT       TIME LONG   Z  Y  X         Z  Y ',
-     * ' X    LOST')
+     + ' ',19X,'       ....VALIDITY OF....       NORMAL COOR 1.HIT'/
+     + '    HIT# CHAMBER HIT       TIME LONG   Z  Y  X         Z  Y ',
+     + ' X    LOST')
   101 FORMAT(' ',I5,I9,'  /',I2,5X,I6,I4,2X,3I3,7X,3I3,I8)
    10 CONTINUE
       RETURN

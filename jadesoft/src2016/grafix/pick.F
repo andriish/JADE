@@ -31,7 +31,7 @@ C
       IF( LASTVW.LT.4 .OR. LASTVW.EQ.17 .OR. LASTVW.EQ.20 ) GO TO 900
 C
          IF( (LASTVW .GT. 3 .AND. LASTVW .LT. 8) .OR. LASTVW .EQ. 18 )
-     *      GO TO 800
+     +      GO TO 800
 C
             WRITE(6,9700) XGET, YGET
  9700       FORMAT(' Z : ',F10.3,'  Y : ',F10.3)

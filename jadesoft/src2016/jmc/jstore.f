@@ -31,8 +31,8 @@ C
    20             IF( I .LT. 1 ) GO TO 50
                     IM = I + M*4
                      IF( HSTORE(IM).GT.HSTORE(I).OR.
-     *                  (HSTORE(IM).EQ.HSTORE(I).AND.
-     *                    HSTORE(IM+3).GE.HSTORE(I+3)) ) GO TO 50
+     +                  (HSTORE(IM).EQ.HSTORE(I).AND.
+     +                    HSTORE(IM+3).GE.HSTORE(I+3)) ) GO TO 50
                                 ISH = ( I - 1 )*2
                                 IMSH =( IM - 1 )*2
                                 CALL MVC( HWV, 0, HSTORE, ISH, 8 )

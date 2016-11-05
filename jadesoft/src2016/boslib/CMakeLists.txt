@@ -66,4 +66,4 @@ ${SRCBOSLIB}/uwp.for
 ${SRCBOSLIB}/vall.for
 ${SRCBOSLIB}/vecsub.f
 )
-ADD_LIBRARY(${BOSLIBLIB} STATIC ${BOSLIB_src})
+ADD_LIBRARY(${BOSLIBLIB} boslib ${BOSLIB_src})

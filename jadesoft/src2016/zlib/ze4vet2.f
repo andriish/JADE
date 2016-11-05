@@ -23,15 +23,15 @@ C
 C
 C
       INTEGER ILIST(21)/68,  71, 100, 248, 254, 332, 360, 366, 449, 456,
-     *                 548, 555, 569, 576, 615, 740, 744, 871, 906, 908,
-     *                 946 /, ICUR / 1 /
+     +                 548, 555, 569, 576, 615, 740, 744, 871, 906, 908,
+     +                 946 /, ICUR / 1 /
 C
       COMMON / BCS / IW(1)
       DIMENSION HW(1),RW(1)
       EQUIVALENCE (HW(1),IW(1),RW(1))
       COMMON /LINK/   IBLCHK,IREG,NBLK,NBLE,XI,YI,ZI,XF,YF,ZF,XSTART,
-     *                YSTART,ZSTART,PSTART,TRKL(2,50),TRITER,EBITER,
-     *                PMAG,NNEW,NENEW,NLIST(40),ENEW,ICHARG(40,20),
+     +                YSTART,ZSTART,PSTART,TRKL(2,50),TRITER,EBITER,
+     +                PMAG,NNEW,NENEW,NLIST(40),ENEW,ICHARG(40,20),
      +                NBLO,MEICL(50),NEICL(50),EBIT1,NBN1,EBLO1,NBL1
       DIMENSION IRKL(2,50)
       EQUIVALENCE(IRKL(1,1),TRKL(1,1))
@@ -101,7 +101,7 @@ C                         CUTS BASED ON ZE4V
           IF( NDEDX .GT. 0 ) THEN
             IF( IDVERS .EQ. 1 ) THEN
               LDEDX = DEDX.LT.10.-DLOCUT*SDEDX.OR.
-     *              DEDX.GT.10.+DHICUT*SDEDX
+     +              DEDX.GT.10.+DHICUT*SDEDX
             ELSEIF( IDVERS .EQ. 2 ) THEN
               LDEDX = DEDX.LT.DFLCUT.OR.DEDX.GT.DFHCUT
             ELSE
@@ -129,7 +129,7 @@ C
             IF( ESHM .GT. 0 ) THEN
               SHADFR = AMAX1(0.011, ENEW/EBITER )
               IF( LOG10(SHADFR).GT.ESHCUT )
-     *                                 JCAND = LOR(JCAND,iSHFTL(ONE,11))
+     +                                 JCAND = LOR(JCAND,iSHFTL(ONE,11))
               JCAND = LAND( ICUT, JCAND )
               IF( JCAND .EQ. 0 .AND. LEVEL2.NE.0 ) THEN
                 CALL EAUNIN( JTRK )
@@ -154,17 +154,17 @@ C
                 NPPATR = IW(IPPATR)
                 IF( JCAND.EQ.0 .AND. LEVEL3.NE.0 ) THEN
                   IF( NPPATR.GT.0 .AND.
-     *                0.LT.JTRK .AND. JTRK.LE.IW(NPPATR+2) ) THEN
+     +                0.LT.JTRK .AND. JTRK.LE.IW(NPPATR+2) ) THEN
                     J = NPPATR + IW(NPPATR+1) + IW(NPPATR+3)*(JTRK-1)
                     CALL CRDOCA( J, RW(NPZE4V+32), PACT, RDOCA, CHARGE )
                     PTRANS = SQRT( PACT(1)**2+PACT(2)**2)
                     ZVER = RVTX(3)
                     ICLUR = 0
                     CALL CHIEN5( JTRK, PTRANS, ESHM, ZVER, CHARGE,
-     *                           CHI2N, PCHI2, ICLUR )
+     +                           CHI2N, PCHI2, ICLUR )
                     IF( ICLUR.GT.0 ) THEN
                       IF( 2 .LE. ICHCUT )
-     *                                 JCAND = LOR(JCAND,iSHFTL(ONE, 2))
+     +                                 JCAND = LOR(JCAND,iSHFTL(ONE, 2))
                     ELSEIF( PCHI2.LT.PCHCUT ) THEN
 
                                        JCAND = LOR(JCAND,iSHFTL(ONE,10))
@@ -192,6 +192,6 @@ C
       ELSEIF( NUMEVT .GT. ILIST(ICUR)) THEN
         ICUR = ICUR + 1
       IF ( NUMEVT .EQ. ILIST(ICUR) )
-     *         WRITE(6,9001) NUMEVT,JCAND,JCAND,ESHM
+     +         WRITE(6,9001) NUMEVT,JCAND,JCAND,ESHM
       ENDIF
       END

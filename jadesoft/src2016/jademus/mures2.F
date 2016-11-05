@@ -14,7 +14,7 @@ C
       IMPLICIT INTEGER*2 (H)
 #include "cmubcs.for"
       COMMON /CMUIEV/IEV,NEV,IRD,KRUN,KREC,
-     *ISECS,IMINS,IHOURS,IDAY,IMONTH,IYEAR
+     +ISECS,IMINS,IHOURS,IDAY,IMONTH,IYEAR
 C PICK UP HEADER POINTER.
       IPHEAD=IDATA(IBLN('HEAD'))
 C PICK UP RUN NUMBER ,RECORD NUMBER ETC
@@ -30,10 +30,10 @@ C
 C  WRITE EVENT HEADER.
 C
       WRITE(6,1000)KRUN,KREC,IEV,IHOURS,IMINS,
-     *ISECS,IDAY,IMONTH,IYEAR
+     +ISECS,IDAY,IMONTH,IYEAR
  1000 FORMAT('0**********',2X,'RUN',I6,2X,'RECORD',I6,
-     *2X,'EVENT (FILE)',I6,2X,'TIME =',I3,':',I2,':',I2,
-     *2X,'DATE =',I3,':',I2,':',I4)
+     +2X,'EVENT (FILE)',I6,2X,'TIME =',I3,':',I2,':',I2,
+     +2X,'DATE =',I3,':',I2,':',I4)
 C
 C LOOK THROUGH ARGUMENTS AND PRINT OUT REQUESTED BANKS.
 C
@@ -59,16 +59,16 @@ C
 C--------OUTPUT BANK 1 . FIRST , WRITE HEADER.
       WRITE(6,1099)
  1099 FORMAT('0 1        38       4     6     11      14 ',
-     *'   15    21      22     24     25      26     30   31  ',
-     *' 32   33   34   35   36   37')
+     +'   15    21      22     24     25      26     30   31  ',
+     +' 32   33   34   35   36   37')
       WRITE(6,1101)
  1101 FORMAT(' TRK CH MOMENTUM HIT INF QUAL CHPRMU  ELOSS',
-     *2X,'NABS  PIDK   PISNK   KDK   MUPROB   PIPROB FPI   FK   ',
-     *'FP  FAP  FPI2 FK2  FP2  FAP2')
+     +2X,'NABS  PIDK   PISNK   KDK   MUPROB   PIPROB FPI   FK   ',
+     +'FP  FAP  FPI2 FK2  FP2  FAP2')
       WRITE(6,1102)
  1102 FORMAT(' --- -- -------- ------- ---- ------  -----',
-     *2X,'----  ----- ------  ------ ------  ------- ---- ---- -',
-     *'--- ---- ---- ---- ---- ----')
+     +2X,'----  ----- ------  ------ ------  ------- ---- ---- -',
+     +'--- ---- ---- ---- ---- ----')
       CALL MUPR21
       GO TO 110
    12 CONTINUE

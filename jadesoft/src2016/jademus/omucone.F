@@ -43,8 +43,8 @@ C
 C
       DIMENSION AQ(20)
       DATA AQ/'OVAL','DIST','ANG ','CLLO','CLHI','CTLO','CTHI',
-     * 'D1  ','CTW ','VDR ','DTP ','LTP ','LSF ','MCST',
-     * 'BLLO','BLHI','BTLO','BTHI','BNLM','ACTW'/
+     + 'D1  ','CTW ','VDR ','DTP ','LTP ','LSF ','MCST',
+     + 'BLLO','BLHI','BTLO','BTHI','BNLM','ACTW'/
       DATA NQ/20/
 C
 C-----------------------------------------------------------------------
@@ -57,26 +57,26 @@ C
       IF(IPRINT.LT.10)GO TO 1
       WRITE(6,100)NQ,(AQ(I),I=1,NQ)
  100  FORMAT('1MUCONE CALLED TO EDIT MU CALIBRATION DATA.'/
-     * '0THE FOLLOWING DATA CAN BE CHANGED BY SPECIFYING IN COLUMNS 1-4.
-     *'/
-     *'0',20A5/(20A5))
+     + '0THE FOLLOWING DATA CAN BE CHANGED BY SPECIFYING IN COLUMNS 1-4.
+     +'/
+     +'0',20A5/(20A5))
       WRITE(6,101)
  101  FORMAT('0FIRST GIVE NEW VERSION NUMBER AND DESCRIPTION (TERMINATED
-     * WITH ''^'') IN FORMAT(I5,5X,15A4).'/
-     *'0THE CHANGES ARE SPECIFIED BY...'/
-     *' WHICH,I1,I2,I3,INEW IN FORMAT(A4,1X,3I5,I10).  E.G.'/
-     *' DIST     5    7          -2378 SPECIFIES THAT THE NORMAL DISTANC
-     *E TO FRAMES 5-7 IS TO BE CHANGED TO -2378.'/
-     *'0DEFAULTS ARE AS FOLLOWS...'/
-     *'   I1   I2   I3   IFRCH1 IFRCH2 IHIT1 IHIT2'/
-     *'    L    M    0       L      M     1     4'/
-     *'    L    M    N       L      M     N     N'/
-     *'    L    0            L      L'/
-     *'    0                 1    ALL'/
-     *' WHERE IFRCH1,IFRCH2 ARE THE FIRST AND LAST FRAME (OR CHAMBER, OR
-     * FACE) NUMBERS,'/
-     *' AND IHIT1,IHIT2 ARE THE FIRST AND LAST HIT (OR BLOCK BOUNDARY) N
-     *UMBERS WHENEVER AND/OR WHICHEVER IS RELEVENT.')
+     + WITH ''^'') IN FORMAT(I5,5X,15A4).'/
+     +'0THE CHANGES ARE SPECIFIED BY...'/
+     +' WHICH,I1,I2,I3,INEW IN FORMAT(A4,1X,3I5,I10).  E.G.'/
+     +' DIST     5    7          -2378 SPECIFIES THAT THE NORMAL DISTANC
+     +E TO FRAMES 5-7 IS TO BE CHANGED TO -2378.'/
+     +'0DEFAULTS ARE AS FOLLOWS...'/
+     +'   I1   I2   I3   IFRCH1 IFRCH2 IHIT1 IHIT2'/
+     +'    L    M    0       L      M     1     4'/
+     +'    L    M    N       L      M     N     N'/
+     +'    L    0            L      L'/
+     +'    0                 1    ALL'/
+     +' WHERE IFRCH1,IFRCH2 ARE THE FIRST AND LAST FRAME (OR CHAMBER, OR
+     + FACE) NUMBERS,'/
+     +' AND IHIT1,IHIT2 ARE THE FIRST AND LAST HIT (OR BLOCK BOUNDARY) N
+     +UMBERS WHENEVER AND/OR WHICHEVER IS RELEVENT.')
  1    CONTINUE
 C
 C-----------------------------------------------------------------------
@@ -101,7 +101,7 @@ C
 C PRINT HEADING.
       IF(IPRINT.GE.2)WRITE(6,103)
  103  FORMAT('0NAME      I1     I2     I3 IFRCH1 IFRCH2  IHIT1  IHIT2
-     *   INEW')
+     +   INEW')
 C
 C-----------------------------------------------------------------------
 C
@@ -159,7 +159,7 @@ C SET NUMBER OF HITS IN CASE REQUIRED.
 C
  13   CONTINUE
       IF(IPRINT.GE.2)WRITE(6,104)WHICH,I1,I2,I3,IFRCH1,IFRCH2,
-     * IHIT1,IHIT2,INEW,CMNT
+     + IHIT1,IHIT2,INEW,CMNT
  104  FORMAT(1X,A4,1X,7I7,I10,10A4)
 C
 C-----------------------------------------------------------------------
@@ -167,7 +167,7 @@ C
 C EXECUTE EDITS.
  14   CONTINUE
       GO TO (1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,
-     * 1011,1012,1013,1014,1015,1016,1017,1018,1019,1020),I
+     + 1011,1012,1013,1014,1015,1016,1017,1018,1019,1020),I
  1000 CONTINUE
       CALL MUMESS('MUCONE',I,'EDIT NOT IMPLEMENTED.^')
       GO TO 4
@@ -395,7 +395,7 @@ C
  99   CONTINUE
 C     FIX UP CTLO AND CTHI.
       CALL MUMESS('MUCONE',0,'CTLO AND CTHI FORCED TO BE 150 MM FROM WIR
-     *E OF EDGE CHAMBERS.^')
+     +E OF EDGE CHAMBERS.^')
       DO 199 J=1,NFRAMS
         I1=HAC(J)
         I2=HAL(J)

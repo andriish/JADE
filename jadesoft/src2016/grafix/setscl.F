@@ -34,7 +34,7 @@ C
       IF( INDEX .LT. 1  .OR.  INDEX .GT. 20 ) GO TO 1
 C
         IF( INDEX.NE.17 .OR. HEAD(18).LE.100
-     *                  .OR. .NOT. FLVCDO(11) ) GO TO 5
+     +                  .OR. .NOT. FLVCDO(11) ) GO TO 5
           CALL VTXCRV( INT(HEAD(18)), XRV, YRV, DXR, DYR ) ! PMF 08/11/99: add run argument HEAD(18)
           XMIN = -XRV + XMINST( INDEX )
           XMAX = -XRV + XMAXST( INDEX )

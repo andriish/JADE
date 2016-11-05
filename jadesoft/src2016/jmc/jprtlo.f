@@ -2,7 +2,7 @@ C   11/09/78 606101230  MEMBER NAME  JPRTLO9  (S)           FORTRAN
 C
 C-----------------------------------------------------------------------
       SUBROUTINE JPRTLO( R, P, PENETR, PENETZ, RLOW, BARHIG,
-     *                   ZLOW, ZHIGH, DRMAX, *, *, *, * )
+     +                   ZLOW, ZHIGH, DRMAX, *, *, *, * )
 C-----------------------------------------------------------------------
 C
 C   AUTHOR:   E. ELSEN     02/10/78 :  PROPAGATES PARTICLE IN NON
@@ -27,17 +27,17 @@ C
       COMMON / CJTRLE / TOTLEN, STPLEN
 C
       COMMON / CJCELL / NCELL(3),
-     *                  NWIRES(3)
+     +                  NWIRES(3)
       COMMON / CJDRCH / RDEC(4),
-     *                  PSIIN(3),
-     *                  RINCR(3),
-     *                  FIRSTW(3),
-     *                  FSENSW(3),
-     *                  RDEPTH,
-     *                  SWDEPL,
-     *                  YSUSPN,
-     *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
-     *                  DRIDEV,DRICOS,DRISIN
+     +                  PSIIN(3),
+     +                  RINCR(3),
+     +                  FIRSTW(3),
+     +                  FSENSW(3),
+     +                  RDEPTH,
+     +                  SWDEPL,
+     +                  YSUSPN,
+     +                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
+     +                  DRIDEV,DRICOS,DRISIN
 C
       DIMENSION R(5), P(7)
 C

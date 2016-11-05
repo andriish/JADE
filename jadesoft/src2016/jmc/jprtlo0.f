@@ -1,6 +1,6 @@
 C   11/09/78 C8100201   MEMBER NAME  JPRTLO0  (CS7)         FORTRAN
       SUBROUTINE JPRTLO( R, P, PENETR, PENETZ, RLOW, BARHIG,
-     *                   ZLOW, ZHIGH, *, *, *, * )
+     +                   ZLOW, ZHIGH, *, *, *, * )
 C  *--------------------------------------------------------
 C  *
 C  *  VERSION OF 02/10/78
@@ -20,17 +20,17 @@ C
       COMMON / CJTRLE / TOTLEN, STPLEN
 C
       COMMON / CJCELL / NCELL(3),
-     *                  NWIRES(3)
+     +                  NWIRES(3)
       COMMON / CJDRCH / RDEC(4),
-     *                  PSIIN(3),
-     *                  RINCR(3),
-     *                  FIRSTW(3),
-     *                  FSENSW(3),
-     *                  RDEPTH,
-     *                  SWDEPL,
-     *                  YSUSPN,
-     *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
-     *                  DRIDEV,DRICOS,DRISIN
+     +                  PSIIN(3),
+     +                  RINCR(3),
+     +                  FIRSTW(3),
+     +                  FSENSW(3),
+     +                  RDEPTH,
+     +                  SWDEPL,
+     +                  YSUSPN,
+     +                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
+     +                  DRIDEV,DRICOS,DRISIN
 C
       DATA TWOPI / 6.283185 /
 C

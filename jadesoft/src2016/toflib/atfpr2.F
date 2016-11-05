@@ -18,11 +18,11 @@ C
   305 FORMAT(' HON',42I3)
       DO   1   I=1,42
       IF(I.LE.16.AND.
-     *   HON(I).LE.0.AND.HFON(I).LE.0.AND.HON1(I).LE.0)  GOTO  1
+     +   HON(I).LE.0.AND.HFON(I).LE.0.AND.HON1(I).LE.0)  GOTO  1
       IF(I.GT.16.AND.
-     *   HON(I).LE.0.AND.HON1(I).LE.0)  GOTO  1
+     +   HON(I).LE.0.AND.HON1(I).LE.0)  GOTO  1
       PRINT301,I,HADC(1,I),HADC(2,I),HTDC(1,I),HTDC(2,I),HTDC1(1,I),
-     *           HTDC1(2,I)
+     +           HTDC1(2,I)
   301 FORMAT(I5,6I6)
       IF(I.GT.16)  GOTO  1
       IF(HFON(I).LE.0)  GOTO 1

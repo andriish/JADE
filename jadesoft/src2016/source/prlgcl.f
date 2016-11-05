@@ -98,7 +98,7 @@ C
         PHI = ATAN2( ADATA(KB+10),ADATA(KB+9))*57.2958
 C
     1   WRITE(6,602) N,NCNT,IDATA(K1),(ADATA(K),K=K2,K7),IDATA(K8),
-     *               THE,PHI, (ADATA(K),K=K9,K16)
+     +               THE,PHI, (ADATA(K),K=K9,K16)
   602   FORMAT(' ',3I2,F7.3,F6.3,4F8.2,I4,2F6.1,3F7.4,3(1PE8.1),
      1    2(0PF7.3))
         KB = KB+LSTEP

@@ -12,9 +12,9 @@ C************************************************************
       EQUIVALENCE (T(1),IT(1)),(V(1),IV(1))
 C        CONSTANTS
       COMMON /CVTXC/ XB,YB,ZB,RTANK,DTANK,X0INN,SIGX0,SIGZ0,PNTMIN,
-     *               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
-     *               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
-     *               EEXYMX
+     +               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
+     +               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
+     +               EEXYMX
 C
       IF(NT.LE.1) GOTO 100
 C****
@@ -68,7 +68,7 @@ C        DISTANCE IN TANK
       SDPHI = ABS(DPHI)/SQRT(T(J1+8)**2+T(J2+8)**2+PTANK2)
       IF(SDPHI.GT.EEDRMX) GOTO 5
       SDXY = ABS(DXY) / SQRT(1./(1./DXT12+1./DYT12)+
-     *                       1./(1./DXT22+1./DYT22)+STANK2)
+     +                       1./(1./DXT22+1./DYT22)+STANK2)
       IF(SDXY.GT.EEDRMX .AND. (DXY.LT.0..OR.DXY.GT.EEXYMN)) GOTO 5
       ITANK = 1
       GOTO 6
@@ -79,7 +79,7 @@ C        DISTANCE AT BEAM PIPE
       IF(SDPHI.GT.EEDRMX) GOTO 6
       DXY = DXY - DPHIT*DTANK/2.
       SDXY = ABS(DXY) / SQRT(1./(1./DXT12+1./DYT12) +
-     *             1./(1./DXT22+1./DYT22) + STANK2)
+     +             1./(1./DXT22+1./DYT22) + STANK2)
       IF(SDXY.GT.EEDRMX .AND. (DXY.LT.0..OR.DXY.GT.EEXYMN)) GOTO 6
       ITANK = 1
 C        VERTEX WHERE TRACKS ARE PARALLEL
@@ -105,7 +105,7 @@ C        DISTANCE IN CHAMBER
       SDZ = DZ / SQRT(DZT12+DZT22)
       IF(SDZ.GT.EEDTMX) GOTO 8
       SDXY = ABS(DXY)/SQRT(1./(1./DXT12+1./DYT12)+1./(1./DXT22+
-     *       1./DYT22))
+     +       1./DYT22))
       IF(SDXY.GT.EEDRMX .AND. (DXY.LT.0..OR.DXY.GT.EEXYMN)) GOTO 8
 C
     7 IF(NV.EQ.20) GOTO 14
@@ -139,7 +139,7 @@ C****    CLEAN UP
       LV2 = I*10
       DO 16 K=M,NV
       IF(IV(LV1+9).EQ.IV(LV2+9) .OR. IV(LV1+10).EQ.IV(LV2+9) .OR.
-     *   IV(LV1+10).EQ.IV(LV2+10)) GOTO 17
+     +   IV(LV1+10).EQ.IV(LV2+10)) GOTO 17
    16 LV2 = LV2 + 10
       GOTO 19
 C        TWO PAIRS WITH SAME TRACK, TAKE PAIR WITH SMALLER DISTANCE

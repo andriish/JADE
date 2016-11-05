@@ -162,7 +162,7 @@ C
 C------------------  C O D E  ------------------------------------------
 C
  2900 FORMAT(' FIRST CALL TO KLREAD, EVENT DATE: ',6I5,
-     *             ' TZERO:',3F6.2)
+     +             ' TZERO:',3F6.2)
  2901 FORMAT('0KLREAD WARNING : NO "SPINNING" BLOCK DATA, RECALIBR. OF L
      ,EADGLASS NOT POSSIBLE')
  2902 FORMAT(' KLREAD ERROR: EVENT TIME =',I12,'FOR EVENT',2I6)

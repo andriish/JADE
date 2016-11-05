@@ -85,4 +85,4 @@ ${SRCJMC}/trlgsh.F
 ${SRCJMC}/wegas.f
 ${SRCJMC}/wrtmcb.f
 )
-ADD_LIBRARY(${JMCLIB} STATIC ${JMC_src})
+ADD_LIBRARY(${JMCLIB} jmc ${JMC_src})

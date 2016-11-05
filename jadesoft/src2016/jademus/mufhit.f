@@ -83,7 +83,7 @@ C                  IF YES, THEN INCREMENT HIT FOUND COUNTER.
 C
           ALLW = ABS(ALLOW)
           IF( ABS(PHIL-PHI) .LT. ALLW  .OR. ABS(PHIR-PHI) .LT. ALLW)
-     *           THEN
+     +           THEN
              NUMHF = NUMHF + 1
           ENDIF
 C

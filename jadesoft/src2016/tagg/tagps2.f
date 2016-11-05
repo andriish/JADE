@@ -46,10 +46,10 @@ C------------ C O M M O N    C W O R K   F O R   T A G A N -------------
 C
 C
        COMMON/CWORK/MARK,IFLMRK,IMC,NCLST,NNEI,
-     *              ISTMZ,ISTPZ,IENDMZ,IENDPZ,
-     *              SIGX,SIGY,SIGEN,
-     *              CAND(3),CLUS(9,2),CMAP(10,9),
-     *              SADC(32,2),CATAG(192)
+     +              ISTMZ,ISTPZ,IENDMZ,IENDPZ,
+     +              SIGX,SIGY,SIGEN,
+     +              CAND(3),CLUS(9,2),CMAP(10,9),
+     +              SADC(32,2),CATAG(192)
 C
 C
 C CWORK - WORKSPACE USED ONLY ONCE PER EVENT FOR INTERNAL PROCESSING
@@ -350,9 +350,9 @@ C - DEBUG SECTION
 C
        IF ( IWRITE .EQ. 1 ) WRITE(6,664)RATLOS,ECLS1,RTYPE(1)
        IF ( IWRITE .EQ. 1 ) WRITE(6,665)CLUS(INNER,2),CLUS(MIDDLE,2),
-     *     CLUS(OUTER,2),TWOSUM,RATIO,RCORR,R
+     +     CLUS(OUTER,2),TWOSUM,RATIO,RCORR,R
  665   FORMAT(' ++TAGPS2: E1,E2,E3,ET,RAT,R,RC=',4(F8.2,2X),/,
-     *        ' ++TAGPS2: RAT,RCORR,R         =',3(F10.4,2X))
+     +        ' ++TAGPS2: RAT,RCORR,R         =',3(F10.4,2X))
  664   FORMAT(' ++TAGPS2: RATLOS,ECLS1,RTYP1  =',3(F8.2,2X))
 C
 C

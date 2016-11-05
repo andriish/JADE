@@ -201,8 +201,8 @@ C                                           ACOPLANARITY
       CALL MOFRCI( JLONG(1), R, P1, CH )
       CALL MOFRCI( JLONG(2), R, P2, CH )
       ACOP = ( P1(1)*P2(1) + P1(2)*P2(2) ) /
-     *       SQRT( ( P1(1)*P1(1) + P1(2)*P1(2) ) *
-     *             ( P2(1)*P2(1) + P2(2)*P2(2) ) )
+     +       SQRT( ( P1(1)*P1(1) + P1(2)*P1(2) ) *
+     +             ( P2(1)*P2(1) + P2(2)*P2(2) ) )
       IF( IHIST .EQ. 1 ) CALL UHIST( 10004, ACOP )
       IF( ACOP .GT. -.9848 ) GO TO 400
       NREJ( 8) = NREJ( 8) + 1
@@ -286,38 +286,38 @@ C-----------------------------------------------------------------------
       PCENTI(I) = NREJ(I) / PCBAS
  8101 CONTINUE
       IF( IEFIX .NE. 1 )
-     *WRITE(6,9101) NCALL, NACC, PCENT, PCENTE, EBEAMI, EBEAMA
+     +WRITE(6,9101) NCALL, NACC, PCENT, PCENTE, EBEAMI, EBEAMA
  9101 FORMAT(//10X,' SUMMARY FOR THIS FILE',
-     *           '         PROGRAM VERSION OF 04/11/80'/
-     *       10X,'   EVENTS ANALYSED ',I8/
-     *       10X,'   EVENTS ACCEPTED ',I8,'=',F7.2,' % +-',F5.2,' %'
-     *                                   ,20X,F7.3,'=< EBEAM =<',F7.3,
-     *           '  TAKEN FROM ''HEAD'''/)
+     +           '         PROGRAM VERSION OF 04/11/80'/
+     +       10X,'   EVENTS ANALYSED ',I8/
+     +       10X,'   EVENTS ACCEPTED ',I8,'=',F7.2,' % +-',F5.2,' %'
+     +                                   ,20X,F7.3,'=< EBEAM =<',F7.3,
+     +           '  TAKEN FROM ''HEAD'''/)
       IF( IEFIX .EQ. 1 )
-     *WRITE(6,9103) NCALL, NACC, PCENT, PCENTE, EBEAMI, EBEAMA
+     +WRITE(6,9103) NCALL, NACC, PCENT, PCENTE, EBEAMI, EBEAMA
  9103 FORMAT(//10X,' SUMMARY FOR THIS FILE',
-     *           '         PROGRAM VERSION OF 04/11/80'/
-     *       10X,'   EVENTS ANALYSED ',I8/
-     *       10X,'   EVENTS ACCEPTED ',I8,'=',F7.2,' % +-',F5.2,' %'
-     *                                   ,20X,F7.3,'=< EBEAM =<',F7.3,
-     *           '  VALUE WAS FIXED'/)
+     +           '         PROGRAM VERSION OF 04/11/80'/
+     +       10X,'   EVENTS ANALYSED ',I8/
+     +       10X,'   EVENTS ACCEPTED ',I8,'=',F7.2,' % +-',F5.2,' %'
+     +                                   ,20X,F7.3,'=< EBEAM =<',F7.3,
+     +           '  VALUE WAS FIXED'/)
       WRITE(6,9102) (NREJ(I),PCENTI(I),I=1,14)
  9102 FORMAT(10X,' REASONS FOR REJECTION'/
-     */10X,'HEAD MISSING             ',I8,' =',F7.1,' %',
-     */10X,'TRIG MISSING             ',I8,' =',F7.1,' %',
-     */10X,'PATR MISSING             ',I8,' =',F7.1,' %',
-     */10X,'LGCL MISSING             ',I8,' =',F7.1,' %',
-     */10X,'NTRKL < 2                ',I8,' =',F7.1,' %',
-     */10X,'RMIN2 > 30.MM            ',I8,' =',F7.1,' %',
-     */10X,'ZMIN > 400.              ',I8,' =',F7.1,' %',
-     */10X,'ACOPL > 10 DEG           ',I8,' =',F7.1,' %',
-     */10X,'E - BARREL < 3(2,1.2)GEV ',
-     */10X,'E+ OR E- < .4 (.4,.2)GEV ',I8,' =',F7.1,' %',
-     */10X,'MOM BALANCE < .4         ',I8,' =',F7.1,' %',
-     */10X,'NO TRACKS                ',I8,' =',F7.1,' %',
-     */10X,'TOO MANY TRACKS          ',I8,' =',F7.1,' %',
-     */10X,'REJECTED BY TRIGGER      ',I8,' =',F7.1,' %',
-     */10X,'ETOTSL < EBEAM           ',I8,' =',F7.1,' %')
+     +/10X,'HEAD MISSING             ',I8,' =',F7.1,' %',
+     +/10X,'TRIG MISSING             ',I8,' =',F7.1,' %',
+     +/10X,'PATR MISSING             ',I8,' =',F7.1,' %',
+     +/10X,'LGCL MISSING             ',I8,' =',F7.1,' %',
+     +/10X,'NTRKL < 2                ',I8,' =',F7.1,' %',
+     +/10X,'RMIN2 > 30.MM            ',I8,' =',F7.1,' %',
+     +/10X,'ZMIN > 400.              ',I8,' =',F7.1,' %',
+     +/10X,'ACOPL > 10 DEG           ',I8,' =',F7.1,' %',
+     +/10X,'E - BARREL < 3(2,1.2)GEV ',
+     +/10X,'E+ OR E- < .4 (.4,.2)GEV ',I8,' =',F7.1,' %',
+     +/10X,'MOM BALANCE < .4         ',I8,' =',F7.1,' %',
+     +/10X,'NO TRACKS                ',I8,' =',F7.1,' %',
+     +/10X,'TOO MANY TRACKS          ',I8,' =',F7.1,' %',
+     +/10X,'REJECTED BY TRIGGER      ',I8,' =',F7.1,' %',
+     +/10X,'ETOTSL < EBEAM           ',I8,' =',F7.1,' %')
       IF( IHIST .NE. 1 ) GO TO 8900
       CALL PHIST( 10001 )
       CALL PHIST( 10002 )

@@ -557,7 +557,7 @@ C  WRITE HERE NEUTRAL EVENTS WITH ETOT < 3.*EBM AND < 10 CLUSTERS
 C---------------------------------------------******** WRITTEN *********
       IF(ETOT.LT.3.*EBM.AND.NCLST.LT.10) LWRIT = 6
       IF(LWRIT.EQ.6.AND.(ICAMWD.EQ.MKFWMU.OR.ICAMWD.EQ.MKFWM1))
-     * LWRIT = 0
+     + LWRIT = 0
       IF(LWRIT.EQ.6.AND.IPRN.GT.0) WRITE(6,7141) HRUN,HEVENT
 7141  FORMAT(' WRITTEN NTR=0, ETOT<3*EBM NCLST<10 ',2I8)
 C                                         --------------------------

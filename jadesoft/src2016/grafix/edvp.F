@@ -36,8 +36,8 @@ C                            CHECK IF WE ARE RUNNING IN GA-MODE
 C                            CHECK IF EDVP IS POSSIBLE FOR THIS VIEW
       IF( LASTVW .NE. 20 ) GO TO 9100
       IF( .NOT. FL22  .OR.
-     *    ABS(XMAX-XMIN) .GT. 0.2*ABS(XMAXST(20)-XMINST(20)) )
-     *   GO TO 9200
+     +    ABS(XMAX-XMIN) .GT. 0.2*ABS(XMAXST(20)-XMINST(20)) )
+     +   GO TO 9200
 C
       CALL CLEAR
       CALL CLOC( IPVPAT, 'VPAT', NNVTXC )
@@ -126,10 +126,10 @@ C
  1400       CONTINUE
 C
  1500       IF( HFND .EQ. 0 )
-     *         CALL TRMOUT(80,' Track not found in bank.^')
+     +         CALL TRMOUT(80,' Track not found in bank.^')
 C
             CALL TRMOUT(80,' Any other existing track to be edited?
-     * <N>,Y^')
+     + <N>,Y^')
             CALL TRMIN( 2, HCD )
             IF( HCD .EQ. HYES ) GO TO 1200
 C
@@ -147,7 +147,7 @@ C
       CALL CLEAR
       CALL TRMOUT(80,' Now editing can start!^')
  5100 CALL TRMOUT(80,' Enter ID-track number of selected track you want
-     *to add!^')
+     +to add!^')
       CALL TRMIN( 4, ICD )
       CALL GETINT( ICD, ITRK )
       IF( ITRK .GT. 0 .AND. ITRK .LT. 99 ) GO TO 5200
@@ -207,7 +207,7 @@ C
       GO TO 10000
 C
  9200 CALL TRMOUT(80,' You have to magnify the VC-view more than 5-times
-     * in the interested region!^')
+     + in the interested region!^')
       GO TO 10000
 C
  9300 CALL TRMOUT(80,' Error during creation of VPAT-bank!^')

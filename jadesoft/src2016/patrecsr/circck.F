@@ -174,7 +174,7 @@
         YCIRC = 100000.
         DY = Y2 - Y1
         IF(ABS(DY).GT..01)
-     *     YCIRC = ((X2-X1)*(X2+X1)/DY + Y2+Y1)*.5
+     +     YCIRC = ((X2-X1)*(X2+X1)/DY + Y2+Y1)*.5
         IF(ABS(YCIRC).GT.100000.) YCIRC = SIGN(100000.,YCIRC)
         T  = YCIRC - YC
         R0 = ABS(T)

@@ -39,7 +39,7 @@ C
 C                                           PARTICLE TYPES
 C         UNKNOWN, GAMMA,   E,    MU,     PI,    K,    P/N,  LAM
       REAL*4 XMAS(8) /
-     *     .1396,   0., .511E-3, .1067, .1396, .4937, .939, 1.1156 /
+     +     .1396,   0., .511E-3, .1067, .1396, .4937, .939, 1.1156 /
 C
       DATA  IFIRST / 0 /
 C

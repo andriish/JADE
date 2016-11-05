@@ -31,7 +31,7 @@ C
       ASUM=AREA(I)
 C     WRITE(6,620) I,XLOW,YMAX(I),AREA(I),ASUM
   620 FORMAT(1H ,I2,' X = ',F15.7,'  YMAX,AREA = ',2F15.7,
-     *           '  ASUM = ',F15.7)
+     +           '  ASUM = ',F15.7)
    10 CONTINUE
 C
       IF(ISW.NE.0) GO TO 100

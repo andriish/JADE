@@ -2,7 +2,7 @@ C   11/09/78 606101311  MEMBER NAME  JTRAPZ9  (S)           FORTRAN
 C
 C-----------------------------------------------------------------------
       SUBROUTINE JTRAPZ( IFORM, X, P, XLOW, XHIGH, ZLOW, ZHIGH,
-     *                   POT, ZARO, XRAD, IRETRN, CA, SA , DRMAX )
+     +                   POT, ZARO, XRAD, IRETRN, CA, SA , DRMAX )
 C-----------------------------------------------------------------------
 C
 C   AUTHOR:   E. ELSEN     02/10/78 :  PROPAGATES PARTICLE IN NON
@@ -34,9 +34,9 @@ C
       COMMON / CJTRLE / TOTLEN, STPLEN
       COMMON / CJSWLO / ITIMOD, MULSC, ELOSS
       COMMON / CJXDAT / XSLOPE, YSLOPE, XL(3), XH(3), R3P, RD3P,
-     *                  S, S2,
-     *                  XSL3L, X3L, XSL3H, X3H, YSL3L, Y3L, YSL3H,
-     *                  YHWIDT, SINHLF, COSHLF, DRITAN
+     +                  S, S2,
+     +                  XSL3L, X3L, XSL3H, X3H, YSL3L, Y3L, YSL3H,
+     +                  YHWIDT, SINHLF, COSHLF, DRITAN
 C
       DIMENSION X(5), P(7)
 C
@@ -92,7 +92,7 @@ C      TOTAL TRACK LENGTH BIGGER THAN MAXIMUM VALUE?
 C
           IF( MULSC ) CALL JMULSC( P, DRTOT / XRAD )
           IF( ELOSS ) CALL JELOSS( P, DRTOT, POT, ZARO, XRAD,
-     *                             X, CA, SA )
+     +                             X, CA, SA )
           IF( P(6) .LT. PMIN ) RETURN
 C
 C

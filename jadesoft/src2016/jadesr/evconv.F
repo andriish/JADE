@@ -509,7 +509,7 @@ C                                           ILLEGAL WIRE ADDRESS
 C                                           NON-INCREASING WIRE NO
  4503 WRITE(JUSCRN,4513) IADR,IADR0
  4513 FORMAT(/' ---- ZETC --- NON-INCREASING WIRE NO = ',I6,
-     *        ' (LAST WAS ',I6,')')
+     +        ' (LAST WAS ',I6,')')
       GOTO 501
 C                                           ILLEGAL DRIFT TIME
  4504 WRITE(JUSCRN,4514) HWORK(IPWRK+2)

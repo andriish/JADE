@@ -78,7 +78,7 @@ C
 C
 C
       IT0OFS = IFIX((0.5/VD*(S0R(1,IWR)+S0R(2,IWR))+T0)*.01
-     *                                  *FLOAT(ISCRCH)/FLOAT(KRANGE))
+     +                                  *FLOAT(ISCRCH)/FLOAT(KRANGE))
       IXO    = IX1 - IT0OFS
       IX     = IXO
       IY     = IYO

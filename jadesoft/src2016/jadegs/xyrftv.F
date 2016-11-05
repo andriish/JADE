@@ -4,7 +4,7 @@
       COMMON/XYFVT1/MODXYV
       DATA LBINIT /0/, IQPATR/0/, IQJHTL/0/
       INTEGER WEAK / Z80000 /, STRONG / Z40000 /, CONCLR,
-     *        CONSTR / Z400 /
+     +        CONSTR / Z400 /
       IF(
      - LBINIT .LE.0
      -)THEN

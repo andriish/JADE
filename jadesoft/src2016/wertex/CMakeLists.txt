@@ -14,4 +14,4 @@ ${SRCWERTEX}/wtxsrc.f
 ${SRCWERTEX}/xfwid.F
 ${SRCWERTEX}/xfwvxc.F
 )
-ADD_LIBRARY(${WERTEXLIB} STATIC ${WERTEX_src})
+ADD_LIBRARY(${WERTEXLIB} wertex ${WERTEX_src})

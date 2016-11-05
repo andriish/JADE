@@ -26,7 +26,14 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 # This INCLUDE statement executes code that sets the compile flags for DEBUG,
 # RELEASE, and TESTING.  You should  review this file and make sure the flags 
 # are to your liking.
-INCLUDE(${CMAKE_MODULE_PATH}/SetFortranFlags.cmake) 
+
+#INCLUDE(${CMAKE_MODULE_PATH}/SetCompileFlag.cmake)
+
+#SET_COMPILE_FLAG(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}" Fortran 
+#"-m32 -std=legacy -m32 -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons " ) 
+
+
+#INCLUDE(${CMAKE_MODULE_PATH}/SetFortranFlags.cmake) 
 # Locate and set parallelization libraries.  There are some CMake peculiarities
 # taken care of here, such as the fact that the FindOpenMP routine doesn't know
 # about Fortran.
@@ -42,12 +49,27 @@ IF(FCNAME STREQUAL "pgf90")
     UNSET(CMAKE_SHARED_LIBRARY_LINK_Fortran_FLAGS)
 ENDIF(FCNAME STREQUAL "pgf90")
 
-SET_COMPILE_FLAG(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}" Fortran 
-"-m32 -std=legacy -m32 -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons")
+
+get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
+if ("${CMAKE_Fortran_FLAGS}" STREQUAL "" )
+if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
+   set(CMAKE_Fortran_FLAGS            "-m32 -std=legacy -m32 -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+elseif (Fortran_COMPILER_NAME MATCHES "ifort.*")
+   set(CMAKE_Fortran_FLAGS            "-fno-automatic -fno-backslash -extend-source 132")	
+elseif (Fortran_COMPILER_NAME MATCHES "xlf.*")
+   set(CMAKE_Fortran_FLAGS           " -qthreaded -qhalt=e ")	
+endif()
+message(STATUS "Fortran compiler : ${Fortran_COMPILER_NAME}")
+elseif()
+
+endif()
+
 
 ############################################################
 # Define the actual files and folders that make up the build
 ############################################################
+
+
 
 # Define the executable name
 #SET(FOOEXE foo)
@@ -58,7 +80,7 @@ SET(GRAFIX          grafix)
 SET(INTERFACE         interface)
 SET(JADEGS         jadegs)
 SET(JADEMUS         jademus)
-SET(JADESR         jadesr)
+#SET(JADESR         jadesr)
 SET(JMC         jmc)
 SET(PATRECSR         patrecsr)
 SET(SOURCE         source)
@@ -74,13 +96,16 @@ SET(ZLIB         zlib)
 SET(SRC ${CMAKE_SOURCE_DIR}/src2016)
 SET(LIB ${CMAKE_SOURCE_DIR}/lib)
 SET(BIN ${CMAKE_SOURCE_DIR}/bin)
+
+include_directories( ${SRC}/boslib ${SRC}/grafix ${SRC}/interface ${SRC}/jadegs ${SRC}/jademus ${SRC}/jadesr ${SRC}/jmc ${SRC}/patrecsr ${SRC}/source ${SRC}/tagg  ${SRC}/toflib ${SRC}/vertex ${SRC}/wertex ${SRC}/zlib  )
+
 #SET(SRCFOO ${SRC}/foo)
 SET(SRCBOSLIB ${SRC}/boslib)
 SET(SRCGRAFIX          ${SRC}/grafix)
 SET(SRCINTERFACE         ${SRC}/interface)
 SET(SRCJADEGS         ${SRC}/jadegs)
 SET(SRCJADEMUS         ${SRC}/jademus)
-SET(SRCJADESR         ${SRC}/jadesr)
+#SET(SRCJADESR         ${SRC}/jadesr)
 SET(SRCJMC         ${SRC}/jmc)
 SET(SRCPATRECSR         ${SRC}/patrecsr)
 SET(SRCSOURCE         ${SRC}/source)
@@ -93,20 +118,20 @@ SET(SRCZLIB         ${SRC}/zlib)
 SET(CMAKE_Fortran_MODULE_DIRECTORY ${LIB})
 
 # The source for the BAR library and have it placed in the lib folder
-ADD_SUBDIRECTORY(${SRCBOSLIB} ${LIB})
-ADD_SUBDIRECTORY(${GRAFIX}      ${LIB})
-ADD_SUBDIRECTORY(${INTERFACE}         ${LIB})
-ADD_SUBDIRECTORY(${JADEGS}          ${LIB})
-ADD_SUBDIRECTORY(${JADEMUS}         ${LIB})
-ADD_SUBDIRECTORY(${JADESR}         ${LIB})
-ADD_SUBDIRECTORY(${JMC}          ${LIB})
-ADD_SUBDIRECTORY(${PATRECSR}          ${LIB})
-ADD_SUBDIRECTORY(${SOURCE}          ${LIB})
-ADD_SUBDIRECTORY(${TAGG}         ${LIB})
-ADD_SUBDIRECTORY(${TOFLIB}         ${LIB})
-ADD_SUBDIRECTORY(${VERTEX}         ${LIB})
-ADD_SUBDIRECTORY(${WERTEX}         ${LIB})
-ADD_SUBDIRECTORY(${ZLIB}         ${LIB})
+ADD_SUBDIRECTORY(${SRCBOSLIB} )
+ADD_SUBDIRECTORY(${SRCGRAFIX}      )
+ADD_SUBDIRECTORY(${SRCINTERFACE}         )
+ADD_SUBDIRECTORY(${SRCJADEGS}          )
+ADD_SUBDIRECTORY(${SRCJADEMUS}         )
+#ADD_SUBDIRECTORY(${SRCJADESR}         )
+ADD_SUBDIRECTORY(${SRCJMC}          )
+ADD_SUBDIRECTORY(${SRCPATRECSR}          )
+ADD_SUBDIRECTORY(${SRCSOURCE}          )
+ADD_SUBDIRECTORY(${SRCTAGG}         )
+ADD_SUBDIRECTORY(${SRCTOFLIB}         )
+ADD_SUBDIRECTORY(${SRCVERTEX}         )
+ADD_SUBDIRECTORY(${SRCWERTEX}         )
+ADD_SUBDIRECTORY(${SRCZLIB}         )
 # The source for the FOO binary and have it placed in the bin folder
 #ADD_SUBDIRECTORY(${SRCFOO} ${BIN})
 

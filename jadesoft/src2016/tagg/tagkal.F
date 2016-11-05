@@ -72,8 +72,8 @@ C
 C
        IF ( IDONT .EQ. 1 ) WRITE(6,608)
   608  FORMAT(/,/,' WARNING FROM TAGGING ANALYSIS ROUTINE -TAGKAL-',
-     *          /,' ****   ILLEGAL CALIBRATION CONSTANT',
-     *               ' FOUND ON FIRST CALL   ****')
+     +          /,' ****   ILLEGAL CALIBRATION CONSTANT',
+     +               ' FOUND ON FIRST CALL   ****')
 C
 C
 C--------------------------------------- READ FACTORS FROM CALIBR
@@ -108,9 +108,9 @@ C
   606  FORMAT(' CATAG ARRAY AFTER RECALIBRATION ')
   605  FORMAT(6(/,8(2X,F8.2) ) )
   607  FORMAT(/,' MESSAGE FROM TAGKAL --- NO RECALIBRATION OF TAGGING',
-     *             ' DATA IS BEING PERFORMED ')
+     +             ' DATA IS BEING PERFORMED ')
   611  FORMAT('  BECAUSE ILLEGAL CALIBRATION CONSTANTS WERE FOUND',
-     *           ' IN FIRST EVENT')
+     +           ' IN FIRST EVENT')
 C
        RETURN
 C

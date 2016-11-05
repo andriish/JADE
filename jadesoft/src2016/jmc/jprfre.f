@@ -2,7 +2,7 @@ C   29/11/77 606101229  MEMBER NAME  JPRFRE9  (S)           FORTRAN
 C
 C-----------------------------------------------------------------------
       SUBROUTINE JPRFRE( R, P, PENETR, PENETZ, RDOWN, RUP,
-     *                   ZDOWN, ZUP, DRMAX, *, *, *, * )
+     +                   ZDOWN, ZUP, DRMAX, *, *, *, * )
 C-----------------------------------------------------------------------
 C
 C   AUTHOR:   E. ELSEN     02/10/78 :  PROPAGATES PARTICLE IN NON

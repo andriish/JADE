@@ -1,6 +1,6 @@
 C   29/11/77 C8100201   MEMBER NAME  JPRFRE0  (CS7)         FORTRAN
       SUBROUTINE JPRFRE( R, P, PENETR, PENETZ, RDOWN, RUP,
-     *                   ZDOWN, ZUP, *, *, *, * )
+     +                   ZDOWN, ZUP, *, *, *, * )
 C  *--------------------------------------------------------
 C  *
 C  *  VERSION OF 02/10/78

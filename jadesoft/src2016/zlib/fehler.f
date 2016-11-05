@@ -28,7 +28,7 @@ C                                      CHECK PARAMETERS
       IF(TEXTAR(NLINE) .NE. BLANC ) THEN
         WRITE(6,9000) NLINE
  9000   FORMAT(///10X,'!!!!!!!!! WARNING FROM FEHLTX !!!!!!!!!!'/
-     *            10X,'ERROR NUMBER ',I5,'  DOUBLY DEFINED  '/)
+     +            10X,'ERROR NUMBER ',I5,'  DOUBLY DEFINED  '/)
         RETURN
       ENDIF
 C                                      FILL ARRAY
@@ -49,7 +49,7 @@ C  PRINTOUT OF ERROR CODE
 C-----------------------------------------------------------------
       WRITE(6,9011)
  9011 FORMAT(///,20X,'FINAL ERROR STATISTICS '/
-     *          ,10X,'  #    NO.              TEXT')
+     +          ,10X,'  #    NO.              TEXT')
       DO 1003 I=1,MAXLNE
         IF ( TEXTAR(I) .NE. BLANC ) WRITE(6,9002)IERR(I),I,TEXTAR(I)
  9002 FORMAT(10X,I5,2X,'(',I2,')',2X,A40)

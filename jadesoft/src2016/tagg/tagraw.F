@@ -91,8 +91,8 @@ C
 C
            IF ( .NOT. NOMSG ) WRITE(6, 11)ISAD,CATAG(ISAD)
    11      FORMAT(//,' +++  WARNING FROM TAGGING ROUTINE - TAGRAW -',
-     *                '   CATAG(',I4,') HAS CRAZY VALUE -',F12.3,
-     *                ' ---  IT HAS BEEN SET TO ZERO ')
+     +                '   CATAG(',I4,') HAS CRAZY VALUE -',F12.3,
+     +                ' ---  IT HAS BEEN SET TO ZERO ')
 C
 C---                                     SET THE ARRAY TO ZERO
 C
@@ -133,7 +133,7 @@ C
        NOMSG = .TRUE.
        WRITE(6, 31)
    31  FORMAT(///,'+++  MORE THAN TEN ERRORS DETECTED BY TAGRAW',
-     *            '  -- NO MORE MESSAGES  +++',///)
+     +            '  -- NO MORE MESSAGES  +++',///)
    41  FORMAT(6(/,8(2X,F9.2)))
 C
        RETURN

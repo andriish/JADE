@@ -43,7 +43,7 @@ C
       DATA HBPCH / 2HBP, 2HCH /
       DATA HVCVW / 2HVC, 2HVW /
       DATA HDIFF / 2Hdi,2Hff,2Her,2Hen,2Hci,2Hat,2Hed,2H p,2Hul,
-     *             2Hse,2Hs  /
+     +             2Hse,2Hs  /
       DATA HZETM / 2H -,2H Z /
       DATA HZETP / 2H +,2H Z /
 C
@@ -161,7 +161,7 @@ C                                      ONLY IN COMPRESSED MODE
          IF( IPVTXC .GT. 0 ) GO TO 103
             WRITE(6,101) NNVTXC
   101       FORMAT(' VTXC BANK NR',I3,' (GIVEN BY COMMAND VTXC) NOT EXIS
-     *TING')
+     +TING')
   102 NBANK = 10
       CALL CLOC( IPVTXC, 'VTXC', NBANK )
       IF( IPVTXC .LE. 0 )  GO TO 140
@@ -184,7 +184,7 @@ C
                   DRIF = FLOAT(IDRI) - T0
                   DRI1 = DRIF*0.1
                   DRI2 = (DRIF*0.5*(CVD(1,NWIR)+CVD(2,NWIR))
-     *                    - 0.5*(S0R(1,NWIR)+S0R(2,NWIR))/VD)*0.1
+     +                    - 0.5*(S0R(1,NWIR)+S0R(2,NWIR))/VD)*0.1
                   XT1  = FLOAT(ISCRCH)/FLOAT(KRANGE)*DRI1*0.1
                   XT2  = FLOAT(ISCRCH)/FLOAT(KRANGE)*DRI2*0.1
                   IXT1 = IX1 + IFIX(XT1)

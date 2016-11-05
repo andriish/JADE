@@ -50,7 +50,7 @@ C
       EQUIVALENCE ( HW(1), IW(1) )
 C
       REAL*8 DATHND(2,2) / 8H=Configu, 8Hration  ,
-     *                     8Has reque, 8Hsted     /
+     +                     8Has reque, 8Hsted     /
       INTEGER DATOPT / 1/
       DATA IERPRI /0/
 C

@@ -2,7 +2,7 @@ C   04/11/82 606091755  MEMBER NAME  JVTXCH   (S)           FORTRAN
 C
 C-----------------------------------------------------------------------
       SUBROUTINE JVTXCH ( R, P, PENETR, PENETZ, JRETRN, RDOWN, RUP,
-     *                    ZDOWN, ZUP, DRMAX, * )
+     +                    ZDOWN, ZUP, DRMAX, * )
 C-----------------------------------------------------------------------
 C
 C   AUTHOR:   J. HAGEMANN  12/11/82 :  PROPAGATES CHARGED PARTICLE
@@ -34,7 +34,7 @@ C
       DIMENSION R(5), P(7), RX(5), RXOLD(3), RXREL1(3), RXREL2(3)
       DIMENSION HDV(4)
       EQUIVALENCE (HDV(1), HMWTOT), (HDV(2), HITAML),
-     *            (HDV(3), HITAMR), (HDV(4), HITIM)
+     +            (HDV(3), HITAMR), (HDV(4), HITIM)
 C
       DATA  ITERMX / 300 /
       DATA  PMIN / 0.01 /
@@ -173,7 +173,7 @@ C                                                 TRX=TRANSLATION
       TRX = DISTW1 + ( MW - 1) * DISTPW
 C
       IF ( MW1 .EQ. MW .OR. MW .LT. 1
-     *     .OR. MW .GT. MWIRE )       GOTO 900
+     +     .OR. MW .GT. MWIRE )       GOTO 900
 C
       RXTRA = RXOLD(1) - TRX
       RYTRA = RXOLD(2)
@@ -192,7 +192,7 @@ C
 C
                  IF( .NOT. ENRLOS .OR. ETRACK .LT. ELIMIT ) GO TO 930
        CALL JELOSS ( P, ETRACK, POTVGA, ZAROVG, XRVTXC,
-     *               RX, COSPHI, SINPHI )
+     +               RX, COSPHI, SINPHI )
                        ETRACK = 0.
                  IF( P(6) .LE. PMIN ) GO TO 2000
   930            IF( .NOT. MULSC .OR. XTRACK .LT. XLIMIT ) GO TO 1000

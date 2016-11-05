@@ -54,7 +54,7 @@ C                                           REQUESTED (NN=-1)
 C                                           BANK NOT YET THERE
 C                                           OR SINGLE TRACK
       IF( .NOT. ( NN.GT.0 .OR. NN.EQ.-1 .OR. NPDEDX.LE.0 ) )
-     *                            GO TO 2213
+     +                            GO TO 2213
         CALL DEDXBN
 C                                           DO NOT RECREATE BANK
 C                                           FOR SINGLE TRACK MODE

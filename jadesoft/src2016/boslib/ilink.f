@@ -24,7 +24,7 @@ C     --------------------------------------------------------------
      7   NHISTL(11),
      8        MARKWR,NOUT(3),IASW,NPRE,IDUMMY(1),NEOTP,NDUMP1,
      9   JNAM,NLK,NLM,ILKNA,ILKIN,ILKND,LKNAME,LKNR,ICUST,IREV,
-     *   NUNTB,DUMMY(9)
+     +   NUNTB,DUMMY(9)
 C     --------------------------------------------------------------
       COMMON/BCS/IW(1)
 C     --------------------------------------------------------------

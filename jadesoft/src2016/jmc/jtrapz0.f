@@ -1,6 +1,6 @@
 C   11/09/78 110071140  MEMBER NAME  JTRAPZ0  (S)           FORTRAN
       SUBROUTINE JTRAPZ( IFORM, X, P, XLOW, XHIGH, ZLOW, ZHIGH,
-     *                   POT, ZARO, XRAD, IRETRN, CA, SA )
+     +                   POT, ZARO, XRAD, IRETRN, CA, SA )
 C--------------------------------------------------------
 C
 C  VERSION OF 02/10/78   LAST MOD 07/10/81   E.ELSEN
@@ -24,9 +24,9 @@ C
       COMMON / CJSWLO / ITIMOD, MULSC, ELOSS
       LOGICAL  ELOSS, MULSC
       COMMON / CJXDAT / XSLOPE, YSLOPE, XL(3), XH(3), R3P, RD3P,
-     *                  S, S2,
-     *                  XSL3L, X3L, XSL3H, X3H, YSL3L, Y3L, YSL3H,
-     *                  YHWIDT, SINHLF, COSHLF, DRITAN
+     +                  S, S2,
+     +                  XSL3L, X3L, XSL3H, X3H, YSL3L, Y3L, YSL3H,
+     +                  YHWIDT, SINHLF, COSHLF, DRITAN
 C
       DATA PMIN / 0.01 /
 C
@@ -78,7 +78,7 @@ C      TOTAL TRACK LENGTH BIGGER THAN MAXIMUM VALUE?
 C
           IF( MULSC ) CALL JMULSC( P, DRTOT / XRAD )
           IF( ELOSS ) CALL JELOSS( P, DRTOT, POT, ZARO, XRAD,
-     *                             X, CA, SA )
+     +                             X, CA, SA )
           IF( P(6) .LT. PMIN ) RETURN
 C
 C

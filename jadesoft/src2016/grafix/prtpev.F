@@ -27,7 +27,7 @@ C
       LIMH2 = 2*LIM2
       CALL CORE(HWORK,62)
       WRITE(cHWORK,1) IDATA(LIM2+1),IDATA(LIM2+2), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     *               (HDATA(LIMH2+I),I=5,14)
+     +               (HDATA(LIMH2+I),I=5,14)
     1 FORMAT('  ',I8,2X,I8,2X,10I4)
       CALL SYSSYM(XS,YS,SIZE,HWORK,62,0.)
       YS = YS - DEL

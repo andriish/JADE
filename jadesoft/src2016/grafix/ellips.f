@@ -43,7 +43,7 @@ Copyright Stanford  Mortran3.1   (FORTRAN 66 11JUN85)
 60    CONTINUE
 10    CONTINUE
       IF  ((MODE.NE.1.OR.INDEX.NE.17).AND.(MODE.NE.0.OR..NOT.(FLVCDO(17)
-     *))) GO TO 90
+     +))) GO TO 90
       NPRE = 25
       DTWI = 6.28318/FLOAT(NPRE)
       TWI = 0.0

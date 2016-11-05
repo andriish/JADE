@@ -34,4 +34,4 @@ ${SRCZLIB}/zmcredu.f
 ${SRCZLIB}/zsphrcy.f
 ${SRCZLIB}/zspthak.f
 )
-ADD_LIBRARY(${ZLIBLIB} STATIC ${ZLIB_src})
+ADD_LIBRARY(${ZLIBLIB} zlib ${ZLIB_src})

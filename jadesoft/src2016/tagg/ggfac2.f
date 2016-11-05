@@ -13,7 +13,7 @@ C
     1   FAKTOR(I) = FACT2(I)
       WRITE(6,600)
   600 FORMAT(/' *** SECOND SET OF LEAD-GLASS CALIBRATION CONSTANTS',
-     *        ' INCLUDED ***')
+     +        ' INCLUDED ***')
       RETURN
       END
       BLOCK DATA

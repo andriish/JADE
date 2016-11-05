@@ -26,7 +26,7 @@ C
      +                  ZVXCM, DZVCM, XRZVCM, ZVXCP, DZVCP, XRZVCP,
      +                  XRVTXC
       COMMON / CJVDAT / XSLOPV, YSLOPV, XLV, XHV,
-     *                  SV, SV2, TANLOR
+     +                  SV, SV2, TANLOR
 C
       DIMENSION X(3), P(7)
 C

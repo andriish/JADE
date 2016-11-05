@@ -379,9 +379,9 @@ C             CALCULATE EXTRAPOLATION ERROR IN R-PHI-PLANE
       ZEXTRP = Z
       RLEN2  = (X-XMID)**2 + (Y-YMID)**2
       VTXYAN = RMSXY**2 * SGFXY2/
-     *                  (FLOAT(NHXY)*PROJL2)*(720.0*RLEN2/PROJL2 + 12.0)
+     +                  (FLOAT(NHXY)*PROJL2)*(720.0*RLEN2/PROJL2 + 12.0)
       VTXYD  = RMSXY**2*SGFXY2/FLOAT(NHXY)*(180.0*(RLEN2/PROJL2)**2 -
-     *             18.0*RLEN2/PROJL2 + 2.25)
+     +             18.0*RLEN2/PROJL2 + 2.25)
 C
 C             ASSUME VERTEX IS INTERACTION POINT.
 C             ASSUME TRACK HAS PASSED THROUGH END-CAP LEAD-GLASS.
@@ -537,9 +537,9 @@ C
       ZEXTRP = Z
       RLEN2  = (X-XMID)**2 + (Y-YMID)**2
       VTXYAN = RMSXY**2 * SGFXY2/
-     *                  (FLOAT(NHXY)*PROJL2)*(720.0*RLEN2/PROJL2 + 12.0)
+     +                  (FLOAT(NHXY)*PROJL2)*(720.0*RLEN2/PROJL2 + 12.0)
       VTXYD  = RMSXY**2*SGFXY2/FLOAT(NHXY)*(180.0*(RLEN2/PROJL2)**2 -
-     *             18.0*RLEN2/PROJL2 + 2.25)
+     +             18.0*RLEN2/PROJL2 + 2.25)
 C
 C             ASSUME VERTEX IS INTERACTION  POINT.  IGNORE  INCREASE  IN
 C             LENGTH DUE TO CURVATURE.
@@ -578,7 +578,7 @@ C***     22/10/83 :
 C        CHECK THAT THIS WON'T PUT THE TRACK INTO THE YOKE END PLATE.
       FACOIL=1.
       IF(  ABS(Z) + ABS(DSTEP*DCZ) .GT. (IZEIO-5.) )
-     *           FACOIL = ( (IZEIO-5.) - ABS(Z) )  /  ABS(DSTEP*DCZ)
+     +           FACOIL = ( (IZEIO-5.) - ABS(Z) )  /  ABS(DSTEP*DCZ)
        DSTEP = DSTEP  * FACOIL
       GMSTEP = GMCOIL * ( COSEC * FACOIL )
       ABSTEP = ABCOIL * ( COSEC * FACOIL )
@@ -617,7 +617,7 @@ C
       IHRING=.FALSE.
       IF(IYEAR.LT.1983)GO TO 3330
            IF(  (DCX.LT.0. .AND. DCZ.GT.0. ) .OR.
-     *          (DCX.GT.0. .AND. DCZ.LT.0. )      )IHRING=.TRUE.
+     +          (DCX.GT.0. .AND. DCZ.LT.0. )      )IHRING=.TRUE.
            IF(IHRING)ZLGBAR=ZLGHAF
  3330 S = 1.0
       IF(ADCZ.LT.0.01) GO TO 3335

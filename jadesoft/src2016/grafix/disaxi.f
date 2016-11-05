@@ -56,10 +56,10 @@ C**HEADER*** MEMBER  MVERTEX0       SAVED BY F22HAG  ON 88/05/24  AT 17:56
 C     PARAMETER MACRO FOR VERTEX-FIT ROUTINES                           
 C01 MAY 80)    DISAXI    SYSTEM/370 FORTRAN H EXTENDED (ENHANCED)    DATE 97.082/19.55.23       PAGE   2
       COMMON /CVTXC/ XB,YB,ZB,RTANK,DTANK,X0INN,SIGX0,SIGZ0,PNTMIN,     
-     *               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,      
-     *               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,    
-     *               EEXYMX,PHEMAX,SIG1,SIG2,SIG3,CSECV,                
-     *               ITDLEN,IVDLEN,SP0,SP1,DFMASS,SFMUSC, SIGFCZ        
+     +               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,      
+     +               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,    
+     +               EEXYMX,PHEMAX,SIG1,SIG2,SIG3,CSECV,                
+     +               ITDLEN,IVDLEN,SP0,SP1,DFMASS,SFMUSC, SIGFCZ        
 C     MACRO FOR VERTEX-FIT ROUTINES ( AXIS AND STATISTICS )             
       COMMON /CVTX2/ MODE,TAXIS(12),SVR,HVTXST(120)                     
 C                                                                       00000300
@@ -86,29 +86,29 @@ C
       DIMENSION HDM(5,6),HDL(5,2),HB1(5,8),HB2(5,8),HB3(5,12),HB4(5,10)
       DIMENSION HC(5)
       DATA HDM / 'D0','  ','  ','  ','  ', 'D0',' b','ar','  ','  ', 'D+
-     *','  ','  ','  ','  ', 'D-','  ','  ','  ','  ', 'Ds','+ ','  ','
-     * ','  ', 'Ds','- ','  ','  ','  ' /
+     +','  ','  ','  ','  ', 'D-','  ','  ','  ','  ', 'Ds','+ ','  ','
+     + ','  ', 'Ds','- ','  ','  ','  ' /
       DATA HDL / 'La','mc','  ','  ',' +', 'La','mc',' b','ar',' -' /
       DATA HB1 / 'bu','(b','ar',') ','- ', 'b(','ba','r)','u ','+ ', 'bd
-     *','(b','ar',') ','0 ', 'b(','ba','r)','d ','0 ', 'bs','(b','ar',')
-     * ','0 ', 'b(','ba','r)','s ','0 ', 'bc','(b','ar',') ','- ', 'b(',
-     *'ba','r)','c ','+ ' /
+     +','(b','ar',') ','0 ', 'b(','ba','r)','d ','0 ', 'bs','(b','ar',')
+     + ','0 ', 'b(','ba','r)','s ','0 ', 'bc','(b','ar',') ','- ', 'b(',
+     +'ba','r)','c ','+ ' /
       DATA HB2 / 'bu','u1','  ','  ',' +', 'bu','u1',' b','ar',' -', 'bd
-     *','u1','  ','  ',' 0', 'bd','u1',' b','ar',' 0', 'bd','d1','  ','
-     * ',' -', 'bd','d1',' b','ar',' +', 'bs','u1','  ','  ',' 0', 'bs',
-     *'u1',' b','ar',' 0' /
+     +','u1','  ','  ',' 0', 'bd','u1',' b','ar',' 0', 'bd','d1','  ','
+     + ',' -', 'bd','d1',' b','ar',' +', 'bs','u1','  ','  ',' 0', 'bs',
+     +'u1',' b','ar',' 0' /
       DATA HB3 / 'bd','u0','  ','  ',' 0', 'bd','u0',' b','ar',' 0', 'bs
-     *','u0','  ','  ',' 0', 'bs','u0',' b','ar',' 0', 'bs','d0','  ','
-     * ',' -', 'bs','d0',' b','ar',' +', 'bc','u0','  ','  ',' +', 'bc',
-     *'u0',' b','ar',' -', 'bc','d0','  ','  ',' 0', 'bc','d0',' b','ar'
-     *,' 0', 'bc','s0','  ','  ',' 0', 'bc','s0',' b','ar',' 0' /
+     +','u0','  ','  ',' 0', 'bs','u0',' b','ar',' 0', 'bs','d0','  ','
+     + ',' -', 'bs','d0',' b','ar',' +', 'bc','u0','  ','  ',' +', 'bc',
+     +'u0',' b','ar',' -', 'bc','d0','  ','  ',' 0', 'bc','d0',' b','ar'
+     +,' 0', 'bc','s0','  ','  ',' 0', 'bc','s0',' b','ar',' 0' /
       DATA HB4 / 'bu','u*','  ','  ',' +', 'bu','u*',' b','ar',' -', 'bd
-     *','u*','  ','  ',' 0', 'bd','u*',' b','ar',' 0', 'bd','d*','  ','
-     * ',' -', 'bd','d*',' b','ar',' +', 'bs','u*','  ','  ',' 0', 'bs',
-     *'u*',' b','ar',' 0', 'bs','d*','  ','  ',' -', 'bs','d*',' b','ar'
-     *,' +' /
+     +','u*','  ','  ',' 0', 'bd','u*',' b','ar',' 0', 'bd','d*','  ','
+     + ',' -', 'bd','d*',' b','ar',' +', 'bs','u*','  ','  ',' 0', 'bs',
+     +'u*',' b','ar',' 0', 'bs','d*','  ','  ',' -', 'bs','d*',' b','ar'
+     +,' +' /
       IF  ((LASTVW.GT.4).AND.((LASTVW.NE.17).AND.(LASTVW.NE.20))) GO TO
-     *20
+     +20
       N = IFIX(ACMD)
       JMODE = N
       IF((N .GT. 0 .AND. N .LT. 6))GOTO 30
@@ -161,7 +161,7 @@ C01 MAY 80)    DISAXI    SYSTEM/370 FORTRAN H EXTENDED (ENHANCED)    DATE 97.082
       LSETAX = .TRUE.
       WRITE(6,180)
 180   FORMAT(' Enter number of track which should be omitted in SPHERIC'
-     * ,'ITY calculation : (or press only )')
+     + ,'ITY calculation : (or press only )')
 190   CONTINUE
       CALL TRMIN( 4, ICD )
       CALL GETINT( ICD, ITRK )
@@ -234,7 +234,7 @@ C01 MAY 80)    DISAXI    SYSTEM/370 FORTRAN H EXTENDED (ENHANCED)    DATE 97.082
       LSETAX = .TRUE.
       WRITE(6,370)
 370   FORMAT(' Enter number of track which should be omitted in THRUST '
-     * ,'calculation : (or press only )')
+     + ,'calculation : (or press only )')
 C01 MAY 80)    DISAXI    SYSTEM/370 FORTRAN H EXTENDED (ENHANCED)    DATE 97.082/19.55.23       PAGE   5
 380   CONTINUE
       CALL TRMIN( 4, ICD )
@@ -308,7 +308,7 @@ C01 MAY 80)    DISAXI    SYSTEM/370 FORTRAN H EXTENDED (ENHANCED)    DATE 97.082
       NTRK = IDATA(IPO+2)
       CALL VTXPRE(IH,IPO)
       CALL TRMOUT(80, ' Enter track number for impact-parameter calculat
-     *ion :^')
+     +ion :^')
 560   CONTINUE
       CALL TRMIN( 4, ICD )
       CALL GETINT( ICD, ITRK )
@@ -319,13 +319,13 @@ C01 MAY 80)    DISAXI    SYSTEM/370 FORTRAN H EXTENDED (ENHANCED)    DATE 97.082
       CALL VTXCRV( INT(HEAD(18)), XRV, YRV, DXR, DYR ) ! PMF 08/11/99: add run argument HEAD(18)
       J = (ITRK-1)*ITDLEN
       CALL VTXIMP(J,XRV,YRV,XT,YT,ZT,DXT2,DYT2,DZT2,PHIT,DPHIT,ST, TAXIS
-     *(7),TAXIS(8),AIMP)
+     +(7),TAXIS(8),AIMP)
       CALL MOVEA( -XRV, YRV )
       CALL DRAWA( -XT , YT )
       IPOSAR = INDTRK(ITRK)
       IF  (IPOSAR.LE.0) GO TO 590
       RNORM = SQRT((TAXIS(7)**2 + TAXIS(8)**2)* (P(1,IPOSAR)**2 + P(2,IP
-     *OSAR)**2))
+     +OSAR)**2))
       IF  (RNORM.LE.0.0) GO TO 610
       COSTRK = (P(1,IPOSAR)*TAXIS(7) + P(2,IPOSAR)*TAXIS(8))/RNORM
 610   CONTINUE
@@ -355,10 +355,10 @@ C01 MAY 80)    DISAXI    SYSTEM/370 FORTRAN H EXTENDED (ENHANCED)    DATE 97.082
       if(ityp.ge.100000) ityp=ityp-100000
 *** PMF(end)
       IF((((ITYP.LT.1101 .OR. ITYP.GT.1104) .AND. (ITYP.LT.1145 .OR. ITY
-     *P.GT.1148) .AND. (ITYP.LT.1241 .OR. ITYP.GT.1246) .AND. (ITYP.LT.1
-     *293 .OR. ITYP.GT.1297)) .AND. IFL.EQ.5))GO TO661
+     +P.GT.1148) .AND. (ITYP.LT.1241 .OR. ITYP.GT.1246) .AND. (ITYP.LT.1
+     +293 .OR. ITYP.GT.1297)) .AND. IFL.EQ.5))GO TO661
       IF(((ITYP.LT.1020 .OR. ITYP.GT.1022) .AND. ITYP.NE.1058 .AND. IFL.
-     *EQ.4))GO TO661
+     +EQ.4))GO TO661
 C01 MAY 80)    DISAXI    SYSTEM/370 FORTRAN H EXTENDED (ENHANCED)    DATE 97.082/19.55.23       PAGE   7
       PX = ADATA(IPPL+1)
       PY = ADATA(IPPL+2)

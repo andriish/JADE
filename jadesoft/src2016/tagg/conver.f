@@ -9,7 +9,7 @@ C
       IMPLICIT INTEGER*2 (H)
 C
       COMMON /CWORK/ HCOINC(16),HLUMON(16),HGGLAT(16),HSCALE(36),
-     *               LNG,HPOINT(4)
+     +               LNG,HPOINT(4)
 C
       HPOINT(4) = 0
       RETURN

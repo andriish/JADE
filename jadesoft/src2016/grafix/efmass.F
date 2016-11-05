@@ -28,9 +28,9 @@ C
 #include "cgeo1.for"
 C
       COMMON / CJIONI / POTBEA, ZAROBE
-     *                 ,POTTRI, ZAROTR
-     *                 ,POTIVE, ZAROIV
-     *                 ,POTRH0, ZAROR0
+     +                 ,POTTRI, ZAROTR
+     +                 ,POTIVE, ZAROIV
+     +                 ,POTRH0, ZAROR0
       COMMON / CVX    / NNPATR
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #include "mvertex0.for"

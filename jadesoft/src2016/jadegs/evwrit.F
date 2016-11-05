@@ -84,9 +84,9 @@ C
       IF( IPMTCO .GT. 0 .AND. IDATA(IPMTCO).GE.LMTCO ) GO TO 1
 C
       IF( IPMTCO .LE. 0 )
-     *              CALL BCRE( IPMTCO, NAM1(1), 1,LMTCO, *1000, IER )
+     +              CALL BCRE( IPMTCO, NAM1(1), 1,LMTCO, *1000, IER )
       IF( IDATA(IPMTCO).LT.LMTCO )
-     *              CALL BCHM( IPMTCO, LMTCO - IDATA(IPMTCO), IER )
+     +              CALL BCHM( IPMTCO, LMTCO - IDATA(IPMTCO), IER )
 C
 C                  COPY DETECTOR STATUS INTO MTCO BANK
 C

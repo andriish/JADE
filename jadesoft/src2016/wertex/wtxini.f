@@ -17,10 +17,10 @@ C*******************************************************************
 C PMF 03.11.98 
       LOGICAL TBIT
       COMMON /CVTXC/ XB,YB,ZB,RTANK,DTANK,X0INN,SIGX0,SIGZ0,PNTMIN,
-     *               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
-     *               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
-     *               EEXYMX,PHEMAX,SIG1,SIG2,SIG3,CSECV
-     *               ,ITDLEN,IVDLEN       ! PMF 03/12/99
+     +               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
+     +               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
+     +               EEXYMX,PHEMAX,SIG1,SIG2,SIG3,CSECV
+     +               ,ITDLEN,IVDLEN       ! PMF 03/12/99
 *** PMF 03/12/99: ITDLEN,IVDLEN needed for graphics ( commands VFIT, VX in JADEZ)
 C
 C%MACRO MVERTEX2

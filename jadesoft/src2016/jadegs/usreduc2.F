@@ -1125,7 +1125,7 @@ C  STATUS FOR DATA REDUCTION STEP 2
       DATA ETAGLM /100./ ,RATLIM /.20/ ,ZVTXLM /350./,ETOTCT/100./
       WRITE(6,1) IGG(1)
   1    FORMAT(' ',25X,'++++++++   STATISTICS FOR RUN',I7,'         +++++
-     *++++++++')
+     +++++++++')
       WRITE(6,2) IGG(2),IGG(3),IGG(62)
   2   FORMAT('   EVENTS READ ',I8,'   OVERFLOW EVENTS',I8,'   OVERFLOW E
      $VENTS AFTER LEAD GLASS AND PICKUP CHECK ',I8)
@@ -1136,82 +1136,82 @@ C  STATUS FOR DATA REDUCTION STEP 2
       GFAIL=FLOAT(IGG(73))/EVS*100.
       WRITE(6,765) IGG(73),GFAIL
 765   FORMAT(' ',I10,' EVENTS FAILING TRIGGER CHECK IN REDUC1  ',F10.2
-     *,'%','               >>>>> REJECTED <<<<<')
+     +,'%','               >>>>> REJECTED <<<<<')
       GFAIL=FLOAT(IGG(65))/EVS*100.
       WRITE(6,665) IGG(65),GFAIL
 665   FORMAT(' ',I10,' EVENTS WITH > 1200 IDHITS, < 500 MEV    ',F10.2
-     *,'%','               >>>>> REJECTED <<<<<')
+     +,'%','               >>>>> REJECTED <<<<<')
       GFAIL=FLOAT(IGG(5))/EVS*100.
       WRITE(6,5) IGG(5),ETOTCT,GFAIL
  5    FORMAT(' ',I10,' LUMI   WITH TOTAL ENERGY < ',F10.2,'     ',F10.2
-     *,'%','               >>>>> REJECTED <<<<<')
+     +,'%','               >>>>> REJECTED <<<<<')
       IVAR = IGG(60)
       GFAIL=FLOAT(IVAR)/EVS*100.
       WRITE(6,56) IVAR,ZVTXLM,GFAIL
  56   FORMAT(' ',I10,' EVENTS WITH ZVTX  > ',F10.2,' AND IWRT=0 ',F10.2
-     *,'%','               >>>>> REJECTED <<<<<')
+     +,'%','               >>>>> REJECTED <<<<<')
       IVAR = IGG(72)
       GFAIL=FLOAT(IVAR)/EVS*100.
       WRITE(6,132) IVAR,GFAIL
  132   FORMAT(' ',I10,' EVENTS REJECTED BY NEW REDUC1 STEP       ',F10.200115500
-     *,'%','               >>>>> REJECTED <<<<<')
+     +,'%','               >>>>> REJECTED <<<<<')
       IVAR = IGG(32)
       GFAIL=FLOAT(IVAR)/EVS*100.
       WRITE(6,57) IVAR,GFAIL
  57   FORMAT(' ',I10,' EVENTS WITH BAD RATIO, SPECIAL CONDITIONS ',F10.200116000
-     *,'%','               >>>>> REJECTED <<<<<')
+     +,'%','               >>>>> REJECTED <<<<<')
       IVAR = IGG(42)
       GFAIL=FLOAT(IVAR)/EVS*100.
       WRITE(6,58) IVAR,GFAIL
  58   FORMAT(' ',I10,' EVENTS LABELLED AS COSMICS                ',F10.200116500
-     *,'%','               >>>>> REJECTED <<<<<')
+     +,'%','               >>>>> REJECTED <<<<<')
       IVAR = IGG(44)
       GFAIL=FLOAT(IVAR)/EVS*100.
       WRITE(6,59) IVAR,GFAIL
  59   FORMAT(' ',I10,' EVENTS FAILING RATIO AND WITH FEW PRONGS  ',F10.200117000
-     *,'%','               >>>>> REJECTED <<<<<')
+     +,'%','               >>>>> REJECTED <<<<<')
       IVAR = IGG(46) - IGG(47)
       GFAIL=FLOAT(IVAR)/EVS*100.
       WRITE(6,60) IVAR,GFAIL
  60   FORMAT(' ',I10,' EVENTS WITH NO BANK LGCL                  ',F10.200117500
-     *,'%','               >>>>> REJECTED <<<<<')
+     +,'%','               >>>>> REJECTED <<<<<')
       IVAR = IGG(47) - IGG(48)
       GFAIL=FLOAT(IVAR)/EVS*100.
       WRITE(6,61) IVAR,GFAIL
  61   FORMAT(' ',I10,' EVENTS WITH NONZERO ERRORCODE IN LGCL     ',F10.200118000
-     *,'%','               >>>>> REJECTED <<<<<')
+     +,'%','               >>>>> REJECTED <<<<<')
       IVAR = IGG(48) - IGG(49)
       GFAIL=FLOAT(IVAR)/EVS*100.
       WRITE(6,62) IVAR,GFAIL
  62   FORMAT(' ',I10,' EVENTS WITH < 2 CLUSTERS,NO GOOD TRACKS   ',F10.200118500
-     *,'%','               >>>>> REJECTED <<<<<')
+     +,'%','               >>>>> REJECTED <<<<<')
       IVAR = IGG(51)
       GFAIL=FLOAT(IVAR)/EVS*100.
       WRITE(6,63) IVAR,GFAIL
  63   FORMAT(' ',I10,' EVENTS WITH NO BANK ALGN                  ',F10.200119000
-     *,'%','               >>>>> REJECTED <<<<<')
+     +,'%','               >>>>> REJECTED <<<<<')
       IVAR = IGG(52)
       GFAIL=FLOAT(IVAR)/EVS*100.
       WRITE(6,64) IVAR,GFAIL
  64   FORMAT(' ',I10,' EVENTS WITH NTR=0, HWORLD IMBALANCE       ',F10.200119500
-     *,'%','               >>>>> REJECTED <<<<<')
+     +,'%','               >>>>> REJECTED <<<<<')
       IVAR = IGG(53)
       GFAIL=FLOAT(IVAR)/EVS*100.
       WRITE(6,65) IVAR,GFAIL
  65   FORMAT(' ',I10,' EVENTS WITH NTR=0, > 1000 IDHITS          ',F10.200120000
-     *,'%','               >>>>> REJECTED <<<<<')
+     +,'%','               >>>>> REJECTED <<<<<')
       IVAR = IGG(56)
       GFAIL=FLOAT(IVAR)/EVS*100.
       WRITE(6,66) IVAR,GFAIL
  66   FORMAT(' ',I10,' EVENTS WITH NO COLLINEARS FOUND           ',F10.200120500
-     *,'%','               >>>>> REJECTED <<<<<')
+     +,'%','               >>>>> REJECTED <<<<<')
       WRITE(6,1119)
 1119  FORMAT(' ',90(1H-))
       EVSW = IGG(80)
       GOOD=EVSW/EVS*100.
       WRITE(6,86) IGG(80),GOOD
  86   FORMAT(' ',I10,' EVENTS WRITTEN                            ',F10.200121200
-     *,'%','            OF ALL READ EVENTS')
+     +,'%','            OF ALL READ EVENTS')
       IF(IGG(80).LE.0) GO TO 2347
       IVAR = IGG(24)
       GOOD=FLOAT(IVAR)/EVSW*100.

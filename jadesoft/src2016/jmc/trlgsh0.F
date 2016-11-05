@@ -25,17 +25,17 @@ C   RATIO ESEEN/ENERGY CORRECTED  03.7.1986     19.30  J.OLSSON
 C
 C
       COMMON/CGEO1/BKGAUS, RPIP,DRPIP,XRLPIP, RBPC,DRBPC,XRLBPC,
-     *             RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
-     *             R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
-     *             R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
-     *             RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
-     *             ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
-     *             ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
-     *             ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
-     *             XRJETC,
-     *             RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
-     *             BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     *             XHOL1,XHOL2,YHOL1,YHOL2
+     +             RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
+     +             R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
+     +             R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
+     +             RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
+     +             ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
+     +             ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
+     +             ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
+     +             XRJETC,
+     +             RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
+     +             BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
+     +             XHOL1,XHOL2,YHOL1,YHOL2
       COMMON/CLGHIT/AMPLG(3000)
       DIMENSION RR(3),LISTBL(30),BLCFRC(30),VAR(2),DC(3)
       LOGICAL * 1 LFLAG
@@ -89,8 +89,8 @@ C                                           BLOCKS
       R1=R(1)**2+R(2)**2
       RADIUS = SQRT( R1 )
       IF( .NOT.
-     *  ( ZLGMI+5..LE.R(3).AND.R(3).LE.ZLGPL-5..AND.RADIUS.GT.RLG-5. ))
-     *                             GO TO 1000
+     +  ( ZLGMI+5..LE.R(3).AND.R(3).LE.ZLGPL-5..AND.RADIUS.GT.RLG-5. ))
+     +                             GO TO 1000
 C
 C                                           CENTRAL PART
 C
@@ -578,7 +578,7 @@ C
 #include "cgeo1.for"
 C
       COMMON /TRAFO/ STR,CTR,SPR,CPR,CTRCPR,CTRSPR,STRCPR,STRSPR,
-     *               JPART,XMOV,YMOV,ZMOV
+     +               JPART,XMOV,YMOV,ZMOV
       COMMON /PARAME/ P(6)
       COMMON / CJTRIG / PI,TWOPI
       DIMENSION VAR(2),DIRC(3)
@@ -760,7 +760,7 @@ C     FUNCTION TO BE INTEGRATED BY VEGAS
 C                                       16/06/82
 C
       COMMON /TRAFO/ STR,CTR,SPR,CPR,CTRCPR,CTRSPR,STRCPR,STRSPR,
-     *               JPART,XMOV,YMOV,ZMOV
+     +               JPART,XMOV,YMOV,ZMOV
       COMMON /PARAME/ P(6)
       REAL X(3)
       DATA X0 /23.90/

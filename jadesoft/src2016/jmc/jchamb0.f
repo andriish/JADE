@@ -21,46 +21,46 @@ C
       DIMENSION IERR(7)
 C
       COMMON / CJCELL / NCELL(3),
-     *                  NWIRES(3)
+     +                  NWIRES(3)
       COMMON / CJDRCH / RDEC(4),
-     *                  PSIIN(3),
-     *                  RINCR(3),
-     *                  FIRSTW(3),
-     *                  FSENSW(3),
-     *                  RDEPTH,
-     *                  SWDEPL,
-     *                  YSUSPN,
-     *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
-     *                  DRIDEV,DRICOS,DRISIN
+     +                  PSIIN(3),
+     +                  RINCR(3),
+     +                  FIRSTW(3),
+     +                  FSENSW(3),
+     +                  RDEPTH,
+     +                  SWDEPL,
+     +                  YSUSPN,
+     +                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
+     +                  DRIDEV,DRICOS,DRISIN
       COMMON / CJIONI / POTBEA, ZAROBE,
-     *                  POTTRI, ZAROTR,
-     *                  POTIVE, ZAROIV,
-     *                  POTRH0, ZAROR0,
-     *                  POTJET, ZAROJE,
-     *                  POTRH1, ZAROR1,
-     *                  POTRH2, ZAROR2,
-     *                  POTRH3, ZAROR3,
-     *                  POTOVE, ZAROOV,
-     *                  POTTOF, ZAROTO,
-     *                  POTVES, ZARVES,
-     *                  POTZJL, ZAROJL,
-     *                  POTZJR, ZAROJR
+     +                  POTTRI, ZAROTR,
+     +                  POTIVE, ZAROIV,
+     +                  POTRH0, ZAROR0,
+     +                  POTJET, ZAROJE,
+     +                  POTRH1, ZAROR1,
+     +                  POTRH2, ZAROR2,
+     +                  POTRH3, ZAROR3,
+     +                  POTOVE, ZAROOV,
+     +                  POTTOF, ZAROTO,
+     +                  POTVES, ZARVES,
+     +                  POTZJL, ZAROJL,
+     +                  POTZJR, ZAROJR
       COMMON/CGEO1/BKGAUS, RPIP,DRPIP,XRLPIP, RBPC,DRBPC,XRLBPC,
-     *             RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
-     *             R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
-     *             R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
-     *             RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
-     *             ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
-     *             ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
-     *             ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
-     *             XRJETC,
-     *             RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
-     *             BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     *             XHOL1,XHOL2,YHOL1,YHOL2
+     +             RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
+     +             R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
+     +             R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
+     +             RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
+     +             ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
+     +             ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
+     +             ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
+     +             XRJETC,
+     +             RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
+     +             BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
+     +             XHOL1,XHOL2,YHOL1,YHOL2
       COMMON / CJXDAT / XSLOPE, YSLOPE, XL(3), XH(3), R3P, RD3P,
-     *                  S, S2,
-     *                  XSL3L, X3L, XSL3H, X3H, YSL3L, Y3L, YSL3H,
-     *                  YHWIDT, SINHLF, COSHLF, DRITAN
+     +                  S, S2,
+     +                  XSL3L, X3L, XSL3H, X3H, YSL3L, Y3L, YSL3H,
+     +                  YHWIDT, SINHLF, COSHLF, DRITAN
 C
       DATA TWOPI / 6.283185 /
 C
@@ -105,8 +105,8 @@ C    -----   START TRACKING THROUGH DIFFERENT LAYERS     -----
 C
 C    -----     FIRST ROHACELL
   100 CALL JTRAPZ( 1, R, P, R0ROH, R0ROH+DR0ROH, ZJM, ZJP,
-     *                   POTRH0, ZAROR0, DR0ROH/XR0ROH, IRETRN,
-     *                   COSPHI, SINPHI )
+     +                   POTRH0, ZAROR0, DR0ROH/XR0ROH, IRETRN,
+     +                   COSPHI, SINPHI )
            IF( IRETRN .NE. 0 ) GO TO 1000
 C
 C    -----     FIRST RING
@@ -115,8 +115,8 @@ C    -----     FIRST RING
 C
 C    -----     SECOND ROHACELL
   300 CALL JTRAPZ( 1, R, P, R1ROH, R1ROH+DR1ROH, ZJM, ZJP,
-     *                   POTRH1, ZAROR1, DR1ROH/XR1ROH, IRETRN,
-     *                   COSPHI, SINPHI )
+     +                   POTRH1, ZAROR1, DR1ROH/XR1ROH, IRETRN,
+     +                   COSPHI, SINPHI )
            GO TO ( 200, 1000, 1000, 1000, 1000 ), IRETRN
 C
 C    -----     SECOND RING
@@ -125,8 +125,8 @@ C    -----     SECOND RING
 C
 C    -----     THIRD ROHACELL
   500 CALL JTRAPZ( 1, R, P, R2ROH, R2ROH+DR2ROH, ZJM, ZJP,
-     *                   POTRH2, ZAROR2, DR2ROH/XR2ROH, IRETRN,
-     *                   COSPHI, SINPHI )
+     +                   POTRH2, ZAROR2, DR2ROH/XR2ROH, IRETRN,
+     +                   COSPHI, SINPHI )
            GO TO ( 400, 1000, 1000, 1000, 1000 ), IRETRN
 C
 C    -----     THIRD RING
@@ -135,8 +135,8 @@ C    -----     THIRD RING
 C
 C    -----     FOURTH ROHACELL
   700 CALL JTRAPZ( 2, R, P, R3P, RD3P, ZJM, ZJP,
-     *                   POTRH3, ZAROR3, DR3ROH/XR3ROH, IRETRN,
-     *                   COSPHI, SINPHI )
+     +                   POTRH3, ZAROR3, DR3ROH/XR3ROH, IRETRN,
+     +                   COSPHI, SINPHI )
            IF( IRETRN .EQ. 1 ) GO TO 600
 C
 C

@@ -42,20 +42,20 @@ C--     BIG AND LONG CLUSTER
         IF( EAB(1,1).GT.30000..AND. RA1.LE.0.08)    GO TO 1000
 C--     MEDIUM SIZE;  CHECK DIRECTION IN PHI-Z PLANE
         IF( EAB(1,1).GT.20000. .AND. RA1.LT.0.2 .AND.
-     *      ABS(COSA(1)).GT.0.50 )               GO TO 1000
+     +      ABS(COSA(1)).GT.0.50 )               GO TO 1000
 C
 C---  CHECK THE 2-ND CLUSTER
 C--     BIG AND LONG CLUSTER
         IF( EAB(2,1).GT.30000..AND. RB1.LE.0.08)  GO TO 1000
 C--     MEDIUM SIZE;  CHECK DIRECTION IN PHI-Z PLANE
         IF( EAB(2,1).GT.20000. .AND. RB1.LT.0.2 .AND.
-     *      ABS(COSB(1)).GT.0.50 )                GO TO 1000
+     +      ABS(COSB(1)).GT.0.50 )                GO TO 1000
 C
 C---- SMALL SIZE    CHECK DIRECTIONS OF BOTH CLUSTER
         IF(EAB(1,1).GT.15000. .AND. RA1.LT.0.2 .AND. EAB(1,3).GE.1.0
-     *  .AND. EAB(2,1).GT.15000 .AND. RB1.LT.0.2 .AND. EAB(2,3).GE.0.5
-     *  .AND. ABS(COSA(1)).GT.0.5 .AND. ABS(COSB(1)).GT.0.5)
-     *                                           GO TO 1000
+     +  .AND. EAB(2,1).GT.15000 .AND. RB1.LT.0.2 .AND. EAB(2,3).GE.0.5
+     +  .AND. ABS(COSA(1)).GT.0.5 .AND. ABS(COSB(1)).GT.0.5)
+     +                                           GO TO 1000
 C
 C---- TIGHTER CUT
   200 ELPSCT = EAB(1,3)*200 + 20000.0

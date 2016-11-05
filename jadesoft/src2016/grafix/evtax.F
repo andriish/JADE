@@ -43,10 +43,10 @@ C
       DO 30 I = 1,NALL
          IPALL = IPALL - L2
          IF(IDATA(IPALL+9) .NE. -2 .AND.
-     *      IDATA(IPALL+9) .NE. -100) GOTO 35
+     +      IDATA(IPALL+9) .NE. -100) GOTO 35
 C
             IF(IPR .GT. 0) WRITE(6,745) IDATA(IPALL+9),
-     *                                  (ADATA(IPALL+II),II=1,5)
+     +                                  (ADATA(IPALL+II),II=1,5)
  745        FORMAT('  TYP: ',I4,'  PX,PY,PY,E,M: ',5F9.3)
 C
          NINAT = NINAT + 1
@@ -109,7 +109,7 @@ C
       IF(IPR .LE. 0) RETURN
          WRITE(6,788) HKOPP(11),NINAT,(EAXIS(II),II=1,3),XMASS,SPHITY(1)
  788     FORMAT('  EVT: ',I5,' #INPA: ',I3,'  ',
-     *             3F9.3,' MT,SPH: ',2F9.3)
+     +             3F9.3,' MT,SPH: ',2F9.3)
          WRITE(6,789) (EOUT(II),II=1,3),SPHITY(3)
  789     FORMAT('  EOUT: ',3F9.3,'  SPH: ',F9.3)
          RETURN

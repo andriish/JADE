@@ -26,7 +26,7 @@ C
 C
       COMMON / CALIBR / IPOINT(100)
       COMMON /CWORK1/ IER,NTR ,TRES(10,60),EWIR(60),XWIR(60),YWIR(60),
-     *                RWIR(60),ZWIR(60),HMW(132)
+     +                RWIR(60),ZWIR(60),HMW(132)
       COMMON / CHEADR / HEAD(108)
 C
       DIMENSION XCAL(1000), ITRES(10,60)

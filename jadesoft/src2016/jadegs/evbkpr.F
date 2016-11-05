@@ -37,7 +37,7 @@ C
 C
   4     WRITE(6,3) LNAM, IDATA( IPLNAM - 2), IDATA(IPLNAM), IPLNAM
   3     FORMAT('  NAME:  ',A4,'    BOS NR: ',I3,'    LENGTH: ',I6,
-     *         '   POINTER: ',I6)
+     +         '   POINTER: ',I6)
 C
         IPLNAM = IDATA(IPLNAM-1)
         IF( IPLNAM .GT. 0 ) GO TO 4

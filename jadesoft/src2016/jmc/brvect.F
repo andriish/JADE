@@ -51,10 +51,10 @@ C                                           READ EVENTS
 C
       IF( IFORM.GE.0 ) THEN
       READ(IUNIT,ERR=8000,END=8100)  NEV, BEAM, PT, PHI, THETA, IFLAVR,
-     *     NP, NC, NN, ( (PP(I4,N), I4=1,4), XM(N), JCH(N), JTP(N),
-     *     (JP(N,I2), I2=1,2), N=1,NP),
-     *     NF, NCF, NNF, ( (PF(I4,N2),I4=1,4), XMF(N2), ICF(N2),ITF(N2),
-     *     (PSTRT(I3,N2),I3=1,3),N2=1,NF)
+     +     NP, NC, NN, ( (PP(I4,N), I4=1,4), XM(N), JCH(N), JTP(N),
+     +     (JP(N,I2), I2=1,2), N=1,NP),
+     +     NF, NCF, NNF, ( (PF(I4,N2),I4=1,4), XMF(N2), ICF(N2),ITF(N2),
+     +     (PSTRT(I3,N2),I3=1,3),N2=1,NF)
       ELSE
 C PMF, 21/12/00: Read binary with different endian format using CFGET
          CALL CPREAD(NBUFF,'I',*8000,*8100)

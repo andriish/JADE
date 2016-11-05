@@ -66,7 +66,7 @@ C                            SORT HITS
                   IM = I + M4
                   IF( HITV(I) .LT. HITV(IM) ) GO TO 400
                   IF( HITV(I) .EQ. HITV(IM) .AND.
-     *                HITV(I+3) .GE. HITV(IM+3)) GO TO 400
+     +                HITV(I+3) .GE. HITV(IM+3)) GO TO 400
                      IM2 = ( IM - 1 ) * 2
                      I2 = ( I - 1 ) * 2
                      CALL MVC( HWBUFV, 0, HITV, IM2, 8 )

@@ -93,7 +93,7 @@ C
       DO 3 I=2,NFRAMS
           K=HCTLO(I)-HCTHI(I-1)
           IF ( HDIST(I).EQ.HDIST(I-1) .AND.
-     *         IABS(K).LT.50 ) GO TO 3
+     +         IABS(K).LT.50 ) GO TO 3
 C
               J=J+1
               IF(J.GT.NPLMAX)GO TO 98
@@ -351,15 +351,15 @@ C                            PRINT OUT CONSTANTS.
  10   CONTINUE
       IF(IPRINT.LT.10)GO TO 99
       WRITE(6,100)NREGS,
-     * (I,XRLO(I),XRHI(I),YRLO(I),YRHI(I),ZRLO(I),ZRHI(I),
-     * HRMASK(I),HRFACE(I),HRTYPE(I),HRORI(I),HRFIRS(I),HRLAST(I),
-     * I=1,NREGS)
+     + (I,XRLO(I),XRHI(I),YRLO(I),YRHI(I),ZRLO(I),ZRHI(I),
+     + HRMASK(I),HRFACE(I),HRTYPE(I),HRORI(I),HRFIRS(I),HRLAST(I),
+     + I=1,NREGS)
  100  FORMAT('1MUREG - ABSTRACTS REGIONS AS FOLLOWS...'/
-     *'0',I5,' REGIONS'/
-     *'0     REGION  XRLO      XRHI      YRLO      YRHI      ZRLO',
-     *'      ZRHI    HRMASK    HRFACE    HRTYPE      HRORI    HRFIRS',
-     *'    HRLAST'/
-     *(I10,6F10.2,Z10,5I10))
+     +'0',I5,' REGIONS'/
+     +'0     REGION  XRLO      XRHI      YRLO      YRHI      ZRLO',
+     +'      ZRHI    HRMASK    HRFACE    HRTYPE      HRORI    HRFIRS',
+     +'    HRLAST'/
+     +(I10,6F10.2,Z10,5I10))
       GO TO 99
 C
 C-----------------------------------------------------------------------

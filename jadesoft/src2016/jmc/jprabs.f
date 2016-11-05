@@ -2,7 +2,7 @@ C   29/11/77 606101228  MEMBER NAME  JPRABS9  (S)           FORTRAN
 C
 C-----------------------------------------------------------------------
       SUBROUTINE JPRABS( R, P, PENETR, PENETZ, RDOWN, RUP,
-     *                   ZDOWN, ZUP, POT, ZARO, XRAD, DRMAX,*, *, *, * )
+     +                   ZDOWN, ZUP, POT, ZARO, XRAD, DRMAX,*, *, *, * )
 C-----------------------------------------------------------------------
 C
 C   AUTHOR:   E. ELSEN    02/10/78 :  PROPAGATES PARTICLE IN ABSORBING
@@ -46,14 +46,14 @@ C
 C
 C
       ENTRY JPRBPC( R, P, PENETR, PENETZ, RDOWN, RUP,
-     *                   ZDOWN, ZUP, POT, ZARO, XRAD, DRMAX,*, *, *, * )
+     +                   ZDOWN, ZUP, POT, ZARO, XRAD, DRMAX,*, *, *, * )
       LBPC = .TRUE.
       LTOF = .FALSE.
       GO TO 1000
 C
 C
       ENTRY JPRTOF( R, P, PENETR, PENETZ, RDOWN, RUP,
-     *                   ZDOWN, ZUP, POT, ZARO, XRAD, DRMAX,*, *, *, * )
+     +                   ZDOWN, ZUP, POT, ZARO, XRAD, DRMAX,*, *, *, * )
       LBPC = .FALSE.
       LTOF = .TRUE.
 C

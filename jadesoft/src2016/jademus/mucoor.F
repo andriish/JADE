@@ -240,24 +240,24 @@ C                            PRINT MEANING OF MUCOOR ERROR MESSAGES.
 C
       WRITE(6,888)
   888 FORMAT(//6X,'THE MEANING OF THE MUON MESSAGE CODES FROM MUCOOR'/
-     *         6X,'================================================='//
-     *'     1.....CRATE NUMBER OUTSIDE RANGE 1 TO 14'/
-     *'     2.....CRATE NUMBER OUT OF SEQUENCE'/
-     *'     3.....TIME REFERENCE WORD MISSING'/
-     *'     4.....CHAMBER NUMBER OUTSIDE RANGE 1 TO 634'/
-     *'     5.....NEW CHAMBER FOUND BUT PREVIOUS CHAMBER NOT FINISHED'/
-     *'     6.....CHAMBER NUMBER OUT OF SEQUENCE'/
-     *'     7.....HIT NUMBER NOT DECREASED BY ONE'/
-     *'     8.....END-OF-CRATE FOUND INSTEAD OF A NEW CRATE MARKER'/
-     *'     9.....SINGLES COUNT < 0  OR  COUNT TIME < 0'/
-     *'    10.....OUTPUT ARRAY FULL. EXCESS HITS IN THE EVENT ARE LOST'/
-     *'    11.....LENGTH ERROR IN HMU ARRAY'/
-     *'    12.....LAST WORD IN HMU ARRAY IS NOT 0 OR 3840'/
-     *'    13.....SINGLES DATA AFTER CHAMBER WORD WITH HIT NOT 1'/
-     *'    14.....UNUSED'/
-     *'    15.....UNUSED'/
-     *'    16.....CHAMBER IN WRONG CRATE'/
-     *'  70+N.....CRATE N MISSING'//)
+     +         6X,'================================================='//
+     +'     1.....CRATE NUMBER OUTSIDE RANGE 1 TO 14'/
+     +'     2.....CRATE NUMBER OUT OF SEQUENCE'/
+     +'     3.....TIME REFERENCE WORD MISSING'/
+     +'     4.....CHAMBER NUMBER OUTSIDE RANGE 1 TO 634'/
+     +'     5.....NEW CHAMBER FOUND BUT PREVIOUS CHAMBER NOT FINISHED'/
+     +'     6.....CHAMBER NUMBER OUT OF SEQUENCE'/
+     +'     7.....HIT NUMBER NOT DECREASED BY ONE'/
+     +'     8.....END-OF-CRATE FOUND INSTEAD OF A NEW CRATE MARKER'/
+     +'     9.....SINGLES COUNT < 0  OR  COUNT TIME < 0'/
+     +'    10.....OUTPUT ARRAY FULL. EXCESS HITS IN THE EVENT ARE LOST'/
+     +'    11.....LENGTH ERROR IN HMU ARRAY'/
+     +'    12.....LAST WORD IN HMU ARRAY IS NOT 0 OR 3840'/
+     +'    13.....SINGLES DATA AFTER CHAMBER WORD WITH HIT NOT 1'/
+     +'    14.....UNUSED'/
+     +'    15.....UNUSED'/
+     +'    16.....CHAMBER IN WRONG CRATE'/
+     +'  70+N.....CRATE N MISSING'//)
       WRITE(6,863)
   863 FORMAT(' ****      SOME OF THESE MESSAGES ARE TO BE',
      +       ' EXPECTED FOR REAL DATA, ESPECIALLY "CRATE MISSING".'/
@@ -771,8 +771,8 @@ C                            DATA IS GOOD IF POSITION IS WITHIN IZEXTN
 C                            OF END OF CHAMBER
 C
           IF( ITL    .NE. 0                         .AND.
-     *        ICLONG .GE. (HCLLO(IFRAME) - IZEXTN)  .AND.
-     *        ICLONG .LE. (HCLHI(IFRAME) + IZEXTN)       ) GO TO 7
+     +        ICLONG .GE. (HCLLO(IFRAME) - IZEXTN)  .AND.
+     +        ICLONG .LE. (HCLHI(IFRAME) + IZEXTN)       ) GO TO 7
 C
 C                            THE DATA IS BAD. SET HLUN1 TO 0 (=0000)
 C
@@ -789,7 +789,7 @@ C
     7     CONTINUE
 C
           IF( ICLONG .LT. HCLLO(IFRAME) .OR. ICLONG .GT. HCLHI(IFRAME) )
-     *               NMU(23) = NMU(23) + 1
+     +               NMU(23) = NMU(23) + 1
 C
 C                            IF POSITION IS OUTSIDE CHAMBER, PULL IT IN
 C

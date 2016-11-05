@@ -45,7 +45,7 @@ C
   601  FORMAT('  CONTENTS OF SADC BEFORE SORT ')
        DO 91 I = 1,IENDMZ,8
           WRITE(6,901) SADC(I,2),SADC(I+1,2),SADC(I+2,2),SADC(I+3,2),
-     *                 SADC(I+4,2 ),SADC(I+5,2),SADC(I+6,2),SADC(I+7,2)
+     +                 SADC(I+4,2 ),SADC(I+5,2),SADC(I+6,2),SADC(I+7,2)
    91  CONTINUE
 C
 C---DEBUG--------------------------------DEBUG  END---------------------
@@ -79,7 +79,7 @@ C
   600  FORMAT('  CONTENTS OF SADC AFTER SORT ')
        DO 80 I = 1,IENDMZ,8
           WRITE(6,901) SADC(I,2),SADC(I+1,2),SADC(I+2,2),SADC(I+3,2),
-     *                 SADC(I+4,2),SADC(I+5,2),SADC(I+6,2),SADC(I+7,2)
+     +                 SADC(I+4,2),SADC(I+5,2),SADC(I+6,2),SADC(I+7,2)
    80  CONTINUE
   901  FORMAT(8(3X,F10.2) )
 C

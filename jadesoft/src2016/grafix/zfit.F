@@ -67,7 +67,7 @@ C                                           IF NOT YET DONE
           IF( LZSPD ) THEN
             CALL TRMOUT(80, '   1.ZSPD Bank......................^')
             CALL TRMOUT(80,
-     *             '   or select fit type (overwriting ZSPD banks)^')
+     +             '   or select fit type (overwriting ZSPD banks)^')
           ELSE
             CALL TRMOUT(80, '   or select fit type ^')
           ENDIF

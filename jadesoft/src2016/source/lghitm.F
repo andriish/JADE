@@ -44,7 +44,7 @@ C
 C
    22   CONTINUE
         IF(HAD.LT.400.OR.HAD.GT.2300.OR.(HAD.GT.1000.AND.HAD.LT.1700))
-     *                                            GO TO 24
+     +                                            GO TO 24
         NPLOT = HAD
         ADC = HLGADC(2,N)
         CALL HFILL( NPLOT, ADC, DUM, 1.0)

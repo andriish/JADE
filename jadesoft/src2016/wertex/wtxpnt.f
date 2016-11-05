@@ -20,8 +20,8 @@ C PMF 03.11.98
 C%MACRO MVERTEX1
 C     MACRO FOR VERTEX-FIT ROUTINES
       COMMON /CWORK1/ NT,T(2000),NV,V(200),A(300),B(24),NTIND(20),S(20),
-     *                CHITR(20),
-     *                JTGOD(50),JTBAD(50),VSAVE(10),V2(20,20)
+     +                CHITR(20),
+     +                JTGOD(50),JTBAD(50),VSAVE(10),V2(20,20)
 C
       DIMENSION IT(2),IV(2)
       EQUIVALENCE (T(1),IT(1)),(V(1),IV(1))
@@ -82,10 +82,10 @@ C
 C                                      MULTIPLE SCATTERRING ( TANKWALL )
       DXY = ( T(J+16) * SSCOUL )**2 +
 C                                      MULTIPLE SCATTERRING ( BEAMPIPE )
-     *      ( T(J+17) * SSCVXC )**2 +
+     +      ( T(J+17) * SSCVXC )**2 +
 C                                      PARABOLA FIT
-     *      ((( T(J+32)   *X + T(J+33) ) *X +
-     *          T(J+34) ) *X + T(J+35) ) *X + T(J+36)
+     +      ((( T(J+32)   *X + T(J+33) ) *X +
+     +          T(J+34) ) *X + T(J+35) ) *X + T(J+36)
 C
 C                                      ERROR IN PHI (NOT SQUARED)
 C
@@ -116,7 +116,7 @@ C
 C                                      MULTIPLE SCATTERRING
       DZT2 = ( T(J+16) * SSCOUL )**2 + ( T(J+17) * SSCVXC )**2 +
 C                                      LINE FIT (WITH TRIPLETS)
-     *         T(J+37) * ( 1.5 + 18.*X**2 )
+     +         T(J+37) * ( 1.5 + 18.*X**2 )
 C
       RETURN
 C

@@ -120,7 +120,7 @@ C
        IF ( IWRITE .NE. 1 ) RETURN
        DO 50 I = 1,NCLST
           WRITE(6,602) CMAP(I,1) ,CMAP(I,2) ,CMAP(I,3) ,CMAP(I,4) ,
-     *                 CMAP(I,5) ,CMAP(I,6) ,CMAP(I,7) ,CMAP(I,9 )
+     +                 CMAP(I,5) ,CMAP(I,6) ,CMAP(I,7) ,CMAP(I,9 )
    50  CONTINUE
   602  FORMAT(9(2X,F10.2))
        RETURN

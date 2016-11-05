@@ -45,4 +45,4 @@ ${SRCTAGG}/tagsum.F
 ${SRCTAGG}/tracks.f
 ${SRCTAGG}/umcpak.f
 )
-ADD_LIBRARY(${TAGGLIB} STATIC ${TAGG_src})
+ADD_LIBRARY(${TAGGLIB} tagg ${TAGG_src})

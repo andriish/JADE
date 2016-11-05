@@ -40,21 +40,21 @@ C
       COMMON/CFLAG/LFLAG(10)
 C
       COMMON / CGEO1  / BKGAUS, RPIP,DRPIP,XRLPIP, RBPC,DRBPC,XRLBPC,
-     *                  RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
-     *                  R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
-     *                  R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
-     *                  RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
-     *                  ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
-     *                  ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
-     *                  ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
-     *                  XRJETC,
-     *                  RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
-     *                  BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     *                  XHOL1,XHOL2,YHOL1,YHOL2
+     +                  RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
+     +                  R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
+     +                  R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
+     +                  RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
+     +                  ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
+     +                  ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
+     +                  ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
+     +                  XRJETC,
+     +                  RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
+     +                  BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
+     +                  XHOL1,XHOL2,YHOL1,YHOL2
 C
       COMMON / CGEOV  / RPIPV, DRPIPV, XRLPIV, RVXC, DRVXC, XRLVXC,
-     *                  ZVXCM, DZVCM, XRZVCM, ZVXCP, DZVCP, XRZVCP,
-     *                  XRVTXC
+     +                  ZVXCM, DZVCM, XRZVCM, ZVXCP, DZVCP, XRZVCP,
+     +                  XRVTXC
 C
       DIMENSION PV(10),R0(3),R(3),P1(10),P2(10)
 C

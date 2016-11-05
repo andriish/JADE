@@ -130,7 +130,7 @@
                       KP=HPTR0
                       CSTH=WRK(KP+4)*WRK(KP+7)+WRK(KP+5)*WRK(KP+8)
                       CSTH=CSTH/SQRT((WRK(KP+4)**2+WRK(KP+5)**2)*
-     *                          (WRK(KP+7)**2+WRK(KP+8)**2))
+     +                          (WRK(KP+7)**2+WRK(KP+8)**2))
                       IF(CSTH.LT.YBKK(13)) HNREL(ITR) = 0
       ENDIF
       IF(

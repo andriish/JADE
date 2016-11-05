@@ -37,17 +37,17 @@ C
       COMMON / CJTCDC / IBANK, IPART
       COMMON / CIEVS  / KIEV,IEVMIN,IEVMAX
       COMMON / CGEO1  / BKGAUS, RPIP,DRPIP,XRLPIP, RBPC,DRBPC,XRLBPC,
-     *                  RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
-     *                  R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
-     *                  R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
-     *                  RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
-     *                  ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
-     *                  ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
-     *                  ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
-     *                  XRJETC,
-     *                  RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
-     *                  BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     *                  XHOL1,XHOL2,YHOL1,YHOL2
+     +                  RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
+     +                  R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
+     +                  R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
+     +                  RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
+     +                  ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
+     +                  ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
+     +                  ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
+     +                  XRJETC,
+     +                  RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
+     +                  BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
+     +                  XHOL1,XHOL2,YHOL1,YHOL2
 C
       DIMENSION PV(10),R0(5),RR(5)
       DIMENSION PVSAVE(10),R0SAVE(3)
@@ -87,22 +87,22 @@ C
 C
       IF(LFLAG(4)) WRITE(6,111)
   111 FORMAT(///,X,'***********************************************',/,
-     *           X,'* LEAD GLASS SIMULATION IS DONE USING         *',/,
-     *           X,'*        F11MEI.MCSHOWS(TRLG3)                *',/,
-     *           X,'*                                             *',/,
-     *           X,'* CONTAINING :                                *',/,
-     *           X,'*                                             *',/,
-     *           X,'*     - EM. SHOWERS FROM INTEGRATION OVER     *',/,
-     *           X,'*       3 DIM SHOWER FUNCTION FOR PARTICLES   *',/,
-     *           X,'*       ABOVE 100 MEV                         *',/,
-     *           X,'*     - STANDARD EM-SHOWER PROCEDURE FOR      *',/,
-     *           X,'*       FOR LOW ENERGY PARTICLES              *',/,
-     *           X,'*     - HADRON INTERACTION USING THE KANZAKI  *',/,
-     *           X,'*       SCHEME BASED ON THE KEK MEASURMENTS   *',/,
-     *           X,'*       LIGHT GUIDES ARE INCLUDED FOR BARREL  *',/,
-     *           X,'*                                             *',/,
-     *           X,'*                           VERSION 20/09/83  *',/,
-     *           X,'***********************************************',//)
+     +           X,'* LEAD GLASS SIMULATION IS DONE USING         *',/,
+     +           X,'*        F11MEI.MCSHOWS(TRLG3)                *',/,
+     +           X,'*                                             *',/,
+     +           X,'* CONTAINING :                                *',/,
+     +           X,'*                                             *',/,
+     +           X,'*     - EM. SHOWERS FROM INTEGRATION OVER     *',/,
+     +           X,'*       3 DIM SHOWER FUNCTION FOR PARTICLES   *',/,
+     +           X,'*       ABOVE 100 MEV                         *',/,
+     +           X,'*     - STANDARD EM-SHOWER PROCEDURE FOR      *',/,
+     +           X,'*       FOR LOW ENERGY PARTICLES              *',/,
+     +           X,'*     - HADRON INTERACTION USING THE KANZAKI  *',/,
+     +           X,'*       SCHEME BASED ON THE KEK MEASURMENTS   *',/,
+     +           X,'*       LIGHT GUIDES ARE INCLUDED FOR BARREL  *',/,
+     +           X,'*                                             *',/,
+     +           X,'*                           VERSION 20/09/83  *',/,
+     +           X,'***********************************************',//)
 C
       DO 1001 IEV=1,NEVTS
       IF( JUHR(NSEC) .NE. 2 ) GO TO 1011

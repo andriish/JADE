@@ -237,8 +237,8 @@ C---                        **************************
       PTOT = ABS(AH03/(CRV*CST))
       IF( FLVCDO(9) .AND. PTOT.LT.PTOTCT ) GOTO 2102
       IF( FLVCDO(9) .AND. PTOTCT.LT.0.0 .AND.
-     *    ((TBIT(ICD,15) .AND. IRC.NE.0 ).OR.
-     *     .NOT.TBIT(ICD,15)) ) GOTO 2102
+     +    ((TBIT(ICD,15) .AND. IRC.NE.0 ).OR.
+     +     .NOT.TBIT(ICD,15)) ) GOTO 2102
 C** DISPLAY TRACKS
       ITYPLI = IDATA(IQO+29)
 C                     PARABOLA FITS

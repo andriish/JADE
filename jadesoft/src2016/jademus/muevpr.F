@@ -164,7 +164,7 @@ C  916 INVALID COUNT OF HITS
       IP = IP - 2*IPMU - 2
       WRITE(6,120)IP, (HMU(I),I=I1,I2)
   120 FORMAT(' MUEVPR - ERROR AT WORD',I3,'       ****',
-     *   /' ',10X, 10I6 , '  GIVE UP AND CALL HPRS' )
+     +   /' ',10X, 10I6 , '  GIVE UP AND CALL HPRS' )
       CALL HPRS('MUEV',0)
       GO TO 201
 C

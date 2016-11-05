@@ -18,7 +18,7 @@ C                            COMMONS
 C
       COMMON / CMUPRN / MUPRIN,MUHPR
       COMMON / CMUIEV / IEV,NEV,IRD,KRUN,KREC,
-     *                  ISECS,IMINS,IHOURS,IDAY,IMONTH,IYEAR
+     +                  ISECS,IMINS,IHOURS,IDAY,IMONTH,IYEAR
 #include "cmubcs.for"
 C
 C------------------  C O D E  ------------------------------------------

@@ -62,7 +62,7 @@ C                            CHECK IF MP-STRING IS CORRECT
          IF( HDATA(IAPOIN + ILMPST) .NE. -2 ) GO TO 2000
              GO TO 4000
  2000    IF( HDATA(IAPOIN + ILMPST) .NE. -1  .OR.
-     *       HDATA(IAPOIN + ILMPST - 1) .NE. -2 ) GO TO 9000
+     +       HDATA(IAPOIN + ILMPST - 1) .NE. -2 ) GO TO 9000
 C
 C                            PROCESS MICROPROCESSOR-STRING
 C                            ERRORWORD AND NUMBER OF HITS IN MP-STRING
@@ -201,11 +201,11 @@ C
                      IF( IHA(I+3) .NE. 240 ) GO TO 4480
                      IF( I+4 .GT. IENDO .OR. I+5 .GT. IENDO ) GO TO 4600
                      IF( IHA(I+4) .GT. 247 .OR. IHA(I+5) .GT. 247 )
-     *                                                      GO TO 4600
+     +                                                      GO TO 4600
                      IF( IHA(I+4) + IHA(I+5) - 2*IPED .LT. 1 )
-     *                                                      GO TO 4480
+     +                                                      GO TO 4480
                         DRFTME = DRFTIM( NCHA, IHA(I+4), IHA(I+5),
-     *                                   IPED, NCD )
+     +                                   IPED, NCD )
                         DRFWAY = DRFTME*DRVELO( NCEL+1 )
 C
                         CALL xCALCOR( XWIRE, YWIRE, EEX, EEY, DRFWAY )! PMF 11/04/00 CALCOR->xCALCOR
@@ -225,7 +225,7 @@ C
                   IF( ILSUMH .GT. (ILWSID*2 - 6) ) GO TO 4800
 C
                   IF( ILSUMH .EQ. (ILWSID*2 - 6) .OR.
-     *                ILSUMH .EQ. (ILWSID*2 - 7) )  GO TO 4800
+     +                ILSUMH .EQ. (ILWSID*2 - 7) )  GO TO 4800
                      IPHELP = IPHELP + ILHIT
                      GO TO 4200
  4800 CONTINUE
@@ -237,7 +237,7 @@ C                            SAFETY CHECK IF END OF MP-STRING
             IF( ILSUMM .GT. (ILMPST-7) ) GO TO 5000
 C                            LAST WIRESIDE-STRING ?
             IF( ILSUMM .EQ. (ILMPST-7) .OR. ILSUMM .EQ. (ILMPST-8) )
-     *                                         GO TO 5000
+     +                                         GO TO 5000
                IPMPST = IPMPST + ILWSID
                GO TO 4100
  4900    CALL TRMOUT(80,' DRVCRD: ERROR IN BPCH WIRESIDE-STRING^')
@@ -250,7 +250,7 @@ C                            SAFETY CHECK IF END OF BANK
             IF( ILSUMB .GT. ILHVCR-2 ) GO TO 9999
 C                            LAST MP-STRING ?
             IF( ILSUMB .EQ. ILHVCR-2 .OR. ILSUMB .EQ. ILHVCR-3 )
-     *                                               GO TO 9999
+     +                                               GO TO 9999
                IAPOIN = IAPOIN + ILMPST
                GO TO 1000
  9000    CALL TRMOUT(80,' DRVCRD: ERROR IN BPCH MICROPROCESSOR-STRING^')

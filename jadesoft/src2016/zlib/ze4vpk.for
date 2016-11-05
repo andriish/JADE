@@ -77,7 +77,7 @@ C                                           FORMAT OF ZE4V BANK
 CHANGED :  LTCH (12 )  31.3.88 MZ
 C
       DATA  LH / 31 /, LT / 9 /, LVX / 3 /,
-     * LTCH / 14 /, LTNE / 5 /, LTRE / 5 /
+     + LTCH / 14 /, LTNE / 5 /, LTRE / 5 /
 C                                            FORMAT OF ZEHD BANK
       DATA HVERS/ 1 /, LZHD / 3 /
       DATA LCUT / 12 /
@@ -192,7 +192,7 @@ C                                      PATR - NBANK
       NPLGCL = IW( IBLN('LGCL'))
       IF( NPPATR .LE. 0 .AND. NPLGCL .LE. 0 ) CALL FEHLER (2,*8000 )
       IF( NPLGCL .LE. 0 .AND. IMODE .EQ. 1
-     *.OR.NPLGCL .LE. 0 .AND. IMODE .EQ. 3 ) CALL FEHLER( 2, *8000 )
+     +.OR.NPLGCL .LE. 0 .AND. IMODE .EQ. 3 ) CALL FEHLER( 2, *8000 )
 C
       NPHEAD = IW( IBLN( 'HEAD' ))
       IF ( NPHEAD .GT. 0 ) THEN
@@ -282,7 +282,7 @@ C                                        FIND NO OF JETS
           DO 4110 IMC=1,NPRONM
             IND = IND - IW(NPVECT+2)
             IF( IND .GE. NPVECT + IW(NPVECT+1) .AND.
-     *          IW(IND+7).LT.-100 ) THEN
+     +          IW(IND+7).LT.-100 ) THEN
               NJET = NJET + 1
               RW(NPZE4V + NPMC + 1) = RW(IND+1)
               RW(NPZE4V + NPMC + 2) = RW(IND+2)
@@ -349,9 +349,9 @@ C                                      EXTEND BANK
         CALL BCHM( NPZE4V, LT+LTCH, IER )
 C                                      POINTER TO NEXT ZE4V-WORD
         NP = NPZE4V + LHEAD + HW( NPZE4V*2 + 6) * LT
-     *                      + HW( NPZE4V*2 + 8) * LTCH
-     *                      + HW( NPZE4V*2 +10) * LTNE
-     *                      + HW( NPZE4V*2 +12) * LTRE
+     +                      + HW( NPZE4V*2 + 8) * LTCH
+     +                      + HW( NPZE4V*2 +10) * LTNE
+     +                      + HW( NPZE4V*2 +12) * LTRE
         NP2 = NP * 2
 C                                      SUM UP # OF TOTAL AND CH. TRKS
         HW(NPZE4V*2+8 ) = HW(NPZE4V*2+8) + 1
@@ -460,7 +460,7 @@ C                                      MUON QUALITY FLAG OR 0
           MUONQU = HW( NPTPTR*2 + 96 )
 CHANGED  13.4.88
           IF ( MUONQU .EQ. 9 )
-     *      HW( NP2 + 8 ) = HW( NP2 + 8 )/100*100 + 3
+     +      HW( NP2 + 8 ) = HW( NP2 + 8 )/100*100 + 3
 C                                      TOF RESULTS (BETA)
           IF ( ABS( IW( NPTPTR + 58 )) .EQ. 1 ) THEN
             HBETA = INT( RW( NPTPTR+61 ) * 1000.) * IW( NPTPTR + 58 )
@@ -469,7 +469,7 @@ C                                      TOF RESULTS (BETA)
 C                                      IF NOT FILLED, GENERATE
 C                                      FOR MC
         IF( MC .AND.
-     *      NDEDX.GE.0 .AND.  DEDX.EQ.0. .AND. SIDEDX.EQ.0. ) THEN
+     +      NDEDX.GE.0 .AND.  DEDX.EQ.0. .AND. SIDEDX.EQ.0. ) THEN
           CALL EAMCDE( NP, IVECT, DEDX, SIDEDX, NDEDX )
         ENDIF
 C
@@ -563,9 +563,9 @@ C                                           ACCEPT THIS TRACK
         CALL BCHM( NPZE4V, LT+LTNE, IER )
 C                                      POINTER TO NEXT ZE4V-WORD
         NP = NPZE4V + LHEAD + HW( NPZE4V*2 + 6) * LT
-     *                      + HW( NPZE4V*2 + 8) * LTCH
-     *                      + HW( NPZE4V*2 +10) * LTNE
-     *                      + HW( NPZE4V*2 +12) * LTRE
+     +                      + HW( NPZE4V*2 + 8) * LTCH
+     +                      + HW( NPZE4V*2 +10) * LTNE
+     +                      + HW( NPZE4V*2 +12) * LTRE
         NP2 = NP * 2
 C                                      SUM UP # OF TOTAL AND NE. TRKS
         HW(NPZE4V*2+10) = HW(NPZE4V*2+10) + 1
@@ -626,8 +626,8 @@ C                                           SAVE AWAY BLANK COMMON
          IF( IEV.LT.IEVLIM) CALL PWRT( NST+1, NST+N, 10000 )
          NPZE4V = IW(IBLN('ZE4V'))
          CALL zSPTHAK( NST+1, NST+N, NST+N+4, THR, ! PMF 11/04/00 SPTHAK->zSPTHAK
-     *                              NST+N+1, SPH,
-     *                              NST+N+5, AKO, IER )
+     +                              NST+N+1, SPH,
+     +                              NST+N+5, AKO, IER )
 C                                      SPHERICITY
          CALL UCOPY( P(1,NST+N+1), RW(NPZE4V+ 9), 4 )
          CALL UCOPY( P(1,NST+N+2), RW(NPZE4V+13), 4 )
@@ -685,8 +685,8 @@ C                                      RUN/EVENT #
       RW(NPZE4V  + 8) = .001*EBEAM( HW(NPZE4V*2+13 ) )
 C
       CALL zSPTHAK( NST+1, NST+N, NST+N+4, THR, ! PMF 11/04/00 SPTHAK->zSPTHAK
-     *                           NST+N+1, SPH,
-     *                           NST+N+5, AKO, IER )
+     +                           NST+N+1, SPH,
+     +                           NST+N+5, AKO, IER )
 C                                      SPHERICITY
       CALL UCOPY( P(1,NST+N+1), RW(NPZE4V+ 9), 4 )
       CALL UCOPY( P(1,NST+N+2), RW(NPZE4V+13), 4 )

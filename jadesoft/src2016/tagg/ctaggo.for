@@ -26,9 +26,9 @@ C
       EQUIVALENCE ( HACLS(1) , HID1 )
 C
       COMMON / CTAGG0 / HID3,HID4,HTRACK,HTRZMI,HTRZPL,HCLST,
-     *                  HCLZMI,HCLZPL,HNEUT,HCOL,HTYPE,HER,HCORR,
-     *                  HPBLAT,HDUM1,HDUM2,HSCAL(36),HWPCL,HWPTR,
-     *                  HDUMM2(14)
+     +                  HCLZMI,HCLZPL,HNEUT,HCOL,HTYPE,HER,HCORR,
+     +                  HPBLAT,HDUM1,HDUM2,HSCAL(36),HWPCL,HWPTR,
+     +                  HDUMM2(14)
       DIMENSION     ATAGG0(34)
       EQUIVALENCE ( HID3 , ATAGG0(1) )
 C
