@@ -28,6 +28,10 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 # are to your liking.
 
 #INCLUDE(${CMAKE_MODULE_PATH}/SetCompileFlag.cmake)
+#set(CERNLIB_FIND_QUIETLY FALSE)
+set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CERNLIB_FIND_REQUIRED ON)
+INCLUDE(${CMAKE_MODULE_PATH}/FindCERNLIB.cmake)
 
 #SET_COMPILE_FLAG(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}" Fortran 
 #"-m32 -std=legacy -m32 -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons " ) 
@@ -57,7 +61,7 @@ if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
 elseif (Fortran_COMPILER_NAME MATCHES "ifort.*")
    set(CMAKE_Fortran_FLAGS            "-fno-automatic -fno-backslash -extend-source 132")	
 elseif (Fortran_COMPILER_NAME MATCHES "xlf.*")
-   set(CMAKE_Fortran_FLAGS           " -qthreaded -qhalt=e ")	
+   set(CMAKE_Fortran_FLAGS           " -m32 -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
 endif()
 message(STATUS "Fortran compiler : ${Fortran_COMPILER_NAME}")
 elseif()

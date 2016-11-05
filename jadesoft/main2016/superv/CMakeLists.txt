@@ -3,7 +3,7 @@
 ########################################
 
 # Add the source files
-SET(SUPERV_src ${SRCSUPERV}/ana.F  ${SRCSUPERV}/cana.for  ${SRCSUPERV}/jdmain.f  ${SRCSUPERV}/showb.f  ${SRCSUPERV}/user.f)
+SET(SUPERV_src ${SRCSUPERV}/ana.F    ${SRCSUPERV}/jdmain.f  ${SRCSUPERV}/showb.f  ${SRCSUPERV}/user.f ${SRCMCJADE}/mcrand.f)
 
 # Define the executable in terms of the source files
 ADD_EXECUTABLE(${SUPERVEXE} ${SUPERV_src})
@@ -13,7 +13,8 @@ ADD_EXECUTABLE(${SUPERVEXE} ${SUPERV_src})
 #####################################################
 
 # This links foo to the bar library
-TARGET_LINK_LIBRARIES(${SUPERVEXE} ${BARLIB})
+TARGET_LINK_LIBRARIES(${SUPERVEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+ ${CERN_LIBRARIES}  X11 -Wl,--end-group)
 
 # Uncomment if you need to link to BLAS and LAPACK
 #TARGET_LINK_LIBRARIES(${SUPERVEXE} ${BLAS_LIBRARIES}

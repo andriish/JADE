@@ -3,7 +3,7 @@
 ########################################
 
 # Add the source files
-SET(ZE4V_src ${SRCZE4V}/ze4vjb.f)
+SET(ZE4V_src ${SRCZE4V}/ze4vjb.f ${SRCMCJADE}/mcrand.f ${SRCSUPERV}/showb.f )
 
 # Define the executable in terms of the source files
 ADD_EXECUTABLE(${ZE4VEXE} ${ZE4V_src})
@@ -13,7 +13,8 @@ ADD_EXECUTABLE(${ZE4VEXE} ${ZE4V_src})
 #####################################################
 
 # This links foo to the bar library
-TARGET_LINK_LIBRARIES(${ZE4VEXE} ${BARLIB})
+TARGET_LINK_LIBRARIES(${ZE4VEXE} -Wl,--start-group ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+ ${CERN_LIBRARIES}  X11 -Wl,--end-group)
 
 # Uncomment if you need to link to BLAS and LAPACK
 #TARGET_LINK_LIBRARIES(${ZE4VEXE} ${BLAS_LIBRARIES}

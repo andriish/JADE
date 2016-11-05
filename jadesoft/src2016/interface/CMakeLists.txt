@@ -1,4 +1,5 @@
 SET(INTERFACE_src
+${SRCINTERFACE}/hfix.f
 ${SRCINTERFACE}/biby.f
 ${SRCINTERFACE}/dlib.f
 ${SRCINTERFACE}/igwlcm.F
