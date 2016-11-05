@@ -57,7 +57,7 @@ C--------------------
      + 10X,I10,11X,
      +'EVENTS CONTINUE FOR PROCESSING BY REDUC1 PACKAGE'/)
 C-----------------------------------
-C TRIGGER ACCEPT / REJECT & POSTPONE
+C TRIGGER ACCEPT / REJECT * POSTPONE
 C-----------------------------------
       NLB48=N4RED-IGG(14)-IGG(15)-IGG(21)
       NLB8=IGG(24) + IGG(25)+IGG(27)+IGG(28)+IGG(29)+IGG(30)
@@ -134,7 +134,7 @@ C ONLY LBACC = 4 , 8 LEFT
      +          IGG(36),FIGG36,IGG(40),FIGG40
  1080 FORMAT(31X,'CREATE PATR BANK'/
      + 10X,I10,1X,'(',F6.2,'%) ',
-     +'EVENTS ARRIVE FOR PATREC TESTS (LABEL 4 & 8)'/
+     +'EVENTS ARRIVE FOR PATREC TESTS (LABEL 4 * 8)'/
      + 10X,I10,1X,'(',F6.2,'%) ',
      +'EVENTS ACCEPTED BECAUSE NO PATREC BANK COULD BE CREATED'/
      + 10X,I10,1X,'(',F6.2,'%) ',
@@ -219,7 +219,7 @@ C----------------------------------------------------------
       IF( IRLCOU .EQ. 0 ) LOGUNI = IWUNIT
       IF( IWUNIT.NE.LOGUNI ) GO TO 8101
         XMBYTE = 0.
-        CALL BLOC( NPBUF, '+BUF', IWUNIT, &8101, IER )
+        CALL BLOC( NPBUF, '+BUF', IWUNIT, *8101, IER )
           XMBYTE = 4.E-6*(IW(NPBUF+7) - IRLCOU )
           IRLCOU = IW(NPBUF+7)
  8101 CONTINUE

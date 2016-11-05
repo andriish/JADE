@@ -9,9 +9,9 @@ C------------------------------------------------- 03.03.86 J.H. -------
 C
       REAL*8 VCDATE
       COMMON / CVCCAL / NVFREE, VFREE(50), VCDATE,
-     &      T0, VD, CSLOR, SNLOR, VROT, VDX, VZX, VDY, VZY,
-     &      S0R(2,168), CVD(2,168),
-     &      VIHCRR(7,2,25)
+     *      T0, VD, CSLOR, SNLOR, VROT, VDX, VZX, VDY, VZY,
+     *      S0R(2,168), CVD(2,168),
+     *      VIHCRR(7,2,25)
 C
 C     NVFREE  : NUMBER OF FREE REAL WORDS IN VFREE
 C     VFREE   : REAL ARRAY FOR CONSTANTS

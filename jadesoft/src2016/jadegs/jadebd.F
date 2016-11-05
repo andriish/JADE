@@ -389,7 +389,7 @@ C
       DATA  XHOL1, XHOL2 / 140., 320. /
       DATA  YHOL1, YHOL2 / 140., 320. /
 C
-C- - - - - - - - -   CGEO2  &  CGEO2COM  - - - - - - - - - - - - - - - -
+C- - - - - - - - -   CGEO2  *  CGEO2COM  - - - - - - - - - - - - - - - -
 C
 #include "cgeo2com.for"
 #include "cgeo2.for"
@@ -410,7 +410,7 @@ C
 C
       DATA WLEN / 800. /, PITCH / 25. /, WZDIS / 10. /
 C
-C- - - - - - - - -   CGEO3  &  CGEO3COM  - - - - - - - - - - - - - - - -
+C- - - - - - - - -   CGEO3  *  CGEO3COM  - - - - - - - - - - - - - - - -
 C
 #include "cgeo3com.for"
 #include "cgeo3.for"
@@ -570,7 +570,7 @@ C
       DATA IEVMIN /      1 /
       DATA IEVMAX / 999999 /
 C
-C- - - - - - - - -   CVFLAG  &  CVERR  - - - - - - - - - - - - - - - - -
+C- - - - - - - - -   CVFLAG  *  CVERR  - - - - - - - - - - - - - - - - -
 C
 C                            MESSAGES AND FLAGS USED (MAINLY) FOR INPUT
 C                            ERROR CHECKING IN THE MONTE CARLO

@@ -39,9 +39,9 @@ C          EAB(2,2) : SMALLER EIGEN-VALUE OF THE CLUSTER               |
 C                          WITH 2ND ENERGY IN THE BARREL PART          |
 C          EAB(2,3) : 2ND MAXIMUM CLUSTER ENERGY                       |
 C                                     IN THE BARREL LEAD GLASS         |
-C             TA    : ANGLE BETWEEN PHI & EIGEN-VECTOR OF CLUSTER A    |
+C             TA    : ANGLE BETWEEN PHI * EIGEN-VECTOR OF CLUSTER A    |
 C                                                                      |
-C             TB    : ANGLE BETWEEN PHI & EIGEN-VECTOR OF CLUSTER B    |
+C             TB    : ANGLE BETWEEN PHI * EIGEN-VECTOR OF CLUSTER B    |
 C                                                                      |
 C             TD    : ANGLE BETWEEN TWO CLUSTERS                       |
 C                                                                      |
@@ -57,7 +57,7 @@ C----------------------------------------------------------------------+
       EQUIVALENCE (IW(1),RW(1)),(IW(1),HW(1))
       COMMON /MAXCLS/EIG1,EIG2,EIGSUM,EIGDIV,MAXHIT,ECMAX,MAXCL
       COMMON /EIGAB/CSD(2),CSA(2),CSB(2),
-     &        EIGA1,EIGA2,EIGB1,EIGB2,ENEA,ENEB,NA,NB,DNOR
+     *        EIGA1,EIGA2,EIGB1,EIGB2,ENEA,ENEB,NA,NB,DNOR
       DIMENSION EAB(2,3),COSD(2),COSA(2),COSB(2)
 #include "clgwork1.for"
 C-----------------------------------------------------------------------

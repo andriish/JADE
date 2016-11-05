@@ -60,7 +60,7 @@ C -------------------------------------------------------------------
 200   CONTINUE
 C                                    SELECT EVENT
       JIGG(2) = JIGG(2) + 1
-      CALL SPITZ(&11)
+      CALL SPITZ(*11)
 C
 C RETURN1 = GO TO 11, WRITE EVENT
 C   IF OUTSIDE RUN LIMITS 16803,17326   OR IF NO HEAD OR JETC BANK.

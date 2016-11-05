@@ -150,11 +150,11 @@ C                                     DET < 0,  3 REAL SOLUTIONS
   450    CONTINUE
          IF( RP1 .GT. RTS ) GO TO 600
          IF(.NOT.TBIT(ICD,15) .OR. (TBIT(ICD,15).AND..NOT.FLVCDO(10)) )
-     &                                        CALL DRAWA(-XP,YP)
+     *                                        CALL DRAWA(-XP,YP)
          IF( TBIT(ICD,15) .AND. FLVCDO(10) .AND. IRC .LT. 0 )
-     &                                        CALL DRAWA(-XP,YP)
+     *                                        CALL DRAWA(-XP,YP)
          IF( TBIT(ICD,15) .AND. FLVCDO(10) .AND. IRC .GE. 0 )
-     &                                        CALL DASHA(-XP,YP,34)
+     *                                        CALL DASHA(-XP,YP,34)
   500 CONTINUE
   600 CONTINUE
       IF( LASTVW.NE.20 ) CALL TRNUMB(ITR,0,XP,YP,ZP)
@@ -199,11 +199,11 @@ C                                   CHECK LIMITS
       R2 = RP
       Z2 = ZP
       IF(.NOT.TBIT(ICD,15) .OR. (TBIT(ICD,15).AND..NOT.FLVCDO(10)) )
-     &                                        CALL DRAWA(-XP,YP)
+     *                                        CALL DRAWA(-XP,YP)
       IF( TBIT(ICD,15) .AND. FLVCDO(10) .AND. IRC .LT. 0 )
-     &                                        CALL DRAWA(-XP,YP)
+     *                                        CALL DRAWA(-XP,YP)
       IF( TBIT(ICD,15) .AND. FLVCDO(10) .AND. IRC .GE. 0 )
-     &                                        CALL DASHA(-XP,YP,34)
+     *                                        CALL DASHA(-XP,YP,34)
       IF( IFLGX .EQ. 0 ) GO TO 650
       IF( IFLGX .EQ. 1 ) CALL PLYGON(6,10.,-XP,YP,0)
       RETURN

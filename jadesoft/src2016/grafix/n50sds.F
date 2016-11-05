@@ -71,7 +71,7 @@ C
 C
       DO  100  I = 1,NT
 C
-C                            GET COORDINATES OF 1ST & LAST POINTS IN MM
+C                            GET COORDINATES OF 1ST * LAST POINTS IN MM
 C
         CALL N50SCO( JPTR, X1, Y1, Z1, X2, Y2, Z2, R )
 C

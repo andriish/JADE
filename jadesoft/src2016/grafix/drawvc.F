@@ -69,8 +69,8 @@ C                            DRAW CELL NUMBERS ON SCREEN
 C                            UNLESS DEMAGNIFIED VIEW
 C
   200 IF( JNDEX .NE. 16 .OR. ( FL22 .AND.
-     &     ABS(XMAX-XMIN) .GT. ABS(XMAXST(20) - XMINST(20))) .OR.
-     &     DSPDTM(16) ) GO TO 600
+     *     ABS(XMAX-XMIN) .GT. ABS(XMAXST(20) - XMINST(20))) .OR.
+     *     DSPDTM(16) ) GO TO 600
          CALL CHRSIZ( 4 )
          XSCAL = (XMAX - XMIN)/690.
          IF( FL22 ) XSCAL = (XMAXR - XMINR)/690.
@@ -156,7 +156,7 @@ C
 C
 C                            MARK BAD CELL BORDER
       IF( (JNDEX .NE. 16) .OR. (.NOT. DSPDTL(4)) .OR.
-     &    (HEAD(18) .LE. 100) ) GO TO 1800
+     *    (HEAD(18) .LE. 100) ) GO TO 1800
          CS1213 = COS(13.0*ANG2 - ANG1 + ADEV)
          SN1213 = SIN(13.0*ANG2 - ANG1 + ADEV)
          XF1213 = (RR11V-1.0)*CS1213 + XDEV

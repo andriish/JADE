@@ -38,7 +38,7 @@ C----------------------------------------
 107   IR(J,I) = 0
 C---   CALL TOF PROGRAM HERE
       NRUN = HEAD(18)
-      CALL TOFINT(NRUN,IPATOF,IPPATR,&1000)
+      CALL TOFINT(NRUN,IPATOF,IPPATR,*1000)
       IF(NN.GE.0) GO TO 99
       IF(NN.EQ.-1) GO TO 91
 C SHOW DIAGRAM BETA VS MOMENTUM
@@ -74,8 +74,8 @@ C--   LOOP OVER TRACKS
       PP = TRK(4,LTR)
       IF(ABS(PP).LT.1.) PP = PP*1000.
       WRITE(6,1379) (IR(I,ITR),I=1,3),PP,(RE(I,ITR),I=4,5),(RE(I,ITR),I=
-     & 10,11),IR(12,ITR),(RE(I,ITR),I=13,14),TRK(1,LTR),
-     & (RE(I,ITR),I=6,9)
+     * 10,11),IR(12,ITR),(RE(I,ITR),I=13,14),TRK(1,LTR),
+     * (RE(I,ITR),I=6,9)
 1379  FORMAT(' ',3I3,F7.1,F5.1,F7.0,2F6.1,I3,F6.2,2F6.0,1X,4F4.0)
 111   CONTINUE
 C

@@ -61,14 +61,14 @@ C
       IER=0
 C                              'ALGN',1  -->  'ALZW',2
       NWO=IDATA(IALGN)
-      CALL BCRE(IALG2,'ALZW',2,NWO,&1100,IER)
+      CALL BCRE(IALG2,'ALZW',2,NWO,*1100,IER)
       IF(IER.NE.0) GOTO 1120
       CALL BSAW(1,'ALZW')
       DO 300 I=1,NWO
   300 IDATA(IALG2+I)=IDATA(IALGN+I)
 C                              'LGCL',1  -->  'LGZW',2
       NWOL=IDATA(IPLG)
-      CALL BCRE(IPLG2,'LGZW',2,NWOL,&1100,IER)
+      CALL BCRE(IPLG2,'LGZW',2,NWOL,*1100,IER)
       IF(IER.NE.0) GOTO 1125
       CALL BSAW(1,'LGZW')
       DO 302 I=1,NWOL
@@ -101,7 +101,7 @@ C
   500 CONTINUE
 C                                     ALLE HALBWORTE > 0 AUS 'ALGN',1
 C                                     NACH 'ALCO',1 KOPIEREN
-      CALL BCRE(IALC,'ALCO',1,NWA,&1100,IER)
+      CALL BCRE(IALC,'ALCO',1,NWA,*1100,IER)
       IF(IER.NE.0) GOTO 1128
       CALL BSAW(1,'ALCO')
       IPNH=2*IALGN

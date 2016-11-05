@@ -32,7 +32,7 @@ C------------------  C O D E  ------------------------------------------
 C
 C                            TAGMRK PUTS VERSION NUMBER IN COMMON
 C
-      CALL TAGMRK(&1)
+      CALL TAGMRK(*1)
    1  IF( MARK .EQ. 0 ) GO TO 3
       IF( MARK .EQ. 1 ) GO TO 2
 C

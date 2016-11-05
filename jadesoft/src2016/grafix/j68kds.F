@@ -84,7 +84,7 @@ C                                   NUMBER OF CRATES WITH SCAN_DATA
  9001     FORMAT(' NUMBER OF CRATES :',I6)
 CX        WRITE(6,9001) NCRATE
 
-C                                   FIND CRATE & CELL NUMBERS
+C                                   FIND CRATE * CELL NUMBERS
           DO 2000 ICRATE=1,NCRATE
             L2 = HW(NPSCAN+1)
  9002       FORMAT(' WORDS FOR CRATE :',I6)

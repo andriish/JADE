@@ -57,9 +57,9 @@ C
          IF( IPVCVW .GT. 0 ) GO TO 55
             LVIEW = .FALSE.
             IF( NNVTXC .NE. 10 )
-     &      WRITE(6,40) NNVTXC
+     *      WRITE(6,40) NNVTXC
    40       FORMAT(' VCVW BANK NR',I3,' (GIVEN BY COMMAND VTXC) NOT EXIS
-     &TING')
+     *TING')
 C
    50 ILBPCH = IDATA(IPBPCH)
 C
@@ -102,7 +102,7 @@ C                            CHECK IF MP-STRING IS CORRECT
          IF( HDATA(IAPOIN + ILMPST) .NE. -2 ) GO TO 200
             GO TO 400
   200    IF( HDATA(IAPOIN + ILMPST) .NE. -1  .OR.
-     &       HDATA(IAPOIN + ILMPST - 1) .NE. -2 ) GO TO 900
+     *       HDATA(IAPOIN + ILMPST - 1) .NE. -2 ) GO TO 900
 C
 C                            PROCESS MICROPROCESSOR-STRING
 C
@@ -203,7 +203,7 @@ C
                IF( ILSUMH .GT. (ILWSID*2 - 6) ) GO TO 700
 C
                   IF( ILSUMH .EQ. (ILWSID*2 - 6) .OR.
-     &                ILSUMH .EQ. (ILWSID*2 - 7) ) GO TO 700
+     *                ILSUMH .EQ. (ILWSID*2 - 7) ) GO TO 700
                      IPHELP = IPHELP + ILHIT
                      GO TO 550
 C                            LOAD PEDESTAL AFTER LAST HIT
@@ -219,7 +219,7 @@ C                            SAFETY CHECK IF END OF MP-STRING
             IF( ILSUMW .GT. (ILMPST-7) ) GO TO 800
 C                            LAST WIRESIDE-STRING ?
                IF( ILSUMW .EQ. (ILMPST-7) .OR. ILSUMW .EQ. (ILMPST-8) )
-     &                                         GO TO 800
+     *                                         GO TO 800
                  IPMPST = IPMPST + ILWSID
                  GO TO 500
   750       CALL TRMOUT(80,' ERROR in Wireside-String^')
@@ -231,7 +231,7 @@ C                            SAFETY CHECK IF END OF BANK
             IF( ILSUMP .GT. ILHVCR-2 ) GO TO 8000
 C                            LAST MP-STRING ?
             IF( ILSUMP .EQ. ILHVCR-2 .OR. ILSUMP .EQ. ILHVCR-3 )
-     &                                               GO TO 8000
+     *                                               GO TO 8000
                IAPOIN = IAPOIN + ILMPST
                GO TO 100
   900    CALL TRMOUT(80,' ERROR in Microprocessor-String^')

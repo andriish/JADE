@@ -11,7 +11,7 @@ C                                          ...FURTHER ITERATION !!
 C      CHANGE 22.00 22/10/83 HUGH MCCANN - CORRECT YOKE PARAMETERS.
 C                                          AND INDENT ENTIRE CODE.
 C      CHANGE 13.30 22/02/82 HUGH MCCANN - FOR IMPROVED ERROR OUTPUT.
-C                                     MUMESS O/P FOR IPRINT >= 6 & < 10.
+C                                     MUMESS O/P FOR IPRINT >= 6 * < 10.
 C      CHANGE 16.05 17/06/81 JOHN ALLISON - TO EXTEND REGIONS.
 C
 C ABSTRACTS FROM THE MU-FILTER CONSTANTS THE REGIONS FOR /CMUREG/.

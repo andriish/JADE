@@ -4,7 +4,7 @@ C-----------------------------------------------------------------------
       SUBROUTINE SCANNR(INDEX,IRFLG)
 C-----------------------------------------------------------------------
 C
-C   AUTHOR:   J. OLSSON   19/06/79 :  GRAPHICS & OTHER COMMANDS
+C   AUTHOR:   J. OLSSON   19/06/79 :  GRAPHICS * OTHER COMMANDS
 C
 C        MOD: C. BOWDERY  16/03/84 :  COMMAND ND50 ADDED
 C        MOD: C. BOWDERY  20/06/84 :  REVERSE JADISP AND EVDISP CALLS
@@ -334,7 +334,7 @@ C
       DO  3203  I = 1,NDES
         CALL BSLT
         CALL BDLG
-        CALL BREAD(NDDINN,&3204,&3205)
+        CALL BREAD(NDDINN,*3204,*3205)
         IF( IDATA(IBLN('HEAD')) .LE. 0 ) GO TO 3206
 3207    ICREC = ICREC + 1
         GO TO 3203
@@ -447,7 +447,7 @@ C
       call setcol(' ') ! PMF 25/11/99: reset color
       GO TO 1
 C
-C             COMMAND  QP    (DISPLAY Q-PLOT & OTHER Q-OPTIONS)
+C             COMMAND  QP    (DISPLAY Q-PLOT * OTHER Q-OPTIONS)
 C
  120  call setcol('TEXT') ! PMF 25/11/99: set color
       CALL QPLOTS

@@ -34,7 +34,7 @@ C---- WRITE THE GENERAL INF.
 C
       WRITE(6,600) IDENT,NCLST,NCLBEC,ETOT,NNEUT,EGAM,IFLAG,NWPCL
   600 FORMAT('0===== LG-CLUSTERS =====    PROG.VERSION=',I2,
-     1   '  DATE&TIME=',I9,'  ====================',
+     1   '  DATE*TIME=',I9,'  ====================',
      2        /' NCLST=',4I5,'  ENERGY=',4F8.3,'    NG=',I3,'  E-GAM=',
      3        4F8.3,/'   FLAGS=',5I8,'  WORDS/CLUST=',I4)
 C
@@ -67,7 +67,7 @@ C
         PHI = ATAN2( CLSPRP(10,N),CLSPRP(9,N))*57.2958
 C
     1   WRITE(6,602) N,NCNT,ICLSPR(1,N),(CLSPRP(K,N),K=2,7),ICLSPR(8,N),
-     &               THE,PHI, (CLSPRP(K,N),K=9,14),CLSPRP(15,N)
+     *               THE,PHI, (CLSPRP(K,N),K=9,14),CLSPRP(15,N)
   602   FORMAT(' ',I2,2I2,F7.3,F6.3,2E11.3,2E10.3,I4,
      1                          2F6.1, 3F7.4,1P3E10.2,0PI2)
    10   CONTINUE

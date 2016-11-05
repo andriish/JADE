@@ -81,7 +81,7 @@ C
 C MAIN READ STATEMENT.
       CALL BSLT
       CALL BDLG
-      CALL BREAD( NUNIT, &1001, &98 )
+      CALL BREAD( NUNIT, *1001, *98 )
       IF(CALIBS)GO TO 20
       IPJ = IDATA( IBLN( 'HEAD' ) )
       IF( IPJ .NE. 0 ) GO TO 91

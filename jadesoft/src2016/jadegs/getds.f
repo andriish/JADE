@@ -52,6 +52,6 @@ C
       IF( HERR .EQ. 0 ) RETURN
         WRITE(6,3) INAME
  3      FORMAT(' DSNAME ---> ',11A4)
-        CALL DSERR(HERR,JERR,DDN,&11)
+        CALL DSERR(HERR,JERR,DDN,*11)
         RETURN
       END

@@ -81,7 +81,7 @@ CCC    IF ( NDEBUG .GT. 0 ) JWRITE = 1
 CCC    NDEBUG = NDEBUG - 1
        IWRITE = JWRITE
        IER = 0
-       CALL BLOC(IND,'ATAG',0,&100)
+       CALL BLOC(IND,'ATAG',0,*100)
        GOTO 200
   100  IER = 10
        RETURN
@@ -120,7 +120,7 @@ C   SETS  IMC = 1 IF MC DATA
 C   SETS MARK = 0,1,OR 2 FOR 79/80,81/82, AND 83
 C                             DETECTORS
 C
-        CALL TAGMRK(&300)
+        CALL TAGMRK(*300)
 C
 C
 C----------------------------------------MONTE CARLO DATA ONLY----------
@@ -218,7 +218,7 @@ C REDUNDANT WHEN CALLED FROM TAGAN
 C RETURN 2 FROM TAGGTP IS DONE IF ERROR IN TAGSTO -
 C  IE NO ROOM FOR TAGG BANKS IN COMMON/BCS/
 C
-    2  CALL TAGGTP(IWRITE,ERGY,&100,&100)
+    2  CALL TAGGTP(IWRITE,ERGY,*100,*100)
 C
 C
 C-----------------------------------------------------------------------
@@ -229,7 +229,7 @@ C---                                    CHECK TAGG/0 BANK FOR CLUSTERS
 C
 C
  1000  CONTINUE
-       CALL BLOC(INTAG0,'TAGG',0,&1001)
+       CALL BLOC(INTAG0,'TAGG',0,*1001)
        NCLST = HDATA( INTAG0 + INTAG0 + 6 )
        IF ( NCLST .LE. 0 ) IER = 1
        RETURN

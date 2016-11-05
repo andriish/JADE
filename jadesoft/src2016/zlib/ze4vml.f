@@ -34,8 +34,8 @@ C
          CALL FEHLTX( 23,'TRACK NOT CHARGED IN ZE4VML')
          WRITE(6,9101) PMIN,  EPMIN
  9101    FORMAT(/' ZE4VMI HAS BEEN CALLED WITH FOLLOWING CUTS:'/,
-     &           ' P - MIN                 :  ',F10.4,/,
-     &           ' MIN E/P FROM LGCL       :  ',F10.4,/)
+     *           ' P - MIN                 :  ',F10.4,/,
+     *           ' MIN E/P FROM LGCL       :  ',F10.4,/)
 C
    10 CONTINUE
 C
@@ -44,7 +44,7 @@ C                                      SAVE PATR-BANK
       LPATR = IW( NPPATR )
       IPATR = IW( NPPATR - 2 )
       NPZIM1 = 0
-      CALL BCRE(NPZIM1,'ZIM1',1,LPATR,&8100,IER)
+      CALL BCRE(NPZIM1,'ZIM1',1,LPATR,*8100,IER)
       IF(IER.NE.0) GOTO 8100
       CALL BSAW(1,'ZIM1')
 C                                      COPY PATR-BANK TO ZIM1 BANK
@@ -65,13 +65,13 @@ C                                      LENGTH OF GEN. TRACK PART
       LT = HW( NPZE4V*2 + 5 )
 C                                      IS TRACK CHARGED?
       IPTF = HW( NPSPUR*2 + 18 )
-      IF( IPTF .NE. 1 ) CALL FEHLER( 23, &8000 )
+      IF( IPTF .NE. 1 ) CALL FEHLER( 23, *8000 )
 C                                      MOMENTUM CUT
       PTOT = RW( NPSPUR + 6 )
-      IF ( PTOT .LT. PMIN )   CALL FEHLER( 21, &8000 )
+      IF ( PTOT .LT. PMIN )   CALL FEHLER( 21, *8000 )
 C                                      E/P MINIMUM ( FROM LGCL )
       EPLGCL = RW( NPSPUR + LT + 1 ) / PTOT
-      IF ( EPLGCL .LT. EPMIN ) CALL FEHLER( 22, &8000 )
+      IF ( EPLGCL .LT. EPMIN ) CALL FEHLER( 22, *8000 )
 C                                      GET TRACK NUMBER OF PATR BANK
       NUMTRK = HW( NPSPUR*2 + LT*2 + 9 )
 C                                      ESHM ENERGY FROM BARREL ONLY

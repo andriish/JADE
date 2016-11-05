@@ -45,7 +45,7 @@ C       LOSS = 1  ELECTRON
 C       LOSS = 2  MINIMUM IONIZING PARTICLE
 C
       IF(PV(6).LT.0.01) RETURN 1
-      IF(LFLAG(4)) CALL TRLGSH(PV,R,&999)
+      IF(LFLAG(4)) CALL TRLGSH(PV,R,*999)
 C
       OUTR=OUTR2*OUTR2
       ELOSS=0.
@@ -211,7 +211,7 @@ C                                           OF THE END CAP COUNTERS
       R(1)=ZLAM*R(1)
       R(2)=ZLAM*R(2)
       R(3)=ZLAM*R(3)
-      CALL ENDCLG(R,NBL,&9000)
+      CALL ENDCLG(R,NBL,*9000)
       IF(NBL.LT.2689 .OR. NBL.GT.2880) GO TO 9000
 C
 C                                           ANTI ENERGY CORRECTION
@@ -266,7 +266,7 @@ C                                           CALCULATE INDEX FOR
 C                                           BLOCKS WHICH ARE HIT AND
 C                                           CHECK WHETHER PARTICLE IS
 C                                           STILL IN THE LEAD GLASS
-      CALL ENDCLG(R,NBL,&9000)
+      CALL ENDCLG(R,NBL,*9000)
       IF(NBL.LT.2689 .OR. NBL.GT.2880) GO TO 9000
 C
 C                                           ACCUMULATE PULSEHEIGHTS

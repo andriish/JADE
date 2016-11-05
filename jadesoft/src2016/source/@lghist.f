@@ -39,13 +39,13 @@ C----   CHECK TIME
         IF( NTIME(DUM).LT.200 ) GO TO 100
 C
         DATA NUNITI/1/
-        CALL BREAD(NUNITI,&1000,&200)
+        CALL BREAD(NUNITI,*1000,*200)
 C
         CALL KALIBR
         CALL CLOC( NPR,    'ALGN',1 )
         IF( NPR.GT. 0 ) GO TO 1
 C
-        CALL LGCALB(&1000)
+        CALL LGCALB(*1000)
 C       LG-HIT MAP
     1   CALL LGHITM(JDMP)
         IF(JDMP.EQ.0) GO TO 30
@@ -78,7 +78,7 @@ C----   TAKE ONLY 2-TRACK EVENTS
         NEV = NEV+1
 C
         CALL CLOC( NPR,    'ALGN',1 )
-        CALL BLOC( NPCL,   'LGCL',1, &90)
+        CALL BLOC( NPCL,   'LGCL',1, *90)
         GO TO 10
 C
 C----   SOME BANK IS MISSING

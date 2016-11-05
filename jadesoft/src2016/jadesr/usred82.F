@@ -179,7 +179,7 @@
       GOTO 16001
       ENDIF
         IERRLG = 0
-        CALL LGCALB(&ERRLGC)
+        CALL LGCALB(*ERRLGC)
         CALL TRCK82(LBACC,LBTRB1,LBTRB2,IERRLG)
         LBTRBT = LBTRB1
         TRBIT = 0.

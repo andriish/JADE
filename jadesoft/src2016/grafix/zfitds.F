@@ -39,7 +39,7 @@ C
       IY(Z) = GRAPHW(3) + SCALEY*(Z-ZL)
       IA(IAM) = AMPSW(3) + SCALAY*IAM
 C
-      CALL BLOC( NPZSPD, 'ZSPD', ITRK, &8000, IER )
+      CALL BLOC( NPZSPD, 'ZSPD', ITRK, *8000, IER )
 C                                           EXTREME VALUES
       NTRW = IW(NPZSPD+1)
       NHIT = (IW(NPZSPD)-1)/NTRW

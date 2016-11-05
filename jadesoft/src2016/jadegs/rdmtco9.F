@@ -11,7 +11,7 @@ C        MOD:   C. BOWDERY   6/10/83 :  CREATE 'JETC'/9 BANK
 C        MOD:   J. OLSSON   15/12/83 :  CORR. OF CTR123 ERROR
 C        MOD:   J. HAGEMANN 11/10/83 :  VERTEX CHAMBER CODE
 C               R. RAMCKE
-C        MOD:   J.H.  C.B.  12/10/84 :  FIX-UP OF ROTNK & OTHER CHANGES
+C        MOD:   J.H.  C.B.  12/10/84 :  FIX-UP OF ROTNK * OTHER CHANGES
 C        MOD:   J. HAGEMANN 08/11/84 :  COMMON /CVCEX/ IMPLEMENTED
 C        MOD:   J. HAGEMANN 22/05/86 :  UPDATED CODE FOR CHANGING THE
 C                                       INPUT FILE (SMEARED DATA <-->
@@ -516,7 +516,7 @@ C A LOGICAL ERROR, SINCE /CTR123/ OR /CTRIGG/ IS NOT UPDATED BEFORE
 C THE FIRST EVENT HAS BEEN READ AND RDDATE BEEN CALLED (IN RDJETC).
 C
   150 CALL BDLS( 'MTCO', 1)
-      CALL BCRE( IPMTCO, 'MTCO', 1, 159, &9090, IER )
+      CALL BCRE( IPMTCO, 'MTCO', 1, 159, *9090, IER )
 C
 C       COPY DETECTOR STATUS INTO MTCO BANK
 C
@@ -653,7 +653,7 @@ C
 C
          IPVTXC = IDATA (IBLN('VTXC'))
          IF( IPVTXC .LE. 0 )
-     *      CALL BCRE ( IPVTXC, 'VTXC',10, 5, &5304, IEVT )
+     *      CALL BCRE ( IPVTXC, 'VTXC',10, 5, *5304, IEVT )
          CALL BSAW(1, 'VTXC')
          IDATA(IPVTXC + 1 ) = 5
 C                                          DOUB. HIT RESO., INEFF.,
@@ -671,7 +671,7 @@ C
          IF( IJETCI .EQ. 0) GO TO 401
 C
             LENGTH = IDATA(IPJ)
-            CALL BCRE( IPJ9, 'JETC', 9, LENGTH, &401, IER )
+            CALL BCRE( IPJ9, 'JETC', 9, LENGTH, *401, IER )
             CALL MVCL( IDATA, IPJ9*4, IDATA, IPJ*4, LENGTH*4 )
             write(*,*)'After BCRE( IPJ9  bla'
 C
@@ -681,7 +681,7 @@ C
         CALL RDRESO( BINMC )
 C
             write(*,*)'After RDRESO'
-      IF( IPJ .LE. 0 ) CALL BCRE( IPJ, 'JETC', 8, 50, &7788, IE )
+      IF( IPJ .LE. 0 ) CALL BCRE( IPJ, 'JETC', 8, 50, *7788, IE )
       CALL BSAW( 1, 'JETC' )
 C
 C                       CONSIDER DOUBLE HIT RESOLUTION,

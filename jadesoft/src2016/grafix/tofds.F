@@ -37,7 +37,7 @@ C----------------------------------------
 107   IR(J,I) = 0
 C---   CALL TOF PROGRAM HERE
       NRUN = HEAD(18)
-      CALL TOFINT(NRUN,IPATOF,IPPATR,&1000)
+      CALL TOFINT(NRUN,IPATOF,IPPATR,*1000)
       IF(NN.GE.0) GO TO 99
       IF(NN.EQ.-1) GO TO 91
 C SHOW DIAGRAM BETA VS MOMENTUM

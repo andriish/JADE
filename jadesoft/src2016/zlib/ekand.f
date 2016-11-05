@@ -33,7 +33,7 @@ C
       CALL CINIT
       IKAND=0
 C
-      CALL BLOC(NPLGZU,'LGZU',JTRK,&1200)
+      CALL BLOC(NPLGZU,'LGZU',JTRK,*1200)
 C                                 NUMBER OF TRACK IN 'ZE4V' BANK
       JREM=HW(NPLGZU*2+3)
 C

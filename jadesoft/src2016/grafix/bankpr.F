@@ -14,8 +14,8 @@ C                                  :  ADDED AND IMPROVED PATR-BANK
 C                                  :  PRINTOUT
 C        MOD: J. HAGEMANN 24/06/85 :  IMPROVED PRINTOUT FOR
 C                                  :  BPCH-BANK
-C        MOD: J. HAGEMANN 23/09/85 :  PRINTOUT FOR VTHT- & VPAT- BANKS
-C        MOD: J. HAGEMANN 10/02/86 :  PRINTOUT FOR VCVW- & TTOP- BANKS
+C        MOD: J. HAGEMANN 23/09/85 :  PRINTOUT FOR VTHT- * VPAT- BANKS
+C        MOD: J. HAGEMANN 10/02/86 :  PRINTOUT FOR VCVW- * TTOP- BANKS
 C        MOD: J. HAGEMANN 02/05/86 :  IMPROVED PRINTOUT FOR JHTL-BANK
 C                                     COMPLETELY NEW STRUCTURE,
 C                                     PRINTOUT FOR SOME BANKS DONE VIA
@@ -75,14 +75,14 @@ C
       DIMENSION DESTPL(7)
 C
       DATA DESTPL  / 8HL1      ,8HL2      ,8HL3      ,8HL4      ,
-     &               8HL5      ,8HPLOTTER ,8HEXTPLOTT/
+     *               8HL5      ,8HPLOTTER ,8HEXTPLOTT/
 C
       DATA NAMES  /4HJETC,4HPATR,4HTAGC,4HJHTL,4HZETC,
-     &             4HGVTX,4HDEDX,4HZVTX,4HLGCL,4HTOFR,
-     &             4HTPEV,4HTPTR,4HATOF,4HTPVX,4HVECT,
-     &             4HTRIG,4HN50S,4HMPRS,4HBK17,4HZTRG,
-     &             4HFAMP,4HBPCH,4HVTXC,4HVTHT,4HVPAT,
-     &             4HVCVW,4HJ68K,4HPALL,4HHWDS,4HHHTL/
+     *             4HGVTX,4HDEDX,4HZVTX,4HLGCL,4HTOFR,
+     *             4HTPEV,4HTPTR,4HATOF,4HTPVX,4HVECT,
+     *             4HTRIG,4HN50S,4HMPRS,4HBK17,4HZTRG,
+     *             4HFAMP,4HBPCH,4HVTXC,4HVTHT,4HVPAT,
+     *             4HVCVW,4HJ68K,4HPALL,4HHWDS,4HHHTL/
 C
       DATA HSYM /1H0 ,1H1 ,1H2 ,1H3 ,1H4 ,1H5 ,1H6 ,1H7 ,1H8 ,1H9 /
       DATA HBLANK/2H  /,HMINUS/2H- /, NNAMES /30/
@@ -105,7 +105,7 @@ C
     5    CALL EVBKPR(ICODE)
          IF( ICODE .EQ. 0 ) RETURN
          CALL TRMOUT(80,'Error in BMRT (currentlist),  called in BANKPR^
-     &')
+     *')
          RETURN
 C
    10 CALL TRMOUT(80,' * * Please enter NAME of desired BANK.^')
@@ -226,9 +226,9 @@ C****************************** WRITE BANK CONTENT
   150 CONTINUE
       GO TO 500
   160 GOTO( 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000,10000,
-     &     11000,12000,13000,14000,15000,16000,17000,18000,19000,20000,
-     &     19000,22000,23000,24000,25000,26000,27000,28000, 2000, 4000),
-     & INNAM
+     *     11000,12000,13000,14000,15000,16000,17000,18000,19000,20000,
+     *     19000,22000,23000,24000,25000,26000,27000,28000, 2000, 4000),
+     * INNAM
 C-------------- NORMAL PRINT OF BANKS, INTEGER*2 FORMAT
   500 CONTINUE
       DO 505 LHO = 1,NCYCLE
@@ -306,49 +306,49 @@ C--------------- SPECIAL FORMAT FOR PATR BANKS
  2004 IPP = IPO + (ICNT-1)*LTR
       CALL CORE(HWORK,122)
       WRITE(cHWORK,2005) IDATA(IPP+1),IDATA(IPP+2), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     & (IDATA(IPP+I),I=3,4),(ADATA(IPP+I),I=5,10),
-     &                  IDATA(IPP+11),(ADATA(IPP+I),I=12,17)
+     * (IDATA(IPP+I),I=3,4),(ADATA(IPP+I),I=5,10),
+     *                  IDATA(IPP+11),(ADATA(IPP+I),I=12,17)
  2005 FORMAT(' ',I2,1X,Z8,1X,I5,I3,1X,2F8.3,F10.3,3F7.3,2X,I3,1X,
-     & 2F8.3,F10.3,3F7.3)
+     * 2F8.3,F10.3,3F7.3)
       CALL SYSSYM(XS,YS,SIZE,HWORK,122,0.)
       YS = YS - DEL
       CALL CORE(HWORK,124)
       IF(IDATA(IPP+18).EQ.1)
-     &WRITE(cHWORK,2006) IDATA(IPP+18),(ADATA(IPP+I),I=19,23), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                   IDATA(IPP+24),(ADATA(IPP+I),I=25,28),
-     &                   IDATA(IPP+29),(ADATA(IPP+I),I=30,32),
-     &                   IDATA(IPP+33)
+     *WRITE(cHWORK,2006) IDATA(IPP+18),(ADATA(IPP+I),I=19,23), ! PMF 17/11/99: JUSCRN changed to cHWORK
+     *                   IDATA(IPP+24),(ADATA(IPP+I),I=25,28),
+     *                   IDATA(IPP+29),(ADATA(IPP+I),I=30,32),
+     *                   IDATA(IPP+33)
  2006 FORMAT(' ',I2,1X,E10.4,F8.3,E11.4,1X,F8.3,F7.3,I3,1X,4E11.4,1X,I2,
-     & 3F7.2,I3)
+     * 3F7.2,I3)
       IF(IDATA(IPP+18).EQ.2)
-     &WRITE(cHWORK,2007) IDATA(IPP+18),(ADATA(IPP+I),I=19,23), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                   IDATA(IPP+24),(ADATA(IPP+I),I=25,28),
-     &                   IDATA(IPP+29),(ADATA(IPP+I),I=30,32),
-     &                   IDATA(IPP+33)
+     *WRITE(cHWORK,2007) IDATA(IPP+18),(ADATA(IPP+I),I=19,23), ! PMF 17/11/99: JUSCRN changed to cHWORK
+     *                   IDATA(IPP+24),(ADATA(IPP+I),I=25,28),
+     *                   IDATA(IPP+29),(ADATA(IPP+I),I=30,32),
+     *                   IDATA(IPP+33)
  2007 FORMAT(' ',I2,1X,E10.4,2F8.3,1X,E11.4,F7.3,I3,1X,4E11.4,1X,I2,
-     & 3F7.2,I3)
+     * 3F7.2,I3)
       CALL SYSSYM(XS,YS,SIZE,HWORK,124,0.)
       YS = YS - DEL
       IF( NPATR .NE. 12 ) GO TO 2009
          CALL CORE(HWORK,118)
          WRITE(cHWORK,2008) (IDATA(IPP+I),I=34,48), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                      (HDATA(IPP*2+I),I=3,4)
+     *                      (HDATA(IPP*2+I),I=3,4)
  2008    FORMAT(' ',6I4,2X,8I5,2X,Z8,2X,' PART.NO.',I4,1X,'IN VECT 0',
-     &          '    PART.TYPE',I3)
+     *          '    PART.TYPE',I3)
          CALL SYSSYM(XS,YS,SIZE,HWORK,118,0.)
          GO TO 2011
  2009 CALL CORE(HWORK,89)
       WRITE(cHWORK,2010) (IDATA(IPP+I),I=34,44),(ADATA(IPP+I),I=45,46), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                   (IDATA(IPP+I),I=47,48)
+     *                   (IDATA(IPP+I),I=47,48)
  2010 FORMAT(' ',6I4,2X,4I6,I4,2F8.1,I8,2X,Z8)
       CALL SYSSYM(XS,YS,SIZE,HWORK,89,0.)
  2011 CONTINUE
       IF(LTR .LT. 62) GO TO 2002
       IF((LTR .LT. 64) .OR.
-     &   (LTR.EQ.64 .AND.
-     &    (.NOT.TBIT(IDATA(IPP+2),19).OR.ABS(ADATA(IPP+51)).LT.0.01)
-     &    .AND. INNAM.NE.29))
-     &                        GO TO 2020
+     *   (LTR.EQ.64 .AND.
+     *    (.NOT.TBIT(IDATA(IPP+2),19).OR.ABS(ADATA(IPP+51)).LT.0.01)
+     *    .AND. INNAM.NE.29))
+     *                        GO TO 2020
          YS = YS - DEL
          CALL CORE(HWORK,114)
          IF(IDATA(IPP+18).EQ.1)WRITE(cHWORK,2012) (ADATA(IPP+I),I=49,58) ! PMF 17/11/99: JUSCRN changed to cHWORK
@@ -373,7 +373,7 @@ C--------------- SPECIAL FORMAT FOR PATR BANKS
       YS = YS - DEL
       CALL CORE(HWORK,124)
       WRITE(cHWORK,2021) (ADATA(IPP+I),I=49,59), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                   (IDATA(IPP+I),I=60,62)
+     *                   (IDATA(IPP+I),I=60,62)
  2021 FORMAT(' ',2X,11E10.3,I7,2I2)
       CALL SYSSYM(XS,YS,SIZE,HWORK,124,0.)
       GO TO 2002
@@ -435,23 +435,23 @@ C--------------- SPECIAL FORMAT FOR JHTL BANK
          ILIMP = 100 + ILIM*10
          CALL CORE(HWORK,IILIM)
          IF( ILIM .EQ. 1 )
-     &   WRITE(cHWORK,4004) (HWORK(JJ),JJ=101,ILIMP) ! PMF 17/11/99: JUSCRN changed to cHWORK
- 4004    FORMAT(' ','/',I2,I3,I2,I3,I2,' &',I2,I3,I2,I3,I2,3X)
+     *   WRITE(cHWORK,4004) (HWORK(JJ),JJ=101,ILIMP) ! PMF 17/11/99: JUSCRN changed to cHWORK
+ 4004    FORMAT(' ','/',I2,I3,I2,I3,I2,' *',I2,I3,I2,I3,I2,3X)
          IF( ILIM .EQ. 2 )
-     &   WRITE(cHWORK,4005) (HWORK(JJ),JJ=101,ILIMP) ! PMF 17/11/99: JUSCRN changed to cHWORK
- 4005    FORMAT(' ','/',I2,I3,I2,I3,I2,' &',I2,I3,I2,I3,I2,3X,
-     &              '/',I2,I3,I2,I3,I2,' &',I2,I3,I2,I3,I2,3X)
+     *   WRITE(cHWORK,4005) (HWORK(JJ),JJ=101,ILIMP) ! PMF 17/11/99: JUSCRN changed to cHWORK
+ 4005    FORMAT(' ','/',I2,I3,I2,I3,I2,' *',I2,I3,I2,I3,I2,3X,
+     *              '/',I2,I3,I2,I3,I2,' *',I2,I3,I2,I3,I2,3X)
          IF( ILIM .EQ. 3 )
-     &   WRITE(cHWORK,4006) (HWORK(JJ),JJ=101,ILIMP) ! PMF 17/11/99: JUSCRN changed to cHWORK
- 4006    FORMAT(' ','/',I2,I3,I2,I3,I2,' &',I2,I3,I2,I3,I2,3X,
-     &              '/',I2,I3,I2,I3,I2,' &',I2,I3,I2,I3,I2,3X,
-     &              '/',I2,I3,I2,I3,I2,' &',I2,I3,I2,I3,I2,3X)
+     *   WRITE(cHWORK,4006) (HWORK(JJ),JJ=101,ILIMP) ! PMF 17/11/99: JUSCRN changed to cHWORK
+ 4006    FORMAT(' ','/',I2,I3,I2,I3,I2,' *',I2,I3,I2,I3,I2,3X,
+     *              '/',I2,I3,I2,I3,I2,' *',I2,I3,I2,I3,I2,3X,
+     *              '/',I2,I3,I2,I3,I2,' *',I2,I3,I2,I3,I2,3X)
          IF( ILIM .EQ. 4 )
-     &   WRITE(cHWORK,4007) (HWORK(JJ),JJ=101,ILIMP) ! PMF 17/11/99: JUSCRN changed to cHWORK
- 4007    FORMAT(' ','/',I2,I3,I2,I3,I2,' &',I2,I3,I2,I3,I2,3X,
-     &              '/',I2,I3,I2,I3,I2,' &',I2,I3,I2,I3,I2,3X,
-     &              '/',I2,I3,I2,I3,I2,' &',I2,I3,I2,I3,I2,3X,
-     &              '/',I2,I3,I2,I3,I2,' &',I2,I3,I2,I3,I2,3X)
+     *   WRITE(cHWORK,4007) (HWORK(JJ),JJ=101,ILIMP) ! PMF 17/11/99: JUSCRN changed to cHWORK
+ 4007    FORMAT(' ','/',I2,I3,I2,I3,I2,' *',I2,I3,I2,I3,I2,3X,
+     *              '/',I2,I3,I2,I3,I2,' *',I2,I3,I2,I3,I2,3X,
+     *              '/',I2,I3,I2,I3,I2,' *',I2,I3,I2,I3,I2,3X,
+     *              '/',I2,I3,I2,I3,I2,' *',I2,I3,I2,I3,I2,3X)
          CALL SYSSYM(XS,YS,SIZE,HWORK,IILIM,0.)
  4008 CONTINUE
       GO TO 90100
@@ -491,7 +491,7 @@ C--------------- SPECIAL FORMAT FOR GVTX BANKS
          IPO = LIM2+(INV-1)*10
          CALL CORE(HWORK,72)
          WRITE(cHWORK,6001) IDATA(IPO+1),(ADATA(IPO+1+JJ),JJ=1,6), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                      IDATA(IPO+8),ADATA(IPO+9),IDATA(IPO+10)
+     *                      IDATA(IPO+8),ADATA(IPO+9),IDATA(IPO+10)
  6001    FORMAT(' ',I3,3F8.2,3F8.2,I4,F8.2,I8)
          CALL SYSSYM(XS,YS,SIZE,HWORK,72,0.)
          YS = YS - DEL
@@ -512,7 +512,7 @@ C--------------- SPECIAL FORMAT FOR GVTX BANKS
          YS = YS - DEL
          CALL CORE(HWORK,42)
          WRITE(cHWORK,6005) (ADATA(IPO+1+JJ),JJ=9,11), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                       IDATA(IPO+13),IDATA(IPO+14),ADATA(IPO+15)
+     *                       IDATA(IPO+13),IDATA(IPO+14),ADATA(IPO+15)
  6005    FORMAT(' ',3F8.2,I4,I3,F10.2)
          CALL SYSSYM(XS,YS,SIZE,HWORK,42,0.)
          YS = YS - DEL
@@ -534,7 +534,7 @@ C--------------- SPECIAL FORMAT FOR DEDX BANKS
          IPO = LIM2 + 1 + (ITR-1)*10
          CALL CORE(HWORK,92)
          WRITE(cHWORK,7002) IDATA(IPO+1),(ADATA(IPO+1+JJ),JJ=1,6), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                      IDATA(IPO+8),ADATA(IPO+9),ADATA(IPO+10)
+     *                      IDATA(IPO+8),ADATA(IPO+9),ADATA(IPO+10)
  7002    FORMAT(' ',I3,2F8.2,4E12.4,I4,2F10.3)
          CALL SYSSYM(XS,YS,SIZE,HWORK,92,0.)
          YS = YS - DEL
@@ -558,7 +558,7 @@ C--------------- SPECIAL FORMAT FOR LGCL BANKS
       YS   = YS - DEL
       CALL CORE(HWORK,118)
       WRITE(cHWORK,9002) (IDATA(LIM2+LL),LL=1,6),(ADATA(LIM2+LL),LL=7,10 ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &),IDATA(LIM2+11),(ADATA(LIM2+LL),LL=12,15),(IDATA(LIM2+L),L=16,21)
+     *),IDATA(LIM2+11),(ADATA(LIM2+LL),LL=12,15),(IDATA(LIM2+L),L=16,21)
  9002 FORMAT(' ',I3,I9,4I4,4F8.3,I4,4F8.3,2I3,I6,3I3)
       CALL SYSSYM(XS,YS,SIZE,HWORK,118,0.)
       NCLST  = IDATA(LIM2+3)
@@ -588,7 +588,7 @@ C--------------- SPECIAL FORMAT FOR LGCL BANKS
          IPO = LIM2 + (ITR-1)*NWPCL
          CALL CORE(HWORK,119)
          WRITE(cHWORK,9004) IDATA(IPO+1),(ADATA(IPO+1+JJ),JJ=1,6), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                      IDATA(IPO+8),(ADATA(IPO+JJ),JJ=9,NWPCL)
+     *                      IDATA(IPO+8),(ADATA(IPO+JJ),JJ=9,NWPCL)
  9004    FORMAT(' ',I3,2F8.3,2F9.2,2F8.3,I4,4F8.3,F10.3,2F6.3,F7.3)
          CALL SYSSYM(XS,YS,SIZE,HWORK,119,0.)
          YS = YS - DEL
@@ -629,7 +629,7 @@ C--------------- SPECIAL FORMAT FOR TPTR BANKS
       GO TO 90100
 C--------------- SPECIAL FORMAT FOR ATOF BANK
 13000 IPTOF = LIM2-1
-      CALL AGRPR(IPTOF,&13001)
+      CALL AGRPR(IPTOF,*13001)
       GO TO 13003
 13001 WRITE(JUSCRN,13002)
 13002 FORMAT(' ATFUGR ERROR, WRONG BANK DESCRIPTOR...' )
@@ -675,14 +675,14 @@ C-
       IF( LTR .EQ. 10 ) CALL CORE(HWORK,102)
       IF( LTR .EQ. 12 ) CALL CORE(HWORK,122)
       IF( LTR .EQ. 10 )
-     &  WRITE(cHWORK,15008) ICNT,(ADATA(IPP+I),I=1,5), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     & (IDATA(IPP+I),I=6,7),(ADATA(IPP+I),I=8,10)
+     *  WRITE(cHWORK,15008) ICNT,(ADATA(IPP+I),I=1,5), ! PMF 17/11/99: JUSCRN changed to cHWORK
+     * (IDATA(IPP+I),I=6,7),(ADATA(IPP+I),I=8,10)
 15008 FORMAT(' ',I4,3X,4F10.4,2X,F10.6,2X,2I4,2X,3F10.3)
       IF( LTR .EQ. 12 )
-     &  WRITE(cHWORK,15009) ICNT, ! PMF 17/11/99: JUSCRN changed to cHWORK
-     & (ADATA(IPP+I),I=1,5),(IDATA(IPP+I),I=6,7),
-     & (ADATA(IPP+I),I=8,10),HDATA(2*IPP+21),HDATA(2*IPP+22),
-     &  ADATA(IPP+12)
+     *  WRITE(cHWORK,15009) ICNT, ! PMF 17/11/99: JUSCRN changed to cHWORK
+     * (ADATA(IPP+I),I=1,5),(IDATA(IPP+I),I=6,7),
+     * (ADATA(IPP+I),I=8,10),HDATA(2*IPP+21),HDATA(2*IPP+22),
+     *  ADATA(IPP+12)
 15009 FORMAT(' ',I4,3X,4F10.4,2X,F10.6,2X,2I4,2X,3F10.3,2I5,F10.2)
       IF( LTR .EQ. 10 ) CALL SYSSYM(XS,YS,SIZE,HWORK,102,0.)
       IF( LTR .EQ. 12 ) CALL SYSSYM(XS,YS,SIZE,HWORK,122,0.)
@@ -766,7 +766,7 @@ C TRIGGERS
          CALL CORE(HWORK,77)
          WRITE(cHWORK,19002) (HDATA(LH2+NTRI+K),K=1,4) ! PMF 17/11/99: JUSCRN changed to cHWORK
 19002    FORMAT(' #T2 TRACKS ',I3,' R3 TRACKS CELLS 33-48 ',Z4,
-     &          '  CELLS 17-32 ',Z4,'  CELLS 1-16 ',Z4)
+     *          '  CELLS 17-32 ',Z4,'  CELLS 1-16 ',Z4)
          CALL SYSSYM(XS,YS,SIZE,HWORK,77,0.)
 C COUNTERS
 19003 NCOU = HDATA(LH2+5)
@@ -775,7 +775,7 @@ C COUNTERS
          YS = YS - DEL
          CALL CORE(HWORK,53)
          WRITE(cHWORK,19004) HDATA(LH2+NCOU+1),AA,HDATA(LH2+NCOU+3), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                       HDATA(LH2+NCOU+4)
+     *                       HDATA(LH2+NCOU+4)
 19004    FORMAT(' #TOFS ',I3,' TDIF(NS) ',F8.1,' ZVTOF ',I6,' ZVLG ',I6)
          CALL SYSSYM(XS,YS,SIZE,HWORK,53,0.)
 C LEAD GLASS
@@ -788,9 +788,9 @@ C LEAD GLASS
          YS  = YS - DEL
          CALL CORE(HWORK,124)
          WRITE(cHWORK,19006) (HDATA(LH2+NL+K),K=1,4),AA1,AA2,AA3,AA4, ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                       (HDATA(LH2+NL+KK),KK=9,10)
+     *                       (HDATA(LH2+NL+KK),KK=9,10)
 19006    FORMAT(' NR CLUSTERS TOTAL,BARREL,-EC,+EC : ',4I5,
-     &          ' ENERGIES: ',4F8.3,' NHCLI ',I6,' ERES ',I6)
+     *          ' ENERGIES: ',4F8.3,' NHCLI ',I6,' ERES ',I6)
          CALL SYSSYM(XS,YS,SIZE,HWORK,124,0.)
 C INNER DETECTOR ANALYSIS
 19007 ND = HDATA(LH2+7)
@@ -820,7 +820,7 @@ C INNER DETECTOR ANALYSIS
       IF( NTR .LE. 0 ) GO TO 19033
          WRITE(cHWORK,19013) NTRT,NTR ! PMF 17/11/99: JUSCRN changed to cHWORK
 19013    FORMAT(' PATREC PERFORMED,',I3,' TRACKS FOUND',I3,
-     &          ' TRACK BANKS')
+     *          ' TRACK BANKS')
          CALL SYSSYM(XS,YS,SIZE,HWORK,49,0.)
          LORT = HDATA(LH2+ND+6)
          LTRT = HDATA(LH2+ND+7)
@@ -833,7 +833,7 @@ C INNER DETECTOR ANALYSIS
          CALL CORE(HWORK,102)
          WRITE(cHWORK,19014) NTRT,LORT,LTRT,MWR1,MWR2,MWR3,IEFA ! PMF 17/11/99: JUSCRN changed to cHWORK
 19014    FORMAT(' TRACKS LISTED ',I4,'  LO AND LT FOR EACH ',2I4,
-     &          ' NR WORDS MAP RING1-3: ',3I5,' ERROR FLAG ',Z4)
+     *          ' NR WORDS MAP RING1-3: ',3I5,' ERROR FLAG ',Z4)
          CALL SYSSYM(XS,YS,SIZE,HWORK,102,0.)
 C
          DO 19018  ITR = 1,NTR
@@ -861,17 +861,17 @@ C
 19015       CONTINUE
             CALL CORE(HWORK,120)
             WRITE(cHWORK,19016) ITR,IFTR,RR1,FI1, ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                          Z1,RR2,FI2,Z2,RR,SIGXY,NXY
+     *                          Z1,RR2,FI2,Z2,RR,SIGXY,NXY
 19016       FORMAT(' ',I2,' SEC. ',I3,' R-FI-Z 1 ',F8.1,F5.0,F8.1,
-     &             ' R-FI-Z 2 ',F8.1,F5.0,F8.1,
-     &             ' RCURV SIGXY NHITXY ',E14.6,F8.2,I4)
+     *             ' R-FI-Z 2 ',F8.1,F5.0,F8.1,
+     *             ' RCURV SIGXY NHITXY ',E14.6,F8.2,I4)
             CALL SYSSYM(XS,YS,SIZE,HWORK,120,0.)
 C
             YS = YS - DEL
             CALL CORE(HWORK,115)
             WRITE(cHWORK,19017) TANTH,Z0,SIGZ,NZ ! PMF 17/11/99: JUSCRN changed to cHWORK
 19017       FORMAT(' ',59X,' TANTHETA ',F10.5,' Z0 ',F8.2,
-     &             ' SIGZ(MM) ',F7.4,' NZ ',I2)
+     *             ' SIGZ(MM) ',F7.4,' NZ ',I2)
             CALL SYSSYM(XS,YS,SIZE,HWORK,115,0.)
 C
 19018 CONTINUE
@@ -951,15 +951,15 @@ C
          NMU   = 2*NMU + 1
          CALL CORE(HWORK,64)
          WRITE(cHWORK,19034) HDATA(LH2+NM),HDATA(LH2+NM+1), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                      (HDATA(LH2+NM+K),K=2,NMU,2)
+     *                      (HDATA(LH2+NM+K),K=2,NMU,2)
 19034    FORMAT(' NR MUON TRACKS ',I2,'   IN BARREL ',I3,
-     &          ' POSITION ',5I4)
+     *          ' POSITION ',5I4)
          CALL SYSSYM(XS,YS,SIZE,HWORK,NCORE,0.)
          YS = YS - DEL
          CALL CORE(HWORK,64)
          WRITE(cHWORK,19035) (HDATA(LH2+NM+K+1),K = 2,NMU,2) ! PMF 17/11/99: JUSCRN changed to cHWORK
 19035    FORMAT('                ',3X,'             ',3X,
-     &          ' QUALITY ',5I4)
+     *          ' QUALITY ',5I4)
          CALL SYSSYM(XS,YS,SIZE,HWORK,NCORE,0.)
 C
 19036 CONTINUE
@@ -988,7 +988,7 @@ C                    WRITE HEADER
       CALL CORE(HWORK,IILIM)
       WRITE(cHWORK,20001) ! PMF 17/11/99: JUSCRN changed to cHWORK
 20001 FORMAT(' DATA  B15 CHANNEL FIFOF HITCN UFLOW OFLOW Z-VALUE',10X,
-     &' DATA  B15 CHANNEL FIFOF HITCN UFLOW OFLOW Z-VALUE')
+     *' DATA  B15 CHANNEL FIFOF HITCN UFLOW OFLOW Z-VALUE')
       CALL SYSSYM(XS,YS,SIZE,HWORK,IILIM,0.)
 C
       DO 20004 IHIT = 1,HZLENG,2
@@ -1028,11 +1028,11 @@ C
          IILIM = 108
          CALL CORE(HWORK,IILIM)
          WRITE(cHWORK,20003) IZWRD1,IBT151,KANAL1,IFIFF1,HITCN1,IUNDF1, ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                       IOVRF1,IZWRT1,
-     &                       IZWRD2,IBT152,KANAL2,IFIFF2,HITCN2,IUNDF2,
-     &                       IOVRF2,IZWRT2
+     *                       IOVRF1,IZWRT1,
+     *                       IZWRD2,IBT152,KANAL2,IFIFF2,HITCN2,IUNDF2,
+     *                       IOVRF2,IZWRT2
 20003    FORMAT(' ',Z4,3X,I1,4X,I2,5X,I1,5X,I1,5X,I1,5X,I1,4X,I5,
-     &          13X,Z4,3X,I1,4X,I2,5X,I1,5X,I1,5X,I1,5X,I1,4X,I5)
+     *          13X,Z4,3X,I1,4X,I2,5X,I1,5X,I1,5X,I1,5X,I1,4X,I5)
          CALL SYSSYM(XS,YS,SIZE,HWORK,IILIM,0.)
 20004 CONTINUE
       GO TO 90100
@@ -1047,7 +1047,7 @@ C                    WRITE HEADER
       CALL CORE(HWORK,IILIM)
       WRITE(cHWORK,20101) HZLENG ! PMF 17/11/99: JUSCRN changed to cHWORK
 20101 FORMAT(' DATA  B15 CRATE SLOT SUBADR. OR UL LL OV Z-VALUE',5X,
-     &' DATA  B15 CRATE SLOT SUBADR. OR UL LL OV Z-VALUE  L: ',I4)
+     *' DATA  B15 CRATE SLOT SUBADR. OR UL LL OV Z-VALUE  L: ',I4)
       CALL SYSSYM(XS,YS,SIZE,HWORK,IILIM,0.)
 C
       DO 20104 IHIT = 1,HZLENG,2
@@ -1107,32 +1107,32 @@ C
          CALL CORE(HWORK,IILIM)
 C ONLY DATA WORDS
          IF(IBT151.EQ.0.AND.IBT152.EQ.0)
-     &   WRITE(cHWORK,20103) IZWRD1,IBT151,IOR1,IUL1,ILL1, ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                       IOVRF1,IZWRT1,
-     &                       IZWRD2,IBT152,IOR2,IUL2,ILL2,
-     &                       IOVRF2,IZWRT2
+     *   WRITE(cHWORK,20103) IZWRD1,IBT151,IOR1,IUL1,ILL1, ! PMF 17/11/99: JUSCRN changed to cHWORK
+     *                       IOVRF1,IZWRT1,
+     *                       IZWRD2,IBT152,IOR2,IUL2,ILL2,
+     *                       IOVRF2,IZWRT2
 20103 FORMAT(' ',Z4,3X,I1,                 22X,I1,2X,I1,2X,I1,2X,I1,4X,
-     & I2, 8X,Z4,3X,I1,                 22X,I1,2X,I1,2X,I1,2X,I1,4X,I2)
+     * I2, 8X,Z4,3X,I1,                 22X,I1,2X,I1,2X,I1,2X,I1,4X,I2)
 C  DATA + ADRESS
          IF(IBT151.EQ.0.AND.IBT152.NE.0)
-     &   WRITE(cHWORK,20109) IZWRD1,IBT151,IOR1,IUL1,ILL1, ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                       IOVRF1,IZWRT1,
-     &                       IZWRD2,IBT152,ICRA2,ISLO2,ISUB2
+     *   WRITE(cHWORK,20109) IZWRD1,IBT151,IOR1,IUL1,ILL1, ! PMF 17/11/99: JUSCRN changed to cHWORK
+     *                       IOVRF1,IZWRT1,
+     *                       IZWRD2,IBT152,ICRA2,ISLO2,ISUB2
 20109 FORMAT(' ',Z4,3X,I1,                 22X,I1,2X,I1,2X,I1,2X,I1,4X,
-     & I2, 8X,Z4,3X,I1,4X,I1,3X,I2,5X,I1)
+     * I2, 8X,Z4,3X,I1,4X,I1,3X,I2,5X,I1)
 C   ADRESS + DATA
          IF(IBT151.NE.0.AND.IBT152.EQ.0)
-     &   WRITE(cHWORK,20110) IZWRD1,IBT151,ICRA1,ISLO1,ISUB1, ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                       IZWRD2,IBT152,IOR2,IUL2,ILL2,
-     &                       IOVRF2,IZWRT2
+     *   WRITE(cHWORK,20110) IZWRD1,IBT151,ICRA1,ISLO1,ISUB1, ! PMF 17/11/99: JUSCRN changed to cHWORK
+     *                       IZWRD2,IBT152,IOR2,IUL2,ILL2,
+     *                       IOVRF2,IZWRT2
 20110 FORMAT(' ',Z4,3X,I1,4X,I1,3X,I2,5X,I1,5X,
-     &    25X,Z4,3X,I1,                 22X,I1,2X,I1,2X,I1,2X,I1,4X,I2)
+     *    25X,Z4,3X,I1,                 22X,I1,2X,I1,2X,I1,2X,I1,4X,I2)
 C  ONLY ADRESS WORDS
          IF(IBT151.NE.0.AND.IBT152.NE.0)
-     &   WRITE(cHWORK,20111) IZWRD1,IBT151,ICRA1,ISLO1,ISUB1, ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                       IZWRD2,IBT152,ICRA2,ISLO2,ISUB2
+     *   WRITE(cHWORK,20111) IZWRD1,IBT151,ICRA1,ISLO1,ISUB1, ! PMF 17/11/99: JUSCRN changed to cHWORK
+     *                       IZWRD2,IBT152,ICRA2,ISLO2,ISUB2
 20111 FORMAT(' ',Z4,3X,I1,4X,I1,3X,I2,5X,I1,5X,
-     &    25X,Z4,3X,I1,4X,I1,3X,I2,5X,I1)
+     *    25X,Z4,3X,I1,4X,I1,3X,I2,5X,I1)
 C
          CALL SYSSYM(XS,YS,SIZE,HWORK,IILIM,0.)
 20104 CONTINUE
@@ -1149,7 +1149,7 @@ C                            CHECK IF MP-STRING IS CORRECT
          IF( HDATA(IAPOIN + ILMPST) .NE. -2 ) GO TO 22002
              GO TO 22003
 22002    IF( HDATA(IAPOIN + ILMPST) .NE. -1  .OR.
-     &       HDATA(IAPOIN + ILMPST - 1) .NE. -2 ) GO TO 22090
+     *       HDATA(IAPOIN + ILMPST - 1) .NE. -2 ) GO TO 22090
 C
 C                            PROCESS MICROPROCESSOR-STRING
 22003    YS = YS - DEL - DEL
@@ -1161,7 +1161,7 @@ C
          CALL CORE(HWORK,66)
          WRITE(cHWORK,22004) (HDATA(IAPOIN+I),I=1,6), IMPROC ! PMF 17/11/99: JUSCRN changed to cHWORK
 22004    FORMAT(' ',I4,I6,'   $',Z4,2I6,'   $',Z4,10X,'***   MP',I3,
-     &          '   ***')
+     *          '   ***')
          CALL SYSSYM(XS,YS,SIZE,HWORK,66,0.)
 C
 22005    YS = YS - DEL
@@ -1214,7 +1214,7 @@ C                            SAFETY CHECK IF END OF MP-STRING
             IF( ILSUMW .GT. (ILMPST-7) ) GO TO 22050
 C                            SET FLAG FOR LAST WIRESIDE-STRING
             IF( ILSUMW .EQ. (ILMPST-7) .OR. ILSUMW .EQ. (ILMPST-8) )
-     &                                         GO TO 22050
+     *                                         GO TO 22050
                IPMPST = IPMPST + ILWSID
                GO TO 22005
 22049    CALL TRMOUT(80,' BANKPR: error in wireside-string^')
@@ -1374,7 +1374,7 @@ C--------------- SPECIAL FORMAT FOR PALL BANKS
       IPO   = LIM2 + LO
       CALL CORE(HWORK,79)
       WRITE(cHWORK,28001) (IDATA(LIM2+II),II=1,6),(ADATA(LIM2+JJ),JJ=7,8 ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &),IDATA(LIM2+9)
+     *),IDATA(LIM2+9)
 28001 FORMAT(' ',6I8,2F11.4,I8)
       CALL SYSSYM(XS,YS,SIZE,HWORK,79,0.)
       YS   = YS - DEL
@@ -1388,7 +1388,7 @@ C--------------- SPECIAL FORMAT FOR PALL BANKS
 28004 IPP = IPO + (ICNT-1)*LTR
       CALL CORE(HWORK,95)
       WRITE(cHWORK,28005) ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &     ICNT,(ADATA(IPP+II),II=1,5),(IDATA(IPP+JJ),JJ=6,9)
+     *     ICNT,(ADATA(IPP+II),II=1,5),(IDATA(IPP+JJ),JJ=6,9)
 28005 FORMAT(' ',I4,3X,4F11.4,F11.6,4I8)
       CALL SYSSYM(XS,YS,SIZE,HWORK,95,0.)
       GO TO 28002
@@ -1404,7 +1404,7 @@ C---------------    CONTINUATION SECTION
       CALL DECIDE(IANSW)
       IF( IANSW .NE. 1 ) GO TO 90300
 90290    CALL TRMOUT(80,'Hardcopy on Laser Printer L1 .. L5 ?  (1 .. 5)^
-     &')
+     *')
          CALL TRMOUT(80,'Hardcopy on INTERNAL PLOTTER ?  (6)^')
          CALL TRMOUT(80,'Hardcopy on EXTERNAL PLOTTER ?  (7)^')
          CALL TRMOUT(80,'Enter your choice (1 .. 7 ) :^')
@@ -1422,9 +1422,9 @@ C---------------    CONTINUATION SECTION
       CALL ERASE
       IF( IRETUR .EQ. 0 ) GO TO 501
       GOTO ( 1001, 2003, 3001, 4001, 5001, 6006, 7003,99999, 9005,10003,
-     &      99999,99999,99999,99999,15006,16001,99999,99999,19015,20002,
-     &      19015,22005,23002,24002,25002,26002,27001,28003, 2003, 4001,
-     &      19019,19022,19026,19030,99999,99999,99999,99999,99999,99999)
-     &   ,IRETUR
+     *      99999,99999,99999,99999,15006,16001,99999,99999,19015,20002,
+     *      19015,22005,23002,24002,25002,26002,27001,28003, 2003, 4001,
+     *      19019,19022,19026,19030,99999,99999,99999,99999,99999,99999)
+     *   ,IRETUR
 99999 RETURN
       END

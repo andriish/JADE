@@ -93,7 +93,7 @@ C
  1000 CALL BSLT
       CALL BDLG
       NRECS = NRECS + 1
-      CALL BREAD(NUNIT,&60,&70)
+      CALL BREAD(NUNIT,*60,*70)
       CALL USER(20)              ! PMF 07/07/99 added for additional checks
                                 !     14/06/00 set MC smearing veto in user routine
 C

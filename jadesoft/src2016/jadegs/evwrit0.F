@@ -83,7 +83,7 @@ C
       IF( IPMTCO .GT. 0 .AND. IDATA(IPMTCO).GE.LMTCO ) GO TO 1
 C
       IF( IPMTCO .LE. 0 )
-     *              CALL BCRE( IPMTCO, NAM1(1), 1,LMTCO, &1000, IER )
+     *              CALL BCRE( IPMTCO, NAM1(1), 1,LMTCO, *1000, IER )
       IF( IDATA(IPMTCO).LT.LMTCO )
      *              CALL BCHM( IPMTCO, LMTCO - IDATA(IPMTCO), IER )
 C
@@ -143,7 +143,7 @@ C
       CALL CLOC( IND, NAM1(2), 2 )
       IF( IND .GT. 0 ) GO TO 2
 C
-      CALL BCRE( IND, NAM1(2), 2, LJET, &1000, IER )
+      CALL BCRE( IND, NAM1(2), 2, LJET, *1000, IER )
     2 CALL BSTR( IND, DRCH, LJET )
 C
 C                                   ***************
@@ -156,7 +156,7 @@ C
       CALL CLOC( IND, NAM1(3), 3 )
       IF( IND .GT. 0 ) GO TO 3
 C
-      CALL BCRE( IND, NAM1(3), 3, LGEO, &1000, IER )
+      CALL BCRE( IND, NAM1(3), 3, LGEO, *1000, IER )
     3 CALL BSTR( IND, GEO, LGEO )
 C
       IF( .NOT. LVTXC ) GO TO 6
@@ -171,7 +171,7 @@ C
       CALL CLOC( IND, NAMV(1), 4 )
       IF( IND .GT. 0 ) GO TO 4
 C
-      CALL BCRE( IND, NAMV(1), 4, LVCC, &1000, IER )
+      CALL BCRE( IND, NAMV(1), 4, LVCC, *1000, IER )
     4 CALL BSTR( IND, VXCC, LVCC )
 C
 C                                   ***************
@@ -184,7 +184,7 @@ C
       CALL CLOC( IND, NAMV(2), 5 )
       IF( IND .GT. 0 ) GO TO 5
 C
-      CALL BCRE( IND, NAMV(2), 5, LGEV, &1000, IER )
+      CALL BCRE( IND, NAMV(2), 5, LGEV, *1000, IER )
     5 CALL BSTR( IND, GEOV, LGEV )
 C
 C                  WRITE OUT

@@ -26,8 +26,8 @@ C
       NREC = HDATA(IPHD*2+11)
       WRITE(6,6000) NRUN,NREC,IDATA(IND+1),IDATA(IND2+1),IPATR
  6000 FORMAT(' +++++ PARCIR  >10 PARENTS +++++',5X,
-     &       'NRUN,NREC=',2I5,5X,'TRK#,PARENT#=',2I5,5X,
-     &       'PATR POINTER=',I8)
+     *       'NRUN,NREC=',2I5,5X,'TRK#,PARENT#=',2I5,5X,
+     *       'PATR POINTER=',I8)
       RETURN
 C
       END

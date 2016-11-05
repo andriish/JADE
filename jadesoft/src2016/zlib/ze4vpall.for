@@ -25,11 +25,11 @@ C                                   READ IN DD* CARDS
  9001 FORMAT(20X,I10)
       WRITE(6,9002) IEVLIM,IFILMX,IWRMAX,IWZMAX,IDULIM,ISCIP
  9002 FORMAT(/' MAX # OF EVENTS TO READ   :',I8/
-     &         ' MAX # OF INPUTFILES       :',I8/
-     &         ' MAX # OF EVENTS ON UNIT 3 :',I8/
-     &         ' MAX # OF EVENTS ON UNIT51 :',I8/
-     &         ' MAX # OF ZE4V-BANK PRINTS :',I8/
-     &         ' INITIAL EVENT SCIP        :',I8/)
+     *         ' MAX # OF INPUTFILES       :',I8/
+     *         ' MAX # OF EVENTS ON UNIT 3 :',I8/
+     *         ' MAX # OF EVENTS ON UNIT51 :',I8/
+     *         ' MAX # OF ZE4V-BANK PRINTS :',I8/
+     *         ' INITIAL EVENT SCIP        :',I8/)
 C                                          INIT BOS
       CALL BINT( 80000, 40000, 10000, 0 )
 C                                           I/O UNIT SPECIFICATION
@@ -56,7 +56,7 @@ C
       IWZE4V = 0
 C
   100 IF( JUHR(2) .EQ. 2 ) GO TO 4000
-      CALL BREAD( IRUNIT, &1000, &3000 )
+      CALL BREAD( IRUNIT, *1000, *3000 )
       IEOF = 0
       IEV = IEV + 1
 C                                      LOOK FOR HEAD BANK
@@ -91,7 +91,7 @@ C
 C
 C                                           ERRORS
  1000 CONTINUE
-      CALL JOBFIN( 3, IEV, &1100 )
+      CALL JOBFIN( 3, IEV, *1100 )
  1100 IF( IEOF .NE. 0 ) GO TO 8000
 C
 C
@@ -99,7 +99,7 @@ C
       CALL BSLT
       CALL BDLG
       IF( IEV .LT. IEVLIM ) GO TO 100
-      CALL JOBFIN( 4, IEV, &8100 )
+      CALL JOBFIN( 4, IEV, *8100 )
 C
 C                                           EOF ON IRUNIT
  3000 IF( IFIL .GE. IFILMX .OR. IEOF.NE.0 )  GO TO 8000
@@ -117,11 +117,11 @@ C                                           EOF ON IRUNIT
       GO TO 100
 C
 C                                        TIME OUT
- 4000 CALL JOBFIN( 2, IEV, &8100 )
+ 4000 CALL JOBFIN( 2, IEV, *8100 )
 C
 C                                           END OF JOB
  8000 CONTINUE
-      CALL JOBFIN( 1, IEV, &8100 )
+      CALL JOBFIN( 1, IEV, *8100 )
  8100 CONTINUE
       CALL BSTA
 C

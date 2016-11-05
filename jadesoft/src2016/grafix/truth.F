@@ -98,7 +98,7 @@ C---  CODE FOR OPTION 4         DRAW JET AXIS
 C---
       IF( INDEX .NE. 4 ) GO TO 777
          IF( LASTVW .GT. 4 .AND. LASTVW .NE. 17 .AND. LASTVW .NE. 20 )
-     &                                         GO TO 780
+     *                                         GO TO 780
             CALL EVTAX(EAXIS,EOUT,SPHITY,XMASS,IERR)
             IF( IERR .NE. 0 ) RETURN
             PHIJET = ATAN2(EAXIS(2),EAXIS(1))
@@ -118,9 +118,9 @@ C---
           CONTINUE ! CALL CLRCON PMF 03/12/99
           WRITE(6,9771)
  9771 FORMAT(' JADE-TYPE :',/,
-     &       ' 1 = PHOTON, 2 = ELECTRON, 3 = MUON, 4 = PION, 5 = KAON,'/
-     &       ' 6 = NUCLEON, 7 = PHI, 8 = ETA, 9 = ETAP, 10 = OMEGA,'/
-     &       ' 11 = K*(890), 12 = RHO, 22 = TAU, 50 = K0')
+     *       ' 1 = PHOTON, 2 = ELECTRON, 3 = MUON, 4 = PION, 5 = KAON,'/
+     *       ' 6 = NUCLEON, 7 = PHI, 8 = ETA, 9 = ETAP, 10 = OMEGA,'/
+     *       ' 11 = K*(890), 12 = RHO, 22 = TAU, 50 = K0')
 C
           RETURN
 C---

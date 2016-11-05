@@ -9,7 +9,7 @@ C
 C   AUTHOR:   E. ELSEN    11/05/79 :  MC TRACKING PROGRAM
 C
 C      MOD  E. ELSEN    10/06/82 :
-C      MOD  J. OLSSON   30/08/83 :  SUBSET TRACKED & EVENT COUNTING
+C      MOD  J. OLSSON   30/08/83 :  SUBSET TRACKED * EVENT COUNTING
 C      MOD  W. BARTEL   25/10/83 :  PARTICLES BEYOND COIL NOT TRACKED
 C      MOD  C. BOWDERY  17/11/83 :  CALL TO MCVSUM FOR ERROR SUMMARY
 C      MOD  C. BOWDERY  24/11/83 :  DELETE CALL TO TRCOIL FOR PHOTONS
@@ -115,7 +115,7 @@ C                                           INITIALISE EVENT
       IPRI = 1
       IF( IWRT .GT. IPRINT-1 ) IPRI= 0
 C                                           GET EVENT
-      CALL JGETEV( &91 )
+      CALL JGETEV( *91 )
 C
  1002 CONTINUE
 C                                           NEXT PARTICLE
@@ -148,20 +148,20 @@ C                                           BRANCH OFF K0L AND N
       IF( PV(7) .EQ. 0. .AND. ABS(PV(8)-5.) . LT. 1.E-5) GO TO 4
       IF( PV(7) .EQ. 0. .AND. ABS(PV(8)-6.) . LT. 1.E-5) GO TO 4
 C
-      CALL TRCDET(PV,R0,RR,&1004)
+      CALL TRCDET(PV,R0,RR,*1004)
       IF( PV(6) .LT. .001 ) GO TO 1000
 C
-      CALL TRCOIL(PV,RR,&992 )
+      CALL TRCOIL(PV,RR,*992 )
   992 R0(1) = RR(1)
       R0(2) = RR(2)
       R0(3) = RR(3)
       GO TO 996
 C
 C                                           TRACK PHOTONS
-    3 CALL JTRKGM(PV,R0,&1000)
+    3 CALL JTRKGM(PV,R0,*1000)
       GO TO 996
 C                                           TRACK K0L , N
-    4 CALL JTRNTR(PV,R0,&1000)
+    4 CALL JTRNTR(PV,R0,*1000)
 C                                           SAVE VECTORS
   996 R0SAVE(1) = R0(1)
       R0SAVE(2) = R0(2)
@@ -169,7 +169,7 @@ C                                           SAVE VECTORS
       DO 995 ISA = 1,10
   995 PVSAVE(ISA) = PV(ISA)
 C                                           LEAD GLASS
-      CALL TRLGL(PV,R0,&997)
+      CALL TRLGL(PV,R0,*997)
 C
   997 CONTINUE
 C

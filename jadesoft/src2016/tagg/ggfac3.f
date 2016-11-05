@@ -13,7 +13,7 @@ C
     1   FAKTOR(I) = FACT3(I)
       WRITE(6,600)
   600 FORMAT(/' *** THIRD SET OF LEAD-GLASS CALIBRATION CONSTANTS',
-     &        ' INCLUDED ***')
+     *        ' INCLUDED ***')
       RETURN
       END
       BLOCK DATA

@@ -10,7 +10,7 @@ C   NOTE:- IT ALSO MULTIPLIES CHANNEL NUMBER TIMES A FACTOR TO MAKE IT
 C   APPROXIMATELY EQUAL TO ENERGY IN MEV
 C
 C  A.J.FINCH 10/12/92
-C       MOD. :  JOHN NYE 29/05/84   TEST FOR INVALID MARK & TIDY-UP
+C       MOD. :  JOHN NYE 29/05/84   TEST FOR INVALID MARK * TIDY-UP
 C  LAST MOD. :  JOHN NYE 20/07/84   CHANGED ERROR HANDLING
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C
@@ -43,7 +43,7 @@ C
 C
        IF ( NDDINN .NE. 0 ) NOMSG = .TRUE.
 C
-       CALL BLOC(IND,'ATAG',0,&1000)
+       CALL BLOC(IND,'ATAG',0,*1000)
        NW    = IDATA(IND)
        IHIND = IND + IND
        IHSTA = IHIND + 7
@@ -57,8 +57,8 @@ C
 C---                                     TEST FOR ILLEGAL MARK
 C---                                     OR TAGMRK NOT CALLED
 C
-       IF ( (MARK .LT. 0) .OR. (MARK .GT. 2) ) CALL TAGMRK(&1000)
-       IF ( IFLMRK .NE. -1 ) CALL TAGMRK(&1000)
+       IF ( (MARK .LT. 0) .OR. (MARK .GT. 2) ) CALL TAGMRK(*1000)
+       IF ( IFLMRK .NE. -1 ) CALL TAGMRK(*1000)
 C
 C---                                     CHECK FOR RAW DATA
 C
@@ -76,7 +76,7 @@ C
 C---                                     CONVERT HARDWARE ADDRESSIHAD
 C---                                     TO SOFTWARE ADDRESS ISAD
 C
-           CALL FHTOS(ISAD,IHAD,&20)
+           CALL FHTOS(ISAD,IHAD,*20)
 C
            IF ( (ISAD .GT. IENDPZ) .OR. (ISAD .LT. 0) ) GOTO 19
 C
@@ -166,7 +166,7 @@ C
 C----------------------------------------RAW DATA-----------------------
 C
  1100  CONTINUE
-       CALL CFLDSK(IWRITE,&1000)
+       CALL CFLDSK(IWRITE,*1000)
        RETURN
        END
 C
@@ -202,7 +202,7 @@ C
 C FIND THE POINTERS ETC
 C
 C
-       CALL BLOC(IND,'ATAG',0,&9001)
+       CALL BLOC(IND,'ATAG',0,*9001)
        I2S = ( IND * 2 ) + 3
        I2F = 2 * ( IND + IDATA(IND) )
        IF ( HDATA(I2F) .EQ. 0 ) I2F = I2F - 1
@@ -237,7 +237,7 @@ C
 C
 C CONVERT HARDWARE ADDRESS TO SOFTWARE ADDRESS
 C
-          CALL FHTOS(ISAD,IADD,&19)
+          CALL FHTOS(ISAD,IADD,*19)
 C
           IF ( (ISAD .GT. IENDPZ) .OR. (ISAD .LT. 0) ) GOTO 19
 C

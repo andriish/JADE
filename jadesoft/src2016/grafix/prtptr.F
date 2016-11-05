@@ -37,7 +37,7 @@ C
       YS = YS - DEL
       CALL CORE(HWORK,78)
       WRITE(cHWORK,3) IDATA(LIM2+20),ADATA(LIM2+21),IDATA(LIM2+22), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &               (ADATA(LIM2+I),I=23,25),IDATA(LIM2+26)
+     *               (ADATA(LIM2+I),I=23,25),IDATA(LIM2+26)
     3 FORMAT('  ',I6,E14.6,I6,3E14.6,I8)
       CALL SYSSYM(XS,YS,SIZE,HWORK,78,0.)
       YS = YS - DEL
@@ -48,7 +48,7 @@ C
       YS = YS - DEL
       CALL CORE(HWORK,112)
       WRITE(cHWORK,5) (ADATA(LIM2+I),I=35,38),(HDATA(LIMH2+I),I=77,78), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                (ADATA(LIM2+I),I=40,42)
+     *                (ADATA(LIM2+I),I=40,42)
     5 FORMAT('  ',4E14.6,2I6,3E14.6)
       CALL SYSSYM(XS,YS,SIZE,HWORK,112,0.)
       YS = YS - DEL
@@ -74,7 +74,7 @@ C
       YS = YS - DEL
       CALL CORE(HWORK,98)
       WRITE(cHWORK,10) IDATA(LIM2+72),(ADATA(LIM2+I),I=73,78), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     &                (IDATA(LIM2+I),I=79,80)
+     *                (IDATA(LIM2+I),I=79,80)
    10 FORMAT('  ',I6,6E13.5,2I6)
       CALL SYSSYM(XS,YS,SIZE,HWORK,98,0.)
       RETURN

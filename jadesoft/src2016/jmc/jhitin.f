@@ -102,7 +102,7 @@ C
       IR = ISTART + NHITS * 4 - 1
       IT = INEXT - 5
       IL = ISTART - 5
-C                                       H4VHTR & H4VHIT POINTERS
+C                                       H4VHTR * H4VHIT POINTERS
       JR = NHALL + NHITS + 1
       JT = NHITS
       JL = NHALL

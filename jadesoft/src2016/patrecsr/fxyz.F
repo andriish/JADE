@@ -456,7 +456,7 @@ C         FIELD DISTORTIONS AT LARGE DRIFT TIMES
 C         --------------------------------------
 C
           IF(DRIFT.GT.CAB(7))
-     #    DRIFT=DRIFT+LRFLAG*CCST0*(LAYER-WMID)*TANBET*(DRIFT-CAB(7))
+     +    DRIFT=DRIFT+LRFLAG*CCST0*(LAYER-WMID)*TANBET*(DRIFT-CAB(7))
 C
 C         ----------------------------------
 C         DRIFT VELOCITY VARIATION NEAR WIRE

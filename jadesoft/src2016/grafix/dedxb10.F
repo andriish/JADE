@@ -261,7 +261,7 @@ C
       INR = (NR-1)*2
       NL = LAND(NW(J),15)
       NH1 = IJC(J)
-C --------------------------------------- AMPLITUDES & DRIFT TIME
+C --------------------------------------- AMPLITUDES * DRIFT TIME
       AR = HDATA(NH1+1)
       AL = HDATA(NH1+2)
       T = HDATA(NH1+3) / 64.

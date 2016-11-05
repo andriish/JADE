@@ -77,7 +77,7 @@ C                                           FORMAT OF ZE4V BANK
 CHANGED :  LTCH (12 )  31.3.88 MZ
 C
       DATA  LH / 31 /, LT / 9 /, LVX / 3 /,
-     & LTCH / 14 /, LTNE / 5 /, LTRE / 5 /
+     * LTCH / 14 /, LTNE / 5 /, LTRE / 5 /
 C                                            FORMAT OF ZEHD BANK
       DATA HVERS/ 1 /, LZHD / 3 /
       DATA LCUT / 12 /
@@ -114,7 +114,7 @@ C                                   CHECK IF MONTE CARLO
 C                                   CALC LENGTH OF BANK
       LZEHD = LZHD + LCUT + LMCH
 C                                   CREATE NEW BANK
-      CALL BCRE(NPZEHD,'ZEHD',IGEN,LZEHD,&30,IER)
+      CALL BCRE(NPZEHD,'ZEHD',IGEN,LZEHD,*30,IER)
       CALL BSAW(1,'ZEHD')
 C                                   FILL HEADER PART
       HW(NPZEHD*2 + 1) = HVERS
@@ -169,7 +169,7 @@ C20   CONTINUE
 C                                  ERROR IN BCRE
  30   CONTINUE
       LVECS = 0
-      CALL FEHLER( 1, &1 )
+      CALL FEHLER( 1, *1 )
 
 *** PMF 09/12/99      ENTRY ZE4VUP( NST, N, IGEN )
 *** This ENTRY point is not called by any of the ZE4V procedures.
@@ -188,11 +188,11 @@ C                                      LOOK FOR BANKS
       CALL BDLS( 'ZE4V',IGEN)
 C                                      PATR - NBANK
       NPPATR = IW( IBLN('PATR'))
-      IF( NPPATR .LE. 0 .AND. IMODE .EQ. 4 ) CALL FEHLER( 2, &8000 )
+      IF( NPPATR .LE. 0 .AND. IMODE .EQ. 4 ) CALL FEHLER( 2, *8000 )
       NPLGCL = IW( IBLN('LGCL'))
-      IF( NPPATR .LE. 0 .AND. NPLGCL .LE. 0 ) CALL FEHLER (2,&8000 )
+      IF( NPPATR .LE. 0 .AND. NPLGCL .LE. 0 ) CALL FEHLER (2,*8000 )
       IF( NPLGCL .LE. 0 .AND. IMODE .EQ. 1
-     &.OR.NPLGCL .LE. 0 .AND. IMODE .EQ. 3 ) CALL FEHLER( 2, &8000 )
+     *.OR.NPLGCL .LE. 0 .AND. IMODE .EQ. 3 ) CALL FEHLER( 2, *8000 )
 C
       NPHEAD = IW( IBLN( 'HEAD' ))
       IF ( NPHEAD .GT. 0 ) THEN
@@ -218,7 +218,7 @@ C
       NVX = 1
       LHEAD = LH + NVX*LVX + LMC
 C                                           CREATE ZE4V HEAD
-      CALL BCRE( NPZE4V, 'ZE4V', IGEN, LHEAD, &8100, IER )
+      CALL BCRE( NPZE4V, 'ZE4V', IGEN, LHEAD, *8100, IER )
       CALL BSAW( 1, 'ZE4V' )
       HW(NPZE4V*2+ 1) = LHEAD
 C                                      VERTEX PART
@@ -251,7 +251,7 @@ C                                      NOT USED
 C
 C                                      ACCEPT EVENT BY MCREDU
       MRFLAG = -1
-      CALL zMCREDU( 0., &2040 ) ! PMF 11/04/00 MCREDU->zMCREDU
+      CALL zMCREDU( 0., *2040 ) ! PMF 11/04/00 MCREDU->zMCREDU
 C                                      EVENT ACCEPTED
       MRFLAG = 1
  2040 CONTINUE
@@ -318,9 +318,9 @@ C                                           PATR TRACKS
       IPPHOT = IBLN('PHOT')
       NPPHOT = IW( IPPHOT )
 
-      IF( NPPATR .LE. 0 )      CALL FEHLER( 3, &1000 )
+      IF( NPPATR .LE. 0 )      CALL FEHLER( 3, *1000 )
       NTR = IW( NPPATR + 2 )
-      IF( NTR .LE. 0 )      CALL FEHLER( 3, &1000 )
+      IF( NTR .LE. 0 )      CALL FEHLER( 3, *1000 )
 C
       IP0 = IW( NPPATR + 1 ) + NPPATR
       LP = IW( NPPATR + 3 )
@@ -331,17 +331,17 @@ C                                           LOOP OVER TRACKS
       DO 300 J = IP0, IP9, LP
         NUMTRK = IW( J + 1 )
         NRPHI = IW(J+24)
-        IF( NRPHI .LT. NRPHCT ) CALL FEHLER ( 11, &300 )
+        IF( NRPHI .LT. NRPHCT ) CALL FEHLER ( 11, *300 )
         NRZ = IW(J+33)
-        IF( NRZ .LT. NRZCT )  CALL FEHLER ( 12, &300 )
+        IF( NRZ .LT. NRZCT )  CALL FEHLER ( 12, *300 )
         AZV = ABS( RW(J+31) )
-        IF( AZV .GT. ZCT )         CALL FEHLER ( 13, &300 )
+        IF( AZV .GT. ZCT )         CALL FEHLER ( 13, *300 )
         CALL PRTOCI( J, CAP, RMIN, PHIM, SIG )
-        IF( ABS( RMIN ) .GT. RMINCT )    CALL FEHLER ( 14, &300 )
+        IF( ABS( RMIN ) .GT. RMINCT )    CALL FEHLER ( 14, *300 )
 C                                      SET REFERNCE POINT FOR CRDOCA
         CALL CRDOCA( J, R, PACT, RDOCA, CHARGE )
         PTOT = SQRT( PACT(1)**2 + PACT(2)**2 + PACT(3)**2 )
-        IF( PTOT .LT. PCT )      CALL FEHLER ( 15, &300 )
+        IF( PTOT .LT. PCT )      CALL FEHLER ( 15, *300 )
 C                                      ACCEPT THIS TRACK
 
 C                                      FILL GLOBAL PART FOR EACH TRACK
@@ -349,9 +349,9 @@ C                                      EXTEND BANK
         CALL BCHM( NPZE4V, LT+LTCH, IER )
 C                                      POINTER TO NEXT ZE4V-WORD
         NP = NPZE4V + LHEAD + HW( NPZE4V*2 + 6) * LT
-     &                      + HW( NPZE4V*2 + 8) * LTCH
-     &                      + HW( NPZE4V*2 +10) * LTNE
-     &                      + HW( NPZE4V*2 +12) * LTRE
+     *                      + HW( NPZE4V*2 + 8) * LTCH
+     *                      + HW( NPZE4V*2 +10) * LTNE
+     *                      + HW( NPZE4V*2 +12) * LTRE
         NP2 = NP * 2
 C                                      SUM UP # OF TOTAL AND CH. TRKS
         HW(NPZE4V*2+8 ) = HW(NPZE4V*2+8) + 1
@@ -384,9 +384,9 @@ C                                      LG-INFORMATION
           SIGECL = RW( NPOI + 3 )
           JBAREC = IW( NPOI + 1 )
         ELSEIF( NPLGCL .GT. 0 .AND. JCLUS1 .LE. 0 ) THEN
-          CALL FEHLER( 17, &3123)
+          CALL FEHLER( 17, *3123)
         ELSEIF( NPLGCL .LE. 0 .AND. JCLUS1 .GT. 0 ) THEN
-          CALL FEHLER( 18, &3123)
+          CALL FEHLER( 18, *3123)
         ENDIF
  3123   CONTINUE
 C
@@ -503,7 +503,7 @@ C                                      OVERWRITES CLUSTER INFORMATION
       NPPATR = IW(IPPATR)
       IF( NPPATR.GT.0 ) THEN
         LPATR = IW(NPPATR)
-        CALL BCRE( NPBUF1, '--BU', 1 , LPATR, &8200, IER )
+        CALL BCRE( NPBUF1, '--BU', 1 , LPATR, *8200, IER )
         IF( IER.EQ.0 ) THEN
           CALL UCOPY( RW(NPPATR+1), RW(NPBUF1+1), LPATR )
 C                                      PERFORM ELECTRON ANALYSIS
@@ -563,9 +563,9 @@ C                                           ACCEPT THIS TRACK
         CALL BCHM( NPZE4V, LT+LTNE, IER )
 C                                      POINTER TO NEXT ZE4V-WORD
         NP = NPZE4V + LHEAD + HW( NPZE4V*2 + 6) * LT
-     &                      + HW( NPZE4V*2 + 8) * LTCH
-     &                      + HW( NPZE4V*2 +10) * LTNE
-     &                      + HW( NPZE4V*2 +12) * LTRE
+     *                      + HW( NPZE4V*2 + 8) * LTCH
+     *                      + HW( NPZE4V*2 +10) * LTNE
+     *                      + HW( NPZE4V*2 +12) * LTRE
         NP2 = NP * 2
 C                                      SUM UP # OF TOTAL AND NE. TRKS
         HW(NPZE4V*2+10) = HW(NPZE4V*2+10) + 1
@@ -617,7 +617,7 @@ C
          N = HW( NPZE4V*2 + 6 )
          NST = 0
 C                                           SAVE AWAY BLANK COMMON
-         CALL BCRE( NPBUF, '--BU', 0 , 10*(N+5), &8200, IER )
+         CALL BCRE( NPBUF, '--BU', 0 , 10*(N+5), *8200, IER )
          CALL UCOPY( P(1,NST+1), RW(NPBUF+1), 10*(N+5) )
  2100 CONTINUE
       IF( IEV.LT.IEVLIM) CALL BPRS( 'ZE4V', IGEN )
@@ -626,8 +626,8 @@ C                                           SAVE AWAY BLANK COMMON
          IF( IEV.LT.IEVLIM) CALL PWRT( NST+1, NST+N, 10000 )
          NPZE4V = IW(IBLN('ZE4V'))
          CALL zSPTHAK( NST+1, NST+N, NST+N+4, THR, ! PMF 11/04/00 SPTHAK->zSPTHAK
-     &                              NST+N+1, SPH,
-     &                              NST+N+5, AKO, IER )
+     *                              NST+N+1, SPH,
+     *                              NST+N+5, AKO, IER )
 C                                      SPHERICITY
          CALL UCOPY( P(1,NST+N+1), RW(NPZE4V+ 9), 4 )
          CALL UCOPY( P(1,NST+N+2), RW(NPZE4V+13), 4 )
@@ -666,7 +666,7 @@ C-----------------------------------------------------------
 C
       IF( N.LE.0 ) GO TO 5000
 C
-         CALL BCRE( NPZE4V, 'ZE4V', IGEN, LH+LT*N, &8100, IER )
+         CALL BCRE( NPZE4V, 'ZE4V', IGEN, LH+LT*N, *8100, IER )
          CALL BSAW( 1, 'ZE4V' )
          HW(NPZE4V*2+ 1) = LH
          HW(NPZE4V*2+ 2) = 0
@@ -685,8 +685,8 @@ C                                      RUN/EVENT #
       RW(NPZE4V  + 8) = .001*EBEAM( HW(NPZE4V*2+13 ) )
 C
       CALL zSPTHAK( NST+1, NST+N, NST+N+4, THR, ! PMF 11/04/00 SPTHAK->zSPTHAK
-     &                           NST+N+1, SPH,
-     &                           NST+N+5, AKO, IER )
+     *                           NST+N+1, SPH,
+     *                           NST+N+5, AKO, IER )
 C                                      SPHERICITY
       CALL UCOPY( P(1,NST+N+1), RW(NPZE4V+ 9), 4 )
       CALL UCOPY( P(1,NST+N+2), RW(NPZE4V+13), 4 )
@@ -724,7 +724,7 @@ C
  8000 CONTINUE
       NPZE4V = IW( IBLN('ZE4V'))
       IF ( HW(NPZE4V*2+6).LE.0) THEN
-        CALL FEHLER( 5, &8001 )
+        CALL FEHLER( 5, *8001 )
  8001   CALL BDLS( 'ZE4V',IGEN)
       ENDIF
       RETURN

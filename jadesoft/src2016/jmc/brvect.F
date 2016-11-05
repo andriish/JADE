@@ -102,14 +102,14 @@ C
 C                                           CREATE VECT BANK
 C
       CALL LHVECT( LENGTH )
-      CALL BCRE( NPVECT, 'VECT', 0 , LENGTH, &8200, IER )
+      CALL BCRE( NPVECT, 'VECT', 0 , LENGTH, *8200, IER )
       CALL STVECT( LENGTH, IW(NPVECT+1) )
       CALL BSAW( 1, 'VECT' )
 C
 C                                           CREATE PALL BANK
 C
       CALL LHPALL( LENGTH)
-      CALL BCRE( NPALL, 'PALL', 0, LENGTH, &8300, IER )
+      CALL BCRE( NPALL, 'PALL', 0, LENGTH, *8300, IER )
       CALL STPALL( LENGTH, IW(NPALL + 1) )
       CALL BSAW( 1, 'PALL' )
       RETURN

@@ -16,7 +16,7 @@ C
 C
       NZ2 = NPZE4V*2
       LLH = HW( NZ2 + 1 ) - HW( NZ2 + 3 )*HW( NZ2 + 2 )
-     &                       - HW( NZ2 + 4)
+     *                       - HW( NZ2 + 4)
 C
 C                                      DIFFERENT VERSIONS OF ZE4V
 C
@@ -92,12 +92,12 @@ C
      *                     HW(NP2+7),HW(NP2+8)/100,MOD(HW(NP2+8),100),
      *                     HW(NP2+9),HW(NP2+10),
      *                     HW(NP2+15),HW(NP2+16),HW(NP2+18),
-     &                    (RW(NP+LTR+I),I=1,3),(HW(NP2+LTR*2+I),I=7,10),
-     &                    (RW(NP+LTR+I),I=6,11)
+     *                    (RW(NP+LTR+I),I=1,3),(HW(NP2+LTR*2+I),I=7,10),
+     *                    (RW(NP+LTR+I),I=6,11)
  9108     FORMAT(1X,I2,1X,3(F5.2,1X),F6.3,1X,I2,1X,I2,1X,2I2,1X,
-     &            2(I2,1X),I2,I3,1X,I2,
-     &            3(1X,F5.2),2(1X,I4),1X,I2,1X,I4,3(1X,F5.1),
-     &            2(1X,F5.2),1X,F6.2)
+     *            2(I2,1X),I2,I3,1X,I2,
+     *            3(1X,F5.2),2(1X,I4),1X,I2,1X,I4,3(1X,F5.1),
+     *            2(1X,F5.2),1X,F6.2)
 C
       ELSEIF ( HW( NZ2 + 7 ) .EQ. 13 ) THEN
 C
@@ -105,13 +105,13 @@ C
      *                     HW(NP2+7),HW(NP2+8)/100,MOD(HW(NP2+8),100),
      *                     HW(NP2+9),HW(NP2+10),
      *                     HW(NP2+15),HW(NP2+16),HW(NP2+18),
-     &                    (RW(NP+LTR+I),I=1,3),(HW(NP2+LTR*2+I),I=7,10),
-     &                    (RW(NP+LTR+I),I=6,10),
-     &                    HW(NP2+2*LTR+23),RW(NP+LTR+11)
+     *                    (RW(NP+LTR+I),I=1,3),(HW(NP2+LTR*2+I),I=7,10),
+     *                    (RW(NP+LTR+I),I=6,10),
+     *                    HW(NP2+2*LTR+23),RW(NP+LTR+11)
  9118     FORMAT(1X,I2,1X,3(F5.2,1X),F6.3,1X,I2,1X,I2,1X,2I2,1X,
-     &            2(I2,1X),I2,I3,1X,I2,
-     &            3(1X,F5.2),2(1X,I4),1X,I2,1X,I4,3(1X,F5.1),
-     &            2(1X,F5.2),1X,I2,1X,F6.2)
+     *            2(I2,1X),I2,I3,1X,I2,
+     *            3(1X,F5.2),2(1X,I4),1X,I2,1X,I4,3(1X,F5.1),
+     *            2(1X,F5.2),1X,I2,1X,F6.2)
 C
       ENDIF
 C
@@ -123,10 +123,10 @@ C
      *                    HW(NP2+7),HW(NP2+8),
      *                    HW(NP2+9),HW(NP2+10),
      *                    HW(NP2+15),HW(NP2+16),HW(NP2+18),
-     &                    (RW(NP+LTR+I),I=1,3),(HW(NP2+LTR*2+I),I=7,8)
+     *                    (RW(NP+LTR+I),I=1,3),(HW(NP2+LTR*2+I),I=7,8)
  9109       FORMAT(1X,I2,1X,3(F5.2,1X),F6.3,1X,I2,1X,I2,1X,I4,1X,
-     &                 4(I2,1X),I2,
-     &                 3(1X,F5.2),2(1X,I4))
+     *                 4(I2,1X),I2,
+     *                 3(1X,F5.2),2(1X,I4))
             NP = NP + LTR + LTRNE
 C
           ELSEIF( HW(NP*2 + 18) .EQ. 2 )  THEN
@@ -135,10 +135,10 @@ C
      *                    HW(NP2+7),HW(NP2+8),
      *                    HW(NP2+9),HW(NP2+10),
      *                    HW(NP2+15),HW(NP2+16),HW(NP2+18),
-     &                    (RW(NP+LTR+I),I=1,3),(HW(NP2+LTR*2+I),I=7,8)
+     *                    (RW(NP+LTR+I),I=1,3),(HW(NP2+LTR*2+I),I=7,8)
  9110       FORMAT(1X,I2,1X,3(F5.2,1X),F6.3,1X,I2,1X,I2,1X,I4,1X,
-     &                 4(I2,1X),I2,
-     &                 3(1X,F5.2),2(1X,I4))
+     *                 4(I2,1X),I2,
+     *                 3(1X,F5.2),2(1X,I4))
             NP = NP + LTR + LTRRE
 C
           ELSEIF( HW(NP*2 + 18) .EQ.-1 )  THEN

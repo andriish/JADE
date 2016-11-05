@@ -281,7 +281,7 @@ C
 C
 C+++
 C         WRITE(6,1796)I,J,NSHARE
-C1796     FORMAT('0 TRACKS ',I3,' &',I3,' SHARE ',I3,' HITS.')
+C1796     FORMAT('0 TRACKS ',I3,' *',I3,' SHARE ',I3,' HITS.')
 C+++
           IF( NSHARE .EQ. 0 ) GO TO 189
           LOSER = IMU

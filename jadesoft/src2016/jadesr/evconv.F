@@ -469,7 +469,7 @@ C                                           LOOP OVER HITS
          IWIR = IWIR - 1
          HDATA(IPHDT+1) = IWIR
 C                                           NOTE A1 AND A2 EXCHANGED
-C                                           BETWEEN RAW & REFORMATTED
+C                                           BETWEEN RAW * REFORMATTED
 C                                           BANKS
          HDATA(IPHDT+3) = HWORK(IPWRK)
          HDATA(IPHDT+2) = HWORK(IPWRK+1)

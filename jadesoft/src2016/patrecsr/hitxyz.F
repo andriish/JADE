@@ -247,8 +247,8 @@ C         CORRECTION FOR WIRE POSITIONS
 C         -----------------------------
 C
           DDRIFT=CABER8*((DELTA5(INCELL,1)+DELTA5(INCELL,2)*ZFIT/1211.5)
-     #    *(LAYER-7)+(DELTA6(INCELL,1)+DELTA6(INCELL,2)*ZFIT/1211.5))
-     #        *TLTCOR
+     +    *(LAYER-7)+(DELTA6(INCELL,1)+DELTA6(INCELL,2)*ZFIT/1211.5))
+     +        *TLTCOR
           DRIFT=ABS(DRIFT*LRFLAG-DDRIFT*10.)
 C
 C         --------------------------------

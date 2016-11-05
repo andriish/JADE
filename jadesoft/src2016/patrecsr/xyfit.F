@@ -620,10 +620,10 @@ C         BAD RESIDUAL TO NEW FIT
 C####################################################################
       RAD = 1.0/CURV
       IF(PRINT)PRINT4051,NMPROG,NPTS,NGOOD,NBAD,NEXTRA,RAD,
-     # CODE0,CHSLIM,CHIFIT
+     + CODE0,CHSLIM,CHIFIT
  4051 FORMAT(' FIT ',I1,' #POINTS USED/GOOD/BAD/EXTRA =',4I3,
-     #' RADIUS =',E11.4,' CODE0 =',F4.1,' CHSLIM =',F4.1,
-     #'  CHI**2 =',F7.3,' ######')
+     +' RADIUS =',E11.4,' CODE0 =',F4.1,' CHSLIM =',F4.1,
+     +'  CHI**2 =',F7.3,' ######')
       IF (PRINT) CALL PCWORK(0,0,0,1,0)
 C####################################################################
           IF(ISP5.NE.0)GOTO4080
@@ -706,7 +706,7 @@ C ERRORM 11 ------------- CIRCLE FIT ERROR ZERO RADIUS --------------
 C#######################################################################
           IF(PRINT)PRINT1012,NCLOOP,CHICIR,CHIL1,CHIFIT
  1012     FORMAT(' CIRCLE FIT LOOP',I3,1X,' CHI**2 =',F7.3,' OLD=',F7.3,
-     #    ' PARAB=',F7.3)
+     +    ' PARAB=',F7.3)
 C#######################################################################
           IF(CHICIR.LE.0.)GOTO1050
           IF(NCLOOP.EQ.0)GOTO1020
@@ -771,7 +771,7 @@ C ERRORM 7 ---------- TRACK START AND END ERROR -----------------------
 C#######################################################################
           IF(PRINT)PRINT1046,DR1,DR2,C4C,X1,X2
  1046 FORMAT(' ..  DR1=',E11.4,' DR2=',E11.4,
-     # '  RAD=',E11.4,'  FIRST/LAST PTS=',2E11.4)
+     + '  RAD=',E11.4,'  FIRST/LAST PTS=',2E11.4)
 C#######################################################################
           GOTO1000
 C         ----------------
@@ -787,7 +787,7 @@ C         ----------------
 C#######################################################################
           IF(PRINT)PRINT1052,NCLOOP,NPTS,C4
  1052     FORMAT(' EXIT CIRCLE FIT AFTER',I2,' ITERATIONS. NPTS=',I3,
-     #    ' RADIUS =',E11.4)
+     +    ' RADIUS =',E11.4)
 C#######################################################################
           RETURN
 C         ------------------------

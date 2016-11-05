@@ -130,7 +130,7 @@ C ------------------------------------- FILL WORK ARRAY VTRK,KTRK
       IF(INPA.LE.0)                     GOTO 990
       NTR   = IDATA(INPA+2)
 C
-      CALL PATTRK(INPA,&980,&980)
+      CALL PATTRK(INPA,*980,*980)
 C ------------------------------------- DITTMANN'S VERTEX ROUTINE
       CALL VTXPRE(INHD,INPA)
 C ------------------------------------- IEEFG ARRAY MARKS BAD TRACKS
@@ -475,11 +475,11 @@ C
 C
       DIMENSION A(3,3)
       DET=A(1,1)*A(2,2)*A(3,3)
-     &   +A(1,2)*A(2,3)*A(3,1)
-     &   +A(1,3)*A(2,1)*A(3,2)
-     &   -A(1,1)*A(2,3)*A(3,2)
-     &   -A(1,3)*A(2,2)*A(3,1)
-     &   -A(1,2)*A(2,1)*A(3,3)
+     *   +A(1,2)*A(2,3)*A(3,1)
+     *   +A(1,3)*A(2,1)*A(3,2)
+     *   -A(1,1)*A(2,3)*A(3,2)
+     *   -A(1,3)*A(2,2)*A(3,1)
+     *   -A(1,2)*A(2,1)*A(3,3)
          RETURN
          END
 C
@@ -573,10 +573,10 @@ C
       IF(IOLD.EQ.1) ZAROSC = ZAROVG
       EISC1 = EISC
       IF(IOLD.EQ.1) EISC1 = POTVGA
-C     CALL JEGAIN(P,DAL,EIAL,ZAROAL,&100)
-C     CALL JEGAIN(P,DSC,EISC1,ZAROSC,&100)
-      CALL JFGAIN(P,DAL,EIAL,ZAROAL,&100)
-      CALL JFGAIN(P,DSC,EISC1,ZAROSC,&100)
+C     CALL JEGAIN(P,DAL,EIAL,ZAROAL,*100)
+C     CALL JEGAIN(P,DSC,EISC1,ZAROSC,*100)
+      CALL JFGAIN(P,DAL,EIAL,ZAROAL,*100)
+      CALL JFGAIN(P,DSC,EISC1,ZAROSC,*100)
       PX=P(1)
       PY=P(2)
       PZ=P(3)
@@ -1004,7 +1004,7 @@ C
 C                                           RFWK POINTERS
 C     CREATE RFWK-BANK IF NOT JET EXISTING
       IF(IW(IQRFWK).GT.0) GOTO 20
-         CALL BCRE( NPRFWK, 'RFWK', 1, LEN, &8100, IERR )
+         CALL BCRE( NPRFWK, 'RFWK', 1, LEN, *8100, IERR )
          CALL BSAT( 1, 'RFWK' )
    20 CONTINUE
 C                                           ADJUST LENGTH OF RFWK
@@ -1881,7 +1881,7 @@ C
 C===== FILL R-Z HIT MAP OF I-TH TRACK
        CALL RFDRPZ(NPATR,I,IERI)
        IF(IERI) 1001,100,1001
- 100   CALL BLOC(NRFWK,'RFWK',1,&1002)
+ 100   CALL BLOC(NRFWK,'RFWK',1,*1002)
        ILENG=IDATA(NRFWK)
        NHITI=ILENG/4
 C
@@ -1897,7 +1897,7 @@ C
 C===== FILL R-Z HIT MAP OF J-TH TRACK
       CALL RFDRPZ(NPATR,J,IERJ)
         IF(IERJ) 1003,200,1003
- 200  CALL BLOC(NRFWK,'RFWK',1,&1004)
+ 200  CALL BLOC(NRFWK,'RFWK',1,*1004)
         JLENG=IDATA(NRFWK)
         NHITJ=JLENG/4
 C
@@ -1999,9 +1999,9 @@ C
 C
 C
       CHI1=X(1)**2*SSRI+X(3)**2*SI+SSZI
-     &    +2.*(X(1)*X(3)*SRI-X(3)*SZI-X(1)*SRZI)
-     &    +X(2)**2*SSRJ+X(4)**2*SJ+SSZJ
-     &    +2.*(X(2)*X(4)*SRJ-X(4)*SZJ-X(2)*SRZJ)
+     *    +2.*(X(1)*X(3)*SRI-X(3)*SZI-X(1)*SRZI)
+     *    +X(2)**2*SSRJ+X(4)**2*SJ+SSZJ
+     *    +2.*(X(2)*X(4)*SRJ-X(4)*SZJ-X(2)*SRZJ)
       SIJ=SI+SJ-3.
       CHI1=CHI1/SIJ
       IF(NN.EQ.1) CHIMIN=CHI1
@@ -2025,7 +2025,7 @@ C
 C-----------------------------------------------------------------------
 C      WRITE(6,9100)KI,R0,RI(KI),ZI(KI),IZFT(KI),FZI(KI),KIMAX
 C9100  FORMAT(' KI=',I3,'   R0=',F10.3,'   RI=',F10.5,'    ZI=',F10.3,
-C    &      '     IZFT=',I5,'     FZI=',F10.3,'  KIMAX=',I3)
+C    *      '     IZFT=',I5,'     FZI=',F10.3,'  KIMAX=',I3)
 C-----------------------------------------------------------------------
        IF(CHIMAX.GE.FZI(KI)) GO TO 30
        KIMAX=KI
@@ -2046,7 +2046,7 @@ C
 C-----------------------------------------------------------------------
 C      WRITE(6,9200)KJ,R0,RJ(KJ),ZJ(KJ),JZFT(KJ),FZJ(KJ),KJMAX
 C9200  FORMAT(' KJ=',I3,'   R0=',F10.3,'   RJ=',F10.5,'    ZJ=',F10.3,
-C    &      '     JZFT=',I5,'     FZJ=',F10.3,'  KJMAX=',I3)
+C    *      '     JZFT=',I5,'     FZJ=',F10.3,'  KJMAX=',I3)
 C-----------------------------------------------------------------------
        IF(CHJMAX.GT.FZJ(KJ)) GO TO 40
        KJMAX=KJ
@@ -2056,8 +2056,8 @@ C
 C-----------------------------------------------------------------------
 C     WRITE(6,9000)I,J,SIJ,CHI1,CHI10,DZI,DZJ,DZIOPT,DZJOPT,CHMAX,CHIMIN
 C9000 FORMAT(' (I,J)=',2I5,' SIJ=',F5.1,
-C    &      ' CHI1(',2F10.2,') DZ=((',2F6.3,' ))',
-C    &      ' DZOPT=(',2F6.3,') CHMAX,CHIMIN=',2F10.1/)
+C    *      ' CHI1(',2F10.2,') DZ=((',2F6.3,' ))',
+C    *      ' DZOPT=(',2F6.3,') CHMAX,CHIMIN=',2F10.1/)
 C-----------------------------------------------------------------------
       IF(CHIMAX-CHJMAX) 23,22,22
  22   IZFT(KIMAX)=100
@@ -2097,25 +2097,25 @@ C     LFLAG=0
       IF(LFLAG.NE.500)  LFLAG=0
 C-----------------------------------------------------------------------
 C     WRITE(6,9300) DZI0,DZJ0,DZI,DZJ,DZIOPT,DZJOPT,SIJ,PI,PJ,
-C    &              THI0,THJ0,THI,THJ,CHI1,
-C    &              CHI2,CHMAX,(X(LL),LL=1,4)
+C    *              THI0,THJ0,THI,THJ,CHI1,
+C    *              CHI2,CHMAX,(X(LL),LL=1,4)
 C9300 FORMAT(' ########## DZ0=(',2F7.3,')  DZ=(',2F7.3,')  ',
-C    &      '  DZ1=(',2F7.3,')    SIJ=',F5.1/
-C    &      '  PI,PJ=',2F7.3,' TH0=',2F8.3,' TH=',2F8.3/
-C    &      '  CHI1,CHI2=',2F10.4,'    CHMAX=',F10.3,' X(4)',4F9.3/)
+C    *      '  DZ1=(',2F7.3,')    SIJ=',F5.1/
+C    *      '  PI,PJ=',2F7.3,' TH0=',2F8.3,' TH=',2F8.3/
+C    *      '  CHI1,CHI2=',2F10.4,'    CHMAX=',F10.3,' X(4)',4F9.3/)
 C-----------------------------------------------------------------------
 C
 C1010 LFLAG=500
 C-----------------------------------------------------------------------
 C     IF(LFLAG.NE.500) GO TO 1011
 C     WRITE(6,9400) I,J,DZI0,DZJ0,DZI,DZJ,DZIOPT,DZJOPT,SIJ,PI,PJ,
-C    &              THI0,THJ0,THI,THJ,CHI1,
-C    &              CHIMIN,CHMAX,(X(LL),LL=1,4),NHITIB,NHITJB,LFLAG
+C    *              THI0,THJ0,THI,THJ,CHI1,
+C    *              CHIMIN,CHMAX,(X(LL),LL=1,4),NHITIB,NHITJB,LFLAG
 C9400 FORMAT(' (I,J)=',2I5,'  DZ0=(',2F6.3,') DZ=(',2F6.3,') ',
-C    &      ' DZ1=(',2F6.3,') SIJ=',F5.1/
-C    &      '  PI,PJ=',2F7.3,' TH0=',2F8.3,' TH=',2F8.3/
-C    &      '  CHI1,CHIMIN=',2F10.4,'    CHMAX=',F10.3,' X(4)',4F9.3,
-C    &      '  NHITIB,NHITJB=',2I3,'  LFLAG=',I4/)
+C    *      ' DZ1=(',2F6.3,') SIJ=',F5.1/
+C    *      '  PI,PJ=',2F7.3,' TH0=',2F8.3,' TH=',2F8.3/
+C    *      '  CHI1,CHIMIN=',2F10.4,'    CHMAX=',F10.3,' X(4)',4F9.3,
+C    *      '  NHITIB,NHITJB=',2I3,'  LFLAG=',I4/)
 C1011  CONTINUE
 C-----------------------------------------------------------------------
 C   CALCULATE Z-COORDINATE OF THE SECONDARY VERTEX

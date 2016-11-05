@@ -8,7 +8,7 @@ C   05/05/85 707281248  MEMBER NAME  ZCOOR    (ZS)          FORTRAN77
 *                                                                      *
 *     INPUT ARGUMENTS : JZETC     = POINTER TO ZETC IN HALF-INTEGERS   *
 *                       NZHIT     = NUMBER OF Z-CHAMBER HITS           *
-*                       WIRLEN(2) = LENGTH OF INNER & OUTER Z-CH WIRES *
+*                       WIRLEN(2) = LENGTH OF INNER * OUTER Z-CH WIRES *
 *                       ZCXCH     = CHARGE DIVISION CONSTANT           *
 *                       ZCVDR     = DRIFT VELOCITY                     *
 *                                                                      *

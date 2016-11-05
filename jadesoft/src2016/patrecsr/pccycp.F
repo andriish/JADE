@@ -22,9 +22,9 @@ C
 #include "ccycp.for"
       PRINT11
  11   FORMAT(
-     # 1X,47('-')/
-     # ' DUMP OF PATTERN RECOGNITION POINTER ARRAY HPTSEC'/
-     # 1X,47('-'))
+     + 1X,47('-')/
+     + ' DUMP OF PATTERN RECOGNITION POINTER ARRAY HPTSEC'/
+     + 1X,47('-'))
       PRINT12,(HPTSEC(I),I=1,98)
  12   FORMAT( 4(1X,20I6/),1X,18I6 )
       RETURN

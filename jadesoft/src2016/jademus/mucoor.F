@@ -28,10 +28,10 @@ C      CHANGE 12.30  19/10/81   H. MCCANN  - CORRECT CRATE6 BAD GAS BUG
 C      CHANGE 14.58  04/09/81   C. BOWDERY - CORRECT HANG BUG
 C      CHANGE 07.30  10/04/81   H. MCCANN  - JADEMUS UPDATE.
 C      CHANGE 10.19  26/03/81   J. ALLISON - TO ADD ABOVE COMMENT
-C                                           ABOUT MUANAC, DATE & BANK 0.
+C                                           ABOUT MUANAC, DATE * BANK 0.
 C      CHANGE 14.45  24/03/81   H. MCCANN  - ALLOW FOR CRATE 6 DURING
 C                                              THE BAD GAS PERIOD.
-C      CHANGE 15.00  19/02/81   H. MCCANN  - MORE TIDYING & DEBUGGING
+C      CHANGE 15.00  19/02/81   H. MCCANN  - MORE TIDYING * DEBUGGING
 C MAJOR TIDYING UP   10/09/80   I. DUERDOTH
 C
 C
@@ -52,7 +52,7 @@ C
 C
 C     30/03/83 : MONTE-CARLO DATA IS NOW CONSIDERED
 C     TO BE DIFFERENT FROM REAL DATA IN THAT THE M-C HITS
-C     ARE CREATED WITHOUT NON-LINEAR , ANGULAR & SHIFT EFFECTS.
+C     ARE CREATED WITHOUT NON-LINEAR , ANGULAR * SHIFT EFFECTS.
 C
 C     OTHERWISE THIS VERSION OF MUCOOR TREATS ALL
 C     INPUT MUEV BANKS IDENTICALLY, REGARDLESS OF WHETHER
@@ -123,7 +123,7 @@ C HLUN  6  = 0(1)   IF Y  COORDINATE IS NORMAL(DRIFT OR LONG)
 C
 C HLUN  7  = 0(1)   IF X  COORDINATE IS NORMAL(DRIFT OR LONG)
 C
-C HLUN  8  = 0(1)   IF HIT1 LOST BY HIT4 & RECOVERED FROM HIT2(ALL OK)
+C HLUN  8  = 0(1)   IF HIT1 LOST BY HIT4 * RECOVERED FROM HIT2(ALL OK)
 C
 C HLUN  9  = 0(1)   IF HIT DID NOT MULTI-PULSE (IF HIT DID MULTI-PULSE)
 C
@@ -310,7 +310,7 @@ C
 C                            START OF MAIN LOOP
 C
 C        ALL JUMPS IN THIS PROGRAM ARE FORWARDS, EXCEPT TWO:
-C          GO TO 2000     &     GO TO 2200
+C          GO TO 2000     *     GO TO 2200
 C-----------------------------------------------------------------------
 C
 C                            RETURN HERE AFTER CONVERTING LAST HIT  TO
@@ -497,7 +497,7 @@ C
  1010 IF( ICHAM .LE. JCHAM ) GO TO 1906
       GO TO 3906
 C
-C                            NOTE: CHAMBERS IN CRATES 9 & 10  ARE  NOT
+C                            NOTE: CHAMBERS IN CRATES 9 * 10  ARE  NOT
 C                            IN SEQUENCE. BEARING THIS IN MIND, DO  WE
 C                            HAVE A SEQUENCE ERROR?
 C
@@ -679,7 +679,7 @@ C                            NORMALLY , THIS MEANS A FIXED CUT  OF  80
 C                            CLOCK PULSES (4.0  MICROSECS)  BUT  ,  IF
 C                            DRIFT VELOCITY DECREASES  ,  NEED  LARGER
 C                            CUTOFF. ---- THIS HAPPENED  BETWEEN  RUNS
-C                            4220 & 4482. THE NORMAL DRIFT VELOCITY IS
+C                            4220 * 4482. THE NORMAL DRIFT VELOCITY IS
 C                            2150 MICRONS  PER  CLOCK  PULSE.  ---  TO
 C                            ABOUT   5   %,   THAT   IS.    SO     PUT
 C                            ITMCUT=80*2260/NEW VDRIFT .
@@ -830,7 +830,7 @@ C
 C                            CORRECT FOR CRATE 6 CLOCK PULSE EXCEPT M.C.
 C
 C                            ( NOTE THAT THE CALIBRATION FILES  ALWAYS
-C                            HAVE CRATE 6 VDR & DTP  EQUAL  TO  GLOBAL
+C                            HAVE CRATE 6 VDR * DTP  EQUAL  TO  GLOBAL
 C                            VALUES....THIS  IS  THE  EFFECT  OF   THE
 C                            VARIOUS UPDATES AS OF 16/03/83. )
 C
@@ -881,7 +881,7 @@ C
    85     HLUN2 = 0
           NDRIF = 0
 C
-C                            SET IC1 & IC2 TO COORD. OF CHAMBER CENTRE
+C                            SET IC1 * IC2 TO COORD. OF CHAMBER CENTRE
 C
           ICT1  = ICWIRE
           ICT2  = ICWIRE

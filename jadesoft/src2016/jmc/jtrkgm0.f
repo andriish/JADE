@@ -11,7 +11,7 @@ C
       DIMENSION P1(10),P2(10)
       COMMON / CJTRLE / TOTLEN, STPLEN, TRCOFS
 C                                           TRACK PHOTONS
-      CALL TRKGAM(PV,R0,RR,P1,P2,&34,&1000)
+      CALL TRKGAM(PV,R0,RR,P1,P2,*34,*1000)
 C
 C                                           PHOTON CONVERTED, STORE ELEC
       TRCOFS = TRCOFS + SQRT(RR(1)**2 + RR(2)**2 + RR(3)**2)

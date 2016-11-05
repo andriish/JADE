@@ -209,17 +209,17 @@ C
       NCALL = NCALL + 1
       IF (NCALL.EQ.1) WRITE(6,9000)
  9000 FORMAT(/
-     &' *** NEW VERSION OF VERTEX-PACKAGE IS RUNNING. 24.7.86 C.K. ***'/
-     &' ( 40 WORDS PER TRACK IN T(), XY-ERRORS FROM COVARIANCE MATRIX )'
-     &/)
+     *' *** NEW VERSION OF VERTEX-PACKAGE IS RUNNING. 24.7.86 C.K. ***'/
+     *' ( 40 WORDS PER TRACK IN T(), XY-ERRORS FROM COVARIANCE MATRIX )'
+     */)
       IF (NCALL.EQ.1 .AND. LAXIS) WRITE(6,9001)
  9001 FORMAT(
-     & ' *******  SPECIAL VERSION OF VTXPRE/VERTEX  ********',/
-     & ' *******     AXIS-CONSTRAINT IS RUNNING     ********'/)
+     * ' *******  SPECIAL VERSION OF VTXPRE/VERTEX  ********',/
+     * ' *******     AXIS-CONSTRAINT IS RUNNING     ********'/)
       IF (NCALL.EQ.1 .AND. LRVCON) WRITE(6,9002)
  9002 FORMAT(
-     & ' *******  SPECIAL VERSION OF VTXPRE/VERTEX  ********',/
-     & ' *******   RUNVERTEX-CONSTRAINT IS RUNNING  ********'/)
+     * ' *******  SPECIAL VERSION OF VTXPRE/VERTEX  ********',/
+     * ' *******   RUNVERTEX-CONSTRAINT IS RUNNING  ********'/)
 C
       LV = (NV-1)*10
       IV(LV+1) = 0
@@ -231,7 +231,7 @@ C**
          IF(TERR .GT. 0.0) GOTO 55
          IF(LWARN) WRITE(6,881)
  881     FORMAT(/' ==== WARNING FROM VERTEX: TAXIS NOT SET',
-     &          ' , BUT REQUIRED --> FLAG IGNORED ==== '/)
+     *          ' , BUT REQUIRED --> FLAG IGNORED ==== '/)
          LWARN  = .FALSE.
          LAXIS  = .FALSE.
          LRVCON = .FALSE.
@@ -340,7 +340,7 @@ C
             IF(ITFIN.EQ.0) GOTO 15
                IT(J+1) = 3
                CHITR(I) = DDX*(XT-B(1))**2 + DDY*(YT-B(2))**2
-     &                                     + DDZ*(ZT-B(3))**2
+     *                                     + DDZ*(ZT-B(3))**2
                CHI2 = CHI2 + CHITR(I)
                IF ((T(J+5)**2+T(J+6)**2).LT.RTANK**2) NTRV = NTRV + 1
                GOTO 16
@@ -366,8 +366,8 @@ C**
                B(2) = B(2) + DBLE(YAXIS)*DBLE(DDAY)
                B(3) = B(3) + DBLE(ZAXIS)*DBLE(DDAZZ)
                B(N) = - XAXIS*TAXIS(7)*DDAX
-     &                - YAXIS*TAXIS(8)*DDAY
-     &                - ZAXIS*TAXIS(9)*DDAZ
+     *                - YAXIS*TAXIS(8)*DDAY
+     *                - ZAXIS*TAXIS(9)*DDAZ
   190       CONTINUE
             A(1) = A(1) + DDAX
             A(3) = A(3) + DDAY
@@ -376,8 +376,8 @@ C**
             A(L+2) = -TAXIS(8)*DDAY
             A(L+3) = -TAXIS(9)*DDAZ
             A(L+N) = TAXIS(7)**2*DDAX +
-     &               TAXIS(8)**2*DDAY +
-     &               TAXIS(9)**2*DDAZ
+     *               TAXIS(8)**2*DDAY +
+     *               TAXIS(9)**2*DDAZ
   200    CONTINUE
 C**
          IF(ITFIN.EQ.1) GOTO 30
@@ -450,8 +450,8 @@ C**
       IF (.NOT.LOR) GOTO 300
          NDF = NDF + 2
          CHI2 = CHI2 + DDAX*(XAXIS-B(1))**2
-     &               + DDAY*(YAXIS-B(2))**2
-     &               + DDAZ*(ZAXIS-B(3))**2
+     *               + DDAY*(YAXIS-B(2))**2
+     *               + DDAZ*(ZAXIS-B(3))**2
  300  CONTINUE
 C**
       PR = 1.
@@ -538,10 +538,10 @@ C
       GOTO 120
   110 CONTINUE
       WRITE(6,9345) LRVST,LRVCON,LAXIS,LNOZ,NTR,NTRV,NREJ,NREJV,
-     &              ITER,DSMAX,NDF,CHI2
+     *              ITER,DSMAX,NDF,CHI2
  9345 FORMAT(' START AT RV, RV-CON., AXIS-CON., NO Z : ',4L2/
-     &       ' NTR,NREJ           : ',4I6/
-     &       ' ITER,DSMAX,NDF,CHI2 : ',I6,G13.4,I6,G13.4)
+     *       ' NTR,NREJ           : ',4I6/
+     *       ' ITER,DSMAX,NDF,CHI2 : ',I6,G13.4,I6,G13.4)
 C
   120 CONTINUE
       HVTXST( 1) = IERR

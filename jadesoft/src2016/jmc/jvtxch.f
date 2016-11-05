@@ -86,7 +86,7 @@ C
       ELIMIT = AMIN1( 100., 500.*P(6)*P(6))
 C
 C
-      CALL JFTEST ( RX, P, JRETRN, &2000 )
+      CALL JFTEST ( RX, P, JRETRN, *2000 )
       JRETRN = 4
       MWBASE = ICELL * MWIRE
 C
@@ -108,7 +108,7 @@ C                                                 SAVE OLD COORD.
            XTRACK = XTRACK + DRTOT
            ETRACK = ETRACK + DRTOT
 C                                                 CHECK
-      CALL JFTEST ( RX, P, JRETRN, &2000 )
+      CALL JFTEST ( RX, P, JRETRN, *2000 )
 C                                                 TEST FOR DEATH SPACE
       IF ( MW .LT. 1 .OR. MW .GT. MWIRE ) GOTO 600
 C

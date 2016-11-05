@@ -42,7 +42,7 @@ C
           CALL MUANAC
           FIRST = .FALSE.
         ELSE
-C                                      SET ERROR & RETURN
+C                                      SET ERROR * RETURN
           NUMHF = -1
           RETURN
         ENDIF
@@ -63,7 +63,7 @@ C
 C                                        2 HALF WORD IS 10*LAYER + ORI.
         LAYER = HDATA(IP + 2) / 10
         IF(LAYER .NE. 1) GO TO 2
-C                                        FIND X & Y OF LEFT AMBIGUITY
+C                                        FIND X * Y OF LEFT AMBIGUITY
           XL = HDATA(IP + 3)
           YL = HDATA(IP + 4)
 C                                        FIND PHI OF THIS COORDINATE
@@ -83,7 +83,7 @@ C                  IF YES, THEN INCREMENT HIT FOUND COUNTER.
 C
           ALLW = ABS(ALLOW)
           IF( ABS(PHIL-PHI) .LT. ALLW  .OR. ABS(PHIR-PHI) .LT. ALLW)
-     &           THEN
+     *           THEN
              NUMHF = NUMHF + 1
           ENDIF
 C

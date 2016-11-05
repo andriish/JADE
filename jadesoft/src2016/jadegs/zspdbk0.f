@@ -25,7 +25,7 @@ C
 
       IF( NHIT .GT.0 .AND. NPJETC.GT.0 .AND.
      *              IW(NPJETC-2).EQ.0 ) THEN
-        CALL BCRE( NPZSPD, 'ZSPD', ITRK, NWTR*NHIT+1, &8000, IER )
+        CALL BCRE( NPZSPD, 'ZSPD', ITRK, NWTR*NHIT+1, *8000, IER )
         CALL BSAW( 1, 'ZSPD' )
         IW(NPZSPD+1) = NWTR
         NPZSP1 = NPZSPD + 1

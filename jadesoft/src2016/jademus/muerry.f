@@ -96,7 +96,7 @@ C
 C
    20 CONTINUE
 C
-C                            COUNT  TOTAL  NO.  OF  MESSAGES  OUTPUT  &
+C                            COUNT  TOTAL  NO.  OF  MESSAGES  OUTPUT  *
 C                            COMPARE WITH JOB LIMIT .
 C
       ITOTAL = ITOTAL + 1

@@ -143,7 +143,7 @@ C
 94    KKSUM = KKSUM + HDEADC(I)
 C
       WRITE(6,9104) IHIST
- 9104 FORMAT(' *** DETECTOR STATUS & TRIGGER CONDITIONS ***',
+ 9104 FORMAT(' *** DETECTOR STATUS * TRIGGER CONDITIONS ***',
      *           '  FOR ',I2,'-',I2,'-',I4,/,
      *' ==============================================================')
       IF( NDEAD .GT. 0 ) WRITE(6,9101) (HITD(I),I=1,NDEAD)

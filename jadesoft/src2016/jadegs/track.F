@@ -27,7 +27,7 @@ C                                             >>>>> CHARGED TRACK <<<<<<
       IF(ABS(PTOT).LT.ABS(PT).AND.HERR.LT.10)
      $ WRITE(6,7575) HEAD(18),HEAD(19),
      $ IP,NHT,PX,PY,PZ,PT,PTOT,FI,THETA
-7575  FORMAT(' R & EV.',2I6,' IP NHT ',2I6,' PX-Z,PT PTOT',5E11.3,' FI &
+7575  FORMAT(' R * EV.',2I6,' IP NHT ',2I6,' PX-Z,PT PTOT',5E11.3,' FI *
      $TH ',2F8.3)
       PL = PTOT*PTOT - PT*PT + .000001
       IF(PL.LE.0.000001) GO TO 9977

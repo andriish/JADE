@@ -80,7 +80,7 @@ C
  1000 CALL BSLT
       CALL BDLG
       NRECS = NRECS + 1
-      CALL BREAD(NUNIT,&60,&70)
+      CALL BREAD(NUNIT,*60,*70)
 C
 C                            DO WE HAVE A 'HEAD' BANK I.E. AN EVENT ?
 C                            IF NOT THEN SKIP NEXT SECTION

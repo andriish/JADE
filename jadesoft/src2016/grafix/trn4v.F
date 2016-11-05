@@ -145,7 +145,7 @@ C                                          Z(TRACK) < 100. MM
            IF(ABS(ADATA(IPTR1+31)) .GT. ZDIS) GOTO 38
 C                                          MEASURED LENGTH > 275 MM
            ALMSQ = (ADATA(IPTR1+12) - ADATA(IPTR1+5))**2
-     &           + (ADATA(IPTR1+13) - ADATA(IPTR1+6))**2
+     *           + (ADATA(IPTR1+13) - ADATA(IPTR1+6))**2
            ISTAT(ISTART+3) = ISTAT(ISTART+3)+ 1
            IF(ALMSQ .LT. TRKL2) GOTO 38
 C                                        CHECK IF TRACK FROM MAIN VERTEX

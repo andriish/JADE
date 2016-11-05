@@ -7,7 +7,7 @@ C=======================================================================
 C=======================================================================
 C
 C     S.YAMADA  31-10-78  14:35
-C          MODIFICATION    01-08-79  24:00  IZ=0&31 KILLED
+C          MODIFICATION    01-08-79  24:00  IZ=0*31 KILLED
 C          MODIFICATION    07-01-79  24:00  NEG ENERGY TO 20000
 C                                                 Y.WATANABE
 C.....THE #WORDS/CLUSTER IS NOW 16..  13/6/80     Y.WATANABE
@@ -87,7 +87,7 @@ C     IFLAG(1)=1024,IF FORMAT CONVRSION IS NOT DONE.
 
       IF(IFLAG(1).GE.1024) GO TO 5
 
-C#####KILL IZ=0&31 RINGS BECAUSE THEY ARE NOT REAL.
+C#####KILL IZ=0*31 RINGS BECAUSE THEY ARE NOT REAL.
       NHIT=LNG-3
       IF ( NHIT .LE. 0 ) GO TO 85
       IF ( HLGADC (1,1) .GE. 2688 ) HPOINT(2)=1
@@ -164,7 +164,7 @@ C---- CREATE THE LGCL BANK.
       CALL LGMESG( 2, 3)
       CALL BDLS(NMLGCL,1)
 
-12    CALL BCRE(NPLGCL,NMLGCL,1,LNGCL,&91,IER)
+12    CALL BCRE(NPLGCL,NMLGCL,1,LNGCL,*91,IER)
       CALL BSAW( 1, NMLGCL)
       IF ( IER .EQ. 0 ) GO TO 20
 

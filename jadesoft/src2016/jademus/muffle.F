@@ -73,7 +73,7 @@ C
       DIMENSION  IPATR(1),APATR(1),HC(1),HLUN(1),IMUR(1),AMUR(1),
      +           HTC(1),HAMB(1),EXTRA(1),CUTS(3)
 C
-C             CUTS IS VECTOR OF CUTS FOR MUREGY &  CHAMBER INEFFICIENCY.
+C             CUTS IS VECTOR OF CUTS FOR MUREGY *  CHAMBER INEFFICIENCY.
 C
       DATA  CUTS /3*0.0/ , CHINEF /0.05/
 C
@@ -178,7 +178,7 @@ C
  1111 CONTINUE
 C
 C             FROM 19/05/81 , EFFECTIVELY HAVE NO CUTS ON TRACK QUALITY.
-C             ----- ONLY INSIST THAT NHZ & NHXY > 0  .
+C             ----- ONLY INSIST THAT NHZ * NHXY > 0  .
 C
       NHXY  = IPATR(IPT+24)
       NHZ   = IPATR(IPT+33)
@@ -192,7 +192,7 @@ C1105 FORMAT(' ','# RMS (XY,RZ) ',I5,F8.3,I5,F10.1)
 C++++
 C
 C             IF RMSXY/RMSZ ARE CLAIMED TO BE BETTER THAN THE NOMINAL
-C             VALUES ( NOZAKI NOTE & DRUMM ET AL. DESY 80/38 ),
+C             VALUES ( NOZAKI NOTE * DRUMM ET AL. DESY 80/38 ),
 C             SET TO NOMINAL. NO LONGER VALID SINCE BETTER CALIBRATION
 C             AND FADC-READOUT 1986.
 C
@@ -379,9 +379,9 @@ C             CALCULATE EXTRAPOLATION ERROR IN R-PHI-PLANE
       ZEXTRP = Z
       RLEN2  = (X-XMID)**2 + (Y-YMID)**2
       VTXYAN = RMSXY**2 * SGFXY2/
-     &                  (FLOAT(NHXY)*PROJL2)*(720.0*RLEN2/PROJL2 + 12.0)
+     *                  (FLOAT(NHXY)*PROJL2)*(720.0*RLEN2/PROJL2 + 12.0)
       VTXYD  = RMSXY**2*SGFXY2/FLOAT(NHXY)*(180.0*(RLEN2/PROJL2)**2 -
-     &             18.0*RLEN2/PROJL2 + 2.25)
+     *             18.0*RLEN2/PROJL2 + 2.25)
 C
 C             ASSUME VERTEX IS INTERACTION POINT.
 C             ASSUME TRACK HAS PASSED THROUGH END-CAP LEAD-GLASS.
@@ -390,7 +390,7 @@ C             BACK-TRACKING AND 1ST STEP SAME AS IN STEP 3.
 C
       CALL MUFFLB
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C-----------------------------------------------------------------------
 C
@@ -404,7 +404,7 @@ C
       RDSTEP = RDJET2*COSEC + RDJETE/ADCZ
       DESTEP = DEJET2*COSEC + DEJETE/ADCZ
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C-----------------------------------------------------------------------
 C
@@ -423,7 +423,7 @@ C
       RDSTEP = RDEPLG/ADCZ
       DESTEP = DEEPLG/ADCZ
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C-----------------------------------------------------------------------
 C
@@ -435,7 +435,7 @@ C
       RDSTEP = RDEP/ADCZ
       DESTEP = DEEP/ADCZ
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C             THIS PARTICLE PENETRATED THE EC LEAD GLASS AND THE EC.
 C             FILL EXTRA.
@@ -537,9 +537,9 @@ C
       ZEXTRP = Z
       RLEN2  = (X-XMID)**2 + (Y-YMID)**2
       VTXYAN = RMSXY**2 * SGFXY2/
-     &                  (FLOAT(NHXY)*PROJL2)*(720.0*RLEN2/PROJL2 + 12.0)
+     *                  (FLOAT(NHXY)*PROJL2)*(720.0*RLEN2/PROJL2 + 12.0)
       VTXYD  = RMSXY**2*SGFXY2/FLOAT(NHXY)*(180.0*(RLEN2/PROJL2)**2 -
-     &             18.0*RLEN2/PROJL2 + 2.25)
+     *             18.0*RLEN2/PROJL2 + 2.25)
 C
 C             ASSUME VERTEX IS INTERACTION  POINT.  IGNORE  INCREASE  IN
 C             LENGTH DUE TO CURVATURE.
@@ -548,7 +548,7 @@ C             BACK-TRACKING AND 1ST STEP SAME AS IN STEP 2.
 C
       CALL MUFFLB
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C-----------------------------------------------------------------------
 C
@@ -560,7 +560,7 @@ C
       RDSTEP = (RDJET2 + RDJET4 + RDJETO) * COSEC
       DESTEP = (DEJET2 + DEJET4 + DEJETO) * COSEC
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C-----------------------------------------------------------------------
 C
@@ -585,7 +585,7 @@ C        CHECK THAT THIS WON'T PUT THE TRACK INTO THE YOKE END PLATE.
       RDSTEP = RDCOIL * ( COSEC * FACOIL )
       DESTEP = DECOIL * ( COSEC * FACOIL )
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C-----------------------------------------------------------------------
 C
@@ -698,7 +698,7 @@ C              ------------------
                RDSTEP = (S * COSEC) * RDLGC
                DESTEP = (S * COSEC) * DELGC
 C
-               CALL MUFFLS(&5555)
+               CALL MUFFLS(*5555)
 C
 C              CHECK IF STILL HAVE TO GO THRO' SOME SF5 .
                IF(S.GT.0.999)GO TO 3338
@@ -712,7 +712,7 @@ C     ------------------
       RDSTEP = (S * COSEC) * RDLG
       DESTEP = (S * COSEC) * DELG
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C             FIND INTERSECTION WITH INTERNAL CHAMBERS AND YOKE.
 C
@@ -790,7 +790,7 @@ C
 C             GO TO 5555 IF TRACK STOPS (I.E. RUNS OUT OF ENERGY).
 C             NORMAL RETURN IF HIT FOUND AND PARTICLE NOT STOPPED.
 C
- 3360 CALL MUFFLY(HC,NHITS,NWHIT,HLUN,HTC,HAMB,NTPH,&5555)
+ 3360 CALL MUFFLY(HC,NHITS,NWHIT,HLUN,HTC,HAMB,NTPH,*5555)
 C
 C             BACK-TRACK  TO  LAST  NON-CHAMBER   REGION   EXIT   POINT
 C             (I.E. YOKE). (THIS  IS  NECESSARY  BECAUSE   UNDER   SOME
@@ -804,7 +804,7 @@ C
       RDSTEP = -RDOVER
       DESTEP = -DEOVER
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C             FILL EXTRA.
 C
@@ -904,7 +904,7 @@ C             TRACK THROUGH REGIONS.
 C             GO TO 5555 IF PARTICLE STOPS (I.E. RUNS OUT OF ENERGY).
 C             NORMAL RETURN IF HIT FOUND AND PARTICLE NOT STOPPED.
 C
-      CALL MUFFLY(HC,NHITS,NWHIT,HLUN,HTC,HAMB,NTPH,&5555)
+      CALL MUFFLY(HC,NHITS,NWHIT,HLUN,HTC,HAMB,NTPH,*5555)
 C
       GO TO 7777
 C
@@ -1333,7 +1333,7 @@ C             WHEN THE TRANSVERSE (DRIFT) COORDINATE IS  BAD.  THIS  IS
 C             SET TO DRIFT DISTANCE =  150  MM,  RATHER  THAN  (CHAMBER
 C             WIDTH), SINCE BOTH AMBIGUITIES ARE TRIED. FOR ASSOCIATION
 C             OF HITS , IT IS ADDED LINEARLY TO THE SQUARE ROOT OF  THE
-C             SUM OF THE SQUARES OF THE VARIANCES DUE TO  MULT  SCAT  &
+C             SUM OF THE SQUARES OF THE VARIANCES DUE TO  MULT  SCAT  *
 C             PATREC FIT ERRORS. HOWEVER , FOR CALCULATION OF  CHI**2 ,
 C             IT SHOULD BE ADDED QUADRATICALLY WITH THE OTHERS -- BUT ,
 C             FOR  PRESENT,  BAD  HITS  ARE   NOT   USED   FOR   CHI**2

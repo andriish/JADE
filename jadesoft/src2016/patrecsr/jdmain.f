@@ -36,7 +36,7 @@ C                                       CHECK TIME
         IF(IUHR(2).NE.1) GOTO 905
 C                                                 READ MC-DATA
         NREC = NREC + 1
-        CALL READMC(NUNIT,'DE',&900)
+        CALL READMC(NUNIT,'DE',*900)
 C                                         INITIALIZATION AFTER 1. RECORD
         IF(NREC.EQ.1) CALL INIT0
 C                                                 FILL JCA-ARRAY

@@ -45,20 +45,20 @@ C
       IKAND=0
 C                                      CHECK IF BANKS ARE FILLED
       NPZE4V = IW( IBLN('ZE4V') )
-      IF( NPZE4V .LE. 0 ) CALL FEHLER( 31, &7000 )
+      IF( NPZE4V .LE. 0 ) CALL FEHLER( 31, *7000 )
 C
       NTPTR = HW( NPSPUR*2 + 17)
       CALL CLOC( NPTPTR, 'TPTR', NTPTR )
       IF( NPTPTR .LE. 0 ) THEN
-        IF( TBIT( ICUT, 26))    CALL FEHLER( 32, &7000 )
-        IF( TBIT( ICUT, 25))    CALL FEHLER( 32, &7000 )
-        IF( TBIT( ICUT, 24))    CALL FEHLER( 32, &7000 )
+        IF( TBIT( ICUT, 26))    CALL FEHLER( 32, *7000 )
+        IF( TBIT( ICUT, 25))    CALL FEHLER( 32, *7000 )
+        IF( TBIT( ICUT, 24))    CALL FEHLER( 32, *7000 )
       ENDIF
 C
       NPPHOT = IW( IBLN('PHOT') )
       IF (NPPHOT .LE. 0 ) THEN
-        IF( TBIT( ICUT, 19))    CALL FEHLER( 33, &7000 )
-        IF( TBIT( ICUT, 18))    CALL FEHLER( 33, &7000 )
+        IF( TBIT( ICUT, 19))    CALL FEHLER( 33, *7000 )
+        IF( TBIT( ICUT, 18))    CALL FEHLER( 33, *7000 )
       ENDIF
 C
       LT = HW(NPZE4V*2 + 5)

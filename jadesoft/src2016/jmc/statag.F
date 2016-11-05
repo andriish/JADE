@@ -82,7 +82,7 @@ C
 C
 C SET DATE IN HEAD BANKS WORDS 93 - 95, FROM COMON/TODAY/
 C
-       CALL BLOC(IND,'HEAD',0,&30)
+       CALL BLOC(IND,'HEAD',0,*30)
          IW(IND+93) = HDATE(4)
          IW(IND+94) = HDATE(5)
          IW(IND+95) = HDATE(6)

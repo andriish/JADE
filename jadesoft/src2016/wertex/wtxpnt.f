@@ -82,10 +82,10 @@ C
 C                                      MULTIPLE SCATTERRING ( TANKWALL )
       DXY = ( T(J+16) * SSCOUL )**2 +
 C                                      MULTIPLE SCATTERRING ( BEAMPIPE )
-     &      ( T(J+17) * SSCVXC )**2 +
+     *      ( T(J+17) * SSCVXC )**2 +
 C                                      PARABOLA FIT
-     &      ((( T(J+32)   *X + T(J+33) ) *X +
-     &          T(J+34) ) *X + T(J+35) ) *X + T(J+36)
+     *      ((( T(J+32)   *X + T(J+33) ) *X +
+     *          T(J+34) ) *X + T(J+35) ) *X + T(J+36)
 C
 C                                      ERROR IN PHI (NOT SQUARED)
 C
@@ -116,7 +116,7 @@ C
 C                                      MULTIPLE SCATTERRING
       DZT2 = ( T(J+16) * SSCOUL )**2 + ( T(J+17) * SSCVXC )**2 +
 C                                      LINE FIT (WITH TRIPLETS)
-     &         T(J+37) * ( 1.5 + 18.*X**2 )
+     *         T(J+37) * ( 1.5 + 18.*X**2 )
 C
       RETURN
 C
