@@ -45,4 +45,9 @@ ${SRCTAGG}/tagsum.F
 ${SRCTAGG}/tracks.f
 ${SRCTAGG}/umcpak.f
 )
+if (Fortran_COMPILER_NAME MATCHES "xlf.*")
+   file(GLOB myfortag ${SRCTAGG}/*.for)
+      set_property(SOURCE ${myfortag} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
+       endif()
+      
 ADD_LIBRARY(${TAGGLIB} tagg ${TAGG_src})

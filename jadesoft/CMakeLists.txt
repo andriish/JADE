@@ -55,18 +55,31 @@ ENDIF(FCNAME STREQUAL "pgf90")
 
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
-if ("${CMAKE_Fortran_FLAGS}" STREQUAL "" )
+#if ("${CMAKE_Fortran_FLAGS}" STREQUAL "" )
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
    set(CMAKE_Fortran_FLAGS            "-m32 -std=legacy -m32 -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
-elseif (Fortran_COMPILER_NAME MATCHES "ifort.*")
-   set(CMAKE_Fortran_FLAGS            "-fno-automatic -fno-backslash -extend-source 132")	
-elseif (Fortran_COMPILER_NAME MATCHES "xlf.*")
-   set(CMAKE_Fortran_FLAGS           " -m32 -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
 endif()
-message(STATUS "Fortran compiler : ${Fortran_COMPILER_NAME}")
-elseif()
 
+if (Fortran_COMPILER_NAME MATCHES "ifort.*")
+   set(CMAKE_Fortran_FLAGS            "-fno-automatic -fno-backslash -extend-source 132")	
 endif()
+if (Fortran_COMPILER_NAME MATCHES "xlf.*")
+   set(CMAKE_Fortran_FLAGS           " -qfixed=256 -q32  -elf32ppc -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
+file(GLOB MyFiles *.for)
+set_property(SOURCE ${MyFiles} PROPERTY COMPILE_FLAGS -O3Z)
+endif()
+#message(STATUS "Fortran compiler : ${Fortran_COMPILER_NAME}")
+#elseif()
+
+#endif()
+message(STATUS "Fortran compiler        : ${Fortran_COMPILER_NAME}")
+message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
+
+
+#if (Fortran_COMPILER_NAME MATCHES "xlf.*")
+#   file(GLOB myfortag ${SRCTAGG}/*.for)
+#      set_property(SOURCE ${myfortag} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
+#       endif()
 
 
 ############################################################
@@ -133,6 +146,12 @@ SET(SRCZLIB         ${SRC}/zlib)
 # Have the .mod files placed in the lib folder
 SET(CMAKE_Fortran_MODULE_DIRECTORY ${LIB})
 
+
+if (Fortran_COMPILER_NAME MATCHES "xlf.*")
+   file(GLOB myfortag ${SRCTAGG}/*.for)
+      set_property(SOURCE ${myfortag} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
+       endif()
+
 # The source for the BAR library and have it placed in the lib folder
 ADD_SUBDIRECTORY(${SRCBOSLIB} )
 ADD_SUBDIRECTORY(${SRCGRAFIX}      )
@@ -156,6 +175,12 @@ ADD_SUBDIRECTORY(${SRCSUPERV} )
 ADD_SUBDIRECTORY(${SRCJADEZ} )
 ADD_SUBDIRECTORY(${SRCZE4V} )
 
+#if (Fortran_COMPILER_NAME MATCHES "xlf.*")
+#   file(GLOB myfortag ${SRCTAGG}/*.for)
+#      set_property(SOURCE ${myfortag} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
+#       endif()
+          
+          
 
 # Add a distclean target to the Makefile
 ADD_CUSTOM_TARGET(distclean 

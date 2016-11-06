@@ -66,4 +66,12 @@ ${SRCBOSLIB}/uwp.for
 ${SRCBOSLIB}/vall.for
 ${SRCBOSLIB}/vecsub.f
 )
+
+if (Fortran_COMPILER_NAME MATCHES "xlf.*")
+   file(GLOB MyFiles ${SRCBOSLIB}/*.for)
+   set_property(SOURCE ${MyFiles} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
+ endif()
+   
+
+
 ADD_LIBRARY(${BOSLIBLIB} boslib ${BOSLIB_src})

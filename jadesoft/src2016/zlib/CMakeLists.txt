@@ -34,4 +34,9 @@ ${SRCZLIB}/zmcredu.f
 ${SRCZLIB}/zsphrcy.f
 ${SRCZLIB}/zspthak.f
 )
+if (Fortran_COMPILER_NAME MATCHES "xlf.*")
+   file(GLOB myforzlib ${SRCZLIB}/*.for)
+      set_property(SOURCE ${myforzlib} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
+       endif()
+      
 ADD_LIBRARY(${ZLIBLIB} zlib ${ZLIB_src})
