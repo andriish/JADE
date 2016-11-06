@@ -251,10 +251,10 @@ C... Set calibration constants reading options
          ENDIF
       ENDDO
       
-      CCALF(1)='/home/andriish/superv/aupdat1.b'
-      CCALF(2)='/home/andriish/superv/bupdat0.b'
-      CCALF(3)='/home/andriish/superv/bupdat1.b'
-      CMCBOSF='/home/andriish/superv/mc_t86-05-17.bos'
+C      CCALF(1)='/home/andriish/superv/aupdat1.b'
+C      CCALF(2)='/home/andriish/superv/bupdat0.b'
+C      CCALF(3)='/home/andriish/superv/bupdat1.b'
+C      CMCBOSF='/home/andriish/superv/mc_t86-05-17.bos'
       
 C... Input file with events in BOS format
       INQUIRE(FILE=CMCBOSF,EXIST=LEXIST)
