@@ -666,9 +666,12 @@
         WR0   = ILAY0
         DS0   = FPAR(WR0)
         SLOP0 = WR0*PAR1*2. + PAR2
+        if (IHIT9.LE.0 .or. IHIT9.GT.16) then
+        write(*,*) 'Bad bounds in ftrkel'
         write(*,*)IHIT9
         write(*,*)HLYAR
-        
+        IHIT9=IHIT0
+        endif 
         ILAY9 = HLYAR(IHIT9)
         WR9   = ILAY9
         DS9   = FPAR(WR9)
