@@ -666,6 +666,9 @@
         WR0   = ILAY0
         DS0   = FPAR(WR0)
         SLOP0 = WR0*PAR1*2. + PAR2
+        write(*,*)IHIT9
+        write(*,*)HLYAR
+        
         ILAY9 = HLYAR(IHIT9)
         WR9   = ILAY9
         DS9   = FPAR(WR9)
