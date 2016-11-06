@@ -17,9 +17,12 @@ VTXFIT OFF
 
 C Calibration constants
 C - Name of the calibration file
-AUPDAT0'./aupdat1.b'
-BUPDAT0'./bupdat0.b'
-BUPDAT1'./bupdat1.b'
+AUPDAT0
+'/tmp/aupdat1.b'
+BUPDAT0
+'/tmp/bupdat0.b'
+BUPDAT1
+'/tmp/bupdat1.b'
 
 
 C - Calibration constants reading flags
