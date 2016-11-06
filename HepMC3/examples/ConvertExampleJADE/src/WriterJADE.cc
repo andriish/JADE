@@ -154,8 +154,8 @@ void WriterJADE::write_event(const GenEvent &evt)
 	/*Flavour: collect hard quarks */
 	for (  k=0;k<evt.particles().size();k++)
 	{
-	if (std::abs(charge(evt.particles().at(k)->pid()<6&&(evt.particles().at(k)->momentum().e()>0.1*fJ->BEAM))
-	quarks.push_back(std::pair(evt.particles().at(k)->momentum().e(),k));
+	if (std::abs(evt.particles().at(k)->pid())<6&&(evt.particles().at(k)->momentum().e()>0.1*fJ->BEAM))
+	quarks.push_back(std::pair<double,int >(evt.particles().at(k)->momentum().e(),k));
 	}
 	if (quarks.size()<2)fJ->IFLAVR=0;
 	if (quarks.size()>2)
