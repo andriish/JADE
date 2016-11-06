@@ -12,7 +12,7 @@ cp ../../main_patched/$d/*.F ./
 cp ../../main_patched/$d/*.for ./
 cd ..
 done
-
+cd ..
 
 cd src2016
 
