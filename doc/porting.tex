@@ -170,7 +170,8 @@ No idea if %-L/usr/lib
 is really needed with all packages, but it runs!
 
 In addition, a brute force trick is to replace /usr/bin/gfortran with a wrapper with explicit -m32 -L/usr/lib flags.
-
+Same trick for /usr/bin/rm:   add -f option.
+Actually needed only because batch builds would require input y when deleting files
 
 The slowness issue can be solved, maybe, with qemu-2.7 with multitreading emulation.
 Maybe the earlier versions have it as well. No idea.
@@ -178,7 +179,7 @@ Maybe the earlier versions have it as well. No idea.
 
 In the same way cernlib is compiled
 
-
+To compile cernlib nohup is usefull. The VM is slow and can drop connection
 
 
 
