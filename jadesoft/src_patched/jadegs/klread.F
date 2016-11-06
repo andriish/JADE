@@ -272,9 +272,10 @@ C---
          ITP = NCALI
          DO 30 I=1,NCALI
             LUNIT=LUNITA(ITP)
-          write(*,*) 'FIXME'
-            READ(LUNIT,ERR=304) NDUUM,ITM1
-C            READ(LUNIT,ERR=304,END=305) NDUUM,ITM1
+C     PRINT 2002, LUNIT
+C          write(*,*) 'FIXME'
+C            READ(LUNIT,ERR=304) NDUUM,ITM1
+            READ(LUNIT,ERR=304,END=305) NDUUM,ITM1
             REWIND LUNIT
 C                                       CHECK IF ONLY ONE FILE
 C                                       DATE(LAST FILE) = 1. DATE ?
@@ -350,8 +351,8 @@ C---
          LUNIT=LUNITA(NINTER)
 C     PRINT 2003, LUNIT
          REWIND LUNIT
-C         READ(LUNIT,ERR=320,END=321) NDUUM
-         READ(LUNIT,ERR=320) NDUUM
+         READ(LUNIT,ERR=320,END=321) NDUUM
+C         READ(LUNIT,ERR=320) NDUUM
          IREAD=1
     6 CONTINUE
 C---
@@ -362,14 +363,12 @@ CCCCC
 C PMF 16/11/98: Read the first word before begin of the record, i.e. the length NWORD
 C               of the record, go back in the record by one unit and then CALL EVREA1
 C               in order to read the record. Otherwise EVREA1 does not work correctly.
-
-       REWIND LUNIT  
-       IF(IREAD.EQ.1) THEN
-C         READ(LUNIT,ERR=320,END=321) NWORDS
-         READ(LUNIT,ERR=320) NWORDS
+C       REWIND LUNIT  
+      IF(IREAD.EQ.1) THEN
+         READ(LUNIT,ERR=320,END=321) NWORDS
+C         READ(LUNIT,ERR=320) NWORDS
          BACKSPACE (LUNIT)
-         write(*,*) 'NWORDS=    ',NWORDS
-       ENDIF
+      ENDIF
 CCCCC
       IF(IREAD.EQ.1) CALL EVREA1(LUNIT,NWORDS,JBUF,IRET)
       IREAD=0
