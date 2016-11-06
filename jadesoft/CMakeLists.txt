@@ -74,6 +74,7 @@ endif()
 #endif()
 message(STATUS "Fortran compiler        : ${Fortran_COMPILER_NAME}")
 message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
+message(STATUS "CERN libraries          : ${CERN_LIBRARIES}")
 
 
 #if (Fortran_COMPILER_NAME MATCHES "xlf.*")
