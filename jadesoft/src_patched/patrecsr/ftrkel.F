@@ -331,6 +331,7 @@
             IF(IHITM1.EQ.IHIT9) IHITM1 = IHITM1 - 1
             IHIT9 = IHITM1
             IF(MKCUT.NE.1) JHIT0 = MIN0(IHITM2,JHIT9)
+            write(*,*)' min ',MKCUT, JHIT0,IHITM2,JHIT9
             MKCUT = 2
       ELSE
             IHIT9 = JHIT9
