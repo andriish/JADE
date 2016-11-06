@@ -77,7 +77,7 @@ C DEBUG - WRITE OUT RESULT
 C
        IF ( IWRITE .EQ. 1 ) WRITE(6, 601) ((CLUS(I,J),I=1,9),J=1,2)
   601  FORMAT(' ++++ TAGPS1 : DEBUG  -  CLUS ARRAY ==>',/,
-     +           2(9(1X,F8.2),/) )
+     *           2(9(1X,F8.2),/) )
        IF ( IWRITE .EQ. 1 ) WRITE(6,602) CAND(1 ) ,CAND(2 ) ,CAND(3)
   602  FORMAT(' CLUSTER INFO ENERGY X Y ',3(2X,F12.2) )
 C
@@ -93,6 +93,6 @@ C
  9010  WRITE(6,9011) ((CLUS(I,J),I=1,9),J=1,2)
        WRITE(6,602) CAND(1 ) ,CAND(2 ) ,CAND(3)
  9011  FORMAT(' ++++ TAGPS1 : NEGATIVE ENERGY  -  CLUS ARRAY ==>',/,
-     +           2(9(1X,F8.2),/) )
+     *           2(9(1X,F8.2),/) )
        RETURN
        END

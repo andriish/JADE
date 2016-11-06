@@ -13,7 +13,7 @@
          FIRST = .FALSE.
          WRITE(6,9101) NZSPRD, ZALPDI, ZALDEF
  9101    FORMAT(' +++ AMPS2Z    NZSPRD=',I3,' ZALPDI=',F10.3,
-     +          ' ZALDEF=',F10.3)
+     *          ' ZALDEF=',F10.3)
       ENDIF
       Z = 0.
       W = 1.
@@ -31,13 +31,13 @@
      - NZSPRD .LE. 2
      -)THEN
             W = ( AZSSAV(NZSPRD) /
-     +              ( AZSRS0(NZSPRD)+
-     +                AZSRSA(NZSPRD)*SQRT(AL**2+AR**2)/(AL+AR)**2
-     +              )
-     +          )**2
+     *              ( AZSRS0(NZSPRD)+
+     *                AZSRSA(NZSPRD)*SQRT(AL**2+AR**2)/(AL+AR)**2
+     *              )
+     *          )**2
       ELSE
             W = (AZSSAV(NZSPRD)/
-     +             (AZSRS0(NZSPRD)+AZSRSA(NZSPRD)/(AL+AR)))**2
+     *             (AZSRS0(NZSPRD)+AZSRSA(NZSPRD)/(AL+AR)))**2
       ENDIF
       ELSE
           Z = .5*ZAL*(AL-AR)/(AL+AR)
@@ -55,17 +55,17 @@
      -)THEN
                ICELL = HW(IP)/128 + 1
                DIS = (HW(NP+3)-HW(IP+3))*
-     +               (DRIVEL(ICELL,1)+DRIVEL(ICELL,2))/2.
+     *               (DRIVEL(ICELL,1)+DRIVEL(ICELL,2))/2.
                IF( ABS(DIS).LT.DISMAX ) ISEC = ISEC + 1
       ENDIF
             NP = IP + 4
       IF(
      -  NP.LT.NPJETC*2+100+HW(NPJETC*2+99) .AND.
-     +          HW(NP)/8 .EQ. HW(IP)/8
+     *          HW(NP)/8 .EQ. HW(IP)/8
      -)THEN
                ICELL = HW(IP)/128 + 1
                DIS = (HW(NP+3)-HW(IP+3))*
-     +               (DRIVEL(ICELL,1)+DRIVEL(ICELL,2))/2.
+     *               (DRIVEL(ICELL,1)+DRIVEL(ICELL,2))/2.
                IF( ABS(DIS).LT.DISMAX ) ISEC = ISEC + 1
       ENDIF
             IF( ISEC .EQ. 0 ) IFLAG = 0
@@ -74,7 +74,7 @@
       ENDIF
       ENDIF
         IF(IFLAG.EQ.0 .AND.
-     +     ( HW(IP+1).EQ. 32760 .OR. HW(IP+2).EQ. 32760 ) ) IFLAG = 32
+     *     ( HW(IP+1).EQ. 32760 .OR. HW(IP+2).EQ. 32760 ) ) IFLAG = 32
       ENDIF
       RETURN
       END

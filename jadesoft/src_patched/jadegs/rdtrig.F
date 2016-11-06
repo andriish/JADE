@@ -90,8 +90,6 @@ C
       IHIST(3) = HW(NPHEAD*2+8)
 C
       IYEAR = IHIST(3)
-      if (IYEAR.GT. 1900) IYEAR=IYEAR-1900
-      write(*,*)'IYEAR=   ',IYEAR
       IYEAR = MOD(IYEAR,100)
       IF(NFLAGS(3).EQ.IYEAR) GO TO 8000
       NFLAGS(3) = IYEAR
@@ -413,7 +411,6 @@ C                                           PRINTOUT OF CONSTANTS
  9105 FORMAT(/' +++ RDTRIG: VERSION OF MAR 88, COMPILED 28/03/1988'/)
 C     CALL PRSTAT
  8000 CONTINUE
-       write(*,*) 'return from rdtrig'
       RETURN
       END
 C-----------------------------------------------------------------------

@@ -25,11 +25,11 @@ C                                   READ IN DD* CARDS
  9001 FORMAT(20X,I10)
       WRITE(6,9002) IEVLIM,IFILMX,IWRMAX,IWZMAX,IDULIM,ISCIP
  9002 FORMAT(/' MAX # OF EVENTS TO READ   :',I8/
-     +         ' MAX # OF INPUTFILES       :',I8/
-     +         ' MAX # OF EVENTS ON UNIT 3 :',I8/
-     +         ' MAX # OF EVENTS ON UNIT51 :',I8/
-     +         ' MAX # OF ZE4V-BANK PRINTS :',I8/
-     +         ' INITIAL EVENT SCIP        :',I8/)
+     &         ' MAX # OF INPUTFILES       :',I8/
+     &         ' MAX # OF EVENTS ON UNIT 3 :',I8/
+     &         ' MAX # OF EVENTS ON UNIT51 :',I8/
+     &         ' MAX # OF ZE4V-BANK PRINTS :',I8/
+     &         ' INITIAL EVENT SCIP        :',I8/)
 C                                          INIT BOS
       CALL BINT( 80000, 40000, 10000, 0 )
 C                                           I/O UNIT SPECIFICATION
@@ -111,7 +111,7 @@ C                                           EOF ON IRUNIT
       CALL BDLS( '+BUF', IRUNIT )
       WRITE(6,9104) IEV, IFIL
  9104 FORMAT(' +++++ AFTER',I6,' EVENTS FILE NUMBER CHANGED TO',I4,' +++
-     +++')
+     *++')
       WRITE(6,9113) HDSN, HVOL
  9113 FORMAT(/' +++++ INPUT CONTINUES FROM DSN=',22A2,' VOL=',3A2)
       GO TO 100

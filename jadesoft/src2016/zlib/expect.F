@@ -26,7 +26,7 @@ C
 #include "cgeo1.for"
 C
       COMMON /TRAFO/ STR,CTR,SPR,CPR,CTRCPR,CTRSPR,STRCPR,STRSPR,
-     +               JPART,XMOV,YMOV,ZMOV
+     *               JPART,XMOV,YMOV,ZMOV
       COMMON /PARAME/ P(6)
       COMMON / CJTRIG / PI,TWOPI
       DIMENSION VAR(2),VERT(3)
@@ -166,7 +166,7 @@ C
       SD = SD/FNORM
       WRITE(6,1133) AVG,SD,C2
  1133 FORMAT(10X,'---> VEGAS INTEGRAL RESULT : ',F12.5,/,
-     +       10X,'---> ERROR + CHI**2 VALUE  : ',2F12.5)
+     *       10X,'---> ERROR + CHI**2 VALUE  : ',2F12.5)
       RETURN
 C
 C     PERFORM INTEGRATION OVER REQUESTED BLOCKS
@@ -193,7 +193,7 @@ C     FUNCTION TO BE INTEGRATED BY VEGAS
 C                                       16/06/82
 C
       COMMON /TRAFO/ STR,CTR,SPR,CPR,CTRCPR,CTRSPR,STRCPR,STRSPR,
-     +               JPART,XMOV,YMOV,ZMOV
+     *               JPART,XMOV,YMOV,ZMOV
       COMMON /PARAME/ P(6)
       REAL X(3)
       DATA X0 /22.39/

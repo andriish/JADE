@@ -18,8 +18,8 @@ C
 C%MACRO MVERTEX1
 C     MACRO FOR VERTEX-FIT ROUTINES
       COMMON /CWORK1/ NT,T(2000),NV,V(200),A(300),B(24),NTIND(20),S(20),
-     +                CHITR(20),
-     +                JTGOD(50),JTBAD(50),VSAVE(10),V2(20,20)
+     *                CHITR(20),
+     *                JTGOD(50),JTBAD(50),VSAVE(10),V2(20,20)
 C
       DIMENSION IT(2),IV(2)
       EQUIVALENCE (T(1),IT(1)),(V(1),IV(1))
@@ -31,9 +31,9 @@ C
 C
 C        CONSTANTS
       COMMON /CVTXC/ XB,YB,ZB,RTANK,DTANK,X0INN,SIGX0,SIGZ0,PNTMIN,
-     +               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
-     +               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
-     +               EEXYMX
+     *               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
+     *               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
+     *               EEXYMX
 C
       IF(NT.LE.1) GOTO 100
 C****
@@ -86,8 +86,8 @@ C        DISTANCE IN TANK
       IF(T(J1+2).LT.0.) DPHI=-DPHI
       IF(ABS(DPHI).GT.3.141593) DPHI=DPHI-SIGN(1.,DPHI)*6.283185
       PTCFT2 =
-     +   (FLOAT(1-ICFT1)*(T(J1+16)**2+T(J1+17)**2)
-     +   +FLOAT(1-ICFT2)*(T(J2+16)**2+T(J2+17)**2)) / 1.5
+     &   (FLOAT(1-ICFT1)*(T(J1+16)**2+T(J1+17)**2)
+     &   +FLOAT(1-ICFT2)*(T(J2+16)**2+T(J2+17)**2)) / 1.5
       STCFT2 = 49. * PTCFT2
       PTANK2 = (T(J1+16)**2+T(J2+16)**2+T(J1+17)**2+T(J2+17)**2) / 1.5
       STANK2 = 49. * PTANK2
@@ -109,7 +109,7 @@ C        DISTANCE IN TANK
       ITEST  = 2
       IF(SDPHI.GT.EEDRMX) GOTO 5
       SDXY = ABS(DXY) / SQRT(1./(1./DXT12+1./DYT12)+
-     +                       1./(1./DXT22+1./DYT22)+STCFT2)
+     *                       1./(1./DXT22+1./DYT22)+STCFT2)
       ITEST  = 4
       IF(SDXY.GT.EEDRMX .AND. (DXY.LT.0..OR.DXY.GT.EEXYMN)) GOTO 5
       ITANK = 1
@@ -132,7 +132,7 @@ C        DISTANCE IN BEAMPIPE
       IF(T(J1+2).LT.0.) DPHI=-DPHI
       IF(ABS(DPHI).GT.3.141593) DPHI=DPHI-SIGN(1.,DPHI)*6.283185
       PTCFT2 = PTCFT2 +
-     +   (FLOAT(ICFT1)*T(J1+17)**2+FLOAT(ICFT2)*T(J2+17)**2) / 1.5
+     &   (FLOAT(ICFT1)*T(J1+17)**2+FLOAT(ICFT2)*T(J2+17)**2) / 1.5
       STCFT2 = DRPIPE(DUM)**2 * PTCFT2
       STANK2 = DRPIPE(DUM)**2 * PTANK2
       DX2 = (XT1-XT2)**2
@@ -149,7 +149,7 @@ C        DISTANCE IN BEAMPIPE
       ITEST  = 2
       IF(SDPHI.GT.EEDRMX) GOTO 6
       SDXY = ABS(DXY) / SQRT(1./(1./DXT12+1./DYT12)+
-     +                       1./(1./DXT22+1./DYT22)+STCFT2)
+     *                       1./(1./DXT22+1./DYT22)+STCFT2)
       ITEST  = 4
       IF(SDXY.GT.EEDRMX .AND. (DXY.LT.0..OR.DXY.GT.EEXYMN)) GOTO 6
       ITANK = 1
@@ -159,9 +159,9 @@ C
       ITEST  = 4
 C        VERTEX WHERE TRACKS ARE PARALLEL
       CALL VTXPNT
-     +   (J1,XM2,YM2,XT1,YT1,ZT1,DXT12,DYT12,DZT12,PHIT1,DPHIT1,ST1)
+     &   (J1,XM2,YM2,XT1,YT1,ZT1,DXT12,DYT12,DZT12,PHIT1,DPHIT1,ST1)
       CALL VTXPNT
-     +   (J2,XM1,YM1,XT2,YT2,ZT2,DXT22,DYT22,DZT22,PHIT2,DPHIT2,ST2)
+     &   (J2,XM1,YM1,XT2,YT2,ZT2,DXT22,DYT22,DZT22,PHIT2,DPHIT2,ST2)
       DX2 = (XT1-XT2)**2
       DY2 = (YT1-YT2)**2
       DXY = SQRT(DX2+DY2)
@@ -188,7 +188,7 @@ C        DISTANCE IN CHAMBER
       ITEST  = 5
       IF(SDZ.GT.EEDTMX) GOTO 8
       SDXY = ABS(DXY)/SQRT(1./(1./DXT12+1./DYT12)+1./(1./DXT22+
-     +       1./DYT22))
+     *       1./DYT22))
       ITEST  = 4
       IF(SDXY.GT.EEDRMX .AND. (DXY.LT.0..OR.DXY.GT.EEXYMN)) GOTO 8
 C
@@ -229,7 +229,7 @@ C****L
       LV2 = I*10
       DO 16 K=M,NV
       IF ( IV(LV1+ 9).EQ.IV(LV2+ 9) .OR. IV(LV1+10).EQ.IV(LV2+ 9) .OR.
-     +     IV(LV1+10).EQ.IV(LV2+10) ) GOTO 17
+     *     IV(LV1+10).EQ.IV(LV2+10) ) GOTO 17
    16 LV2 = LV2 + 10
       GOTO 19
 C        TWO PAIRS WITH SAME TRACK, TAKE PAIR WITH SMALLER DISTANCE

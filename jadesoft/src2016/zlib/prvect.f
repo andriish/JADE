@@ -25,11 +25,11 @@ C-----------------------------------------------------------
         NP9 = NP + (IW(NPVECT+4)-1)*L1
         IF( IW(NPVECT+4).GT.0 ) THEN
           WRITE(6,9103) ((J-NP)/L1+1,
-     +                   (RW(J+I),I=1,5),IW(J+6),IW(J+7),
-     +                   (RW(J+I),I=8,10),J=NP,NP9,L1)
+     *                   (RW(J+I),I=1,5),IW(J+6),IW(J+7),
+     *                   (RW(J+I),I=8,10),J=NP,NP9,L1)
  9103     FORMAT('     #       px       py       pz        E        m',
-     +           '   q  type        x        y        z'/
-     +          (1X,I5,5F9.3,I4,I6,3F9.3))
+     *           '   q  type        x        y        z'/
+     *          (1X,I5,5F9.3,I4,I6,3F9.3))
         ENDIF
         NPVECT = IW(NPVECT-1)
         IF( NPVECT.GT.0 ) THEN
@@ -41,13 +41,13 @@ C-----------------------------------------------------------
           NP9 = NP + (IW(NPVECT+4)-1)*L1
           IF( IW(NPVECT+4).GT.0 ) THEN
           WRITE(6,9104) ((J-NP)/L1+1,
-     +                     (RW(J+I),I=1,5),IW(J+6),IW(J+7),
-     +                     (RW(J+I),I=8,10),(HW(J*2+I),I=21,22),
-     +                      RW(J+12),J=NP,NP9,L1)
+     *                     (RW(J+I),I=1,5),IW(J+6),IW(J+7),
+     *                     (RW(J+I),I=8,10),(HW(J*2+I),I=21,22),
+     *                      RW(J+12),J=NP,NP9,L1)
  9104     FORMAT('     #       px       py       pz        E        m',
-     +           '   q  type        x        y        z',
-     +           ' vect part s(parnt)'/
-     +          (1X,I5,5F9.3,I4,I6,3F9.3),2I5,F9.3)
+     *           '   q  type        x        y        z',
+     *           ' vect part s(parnt)'/
+     *          (1X,I5,5F9.3,I4,I6,3F9.3),2I5,F9.3)
           ENDIF
         ENDIF
       ENDIF

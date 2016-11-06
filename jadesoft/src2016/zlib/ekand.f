@@ -274,8 +274,8 @@ C  RETURN VALUES FOR NON CUT VARIABLES
       INTEGER ITRCNT / 0  /, ACCPTD / 0 /, NOFAIL / 0 /, ITRNOF / 0 /
       INTEGER REASON(0:31) / 32*0 /
       INTEGER FAILS(0:31) / 32*0 /, FAILSP(0:31) / 32*0 /,CHECKS(0:31) /
-     +  0,  1,  3,  2,  4,  7,  5,  6, 12,  8,  9, 10, 11, 13, 14, 15,
-     + 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31/
+     *  0,  1,  3,  2,  4,  7,  5,  6, 12,  8,  9, 10, 11, 13, 14, 15,
+     * 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31/
       REAL*4 REAMAT(0:31,0:31) / 1024*0./
       INTEGER ONE / 1 /
 C
@@ -338,7 +338,7 @@ C
  9212   FORMAT(I1,2X,'E/P        < ',F6.3)
         WRITE(6,9401) (CCOND(I),CCOND(I-16),I=32,17,-1)
  9401   FORMAT(' CUTS USED IN EKAND (0=CUT IS DISABLED)'/1X,100('-')/
-     +        (1X,2A50))
+     *        (1X,2A50))
       ENDIF
       RETURN
       ENTRY EALZFA( KA )
@@ -388,10 +388,10 @@ C  PRINT SIMPLE STATISTICS FOR FAILURES AND CANDIDATES
 C-----------------------------------------------------------
       WRITE(6,9601) ITRNOF
  9601 FORMAT(//' Summary of Electron Selection after ',I7,' tracks.',
-     +   36X,' Asymmetry of'/
-     +   ' cut     rejected     surviving  n/(n-1)       Name',
-     +   37X,' rejected tracks'/
-     +   1X,103('-'))
+     *   36X,' Asymmetry of'/
+     *   ' cut     rejected     surviving  n/(n-1)       Name',
+     *   37X,' rejected tracks'/
+     *   1X,103('-'))
       IF( ITRNOF .GT.0 ) THEN
         IPREV = ITRNOF
         DO 6030 J=0,31
@@ -401,11 +401,11 @@ C-----------------------------------------------------------
             ASYM = FLOAT(2*FAILSP(I)-FAILS(I))/FAILS(I)
             DASYM = .5*SQRT((1.+ASYM)*(1.-ASYM)/FAILS(I))
             WRITE(6,9602) I, FAILS(I), FLOAT(FAILS(I))/ITRNOF*100,
-     +                    IPREV, FLOAT(IPREV)/ITRNOF*100,
-     +                    FLOAT(IPREV)/MAX(IPREV+FAILS(I),1)*100,
-     +                    CCOND(32-I)(4:50), ASYM, DASYM
+     *                    IPREV, FLOAT(IPREV)/ITRNOF*100,
+     *                    FLOAT(IPREV)/MAX(IPREV+FAILS(I),1)*100,
+     *                    CCOND(32-I)(4:50), ASYM, DASYM
  9602       FORMAT(I3,I8,'=',F5.1,'%',I7,'=',F5.1,'%  ',F5.1,'% ',A46,
-     +             3X,F6.3,'+-',F5.3)
+     *             3X,F6.3,'+-',F5.3)
           ENDIF
  6030   CONTINUE
         WRITE(6,9607) NOFAIL, FLOAT(NOFAIL)/ITRNOF*100
@@ -450,13 +450,13 @@ C  PRINT STATISTICS FOR FAILURES AND CANDIDATES
 C-----------------------------------------------------------
       WRITE(6,9501) ITRCNT
  9501 FORMAT(//40X,'SUMMARY OF '/
-     +   20X,' FAILURE REASONS FOR E CANDIDATES AFTER',I7,' TRACKS'/
-     +   1X,72('-'))
+     *   20X,' FAILURE REASONS FOR E CANDIDATES AFTER',I7,' TRACKS'/
+     *   1X,72('-'))
       IF( ITRCNT .GT.0 ) THEN
         DO 8010 I=0,31
           IF( REASON(I) .GT. 0 ) THEN
             WRITE(6,9502) I, REASON(I), FLOAT(REASON(I))/ITRCNT*100,
-     +                    CCOND(32-I)(4:50)
+     *                    CCOND(32-I)(4:50)
  9502       FORMAT(1X,I3,I7,' = ',F5.1,'% AT CUT ',A46)
           ENDIF
  8010   CONTINUE

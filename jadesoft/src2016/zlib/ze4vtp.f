@@ -45,11 +45,11 @@ C                                       Muon Quality or unused (= 0 )
               MUONQU = HW( NPTPTR*2 + 96 )
               IW(NP+LT+12) = MUONQU
               IF ( MUONQU .EQ. 9 )
-     +          HW( NP*2 + 8 ) = HW( NP*2 + 8 )/100*100 + 3
+     *          HW( NP*2 + 8 ) = HW( NP*2 + 8 )/100*100 + 3
 C                                      TOF RESULTS (BETA)
               IF ( ABS( IW( NPTPTR + 58 )) .EQ. 1 ) THEN
                 HW( (NP+LT)*2 + 28 ) =
-     +             INT( RW( NPTPTR+61 )*1000.) * IW( NPTPTR + 58 )
+     *             INT( RW( NPTPTR+61 )*1000.) * IW( NPTPTR + 58 )
               ENDIF
             ELSE
               HW((NP+LT)*2+25) = 0

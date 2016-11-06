@@ -30,7 +30,7 @@ C
       X21 = X2 -1.
       FACLOG = ALOG( B * X21 )
       DX = ( XLOW - X + A * ( X2 / X21 * FACLOG - 1. ) ) /
-     +     ( 1. + 2.*A/(X21*X21) * ( FACLOG - X2 ) )
+     *     ( 1. + 2.*A/(X21*X21) * ( FACLOG - X2 ) )
       ADX = ABS( DX )
       INCREM = INCREM + 1
       IF( ADX .LE. DXOLD ) INCREM = 0
@@ -54,9 +54,9 @@ C
       END
       BLOCK DATA ONIDAT
       COMMON / CJJONI / POTBEA, ZAROBE
-     +                 ,POTTRI, ZAROTR
-     +                 ,POTIVE, ZAROIV
-     +                 ,POTRH0, ZAROR0
+     *                 ,POTTRI, ZAROTR
+     *                 ,POTIVE, ZAROIV
+     *                 ,POTRH0, ZAROR0
 C    *                  POTJET, ZAROJE,
 C    *                  POTRH1, ZAROR1,
 C    *                  POTRH2, ZAROR2,

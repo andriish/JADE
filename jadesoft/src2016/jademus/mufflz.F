@@ -1,18 +1,18 @@
 C   29/03/80 004242330  MEMBER NAME  MUFFLZ   (JADEMUS1)    FORTRAN
 C LAST CHANGE 19.46 31/03/80 JOHN ALLISON.
       SUBROUTINE MUFFLZ
-     +(HC,NHITS,NWHIT,
-     + HLUN,
-     + IMUR,AMUR,NWMUR,
-     + HTC,HAMB,NTPH)
+     *(HC,NHITS,NWHIT,
+     * HLUN,
+     * IMUR,AMUR,NWMUR,
+     * HTC,HAMB,NTPH)
 C
       IMPLICIT INTEGER*2 (H)
 C
       DIMENSION
-     + HC(1),
-     + HLUN(1),
-     + IMUR(1),AMUR(1),
-     + HTC(1),HAMB(1)
+     * HC(1),
+     * HLUN(1),
+     * IMUR(1),AMUR(1),
+     * HTC(1),HAMB(1)
 C
 C CALLED AFTER EACH 'GOOD' MUON.
 C

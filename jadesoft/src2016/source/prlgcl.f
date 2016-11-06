@@ -58,7 +58,7 @@ C---- WRITE THE GENERAL INF.
       WRITE(6,600) NPCL, (IDATA(K),K=K1,K6),(ADATA(K),K=K7,K10),
      $           IDATA(K11),  (ADATA(K),K=K12,K15),(IDATA(K),K=K16,K21)
   600 FORMAT('0===== LG-CLUSTERS =====  (NPCL=',I5,')    PROG.VERSION=',
-     1        I2,'  DATE*TIME=',I9,'  ====================',
+     1        I2,'  DATE&TIME=',I9,'  ====================',
      2        /' NCLST=',4I5,'  ENERGY=',4F8.3,'    NG=',I3,'  E-GAM=',
      3        4F8.3,/'   FLAGS=',5I8,'  WORDS/CLUST=',I4)
 C
@@ -98,7 +98,7 @@ C
         PHI = ATAN2( ADATA(KB+10),ADATA(KB+9))*57.2958
 C
     1   WRITE(6,602) N,NCNT,IDATA(K1),(ADATA(K),K=K2,K7),IDATA(K8),
-     +               THE,PHI, (ADATA(K),K=K9,K16)
+     &               THE,PHI, (ADATA(K),K=K9,K16)
   602   FORMAT(' ',3I2,F7.3,F6.3,4F8.2,I4,2F6.1,3F7.4,3(1PE8.1),
      1    2(0PF7.3))
         KB = KB+LSTEP

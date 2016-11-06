@@ -51,7 +51,7 @@ C  *  VERSION OF 09/10/78
 C  *--------------------------------------------------------
 C
       COMMON / CJCELL / NCELL(3),
-     +                  NWIRES(3)
+     *                  NWIRES(3)
 C       NCELL = NUMBER OF CELLS PER CHAMBER
 C       NWIRES = NUMBER OF WIRES PER CELL
       DATA NCELL /24,24,48/
@@ -94,10 +94,10 @@ C       AND THE CORRESPONDING SINES AND COSINES.
       DATA YSUSPN / 0.07 /
       DATA TIMDEL / 6*0.35 /
       DATA ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL
-     +          / 1180., -10., 1., 1000., 2687., 10. /
+     *          / 1180., -10., 1., 1000., 2687., 10. /
       DATA DRIDEV /0.349066 /,
-     +     DRICOS /0.939693 /,
-     +     DRISIN /0.342020 /
+     *     DRICOS /0.939693 /,
+     *     DRISIN /0.342020 /
       DATA PEDES /50./
       DATA TZERO /3*0./
       DATA DRIROT/192*0.349066/

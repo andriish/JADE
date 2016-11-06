@@ -10,7 +10,7 @@ C        MOD: C. BOWDERY  26/04/84 :  MORE CDTL'S
 C        MOD: C. BOWDERY  10/05/84 :  CONVERTED TITLES TO LOWER CASE
 C        MOD: C. BOWDERY  12/10/84 :  NEW CDTL 45
 C        MOD: C. BOWDERY   7/08/85 :  CHANGED CDTL 40 DESCRIPTION
-C        MOD: C. BOWDERY  11/08/85 :  CHANGED CDTL 23 * 14 DESCRIPTIONS
+C        MOD: C. BOWDERY  11/08/85 :  CHANGED CDTL 23 & 14 DESCRIPTIONS
 C        MOD: C. BOWDERY  15/08/85 :  CORRECTIONS
 C        MOD: C. BOWDERY  20/12/85 :  NEW OPTIONS 46 TO 48, BUG FIXED
 C        MOD: J. OLSSON   09/06/86 :  OPTION 49, DEDX VS. R PLOT
@@ -117,170 +117,170 @@ C
      +                  OPTIO4(18,9),OPTIO5(18,9),OPTIO6(18,9)
 C
       DATA OPTIO1/' 1: ','Disp','lay ','of I','nner',' Det','ecto',
-     +'r   ','    ','    ','    ','    ','    ','    ','    ','    ',
-     +'    ','    ',
+     &'r   ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'    ','    ',
 C     OPTION 2
-     +' 2: ','Disp','lay ','of L','ead ','Glas','s   ','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &' 2: ','Disp','lay ','of L','ead ','Glas','s   ','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 3
-     +' 3: ','Disp','lay ','of M','uon ','Filt','er  ','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &' 3: ','Disp','lay ','of M','uon ','Filt','er  ','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 4
-     +' 4: ','Disp','lay ','of c','hamb','er w','alls','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &' 4: ','Disp','lay ','of c','hamb','er w','alls','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 5
-     +' 5: ','Disp','lay ','of c','hamb','er w','ires','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &' 5: ','Disp','lay ','of c','hamb','er w','ires','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 6
-     +' 6: ','Cros','ses ','for ','Inne','r De','tect','or h','its ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &' 6: ','Cros','ses ','for ','Inne','r De','tect','or h','its ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 7
-     +' 7: ','Hist','ogra','ms o','f Le','ad G','lass',' ene','rgy ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &' 7: ','Hist','ogra','ms o','f Le','ad G','lass',' ene','rgy ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 8
-     +' 8: ','Full',' muo','n hi','t sy','mbol','s   ','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &' 8: ','Full',' muo','n hi','t sy','mbol','s   ','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 9
-     +' 9: ','z-ra','dius',' dis','play',' of ','trac','ks i','n z ',
-     +'view','s   ','    ','    ','    ','    ','    ','    ','    '/
+     &' 9: ','z-ra','dius',' dis','play',' of ','trac','ks i','n z ',
+     &'view','s   ','    ','    ','    ','    ','    ','    ','    '/
 C     OPTION 10
       DATA OPTIO2/'10: ','Mirr','or h','its ',
-     +'in z','-rad','ius ','mode','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'in z','-rad','ius ','mode','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 11
-     +'11: ','T2 t','rigg','er d','ispl','ay  ','    ','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'11: ','T2 t','rigg','er d','ispl','ay  ','    ','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 12
-     +'12: ','Trac','k nr',' dis','play',' in ','RES ','comm','and ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'12: ','Trac','k nr',' dis','play',' in ','RES ','comm','and ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 13
-     +'13: ','Prin','t of',' ban','k li','st i','n re','sult',' dis',
-     +'play','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'13: ','Prin','t of',' ban','k li','st i','n re','sult',' dis',
+     &'play','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 14
-     +'14: ','Obso','lete','. Do',' not',' cha','nge!','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'14: ','Obso','lete','. Do',' not',' cha','nge!','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 15
-     +'15: ','Dash','ed l','ine ','disp','lay ','of L','ead ','Glas',
-     +'s sy','stem','s in',' vie','ws R','U an','d CY','L   ','    ',
+     &'15: ','Dash','ed l','ine ','disp','lay ','of L','ead ','Glas',
+     &'s sy','stem','s in',' vie','ws R','U an','d CY','L   ','    ',
 C     OPTION 16
-     +'16: ','Auto','mati','c re','sult',' dis','play','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'16: ','Auto','mati','c re','sult',' dis','play','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 17
-     +'17: ','Auto','mati','c di','spla','y of',' the',' ort','hogo',
-     +'nal ','proj','ecti','ons ','    ','    ','    ','    ','    ',
+     &'17: ','Auto','mati','c di','spla','y of',' the',' ort','hogo',
+     &'nal ','proj','ecti','ons ','    ','    ','    ','    ','    ',
 C     OPTION 18
-     +'18: ','Disp','lay ','of T','3 tr','igge','r co','ndit','ions',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    '/
+     &'18: ','Disp','lay ','of T','3 tr','igge','r co','ndit','ions',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    '/
 C     OPTION 19
       DATA OPTIO3/'19: ','Trac','k di','spla',
-     +'y fr','om c','lose','st a','ppro',
-     +'ach ','to o','rigi','n   ','    ','    ','    ','    ','    ',
+     &'y fr','om c','lose','st a','ppro',
+     &'ach ','to o','rigi','n   ','    ','    ','    ','    ','    ',
 C     OPTION 20
-     +'20: ','ID h','its ','in p','roje','ctio','ns  ','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'20: ','ID h','its ','in p','roje','ctio','ns  ','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 21
-     +'21: ','ID h','it d','ispl','ay i','n ma','in v','iew ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'21: ','ID h','it d','ispl','ay i','n ma','in v','iew ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 22
-     +'22: ','Muon',' hit',' num','bers','    ','    ','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'22: ','Muon',' hit',' num','bers','    ','    ','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 23
-     +'23: ','Fitt','ed t','rack','s pr','ojec','ted ','to L','ead ',
-     +'Glas','s li','mit ','in R','-PHI',' and',' CYL',' vie','ws  ',
+     &'23: ','Fitt','ed t','rack','s pr','ojec','ted ','to L','ead ',
+     &'Glas','s li','mit ','in R','-PHI',' and',' CYL',' vie','ws  ',
 C     OPTION 24
-     +'24: ','Disp','lay ','of a','ll m','uon ','hits',' inc','ludi',
-     +'ng t','hose',' in ','othe','r pl','anes','    ','    ','    ',
+     &'24: ','Disp','lay ','of a','ll m','uon ','hits',' inc','ludi',
+     &'ng t','hose',' in ','othe','r pl','anes','    ','    ','    ',
 C     OPTION 25
-     +'25: ','Unus','ed. ','    ','    ','    ','    ','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'25: ','Unus','ed. ','    ','    ','    ','    ','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 26
-     +'26: ','Disp','lay ','of e','ven ','wire',' hit','s on','ly (',
-     +'fast',' mod','e)  ','    ','    ','    ','    ','    ','    ',
+     &'26: ','Disp','lay ','of e','ven ','wire',' hit','s on','ly (',
+     &'fast',' mod','e)  ','    ','    ','    ','    ','    ','    ',
 C     OPTION 27
-     +'27: ','Disp','lay ','of e','vent',' ver','tex ','from',' P.D',
-     +'ittm','ann ','    ','    ','    ','    ','    ','    ','    '/
+     &'27: ','Disp','lay ','of e','vent',' ver','tex ','from',' P.D',
+     &'ittm','ann ','    ','    ','    ','    ','    ','    ','    '/
 C     OPTION 28
       DATA OPTIO4/'28: ','Disp','lay ','of p',
-     +'hoto','ns f','rom ','LGCL',' ban',
-     +'k to','geth','er w','ith ','char','ged ','trac','ks  ','    ',
+     &'hoto','ns f','rom ','LGCL',' ban',
+     &'k to','geth','er w','ith ','char','ged ','trac','ks  ','    ',
 C     OPTION 29
-     +'29: ','Disp','lay ','of p','hoto','ns f','rom ','LGCL',' ban',
-     +'k wi','thou','t ch','arge','d tr','acks','    ','    ','    ',
+     &'29: ','Disp','lay ','of p','hoto','ns f','rom ','LGCL',' ban',
+     &'k wi','thou','t ch','arge','d tr','acks','    ','    ','    ',
 C     OPTION 30
-     +'30: ','Disp','lay ','of F','orwa','rd M','uon ','Cntr',' TOF',
-     +' val','ues ','    ','    ','    ','    ','    ','    ','    ',
+     &'30: ','Disp','lay ','of F','orwa','rd M','uon ','Cntr',' TOF',
+     &' val','ues ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 31
-     +'31: ','Disp','lay ','of t','rack',' nr ','in T','R di','spla',
-     +'y   ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'31: ','Disp','lay ','of t','rack',' nr ','in T','R di','spla',
+     &'y   ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 32
-     +'32: ','Disp','lay ','of t','rack',' nr ','in V','RES ','disp',
-     +'lay ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'32: ','Disp','lay ','of t','rack',' nr ','in V','RES ','disp',
+     &'lay ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 33
-     +'33: ','Supp','ress',' TOF',' num','bers',' and',' cou','nter',
-     +' num','bers','    ','    ','    ','    ','    ','    ','    ',
+     &'33: ','Supp','ress',' TOF',' num','bers',' and',' cou','nter',
+     &' num','bers','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 34
-     +'34: ','Supp','ress',' spi','nnin','g on','e-bl','ock ','phot',
-     +'ons ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'34: ','Supp','ress',' spi','nnin','g on','e-bl','ock ','phot',
+     &'ons ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 35
-     +'35: ','Supp','ress',' pho','tons',' wit','h < ','200 ','MeV ',
-     +'ener','gy  ','    ','    ','    ','    ','    ','    ','    ',
+     &'35: ','Supp','ress',' pho','tons',' wit','h < ','200 ','MeV ',
+     &'ener','gy  ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 36
-     +'36: ','Supp','ress',' muo','n mi','rror',' hit','s wh','ere ',
-     +'poss','ible','    ','    ','    ','    ','    ','    ','    '/
+     &'36: ','Supp','ress',' muo','n mi','rror',' hit','s wh','ere ',
+     &'poss','ible','    ','    ','    ','    ','    ','    ','    '/
 C     OPTION 37
       DATA OPTIO5/'37: ','Supp','ress',' muo',
-     +'n hi','ts n','ot b','elon','ging',
-     +' to ','good',' muo','ns  ','    ','    ','    ','    ','    ',
+     &'n hi','ts n','ot b','elon','ging',
+     &' to ','good',' muo','ns  ','    ','    ','    ','    ','    ',
 C     OPTION 38
-     +'38: ','Muon',' tra','ck n','umbe','rs d','ispl','ayed','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'38: ','Muon',' tra','ck n','umbe','rs d','ispl','ayed','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 39
-     +'39: ','Muon',' cha','mber',' num','bers',' and',' raw',' hit',
-     +' num','bers',' dis','play','ed  ','    ','    ','    ','    ',
+     &'39: ','Muon',' cha','mber',' num','bers',' and',' raw',' hit',
+     &' num','bers',' dis','play','ed  ','    ','    ','    ','    ',
 C     OPTION 40
-     +'40: ','Only',' top',' pro','ject','ion ','show','n wi','th  ',
-     +'PRO ','or C','DTL ','17  ','    ','    ','    ','    ','    ',
+     &'40: ','Only',' top',' pro','ject','ion ','show','n wi','th  ',
+     &'PRO ','or C','DTL ','17  ','    ','    ','    ','    ','    ',
 C     OPTION 41
-     +'41: ','Z Ch','ambe','r di','spla','y if',' app','ropr','iate',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'41: ','Z Ch','ambe','r di','spla','y if',' app','ropr','iate',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 42
-     +'42: ','Forc','ed Z',' Cha','mber',' dis','play','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'42: ','Forc','ed Z',' Cha','mber',' dis','play','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 43
-     +'43: ','Vert','ex C','hamb','er d','ispl','ay i','f ap','prop',
-     +'riat','e   ','    ','    ','    ','    ','    ','    ','    ',
+     &'43: ','Vert','ex C','hamb','er d','ispl','ay i','f ap','prop',
+     &'riat','e   ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 44
-     +'44: ','Forc','ed V','erte','x Ch','ambe','r di','spla','y   ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'44: ','Forc','ed V','erte','x Ch','ambe','r di','spla','y   ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 45
-     +'45: ','Hatc','hed ','line','s fo','r be','am p','ipe ','and ',
-     +'pres','sure',' tan','k   ','    ','    ','    ','    ','    '/
+     &'45: ','Hatc','hed ','line','s fo','r be','am p','ipe ','and ',
+     &'pres','sure',' tan','k   ','    ','    ','    ','    ','    '/
       DATA OPTIO6/
 C     OPTION 46
-     +'46: ','Supp','ress',' cap','tion',' tex','t   ','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'46: ','Supp','ress',' cap','tion',' tex','t   ','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 47
-     +'47: ','Supp','ress',' ori','gin ','mark','er  ','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'47: ','Supp','ress',' ori','gin ','mark','er  ','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 48
-     +'48: ','Supp','ress',' coo','rdin','ate ','axes','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'48: ','Supp','ress',' coo','rdin','ate ','axes','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 49
-     +'49: ','DE/d','x vs','. Rh','it f','or s','ingl','e tr','acks',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'49: ','DE/d','x vs','. Rh','it f','or s','ingl','e tr','acks',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 50
-     +'50: ','left',' and',' rig','ht s','epar','ated',' (J6','8K) ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'50: ','left',' and',' rig','ht s','epar','ated',' (J6','8K) ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 51
-     +'51: ','diff','eren','tiat','ed p','ulse','s (J','68K)','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'51: ','diff','eren','tiat','ed p','ulse','s (J','68K)','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 52
-     +'52: ','line','ariz','ed p','ulse','s (J','68K)','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'52: ','line','ariz','ed p','ulse','s (J','68K)','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 53
-     +'53: ','disp','lay ','of P','ATR ','trac','ks (','J68K',')   ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'53: ','disp','lay ','of P','ATR ','trac','ks (','J68K',')   ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 54
-     +'>54:',' Non',' sta','ndar','d op','tion','    ','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    '/
+     &'>54:',' Non',' sta','ndar','d op','tion','    ','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    '/
       END

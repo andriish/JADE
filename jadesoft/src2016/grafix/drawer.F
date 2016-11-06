@@ -141,7 +141,7 @@ C
       YA  = Y0 - RLEN*SN
       YE  = Y0 + RLEN*SN
       IF( LASTVW .GT. 4 .AND. LASTVW .NE. 17 .AND. LASTVW .NE. 20 )
-     +                                        GO TO 802
+     &                                        GO TO 802
          XA = -XA
          XE = -XE
   802 CALL DRAMOV( XA, YA, XE, YE, 0 )

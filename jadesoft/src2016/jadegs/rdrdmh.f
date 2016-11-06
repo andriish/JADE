@@ -22,15 +22,15 @@ C
       IMPLICIT INTEGER*2 (H)
 C
       COMMON / CJDRCH / RDEC(4),
-     +                  PSIIN(3),
-     +                  RINCR(3),
-     +                  FIRSTW(3),
-     +                  FSENSW(3),
-     +                  RDEPTH,
-     +                  SWDEPL,
-     +                  YSUSPN,
-     +                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
-     +                  DRIDEV,DRICOS,DRISIN
+     *                  PSIIN(3),
+     *                  RINCR(3),
+     *                  FIRSTW(3),
+     *                  FSENSW(3),
+     *                  RDEPTH,
+     *                  SWDEPL,
+     *                  YSUSPN,
+     *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
+     *                  DRIDEV,DRICOS,DRISIN
 C
       COMMON / CBINMC / BINMC(6)
 C
@@ -68,7 +68,7 @@ CCCCC HITS(IH+3) = 256.*RN(DUM) + .5
 C----------------  N E W -----------------------------
       HITS(IH+3) = HFIX(256.*RN(DUM) + .5)
       IF(BINMC(JR) .GT. 0.)
-     +         HITS(IH+3) = HFIX(DRIMAX(JR)*RN(DUM)/BINMC(JR) + .5)
+     *         HITS(IH+3) = HFIX(DRIMAX(JR)*RN(DUM)/BINMC(JR) + .5)
 C-----------------------------------------------------
   100 IH = IH + 4
 C

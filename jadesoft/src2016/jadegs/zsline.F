@@ -15,8 +15,8 @@ C*       MODIFIED 29/04/87    E ELSEN                               *
 C*       INTRODUCED COMMON CZSPRM                                   *
 C********************************************************************
       COMMON /CWORK/ NHIT,IZB(60),IJC(60),IJH(60),NW(60),LH(60),
-     +                LRFL(60),ALU(60),ARU(60),X(60),Y(60),Z(60),S(60),
-     +                G(60),DT(60),DL(60),DW(60),FCORR(60)
+     *                LRFL(60),ALU(60),ARU(60),X(60),Y(60),Z(60),S(60),
+     *                G(60),DT(60),DL(60),DW(60),FCORR(60)
       DIMENSION JW(60),JTRIP(60),ZTRIP(60),STRIP(60)
       REAL*8 SN,SS,SZ,SS2,SZ2,SSZ,D,ZZ,TT,SSJ,SZJ,SGJ
 C     DIMENSION ITR(60),ITRW(60),DZ1TR(60),DZ2TR(60)

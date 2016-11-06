@@ -1,6 +1,6 @@
 C   29/11/77 310261800  MEMBER NAME  JPRABS0  (S)           FORTRAN
       SUBROUTINE JPRABS( R, P, PENETR, PENETZ, RDOWN, RUP,
-     +                   ZDOWN, ZUP, POT, ZARO, XRAD, *, *, *, * )
+     *                   ZDOWN, ZUP, POT, ZARO, XRAD, *, *, *, * )
 C  *--------------------------------------------------------
 C  *
 C  *  VERSION OF 02/10/78    LAST MOD 01/10/81        E.ELSEN
@@ -32,14 +32,14 @@ C
 C
 C
       ENTRY JPRBPC( R, P, PENETR, PENETZ, RDOWN, RUP,
-     +                   ZDOWN, ZUP, POT, ZARO, XRAD, *, *, *, * )
+     *                   ZDOWN, ZUP, POT, ZARO, XRAD, *, *, *, * )
       LBPC = .TRUE.
       LTOF = .FALSE.
       GO TO 1000
 C
 C
       ENTRY JPRTOF( R, P, PENETR, PENETZ, RDOWN, RUP,
-     +                   ZDOWN, ZUP, POT, ZARO, XRAD, *, *, *, * )
+     *                   ZDOWN, ZUP, POT, ZARO, XRAD, *, *, *, * )
       LBPC = .FALSE.
       LTOF = .TRUE.
 C

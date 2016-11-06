@@ -138,7 +138,7 @@
       ENDIF
         IF(HEAD(23).NE.0) IFLW = 1
         IERRLG = 0
-        CALL LGCALB(*ERRLGC)
+        CALL LGCALB(&ERRLGC)
         LBTRBT = 0
         IPTRIG = IDATA(IQTRIG)
         IF(IPTRIG.GT.0 .AND. IDATA(IPTRIG-2).EQ.1)

@@ -85,7 +85,7 @@ C
          IF( HCD .NE. HYES ) GO TO 200
             WRITE(6,9001) PTOTCT
  9001       FORMAT(' Actual value of PTOT-cut : ',F9.3,/,
-     +             ' Enter NEW value :')
+     &             ' Enter NEW value :')
             READ(5,*) PTOTCT
   200 CONTINUE
 C
@@ -101,68 +101,68 @@ C
 C
       DATA OPTDO1/
 C     OPTION 1
-     +' 1: ','Disp','lay ','of V','TXC-','bank',' hit','s   ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &' 1: ','Disp','lay ','of V','TXC-','bank',' hit','s   ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 2
-     +' 2: ','Disp','lay ','of V','THT-','bank',' hit','s   ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &' 2: ','Disp','lay ','of V','THT-','bank',' hit','s   ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 3
-     +' 3: ','Disp','lay ','of V','PAT-','bank',' hit','s   ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &' 3: ','Disp','lay ','of V','PAT-','bank',' hit','s   ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 4
-     +' 4: ','Forc','ed d','ispl','ay o','f BP','CH-b','ank ','hits',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &' 4: ','Forc','ed d','ispl','ay o','f BP','CH-b','ank ','hits',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 5
-     +' 5: ','Writ','e VT','XC-b','ank ','hit ','poin','ters',' in ',
-     +'magn','ifie','d VC','-vie','w on',' scr','een ','    ','    '/
+     &' 5: ','Writ','e VT','XC-b','ank ','hit ','poin','ters',' in ',
+     &'magn','ifie','d VC','-vie','w on',' scr','een ','    ','    '/
       DATA OPTDO2/
 C     OPTION 6
-     +' 6: ','Sepa','rate','d si','des ','in V','AC d','ispl','ay  ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &' 6: ','Sepa','rate','d si','des ','in V','AC d','ispl','ay  ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 7
-     +' 7: ','Disp','lay ','of V','PAT-','bank',' hit','s fr','om p',
-     +'re-f','ilte','r   ','    ','    ','    ','    ','    ','    ',
+     &' 7: ','Disp','lay ','of V','PAT-','bank',' hit','s fr','om p',
+     &'re-f','ilte','r   ','    ','    ','    ','    ','    ','    ',
 C     OPTION 8
-     +' 8: ','unus','ed  ','    ','    ','    ','    ','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &' 8: ','unus','ed  ','    ','    ','    ','    ','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 9
-     +' 9: ','Draw',' onl','y tr','acks',' abo','ve a',' cer','tain',
-     +' mom','entu','m   ','    ','    ','    ','    ','    ','    ',
+     &' 9: ','Draw',' onl','y tr','acks',' abo','ve a',' cer','tain',
+     &' mom','entu','m   ','    ','    ','    ','    ','    ','    ',
 C     OPTION 10
-     +'10: ','Draw',' COM','FIT-','trac','ks d','otte','d   ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    '/
+     &'10: ','Draw',' COM','FIT-','trac','ks d','otte','d   ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    '/
       DATA OPTDO3/
 C     OPTION 11
-     +'11: ','Trac','k pr','olon','gati','on t','o ru','n ve','rtex',
-     +' and',' pho','tons',' beg','in a','t ru','n ve','rtex','    ',
+     &'11: ','Trac','k pr','olon','gati','on t','o ru','n ve','rtex',
+     &' and',' pho','tons',' beg','in a','t ru','n ve','rtex','    ',
 C     OPTION 12
-     +'12: ','Sphe','rici','ty a','xis ','thro','ugh ','run ','vert',
-     +'ex  ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'12: ','Sphe','rici','ty a','xis ','thro','ugh ','run ','vert',
+     &'ex  ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 13
-     +'13: ','Sele','ct V','ECT-','1-ba','nk f','or s','ingl','e pa',
-     +'rtic','le d','ispl','ay f','or c','omma','nd T','RUE ','    ',
+     &'13: ','Sele','ct V','ECT-','1-ba','nk f','or s','ingl','e pa',
+     &'rtic','le d','ispl','ay f','or c','omma','nd T','RUE ','    ',
 C     OPTION 14
-     +'14: ','Draw',' COM','FIT-','trac','ks w','ith ','ID-t','rack',
-     +' par','amet','ers ','    ','    ','    ','    ','    ','    ',
+     &'14: ','Draw',' COM','FIT-','trac','ks w','ith ','ID-t','rack',
+     &' par','amet','ers ','    ','    ','    ','    ','    ','    ',
 C     OPTION 15
-     +'15: ','Forc','ed D','ispl','ay o','f HW','DS-b','ank ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    '/
+     &'15: ','Forc','ed D','ispl','ay o','f HW','DS-b','ank ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    '/
       DATA OPTDO4/
 C     OPTION 16
-     +'16: ','DAVI','DON-','algo','rith','m fo','r ve','rtex','-pro',
-     +'gram','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'16: ','DAVI','DON-','algo','rith','m fo','r ve','rtex','-pro',
+     &'gram','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 17
-     +'17: ','Draw',' ver','tex ','erro','rs a','s el','lips','e   ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'17: ','Draw',' ver','tex ','erro','rs a','s el','lips','e   ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 18
-     +'18: ','Unus','ed  ','    ','    ','    ','    ','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    ',
+     &'18: ','Unus','ed  ','    ','    ','    ','    ','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    ',
 C     OPTION 19
-     +'19: ','Draw',' big',' dot','s fo','r si','gnal',' wir','es i',
-     +'n r-','phi-','view','s   ','    ','    ','    ','    ','    ',
+     &'19: ','Draw',' big',' dot','s fo','r si','gnal',' wir','es i',
+     &'n r-','phi-','view','s   ','    ','    ','    ','    ','    ',
 C     OPTION 20
-     +'>19:',' Non',' sta','ndar','d op','tion','    ','    ','    ',
-     +'    ','    ','    ','    ','    ','    ','    ','    ','    '/
+     &'>19:',' Non',' sta','ndar','d op','tion','    ','    ','    ',
+     &'    ','    ','    ','    ','    ','    ','    ','    ','    '/
 C
 C                         DEFAULT SETTINGS OF FLAGS
       LOGICAL FLVCDO

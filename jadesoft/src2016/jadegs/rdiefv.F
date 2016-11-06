@@ -20,7 +20,7 @@ C         EFF(Z) = EPV(1) - EPV(2)*(Z/Z05MX)**2
 C                  ======   ======
 C                                     (Z05MX = MAXIMUM HALF WIRE LENGTH)
 C
-C   ERASE HITS ON WIRES 1 * 85 DUE TO COOLING PIPES
+C   ERASE HITS ON WIRES 1 & 85 DUE TO COOLING PIPES
 C
 C-----------------------------------------------------------------------
 C

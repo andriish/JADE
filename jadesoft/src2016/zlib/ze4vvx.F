@@ -34,7 +34,7 @@ C                                           LOAD BHABHA VERTEX
          IF( IEV.GT.1 ) GO TO 100
             WRITE(6,9101) ICX,IPVXDF
  9101       FORMAT(' EAVXGL WARNING: ICALIB(10)=',I6,
-     +             ' DOES NOT MATCH DEFAULT ',I6)
+     *             ' DOES NOT MATCH DEFAULT ',I6)
   100 CONTINUE
 C
 C

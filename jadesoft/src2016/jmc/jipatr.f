@@ -30,28 +30,28 @@ C
       COMMON / CWORK  / NHITS, INEXT, HLIST(1600)
 C
       COMMON / CJDRCH / RDEC(4),
-     +                  PSIIN(3),
-     +                  RINCR(3),
-     +                  FIRSTW(3),
-     +                  FSENSW(3),
-     +                  RDEPTH,
-     +                  SWDEPL,
-     +                  YSUSPN,
-     +                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
-     +                  DRIDEV,DRICOS,DRISIN
+     *                  PSIIN(3),
+     *                  RINCR(3),
+     *                  FIRSTW(3),
+     *                  FSENSW(3),
+     *                  RDEPTH,
+     *                  SWDEPL,
+     *                  YSUSPN,
+     *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
+     *                  DRIDEV,DRICOS,DRISIN
 C
       COMMON / CGEO1  / BKGAUS, RPIP,DRPIP,XRLPIP, RBPC,DRBPC,XRLBPC,
-     +                  RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
-     +                  R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
-     +                  R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
-     +                  RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
-     +                  ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
-     +                  ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
-     +                  ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
-     +                  XRJETC,
-     +                  RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
-     +                  BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     +                  XHOL1,XHOL2,YHOL1,YHOL2
+     *                  RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
+     *                  R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
+     *                  R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
+     *                  RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
+     *                  ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
+     *                  ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
+     *                  ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
+     *                  XRJETC,
+     *                  RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
+     *                  BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
+     *                  XHOL1,XHOL2,YHOL1,YHOL2
 C
       COMMON / CDAY   / IDAY(5)
       COMMON / CJPATR / KPATR, APATR(1976)
@@ -87,7 +87,7 @@ C                                                CURVATURE
       APATR( KPATR + 19 ) = 0.3E-4*ABS(BKGAUS)/PRAD
 C                                                RMIN
       APATR( KPATR + 20 ) = SQRT( R0X*R0X+R0Y*R0Y)
-     +                      -1./   APATR( KPATR + 19 )
+     *                      -1./   APATR( KPATR + 19 )
 C                                                PHI
       APATR( KPATR + 21 ) = ATAN2( R0Y, R0X )
 C                                                NOT USED
@@ -96,7 +96,7 @@ C                                                FIT TYPE IN R Z
       IPATR( KPATR + 29 ) = 1
 C                                                DZ/DR
       APATR( KPATR + 30 ) = P(3)*R(4) /
-     +                      AMAX1( 1.E-4,ABS(P(1)*R(1) + P(2)*R(2)))
+     *                      AMAX1( 1.E-4,ABS(P(1)*R(1) + P(2)*R(2)))
 C                                                Z0
       APATR( KPATR + 31 ) = R(3) - APATR(KPATR+30) * R(4)
 C
@@ -127,10 +127,10 @@ CCC  CURVATURE AT LAST POINT
       APATR( KPATR + 28 )=0.3E-4*BKGAUS*P(7)/PRAD
 CCC  AVERAGE CURVATURE
       APATR( KPATR + 25 ) = ( APATR(KPATR+27) +
-     +    APATR(KPATR+28) ) * .5
+     *    APATR(KPATR+28) ) * .5
 CCC  ERROR IN CURVATURE
       APATR( KPATR + 26 ) = ABS( APATR(KPATR+27) -
-     +         APATR(KPATR+25) )
+     *         APATR(KPATR+25) )
 C
       RETURN
 C

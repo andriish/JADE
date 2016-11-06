@@ -57,9 +57,9 @@ C
 C                                           INTERPOLATE
       IF( IH.LT.NBIN ) THEN
         XBIN = FLOAT(IH+1-IL)/(ISPECT(IH+1)-ISPECT(IL))*
-     +                (ISPECT(NBIN)*X-ISPECT(IL)) + IL
+     *                (ISPECT(NBIN)*X-ISPECT(IL)) + IL
       ELSE
         XBIN = FLOAT(IH-1-IL)/(ISPECT(IH)-ISPECT(IL-1))*
-     +                (ISPECT(NBIN)*X-ISPECT(IL-1)) + IL - 1
+     *                (ISPECT(NBIN)*X-ISPECT(IL-1)) + IL - 1
       ENDIF
       END

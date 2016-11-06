@@ -90,7 +90,7 @@ C---  LG-TOF CALIBRATION OUTPUT
       CALL HRESET(1)
 C---- BIG CHANGE BOUNDARY
       IF( KRUN2.NE.2010241 .AND. KRUN2.NE.2010263 .AND.
-     +    KRUN2.NE.2010361 ) GO TO 10
+     *    KRUN2.NE.2010361 ) GO TO 10
 C---- GET THE AVERAGE OF THE GROUP
       IF( BIGSUM.LE.0. ) BIGSUM = 1.0
       BIGAV = BIGTDC/BIGSUM
@@ -109,7 +109,7 @@ C----      SET UP FOR HITOGRAM FOR AV.TOF
            LRUN1 = HDATA(NPHD2+10)
            LRUN2 = LRUN1+500
            CALL HBOOK2(100,'AV.TOF VS RUN NO.$',100,LRUN1,LRUN2,
-     +                                          60,700.,1300.,0)
+     *                                          60,700.,1300.,0)
            BIGSUM = 0.
            BIGTDC = 0.
                     ISTART = 1

@@ -28,10 +28,10 @@ C      CHANGE 12.30  19/10/81   H. MCCANN  - CORRECT CRATE6 BAD GAS BUG
 C      CHANGE 14.58  04/09/81   C. BOWDERY - CORRECT HANG BUG
 C      CHANGE 07.30  10/04/81   H. MCCANN  - JADEMUS UPDATE.
 C      CHANGE 10.19  26/03/81   J. ALLISON - TO ADD ABOVE COMMENT
-C                                           ABOUT MUANAC, DATE * BANK 0.
+C                                           ABOUT MUANAC, DATE & BANK 0.
 C      CHANGE 14.45  24/03/81   H. MCCANN  - ALLOW FOR CRATE 6 DURING
 C                                              THE BAD GAS PERIOD.
-C      CHANGE 15.00  19/02/81   H. MCCANN  - MORE TIDYING * DEBUGGING
+C      CHANGE 15.00  19/02/81   H. MCCANN  - MORE TIDYING & DEBUGGING
 C MAJOR TIDYING UP   10/09/80   I. DUERDOTH
 C
 C
@@ -52,7 +52,7 @@ C
 C
 C     30/03/83 : MONTE-CARLO DATA IS NOW CONSIDERED
 C     TO BE DIFFERENT FROM REAL DATA IN THAT THE M-C HITS
-C     ARE CREATED WITHOUT NON-LINEAR , ANGULAR * SHIFT EFFECTS.
+C     ARE CREATED WITHOUT NON-LINEAR , ANGULAR & SHIFT EFFECTS.
 C
 C     OTHERWISE THIS VERSION OF MUCOOR TREATS ALL
 C     INPUT MUEV BANKS IDENTICALLY, REGARDLESS OF WHETHER
@@ -123,7 +123,7 @@ C HLUN  6  = 0(1)   IF Y  COORDINATE IS NORMAL(DRIFT OR LONG)
 C
 C HLUN  7  = 0(1)   IF X  COORDINATE IS NORMAL(DRIFT OR LONG)
 C
-C HLUN  8  = 0(1)   IF HIT1 LOST BY HIT4 * RECOVERED FROM HIT2(ALL OK)
+C HLUN  8  = 0(1)   IF HIT1 LOST BY HIT4 & RECOVERED FROM HIT2(ALL OK)
 C
 C HLUN  9  = 0(1)   IF HIT DID NOT MULTI-PULSE (IF HIT DID MULTI-PULSE)
 C
@@ -240,24 +240,24 @@ C                            PRINT MEANING OF MUCOOR ERROR MESSAGES.
 C
       WRITE(6,888)
   888 FORMAT(//6X,'THE MEANING OF THE MUON MESSAGE CODES FROM MUCOOR'/
-     +         6X,'================================================='//
-     +'     1.....CRATE NUMBER OUTSIDE RANGE 1 TO 14'/
-     +'     2.....CRATE NUMBER OUT OF SEQUENCE'/
-     +'     3.....TIME REFERENCE WORD MISSING'/
-     +'     4.....CHAMBER NUMBER OUTSIDE RANGE 1 TO 634'/
-     +'     5.....NEW CHAMBER FOUND BUT PREVIOUS CHAMBER NOT FINISHED'/
-     +'     6.....CHAMBER NUMBER OUT OF SEQUENCE'/
-     +'     7.....HIT NUMBER NOT DECREASED BY ONE'/
-     +'     8.....END-OF-CRATE FOUND INSTEAD OF A NEW CRATE MARKER'/
-     +'     9.....SINGLES COUNT < 0  OR  COUNT TIME < 0'/
-     +'    10.....OUTPUT ARRAY FULL. EXCESS HITS IN THE EVENT ARE LOST'/
-     +'    11.....LENGTH ERROR IN HMU ARRAY'/
-     +'    12.....LAST WORD IN HMU ARRAY IS NOT 0 OR 3840'/
-     +'    13.....SINGLES DATA AFTER CHAMBER WORD WITH HIT NOT 1'/
-     +'    14.....UNUSED'/
-     +'    15.....UNUSED'/
-     +'    16.....CHAMBER IN WRONG CRATE'/
-     +'  70+N.....CRATE N MISSING'//)
+     *         6X,'================================================='//
+     *'     1.....CRATE NUMBER OUTSIDE RANGE 1 TO 14'/
+     *'     2.....CRATE NUMBER OUT OF SEQUENCE'/
+     *'     3.....TIME REFERENCE WORD MISSING'/
+     *'     4.....CHAMBER NUMBER OUTSIDE RANGE 1 TO 634'/
+     *'     5.....NEW CHAMBER FOUND BUT PREVIOUS CHAMBER NOT FINISHED'/
+     *'     6.....CHAMBER NUMBER OUT OF SEQUENCE'/
+     *'     7.....HIT NUMBER NOT DECREASED BY ONE'/
+     *'     8.....END-OF-CRATE FOUND INSTEAD OF A NEW CRATE MARKER'/
+     *'     9.....SINGLES COUNT < 0  OR  COUNT TIME < 0'/
+     *'    10.....OUTPUT ARRAY FULL. EXCESS HITS IN THE EVENT ARE LOST'/
+     *'    11.....LENGTH ERROR IN HMU ARRAY'/
+     *'    12.....LAST WORD IN HMU ARRAY IS NOT 0 OR 3840'/
+     *'    13.....SINGLES DATA AFTER CHAMBER WORD WITH HIT NOT 1'/
+     *'    14.....UNUSED'/
+     *'    15.....UNUSED'/
+     *'    16.....CHAMBER IN WRONG CRATE'/
+     *'  70+N.....CRATE N MISSING'//)
       WRITE(6,863)
   863 FORMAT(' ****      SOME OF THESE MESSAGES ARE TO BE',
      +       ' EXPECTED FOR REAL DATA, ESPECIALLY "CRATE MISSING".'/
@@ -310,7 +310,7 @@ C
 C                            START OF MAIN LOOP
 C
 C        ALL JUMPS IN THIS PROGRAM ARE FORWARDS, EXCEPT TWO:
-C          GO TO 2000     *     GO TO 2200
+C          GO TO 2000     &     GO TO 2200
 C-----------------------------------------------------------------------
 C
 C                            RETURN HERE AFTER CONVERTING LAST HIT  TO
@@ -497,7 +497,7 @@ C
  1010 IF( ICHAM .LE. JCHAM ) GO TO 1906
       GO TO 3906
 C
-C                            NOTE: CHAMBERS IN CRATES 9 * 10  ARE  NOT
+C                            NOTE: CHAMBERS IN CRATES 9 & 10  ARE  NOT
 C                            IN SEQUENCE. BEARING THIS IN MIND, DO  WE
 C                            HAVE A SEQUENCE ERROR?
 C
@@ -679,7 +679,7 @@ C                            NORMALLY , THIS MEANS A FIXED CUT  OF  80
 C                            CLOCK PULSES (4.0  MICROSECS)  BUT  ,  IF
 C                            DRIFT VELOCITY DECREASES  ,  NEED  LARGER
 C                            CUTOFF. ---- THIS HAPPENED  BETWEEN  RUNS
-C                            4220 * 4482. THE NORMAL DRIFT VELOCITY IS
+C                            4220 & 4482. THE NORMAL DRIFT VELOCITY IS
 C                            2150 MICRONS  PER  CLOCK  PULSE.  ---  TO
 C                            ABOUT   5   %,   THAT   IS.    SO     PUT
 C                            ITMCUT=80*2260/NEW VDRIFT .
@@ -771,8 +771,8 @@ C                            DATA IS GOOD IF POSITION IS WITHIN IZEXTN
 C                            OF END OF CHAMBER
 C
           IF( ITL    .NE. 0                         .AND.
-     +        ICLONG .GE. (HCLLO(IFRAME) - IZEXTN)  .AND.
-     +        ICLONG .LE. (HCLHI(IFRAME) + IZEXTN)       ) GO TO 7
+     *        ICLONG .GE. (HCLLO(IFRAME) - IZEXTN)  .AND.
+     *        ICLONG .LE. (HCLHI(IFRAME) + IZEXTN)       ) GO TO 7
 C
 C                            THE DATA IS BAD. SET HLUN1 TO 0 (=0000)
 C
@@ -789,7 +789,7 @@ C
     7     CONTINUE
 C
           IF( ICLONG .LT. HCLLO(IFRAME) .OR. ICLONG .GT. HCLHI(IFRAME) )
-     +               NMU(23) = NMU(23) + 1
+     *               NMU(23) = NMU(23) + 1
 C
 C                            IF POSITION IS OUTSIDE CHAMBER, PULL IT IN
 C
@@ -830,7 +830,7 @@ C
 C                            CORRECT FOR CRATE 6 CLOCK PULSE EXCEPT M.C.
 C
 C                            ( NOTE THAT THE CALIBRATION FILES  ALWAYS
-C                            HAVE CRATE 6 VDR * DTP  EQUAL  TO  GLOBAL
+C                            HAVE CRATE 6 VDR & DTP  EQUAL  TO  GLOBAL
 C                            VALUES....THIS  IS  THE  EFFECT  OF   THE
 C                            VARIOUS UPDATES AS OF 16/03/83. )
 C
@@ -881,7 +881,7 @@ C
    85     HLUN2 = 0
           NDRIF = 0
 C
-C                            SET IC1 * IC2 TO COORD. OF CHAMBER CENTRE
+C                            SET IC1 & IC2 TO COORD. OF CHAMBER CENTRE
 C
           ICT1  = ICWIRE
           ICT2  = ICWIRE

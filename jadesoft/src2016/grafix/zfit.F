@@ -67,13 +67,13 @@ C                                           IF NOT YET DONE
           IF( LZSPD ) THEN
             CALL TRMOUT(80, '   1.ZSPD Bank......................^')
             CALL TRMOUT(80,
-     +             '   or select fit type (overwriting ZSPD banks)^')
+     *             '   or select fit type (overwriting ZSPD banks)^')
           ELSE
             CALL TRMOUT(80, '   or select fit type ^')
           ENDIF
           CALL TRMOUT(80, '   2.ZSFIT single track (PD ).......^')
-          CALL TRMOUT(80, '   3.ZSRFTV single track.(JS * EE)..^')
-          CALL TRMOUT(80, '   4.ZSRFTV common Z-Fit.(JS * EE)..^')
+          CALL TRMOUT(80, '   3.ZSRFTV single track.(JS & EE)..^')
+          CALL TRMOUT(80, '   4.ZSRFTV common Z-Fit.(JS & EE)..^')
         ENDIF
         CALL TRMIN(80,CLINE)
         NB = 1

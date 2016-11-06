@@ -20,15 +20,15 @@ C
 C
 C
       COMMON / CJDRCH / RDEC(4),
-     +                  PSIIN(3),
-     +                  RINCR(3),
-     +                  FIRSTW(3),
-     +                  FSENSW(3),
-     +                  RDEPTH,
-     +                  SWDEPL,
-     +                  YSUSPN,
-     +                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
-     +                  DRIDEV,DRICOS,DRISIN
+     *                  PSIIN(3),
+     *                  RINCR(3),
+     *                  FIRSTW(3),
+     *                  FSENSW(3),
+     *                  RDEPTH,
+     *                  SWDEPL,
+     *                  YSUSPN,
+     *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
+     *                  DRIDEV,DRICOS,DRISIN
 C
       DATA S12 / 3.4641016 /
 C

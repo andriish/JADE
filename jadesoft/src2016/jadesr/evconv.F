@@ -469,7 +469,7 @@ C                                           LOOP OVER HITS
          IWIR = IWIR - 1
          HDATA(IPHDT+1) = IWIR
 C                                           NOTE A1 AND A2 EXCHANGED
-C                                           BETWEEN RAW * REFORMATTED
+C                                           BETWEEN RAW & REFORMATTED
 C                                           BANKS
          HDATA(IPHDT+3) = HWORK(IPWRK)
          HDATA(IPHDT+2) = HWORK(IPWRK+1)
@@ -509,7 +509,7 @@ C                                           ILLEGAL WIRE ADDRESS
 C                                           NON-INCREASING WIRE NO
  4503 WRITE(JUSCRN,4513) IADR,IADR0
  4513 FORMAT(/' ---- ZETC --- NON-INCREASING WIRE NO = ',I6,
-     +        ' (LAST WAS ',I6,')')
+     *        ' (LAST WAS ',I6,')')
       GOTO 501
 C                                           ILLEGAL DRIFT TIME
  4504 WRITE(JUSCRN,4514) HWORK(IPWRK+2)

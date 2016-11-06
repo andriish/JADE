@@ -14,26 +14,26 @@ C  *   NBL = 2785 TO 2880 FOR R3 GT 0
 C  *--------------------------------------------------------
 C
       COMMON/CGEO1/BKGAUS, RPIP,DRPIP,XRLPIP, RBPC,DRBPC,XRLBPC,
-     +             RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
-     +             R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
-     +             R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
-     +             RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
-     +             ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
-     +             ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
-     +             ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
-     +             XRJETC,
-     +             RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
-     +             BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     +             XHOL1,XHOL2,YHOL1,YHOL2,BLPHI
+     *             RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
+     *             R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
+     *             R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
+     *             RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
+     *             ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
+     *             ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
+     *             ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
+     *             XRJETC,
+     *             RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
+     *             BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
+     *             XHOL1,XHOL2,YHOL1,YHOL2,BLPHI
 *** PMF 15/10/99      DIMENSION R(1)
       DIMENSION R(*)
 *** PMF (end)
       INTEGER NB1(5,5)/0,2,6,11,17,3,7,12,18,0,8,13,20,19,0,14,22,21,0,
-     +                 0,23,0,0,0,0/
+     *                 0,23,0,0,0,0/
       INTEGER NB2(4)  /1,5,10,16/
       INTEGER NB3(4)  /4,9,15,24/
       INTEGER MIRROR(24)/28,27,26,25,33,32,31,30,29,39,38,37,36,35,34,
-     +                   48,47,46,45,44,43,42,41,40/
+     *                   48,47,46,45,44,43,42,41,40/
 C
       NBL=0
       NBL0 = 2688

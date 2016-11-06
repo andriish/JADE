@@ -11,7 +11,7 @@ C        MOD:   C. BOWDERY   6/10/83 :  CREATE 'JETC'/9 BANK
 C        MOD:   J. OLSSON   15/12/83 :  CORR. OF CTR123 ERROR
 C        MOD:   J. HAGEMANN 11/10/83 :  VERTEX CHAMBER CODE
 C               R. RAMCKE
-C        MOD:   J.H.  C.B.  12/10/84 :  FIX-UP OF ROTNK * OTHER CHANGES
+C        MOD:   J.H.  C.B.  12/10/84 :  FIX-UP OF ROTNK & OTHER CHANGES
 C        MOD:   J. HAGEMANN 08/11/84 :  COMMON /CVCEX/ IMPLEMENTED
 C        MOD:   J. HAGEMANN 22/05/86 :  UPDATED CODE FOR CHANGING THE
 C                                       INPUT FILE (SMEARED DATA <-->
@@ -123,14 +123,14 @@ C
       COMMON / CRDSTA / NDEAD, NCDEAD, HITD(10), HCELLD(10), IPHALG
 C
       COMMON /CTRIGG/ IHIST(3),NBPTFW,TAGADC,IDUM1(4),HDUM1,
-     +  HLGBRT,HLGBST,HLGQT,HLGTOT(4,2),HECAPT(4),HLGTL,HLGTH,HTGTRG,
-     +                HDUM2(9),IWIDBS,NRNBSL,NRNBSH,NTOFBS,IDUM2(10),
-     +                NTOFC,NTOFC1,NTOFC2,NTBGC,NTBGC1,NTBGC2,
-     +                IWCOLL,IWCOLN,IWMPRG,HFMPRL,HFMPRH,HWCOLN,HMPRON,
-     +                IWCTBG,NTFCOL,NTFCLN,NTFBS2,IDUM3(9),
-     +  HITCLL(3),HITWLL(3),HITSUM(3),HCHAMB(3),HMASK(16,3),HDEADC(10),
-     +  HACC1,HACC2,HACC3,HACC4,HACCM,HDUM6,IWIDT2,HACCB1,HACCB2,
-     +  HT1ACC,HT1PSP,IDUM4(8)
+     *  HLGBRT,HLGBST,HLGQT,HLGTOT(4,2),HECAPT(4),HLGTL,HLGTH,HTGTRG,
+     *                HDUM2(9),IWIDBS,NRNBSL,NRNBSH,NTOFBS,IDUM2(10),
+     *                NTOFC,NTOFC1,NTOFC2,NTBGC,NTBGC1,NTBGC2,
+     *                IWCOLL,IWCOLN,IWMPRG,HFMPRL,HFMPRH,HWCOLN,HMPRON,
+     *                IWCTBG,NTFCOL,NTFCLN,NTFBS2,IDUM3(9),
+     *  HITCLL(3),HITWLL(3),HITSUM(3),HCHAMB(3),HMASK(16,3),HDEADC(10),
+     *  HACC1,HACC2,HACC3,HACC4,HACCM,HDUM6,IWIDT2,HACCB1,HACCB2,
+     *  HT1ACC,HT1PSP,IDUM4(8)
 C
       DIMENSION TSTAT1(110), TSTAT2(13)
       EQUIVALENCE (TSTAT1(1),IHIST(1)), (TSTAT2(1), NDEAD)
@@ -174,8 +174,6 @@ CCC   DATA HOPT1   / 'DE'  /
 C
 C-------------------  C O D E  -----------------------------------------
 C
-      write(*,*)'ENTER rdmtco9'
-
       ICALL = ICALL + 1
       IF( ICALL .EQ. 1) WRITE(6,6110)
 6110  FORMAT(' ---> RDMTCO: VERSION FROM  JULY 1988')
@@ -186,8 +184,8 @@ C
       IF( IPMTCO .NE. 0 .OR. ICALL .GT. 1 ) GO TO 500
          WRITE(6,9100)
  9100    FORMAT(//' +++++ WARNING FROM RDMTCO ++++++',/
-     +            '   NO M T C O BANK IS FOUND !',/
-     +            '    PROGRAMMED STOP FOLLOWS')
+     *            '   NO M T C O BANK IS FOUND !',/
+     *            '    PROGRAMMED STOP FOLLOWS')
          STOP
   500 CONTINUE
 C
@@ -599,7 +597,6 @@ C
       RETURN
 C-----------------------------------------------------------------------
       ENTRY RDJETC
-            write(*,*)'ENTER rdmtco9,ENTRY RDJETC'
 C-----------------------------------------------------------------------
 C
 C      SMEAR JETC BANK DATA, PUT IN INEFFICIENCIES, RANDOM HITS1
@@ -619,7 +616,6 @@ C                      COMPARE CURRENT STATUS TO BACKUP
 C                      IN ORDER TO AVOID UNNECESSARY PRINT
       IPRIT = 0
       IF(NFLAGS(8).NE.0) CALL PRAGAI(IPRIT)
-      write(*,*)'After pragaddddi'
       NFLAGS(8) = 0
       IF(IPRIT.NE.0) NFLAGS(9) = 1
 C     IF(NFLAGS(9).NE.0)  WRITE(6,8011)
@@ -635,7 +631,6 @@ C  OF DRIFT TIME BINS
 C   OBS!! ALL SMEARED DATA ARE KEPT IN UNITS OF FINE ORIGINAL RESOLUTION
 C         THEREFORE BINMC IS USED AS UNIT. THE SAME IS TRUE IN RDRESO.
 C
-      write(*,*)'After PRSTAT'
       IF(IFLADB.NE.0) GO TO 7021
       DO 7020 I=1,3
          IDOUBL(I) = IFIX(DOUB(I) / BINMC(2*I-1))
@@ -649,18 +644,15 @@ C
       IF( .NOT. LVTXC )  GO TO 5304
 C
          CALL RDRESV
-         write(*,*)'After RDRESV'
 C
          IPVTXC = IDATA (IBLN('VTXC'))
          IF( IPVTXC .LE. 0 )
-     +      CALL BCRE ( IPVTXC, 'VTXC',10, 5, *5304, IEVT )
+     *      CALL BCRE ( IPVTXC, 'VTXC',10, 5, *5304, IEVT )
          CALL BSAW(1, 'VTXC')
          IDATA(IPVTXC + 1 ) = 5
 C                                          DOUB. HIT RESO., INEFF.,
 C                                          RANDOM HITS
          CALL RDMODV( IRNHVV, EFFVV, DOUBVV )
-         write(*,*)'After RDMODV'
-
  5304 CONTINUE
 C
 C
@@ -673,34 +665,26 @@ C
             LENGTH = IDATA(IPJ)
             CALL BCRE( IPJ9, 'JETC', 9, LENGTH, *401, IER )
             CALL MVCL( IDATA, IPJ9*4, IDATA, IPJ*4, LENGTH*4 )
-            write(*,*)'After BCRE( IPJ9  bla'
 C
 C                       NOW SMEAR TIME AND Z-COORD VALUES
 C
- 401    CONTINUE 
-        CALL RDRESO( BINMC )
+ 401  CALL RDRESO( BINMC )
 C
-            write(*,*)'After RDRESO'
       IF( IPJ .LE. 0 ) CALL BCRE( IPJ, 'JETC', 8, 50, *7788, IE )
       CALL BSAW( 1, 'JETC' )
 C
 C                       CONSIDER DOUBLE HIT RESOLUTION,
 C                       INEFFICIENCIES AND RANDOM HITS
 C
-
-            write(*,*)'After BCRE'
-
       CALL RDMODN( IRN, EPSI, IDOUBL )
 C
 C                       SET CORRECT STANDARD DEVIATIONS IN PATR BANK
 C
-        write(*,*)'After RDMOND ...'
       CALL RDPATR
 C                       CREATE TRIGGER BANKS
 7788  CALL RDTRG1
       CALL RDTRG2
 C                       DELETE LG-BLOCKS BELOW READOUT THRESHOLD IPHALG
       CALL RDALGN
-               write(*,*)'return from rdmtco9'
       RETURN
       END

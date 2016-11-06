@@ -36,12 +36,12 @@ C                            SELECT TRACK NUMBER AND POINT ON SCREEN
 C
 C                            CHECK IF DIST IS POSSIBLE FOR THIS VIEW
       IF( LASTVW .GT. 3 .AND. LASTVW .NE. 17 .AND. LASTVW .NE. 20 )
-     +         GO TO 4000
+     &         GO TO 4000
       CALL CLOC(IPPATR,'PATR',NNPATR)
       IF( IPPATR .GT. 0 ) GO TO 310
          WRITE(6,9301) NNPATR
  9301    FORMAT(' PATR BANK NR',I3,' (GIVEN BY COMMAND PATR) NOT EXISTIN
-     +G')
+     &G')
          GO TO 5000
   310 CONTINUE
       IPHWDS = IDATA(IBLN('HWDS'))
@@ -56,7 +56,7 @@ C                            CHECK IF DIST IS POSSIBLE FOR THIS VIEW
 C
          WRITE(6,9321) ITRK,NTR
  9321    FORMAT(' Track number ',I3,' is outside valid range (1 - ',I3,'
-     +)')
+     &)')
          GO TO 320
 C
   330 CALL TRMOUT(80,' Now select point with hair cross!^')

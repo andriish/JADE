@@ -53,42 +53,42 @@ C
       COMMON / CWSET  / NHALL, ISTART, HPCELL(98), HITAR(16000)
 C
       COMMON / CJDRCH / RDEC(4),
-     +                  PSIIN(3),
-     +                  RINCR(3),
-     +                  FIRSTW(3),
-     +                  FSENSW(3),
-     +                  RDEPTH,
-     +                  SWDEPL,
-     +                  YSUSPN,
-     +                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
-     +                  DRIDEV,DRICOS,DRISIN
+     *                  PSIIN(3),
+     *                  RINCR(3),
+     *                  FIRSTW(3),
+     *                  FSENSW(3),
+     *                  RDEPTH,
+     *                  SWDEPL,
+     *                  YSUSPN,
+     *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
+     *                  DRIDEV,DRICOS,DRISIN
 C
       COMMON / CJIONI / POTBEA, ZAROBE,
-     +                  POTTRI, ZAROTR,
-     +                  POTIVE, ZAROIV,
-     +                  POTRH0, ZAROR0,
-     +                  POTJET, ZAROJE,
-     +                  POTRH1, ZAROR1,
-     +                  POTRH2, ZAROR2,
-     +                  POTRH3, ZAROR3,
-     +                  POTOVE, ZAROOV,
-     +                  POTTOF, ZAROTO,
-     +                  POTVES, ZARVES,
-     +                  POTZJL, ZAROJL,
-     +                  POTZJR, ZAROJR
+     *                  POTTRI, ZAROTR,
+     *                  POTIVE, ZAROIV,
+     *                  POTRH0, ZAROR0,
+     *                  POTJET, ZAROJE,
+     *                  POTRH1, ZAROR1,
+     *                  POTRH2, ZAROR2,
+     *                  POTRH3, ZAROR3,
+     *                  POTOVE, ZAROOV,
+     *                  POTTOF, ZAROTO,
+     *                  POTVES, ZARVES,
+     *                  POTZJL, ZAROJL,
+     *                  POTZJR, ZAROJR
 C
       COMMON / CGEO1  / BKGAUS, RPIP,DRPIP,XRLPIP, RBPC,DRBPC,XRLBPC,
-     +                  RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
-     +                  R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
-     +                  R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
-     +                  RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
-     +                  ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
-     +                  ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
-     +                  ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
-     +                  XRJETC,
-     +                  RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
-     +                  BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     +                  XHOL1,XHOL2,YHOL1,YHOL2
+     *                  RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
+     *                  R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
+     *                  R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
+     *                  RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
+     *                  ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
+     *                  ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
+     *                  ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
+     *                  XRJETC,
+     *                  RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
+     *                  BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
+     *                  XHOL1,XHOL2,YHOL1,YHOL2
 
       COMMON / CJTRLE / TOTLEN, STPLEN, TRCOFS
       COMMON / CJSWLO / ITIMOD, MULSC, ELOSS
@@ -132,38 +132,38 @@ C
 C
 C                            INSIDE BEAM PIPE
   100 CALL JPRFRE( R, P, PENETR, PENETZ,  0.  , RPIP,
-     +                     ZENDMI, ZENDPL,
-     +                     *9100, *9200, *9200, *9100 )
+     *                     ZENDMI, ZENDPL,
+     *                     *9100, *9200, *9200, *9100 )
 C
 C                            BEAM PIPE WALL
   200 CALL JPRABS( R, P, PENETR, PENETZ, RPIP, RPIP + DRPIP,
-     +             ZENDMI, ZENDPL, POTBEA, ZAROBE, DRPIP/XRLPIP,
-     +                   *100, *9200, *9200, *9100 )
+     *             ZENDMI, ZENDPL, POTBEA, ZAROBE, DRPIP/XRLPIP,
+     *                   *100, *9200, *9200, *9100 )
 C
 C                            BETWEEN BEAM PIPE AND TRIGGER
   300 CALL JPRFRE( R, P, PENETR, PENETZ, RPIP + DRPIP, RBPC,
-     +                     ZENDMI , ZENDPL,
-     +                      *200, *9200, *9200, *9100 )
+     *                     ZENDMI , ZENDPL,
+     *                      *200, *9200, *9200, *9100 )
 C
 C                            BEAM PIPE COUNTER
   400 CALL JPRBPC( R, P, PENETR, PENETZ, RBPC , RBPC + DRBPC,
-     +             ZBPMI, ZBPPL, POTTRI, ZAROTR, DRBPC/XRLBPC,
-     +                   *300, *8500, *7500, *9100 )
+     *             ZBPMI, ZBPPL, POTTRI, ZAROTR, DRBPC/XRLBPC,
+     *                   *300, *8500, *7500, *9100 )
 C
 C                            BETWEEN BP COUNTER AND INNER VESSEL WALL
   500 CALL JPRFRE( R, P, PENETR, PENETZ, RBPC  + DRBPC , RITNK,
-     +                     ZENDMI, ZENDPL,
-     +                      *400, *9200, *9200, *9100 )
+     *                     ZENDMI, ZENDPL,
+     *                      *400, *9200, *9200, *9100 )
 C
 C                            INNER VESSEL WALL
   600 CALL JPRABS( R, P, PENETR, PENETZ, RITNK , RITNK + DRITNK,
-     +            ZTKM+DZTKM, ZTKP+DZTKP, POTIVE, ZAROIV, DRITNK/XRLTKI,
-     +                   *500, *8300, *7300, *9100 )
+     *            ZTKM+DZTKM, ZTKP+DZTKP, POTIVE, ZAROIV, DRITNK/XRLTKI,
+     *                   *500, *8300, *7300, *9100 )
 C
 C                           BETWEEN INNER VESSEL WALL AND FIRST ROHACELL
   700 CALL JPRTLO( R, P, PENETR, PENETZ, RITNK  + DRITNK , R0ROH,
-     +                     ZJM, ZJP,
-     +                      *600, *8700, *7700, *9100 )
+     *                     ZJM, ZJP,
+     *                      *600, *8700, *7700, *9100 )
 C
 CCC  TENTATIVE FILLING OF CJPATR COMMON
  2000 CALL JIPATR( P, R )
@@ -180,26 +180,26 @@ C
 C
 C                            BETWEEN LAST ROHACELL AND OUTER VESSEL WALL
  3100 CALL JPRTHI( R, P, PENETR, PENETZ, R3ROH  + DR3ROH , ROTNK,
-     +                     ZJM, ZJP,
-     +                     *2000, *8600, *7600, *9100 )
+     *                     ZJM, ZJP,
+     *                     *2000, *8600, *7600, *9100 )
 C
 C                            IN OUTER VESSEL WALL
  3200 CALL JPRABS( R, P, PENETR, PENETZ, ROTNK , ROTNK + DROTNK,
-     +             ZTKM+DZTKM,ZTKP+DZTKP, POTOVE, ZAROOV, DROTNK/XRLTKO,
-     +                  *3100, *8300, *7300, *9100 )
+     *             ZTKM+DZTKM,ZTKP+DZTKP, POTOVE, ZAROOV, DROTNK/XRLTKO,
+     *                  *3100, *8300, *7300, *9100 )
 C
 C                            BETWEEN OUTER VESSEL WALL AND TOF COUNTER
  3300 CALL JPRFRE( R, P, PENETR, PENETZ, ROTNK  + DROTNK , RTOF ,
-     +                     ZENDMI, ZENDPL,
-     +                     *3200, *9000, *9000, *9100 )
+     *                     ZENDMI, ZENDPL,
+     *                     *3200, *9000, *9000, *9100 )
 C                            IN TOF COUNTER
  3400 CALL JPRTOF( R, P, PENETR, PENETZ, RTOF  , RTOF  + DRTOF ,
-     +             ZTOFMI, ZTOFPL, POTTOF, ZAROTO, DRTOF/XRTOF ,
-     +                  *3300, *8400, *7400, *9100 )
+     *             ZTOFMI, ZTOFPL, POTTOF, ZAROTO, DRTOF/XRTOF ,
+     *                  *3300, *8400, *7400, *9100 )
 C                            BETWEEN TOF COUNTER AND COIL
  3500 CALL JPRFRE( R, P, PENETR, PENETZ, RTOF   + DRTOF  , RCOIL,
-     +                     ZENDMI, ZENDPL,
-     +                     *3400, *9000, *9000, *9100 )
+     *                     ZENDMI, ZENDPL,
+     *                     *3400, *9000, *9000, *9100 )
       GO TO 9000
 C
 C
@@ -207,43 +207,43 @@ C                      - Z - PART
 C
 C                           IN END PLATE OF INNER DETECTOR
  7000 CALL JPRABS( R, P, PENETR, PENETZ, R0ROH , R3ROH + DR3ROH,
-     +             ZJM+DZJM, ZJM, POTZJL, ZAROJL, -DZJM/XRZJM,
-     +                   *7700, *2000, *7100, *9100 )
+     *             ZJM+DZJM, ZJM, POTZJL, ZAROJL, -DZJM/XRZJM,
+     *                   *7700, *2000, *7100, *9100 )
             GO TO 7600
 C                  BETWEEN INNER DETECTOR END PLATE AND VESSEL END PLATE
  7100 CALL JPRFRE( R, P, PENETR, PENETZ, RITNK + DRITNK, ROTNK,
-     +               ZTKM, ZJM + DZJM,
-     +                      *600, *7000, *7200, *9100 )
+     *               ZTKM, ZJM + DZJM,
+     *                      *600, *7000, *7200, *9100 )
             GO TO 3200
 C                           IN VESSEL END PLATE
  7200 CALL JPRABS( R, P, PENETR, PENETZ, RITNK + DRITNK , ROTNK,
-     +             ZTKM +DZTKM, ZTKM, POTVES, ZARVES, -DZTKM/XRZTKM,
-     +                   *600, *7100, *7300, *9100 )
+     *             ZTKM +DZTKM, ZTKM, POTVES, ZARVES, -DZTKM/XRZTKM,
+     *                   *600, *7100, *7300, *9100 )
             GO TO 3200
 C                           BETWEEN VESSEL END PLATE AND LEAD GLASS
  7300 CALL JPRFRE( R, P, PENETR, PENETZ, RITNK  , ROTNK + DROTNK,
-     +               ZENDMI, ZTKM + DZTKM,
-     +                      *500, *7200, *9000, *9100 )
+     *               ZENDMI, ZTKM + DZTKM,
+     *                      *500, *7200, *9000, *9100 )
             GO TO 3300
 C                           BETWEEN TOF COUNTER  AND LEAD GLASS
  7400 CALL JPRFRE( R, P, PENETR, PENETZ, RTOF   , RTOF + DRTOF,
-     +                      ZENDMI, ZTOFMI,
-     +                     *3300, *3400, *9000, *9100 )
+     *                      ZENDMI, ZTOFMI,
+     *                     *3300, *3400, *9000, *9100 )
             GO TO 3500
 C                           BETWEEN TRIGGER END AND LEAD GLASS
  7500 CALL JPRFRE( R, P, PENETR, PENETZ, RBPC  , RBPC + DRBPC,
-     +                        ZENDMI, ZBPMI,
-     +                      *300, *400,  *9200, *9100 )
+     *                        ZENDMI, ZBPMI,
+     *                      *300, *400,  *9200, *9100 )
             GO TO  500
 C                           BETWEEN END PLAT OF I DETC. AND OUTER TNK W
  7600 CALL JPRFRE( R, P, PENETR, PENETZ, R3ROH + DR3ROH, ROTNK,
-     +                        ZJM + DZJM, ZJM,
-     +                      *7000, *3100,  *7100, *9100 )
+     *                        ZJM + DZJM, ZJM,
+     *                      *7000, *3100,  *7100, *9100 )
             GO TO  3200
 C                           BETWEEN INNER TNK W AND END PLATE OF I DETC.
  7700 CALL JPRFRE( R, P, PENETR, PENETZ, RITNK + DRITNK, R0ROH,
-     +                        ZJM + DZJM, ZJM,
-     +                      *600, *700,  *7100, *9100 )
+     *                        ZJM + DZJM, ZJM,
+     *                      *600, *700,  *7100, *9100 )
             GO TO  7000
 C
 C
@@ -251,43 +251,43 @@ C                      + Z - PART
 C
 C                           IN END PLATE OF INNER DETECTOR ( + Z )
  8000 CALL JPRABS( R, P, PENETR, PENETZ, R0ROH , R3ROH + DR3ROH,
-     +             ZJP, ZJP+DZJP, POTZJR, ZAROJR, DZJP/XRZJP,
-     +                   *8700, *8100, *2000, *9100 )
+     *             ZJP, ZJP+DZJP, POTZJR, ZAROJR, DZJP/XRZJP,
+     *                   *8700, *8100, *2000, *9100 )
             GO TO 8600
 C                  BETWEEN INNER DETECTOR END PLATE AND VESSEL END PLATE
  8100 CALL JPRFRE( R, P, PENETR, PENETZ, RITNK + DRITNK, ROTNK,
-     +               ZJP + DZJP, ZTKP,
-     +                      *600, *8200, *8000, *9100 )
+     *               ZJP + DZJP, ZTKP,
+     *                      *600, *8200, *8000, *9100 )
             GO TO 3200
 C                           IN VESSEL END PLATE
  8200 CALL JPRABS( R, P, PENETR, PENETZ, RITNK + DRITNK , ROTNK,
-     +             ZTKP, ZTKP +DZTKP, POTVES, ZARVES, DZTKP/XRZTKP,
-     +                   *600, *8300, *8100, *9100 )
+     *             ZTKP, ZTKP +DZTKP, POTVES, ZARVES, DZTKP/XRZTKP,
+     *                   *600, *8300, *8100, *9100 )
             GO TO 3200
 C                           BETWEEN VESSEL END PLATE AND LEAD GLASS
  8300 CALL JPRFRE( R, P, PENETR, PENETZ, RITNK  , ROTNK + DROTNK,
-     +               ZTKP + DZTKP, ZENDPL,
-     +                      *500, *9000, *8200, *9100 )
+     *               ZTKP + DZTKP, ZENDPL,
+     *                      *500, *9000, *8200, *9100 )
             GO TO 3300
 C                           BETWEEN TOF COUNTER  AND LEAD GLASS
  8400 CALL JPRFRE( R, P, PENETR, PENETZ, RTOF   , RTOF + DRTOF,
-     +                      ZTOFPL, ZENDPL,
-     +                     *3300, *9000, *3400, *9100 )
+     *                      ZTOFPL, ZENDPL,
+     *                     *3300, *9000, *3400, *9100 )
             GO TO 3500
 C                           BETWEEN TRIGGER END AND LEAD GLASS
  8500 CALL JPRFRE( R, P, PENETR, PENETZ, RBPC  , RBPC + DRBPC,
-     +                        ZBPPL, ZENDPL,
-     +                      *300, *9200,  *400, *9100 )
+     *                        ZBPPL, ZENDPL,
+     *                      *300, *9200,  *400, *9100 )
             GO TO  500
 C                           BETWEEN END PLAT OF I DETC. AND OUTER TNK W
  8600 CALL JPRFRE( R, P, PENETR, PENETZ, R3ROH + DR3ROH, ROTNK,
-     +                        ZJP, ZJP + DZJP,
-     +                      *8000, *8100,  *3100, *9100 )
+     *                        ZJP, ZJP + DZJP,
+     *                      *8000, *8100,  *3100, *9100 )
             GO TO  3200
 C                           BETWEEN INNER TNK W AND END PLATE OF I DETC.
  8700 CALL JPRFRE( R, P, PENETR, PENETZ, RITNK + DRITNK, R0ROH,
-     +                        ZJP, ZJP + DZJP,
-     +                      *600, *8100,  *700, *9100 )
+     *                        ZJP, ZJP + DZJP,
+     *                      *600, *8100,  *700, *9100 )
             GO TO  8000
 C
 C
@@ -302,7 +302,7 @@ C                          DECAY OR STOPPING PARTICLE
              IF(ABS(P(8)-5.).LT.1.E-3) CALL TRKADC(P,R,R0,STOPL,*9120)
                     CALL PIKDEC( P, PV2, STPLEN )
                     TRCOFS = STPLEN + SQRT(R0(1)**2 + R0(2)**2
-     +                              + R0(3)**2)
+     *                              + R0(3)**2)
                     CALL SVECT1( PV2, R )
 C                                           FINISH THIS PARTICLE
  9120               P(1) = 0.

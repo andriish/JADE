@@ -192,11 +192,11 @@ C                                           ACOPLANARITY
       ACOP = 1.5
       IF( NTRKL .NE. 2 ) GO TO 400
       ACOP = ( P(1,JLONG(1))*P(1,JLONG(2)) +
-     +         P(2,JLONG(1))*P(2,JLONG(2)) )/
-     +       SQRT( ( P(1,JLONG(1))*P(1,JLONG(1)) +
-     +               P(2,JLONG(1))*P(2,JLONG(1)) ) *
-     +             ( P(1,JLONG(2))*P(1,JLONG(2)) +
-     +               P(2,JLONG(2))*P(2,JLONG(2)) ))
+     *         P(2,JLONG(1))*P(2,JLONG(2)) )/
+     *       SQRT( ( P(1,JLONG(1))*P(1,JLONG(1)) +
+     *               P(2,JLONG(1))*P(2,JLONG(1)) ) *
+     *             ( P(1,JLONG(2))*P(1,JLONG(2)) +
+     *               P(2,JLONG(2))*P(2,JLONG(2)) ))
       IF( IHIST .EQ. 1 ) CALL UHIST( 10004, ACOP )
       IF( ACOP .GT. -.9848 ) GO TO 400
       NREJ( 8) = NREJ( 8) + 1
@@ -263,27 +263,27 @@ C----------------------------------------------------------
  8101 CONTINUE
       WRITE(6,9101) NCALL, NACC, PCENT, PCENTE, EBEAMI, EBEAMA
  9101 FORMAT(//10X,' SUMMARY FOR THIS FILE'/
-     +       10X,'   EVENTS ANALYSED ',I8/
-     +       10X,'   EVENTS ACCEPTED ',I8,'=',F7.2,' % +-',F5.2,' %',
-     +                                   ,20X,F7.3,'=< EBEAM =<',F7.3,
-     +           '  TAKEN FROM EBGENL'/)
+     *       10X,'   EVENTS ANALYSED ',I8/
+     *       10X,'   EVENTS ACCEPTED ',I8,'=',F7.2,' % +-',F5.2,' %',
+     *                                   ,20X,F7.3,'=< EBEAM =<',F7.3,
+     *           '  TAKEN FROM EBGENL'/)
       WRITE(6,9102) (NREJ(I),PCENTI(I),I=1,14)
  9102 FORMAT(10X,' REASONS FOR REJECTION'/
-     +/10X,'OBSOLETE                 ',I8,' =',F7.1,' %',
-     +/10X,'OBSOLETE                 ',I8,' =',F7.1,' %',
-     +/10X,'OBSOLETE                 ',I8,' =',F7.1,' %',
-     +/10X,'OBSOLETE                 ',I8,' =',F7.1,' %',
-     +/10X,'NTRKL < 2 AND NTRK < 4   ',I8,' =',F7.1,' %',
-     +/10X,'OBSOLETE                 ',I8,' =',F7.1,' %',
-     +/10X,'ZMIN > 400.              ',I8,' =',F7.1,' %',
-     +/10X,'ACOPL > 10 DEG           ',I8,' =',F7.1,' %',
-     +/10X,'E - BARREL < 3 GEV       ',
-     +/10X,'E+ OR E- < 400 MEV       ',I8,' =',F7.1,' %',
-     +/10X,'MOM BALANCE < .4         ',I8,' =',F7.1,' %',
-     +/10X,'NO TRACKS                ',I8,' =',F7.1,' %',
-     +/10X,'TOO MANY TRACKS          ',I8,' =',F7.1,' %',
-     +/10X,'OBSOLETE                 ',I8,' =',F7.1,' %',
-     +/10X,'ETOTSL < EBEAM           ',I8,' =',F7.1,' %')
+     */10X,'OBSOLETE                 ',I8,' =',F7.1,' %',
+     */10X,'OBSOLETE                 ',I8,' =',F7.1,' %',
+     */10X,'OBSOLETE                 ',I8,' =',F7.1,' %',
+     */10X,'OBSOLETE                 ',I8,' =',F7.1,' %',
+     */10X,'NTRKL < 2 AND NTRK < 4   ',I8,' =',F7.1,' %',
+     */10X,'OBSOLETE                 ',I8,' =',F7.1,' %',
+     */10X,'ZMIN > 400.              ',I8,' =',F7.1,' %',
+     */10X,'ACOPL > 10 DEG           ',I8,' =',F7.1,' %',
+     */10X,'E - BARREL < 3 GEV       ',
+     */10X,'E+ OR E- < 400 MEV       ',I8,' =',F7.1,' %',
+     */10X,'MOM BALANCE < .4         ',I8,' =',F7.1,' %',
+     */10X,'NO TRACKS                ',I8,' =',F7.1,' %',
+     */10X,'TOO MANY TRACKS          ',I8,' =',F7.1,' %',
+     */10X,'OBSOLETE                 ',I8,' =',F7.1,' %',
+     */10X,'ETOTSL < EBEAM           ',I8,' =',F7.1,' %')
 C
 C                                           CLEAR COUNTERS
       NACC = 0

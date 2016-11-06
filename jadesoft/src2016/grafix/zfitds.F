@@ -97,7 +97,7 @@ C                                           DRAW RUN AND EVENT NUMBER
       NPHEAD = IW(IBLN('HEAD'))
       IF( NPHEAD.GT.0 ) THEN
         WRITE(CLINE,9004)
-     +         HW(NPHEAD*2+10), HW(NPHEAD*2+11), ICREC, ITRK, IDATSV
+     *         HW(NPHEAD*2+10), HW(NPHEAD*2+11), ICREC, ITRK, IDATSV
  9004   FORMAT(2I7,I4,' Track',I3,'  DSN=',11A4)
         CALL MOVABS( PLOTW(1)+400, PLOTW(4)-75  )
         CALL EOUTST( 77, CLINE )
@@ -407,11 +407,11 @@ C
         DEST = ' '
         CALL TRMIN( 8, DEST )
         IF( .NOT. (
-     +        DEST .EQ. 'L1      '   .OR.
-     +        DEST .EQ. 'L2      '   .OR.
-     +        DEST .EQ. 'L3      '   .OR.
-     +        DEST .EQ. 'L4      '   .OR.
-     +        DEST .EQ. 'EXT     '   ) ) THEN
+     *        DEST .EQ. 'L1      '   .OR.
+     *        DEST .EQ. 'L2      '   .OR.
+     *        DEST .EQ. 'L3      '   .OR.
+     *        DEST .EQ. 'L4      '   .OR.
+     *        DEST .EQ. 'EXT     '   ) ) THEN
           WRITE(CLINE,9204) DEST
  9204     FORMAT(' Unknown Destination:',A8,' L1 will be assumed^')
           CALL TRMOUT( 80, CLINE )
@@ -423,15 +423,15 @@ C
         IF( LHELP ) THEN
           WRITE(6,9202)
  9202     FORMAT(' The Cursor ( Haircross ) is used to obtain'/
-     +     ' additional information on specified hits:'/
-     +     ' The horizontal coordinate of the cross is used to find',
-     +     ' the closest hit,'/
-     +     ' the position of the cross is used to place the text',
-     +     ' in format:'/
-     +   '   Hit Multiplicity      Wire Number    Quality Code(0=good)'/
-     +     '        and then for each hit'/
-     +     '   Amplitude left       Amplitude Right    Time'//
-     +     '   Enter Cursor Position on Graphics Screen')
+     *     ' additional information on specified hits:'/
+     *     ' The horizontal coordinate of the cross is used to find',
+     *     ' the closest hit,'/
+     *     ' the position of the cross is used to place the text',
+     *     ' in format:'/
+     *   '   Hit Multiplicity      Wire Number    Quality Code(0=good)'/
+     *     '        and then for each hit'/
+     *     '   Amplitude left       Amplitude Right    Time'//
+     *     '   Enter Cursor Position on Graphics Screen')
         ENDIF
         CALL SCURSR( ICHR, IXP, IYP )
         IXP0 = IXP
@@ -462,7 +462,7 @@ C
               ENDIF
               IP = IP0 + 4
  2120         IF( IP.LT.NPJETC*2+HW(NPJETC*2+99)+100 .AND.
-     +                         HW(IP)/8.EQ.NW ) THEN
+     *                         HW(IP)/8.EQ.NW ) THEN
                 IP = IP + 4
                 MULT = MULT + 1
                 GO TO 2120
@@ -486,7 +486,7 @@ C
               ENDIF
               IP = IP0 + 4
  2140         IF( IP.LT.NPJETC*2+HW(NPJETC*2+99)+100 .AND.
-     +                         HW(IP)/8.EQ.NW ) THEN
+     *                         HW(IP)/8.EQ.NW ) THEN
                 IYP = IYP - 50
                 WRITE(CLINE,9162) HW(IP+1), HW(IP+2), HW(IP+3)
                 CALL MOVABS( IXP, IYP )
@@ -496,7 +496,7 @@ C
               ENDIF
               CALL MOVABS( IXP0, IYP0-50 )
               CALL DSHABS( IX(RW(NPZSPD+(I-1)*NTRW+3)),
-     +                       IY(RW(NPZSPD+(I-1)*NTRW+4)), 1 )
+     *                       IY(RW(NPZSPD+(I-1)*NTRW+4)), 1 )
             ENDIF
           ENDIF
         ENDIF
@@ -506,7 +506,7 @@ C
         NPJETC = IW(IBLN('JETC'))
         WRITE(CLINE,9152)
  9152   FORMAT(' HIT JETC POI    s       z     Flag      Weight',
-     +           '    z      Flag   Weight')
+     *           '    z      Flag   Weight')
         CALL TRMOUT( 80, CLINE )
         DO 7900 J=NPZSPD+1,NPZSPD+IW(NPZSPD)-1,NTRW
           I = (J-(NPZSPD+1))/NTRW+1
@@ -519,15 +519,15 @@ C
             IFL = 0
           ENDIF
           WRITE(CLINE,9151)  I,
-     +                   IW(J+1), RW(J+2), RW(J+3), IW(J+4), RW(J+5),
-     +                   ZOWN, IFL, W
+     *                   IW(J+1), RW(J+2), RW(J+3), IW(J+4), RW(J+5),
+     *                   ZOWN, IFL, W
  9151     FORMAT(I6,I7,2F8.2,I6,E12.3,F8.2,I6,E12.3,'^')
           CALL TRMOUT( 80, CLINE )
  7900   CONTINUE
         IF( MODEGA.EQ.1 ) CALL CLEAR
         GO TO 2000
       ELSEIF( ICHAR(ANSWER) .GT. ICHAR(ZERO) .AND.
-     +          ICHAR(ANSWER) .LE. ICHAR(NINE) ) THEN
+     *          ICHAR(ANSWER) .LE. ICHAR(NINE) ) THEN
         READ(CNUMB,*) ITRK
         ITRK = -ITRK
         RETURN

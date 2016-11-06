@@ -62,7 +62,7 @@ C
 C
 C     /////////////////// STANDARD-CUTS ON TRACKS////////////////////
       DATA SIG / 0.60 / , MHITS / 12 /, SIGZ /120.0 /, MZHITS / 12 /,
-     +     ZDIS / 200.0 /,TRKL2/ 75635.0 /,DRPHI / 20.0 /
+     *     ZDIS / 200.0 /,TRKL2/ 75635.0 /,DRPHI / 20.0 /
 C     ////////////////////////////////////////////////////////////////
 C
       DATA LBINIT /0/ ,CUT / 17.5 /
@@ -135,17 +135,17 @@ C
 C                                          CHECK R-FI-FIT, # OF HITS
  33        ISTAT(ISTART) = ISTAT(ISTART)+ 1
            IF(ADATA(IPTR1+23) .GT. SIG .OR.
-     +        IDATA(IPTR1+24).LE. MHITS) GOTO 38
+     *        IDATA(IPTR1+24).LE. MHITS) GOTO 38
 C                                          CHECK ZFIT, # OF HITS
            ISTAT(ISTART+1) = ISTAT(ISTART+1)+ 1
            IF(ADATA(IPTR1+32) .GT. SIGZ .OR.
-     +        IDATA(IPTR1+33) .LE. MZHITS)  GOTO 38
+     *        IDATA(IPTR1+33) .LE. MZHITS)  GOTO 38
 C                                          Z(TRACK) < 100. MM
            ISTAT(ISTART+2) = ISTAT(ISTART+2)+ 1
            IF(ABS(ADATA(IPTR1+31)) .GT. ZDIS) GOTO 38
 C                                          MEASURED LENGTH > 275 MM
            ALMSQ = (ADATA(IPTR1+12) - ADATA(IPTR1+5))**2
-     +           + (ADATA(IPTR1+13) - ADATA(IPTR1+6))**2
+     &           + (ADATA(IPTR1+13) - ADATA(IPTR1+6))**2
            ISTAT(ISTART+3) = ISTAT(ISTART+3)+ 1
            IF(ALMSQ .LT. TRKL2) GOTO 38
 C                                        CHECK IF TRACK FROM MAIN VERTEX
@@ -233,11 +233,11 @@ C
 C
       DO 1000 I = 1,NTALL
          RNORM = SQRT((P(1,NH1)**2 + P(2,NH1)**2)*
-     +           (P(1,I)**2 + P(2,I)**2))
+     *           (P(1,I)**2 + P(2,I)**2))
 C
          PE(9,I) = -100.
          IF( RNORM .GT. 0.0)
-     +      PE(9,I) = (P(1,I)*P(1,NH1) + P(2,I)*P(2,NH1))/RNORM
+     *      PE(9,I) = (P(1,I)*P(1,NH1) + P(2,I)*P(2,NH1))/RNORM
  1000 CONTINUE
 C
 C

@@ -4,7 +4,7 @@ C-----------------------------------------------------------------------
       SUBROUTINE JSPOIN
 C-----------------------------------------------------------------------
 C
-C   AUTHOR:   E. ELSEN     20/09/78 :  SHIFTS WIRE NOS. * SETS UP HPCELL
+C   AUTHOR:   E. ELSEN     20/09/78 :  SHIFTS WIRE NOS. & SETS UP HPCELL
 C
 C        MOD  E. ELSEN     02/05/79 :
 C   LAST MOD  C. BOWDERY   19/08/83 :  EXPANDED COMMON /CWSET/.

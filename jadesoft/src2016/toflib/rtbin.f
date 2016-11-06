@@ -226,7 +226,7 @@ C     T1 = T1L
 C     T2 = T2L
       CALL HF1(105,(IB-1)*20.+6.,1.)
       IF(IB.GT.3.AND.IB.LE.8.AND.
-     +  (ABS(T1).GT..75.OR.ABS(T2).GT..75))  GOTO  81
+     &  (ABS(T1).GT..75.OR.ABS(T2).GT..75))  GOTO  81
       IREJ = 1
       IF(ABS(T1).GT.ACUT(INDAC))  GOTO  81
       IREJ = 2

@@ -20,8 +20,8 @@ C
 #include "cgeo1.for"
 C
       COMMON /LINK/   IBLCHK,IREG,NBLK,NBLE,XI,YI,ZI,XF,YF,ZF,XSTART,
-     +                YSTART,ZSTART,PSTART,TRKL(2,50),TRITER,EBITER,
-     +                PMAG,NNEW,NENEW,NLIST(40),ENEW,ICHARG(40,20),
+     *                YSTART,ZSTART,PSTART,TRKL(2,50),TRITER,EBITER,
+     *                PMAG,NNEW,NENEW,NLIST(40),ENEW,ICHARG(40,20),
      +                NBLO,MEICL(50),NEICL(50),EBIT1,NBN1,EBLO1,NBL1
       DIMENSION IRKL(2,50)
       EQUIVALENCE(IRKL(1,1),TRKL(1,1))
@@ -35,7 +35,7 @@ C  VALUES ARE BLOCK DATA SET AT THE END OF THIS ROUTINE
       DATA PI/3.14159/, TWOPI/6.283185/
       DATA SIGX,SIGY,SIGZ,SIGP / 40., 40., 40.,.02/
       DATA POS1,POS2 /3*0.,3*1.,3*-1.,16*0.,0.,-1.,1.,0.,-1.,1.,0.,-1.,
-     + 1.,16*0./
+     * 1.,16*0./
 C
 C                                           MOD 13/08/87 E E
       EXTERNAL JADEBD

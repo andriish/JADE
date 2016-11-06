@@ -52,7 +52,7 @@ C
          VERVAL = -100.0
          IF( LTR .GT. 62 ) VERVAL = ABS(ADATA(IPP+51))
          IF(TBIT(ICD,19) .AND. LTR.EQ.64 .AND. VERVAL.GT.0.01)
-     +                     ICD = IBITON(ICD,15)
+     &                     ICD = IBITON(ICD,15)
          IF( TBIT(ICD,15) .AND. LTR .GE. 64 ) IRC = IDATA(IPP + 62)
          IF(.NOT.TBIT(ICD,15) .OR. IRC.NE.0) GOTO 641
             HSIGN = HPLCFT

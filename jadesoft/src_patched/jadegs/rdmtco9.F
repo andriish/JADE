@@ -174,8 +174,6 @@ CCC   DATA HOPT1   / 'DE'  /
 C
 C-------------------  C O D E  -----------------------------------------
 C
-      write(*,*)'ENTER rdmtco9'
-
       ICALL = ICALL + 1
       IF( ICALL .EQ. 1) WRITE(6,6110)
 6110  FORMAT(' ---> RDMTCO: VERSION FROM  JULY 1988')
@@ -599,7 +597,6 @@ C
       RETURN
 C-----------------------------------------------------------------------
       ENTRY RDJETC
-            write(*,*)'ENTER rdmtco9,ENTRY RDJETC'
 C-----------------------------------------------------------------------
 C
 C      SMEAR JETC BANK DATA, PUT IN INEFFICIENCIES, RANDOM HITS1
@@ -619,7 +616,6 @@ C                      COMPARE CURRENT STATUS TO BACKUP
 C                      IN ORDER TO AVOID UNNECESSARY PRINT
       IPRIT = 0
       IF(NFLAGS(8).NE.0) CALL PRAGAI(IPRIT)
-      write(*,*)'After pragaddddi'
       NFLAGS(8) = 0
       IF(IPRIT.NE.0) NFLAGS(9) = 1
 C     IF(NFLAGS(9).NE.0)  WRITE(6,8011)
@@ -635,7 +631,6 @@ C  OF DRIFT TIME BINS
 C   OBS!! ALL SMEARED DATA ARE KEPT IN UNITS OF FINE ORIGINAL RESOLUTION
 C         THEREFORE BINMC IS USED AS UNIT. THE SAME IS TRUE IN RDRESO.
 C
-      write(*,*)'After PRSTAT'
       IF(IFLADB.NE.0) GO TO 7021
       DO 7020 I=1,3
          IDOUBL(I) = IFIX(DOUB(I) / BINMC(2*I-1))
@@ -649,7 +644,6 @@ C
       IF( .NOT. LVTXC )  GO TO 5304
 C
          CALL RDRESV
-         write(*,*)'After RDRESV'
 C
          IPVTXC = IDATA (IBLN('VTXC'))
          IF( IPVTXC .LE. 0 )
@@ -659,8 +653,6 @@ C
 C                                          DOUB. HIT RESO., INEFF.,
 C                                          RANDOM HITS
          CALL RDMODV( IRNHVV, EFFVV, DOUBVV )
-         write(*,*)'After RDMODV'
-
  5304 CONTINUE
 C
 C
@@ -673,34 +665,26 @@ C
             LENGTH = IDATA(IPJ)
             CALL BCRE( IPJ9, 'JETC', 9, LENGTH, &401, IER )
             CALL MVCL( IDATA, IPJ9*4, IDATA, IPJ*4, LENGTH*4 )
-            write(*,*)'After BCRE( IPJ9  bla'
 C
 C                       NOW SMEAR TIME AND Z-COORD VALUES
 C
- 401    CONTINUE 
-        CALL RDRESO( BINMC )
+ 401  CALL RDRESO( BINMC )
 C
-            write(*,*)'After RDRESO'
       IF( IPJ .LE. 0 ) CALL BCRE( IPJ, 'JETC', 8, 50, &7788, IE )
       CALL BSAW( 1, 'JETC' )
 C
 C                       CONSIDER DOUBLE HIT RESOLUTION,
 C                       INEFFICIENCIES AND RANDOM HITS
 C
-
-            write(*,*)'After BCRE'
-
       CALL RDMODN( IRN, EPSI, IDOUBL )
 C
 C                       SET CORRECT STANDARD DEVIATIONS IN PATR BANK
 C
-        write(*,*)'After RDMOND ...'
       CALL RDPATR
 C                       CREATE TRIGGER BANKS
 7788  CALL RDTRG1
       CALL RDTRG2
 C                       DELETE LG-BLOCKS BELOW READOUT THRESHOLD IPHALG
       CALL RDALGN
-               write(*,*)'return from rdmtco9'
       RETURN
       END

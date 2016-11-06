@@ -41,7 +41,7 @@ C
       DATA HTX   / 2HDS, 2HN  /
       DATA HCELL / 2HCe, 2Hll /
       DATA HDIFF / 2Hdi,2Hff,2Her,2Hen,2Hci,2Hat,2Hed,2H p,2Hul,
-     +             2Hse,2Hs  /
+     &             2Hse,2Hs  /
       DATA HLIN  / 2Hno,2Hn ,2Hli,2Hne,2Har /
       DATA HZETM / 2H -,2H Z /
       DATA HZETP / 2H +,2H Z /

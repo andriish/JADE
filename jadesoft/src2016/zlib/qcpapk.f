@@ -46,7 +46,7 @@ C                                      SKIP IF PARTICLE IS PARENT
  1010      CONTINUE
            CHARGE = IW(LP+6)
            IF( CHARGE.NE.0. .OR.
-     +        (IMODE.EQ.0.AND.IABS(IW(LP+7)).EQ.1) ) THEN
+     *        (IMODE.EQ.0.AND.IABS(IW(LP+7)).EQ.1) ) THEN
              N = N + 1
              P(1,NST+N) = RW(LP+1)
              P(2,NST+N) = RW(LP+2)
@@ -78,20 +78,20 @@ C                                      STOP IF PARENT IS A PARTON
 C
              IF( KF.LT.100 ) GO TO 300
              IF( (101 .GT. KF .OR. KF .GT. 104) .AND.
-     +           (123 .GT. KF .OR. KF .GT. 126) .AND.
-     +           (145 .GT. KF .OR. KF .GT. 158) .AND.
-     +           (241 .GT. KF .OR. KF .GT. 246) .AND.
-     +           (293 .GT. KF .OR. KF .GT. 307)
-     +               )   GOTO 300
+     *           (123 .GT. KF .OR. KF .GT. 126) .AND.
+     *           (145 .GT. KF .OR. KF .GT. 158) .AND.
+     *           (241 .GT. KF .OR. KF .GT. 246) .AND.
+     *           (293 .GT. KF .OR. KF .GT. 307)
+     *               )   GOTO 300
 C                                           THIS IS A B-HAD
               ISC = 3
               GO TO 400
   300         IF( ( 20 .GT. KF .OR. KF .GT.  22) .AND.
-     +            ( 30 .GT. KF .OR. KF .GT.  32) .AND.
-     +            ( 51 .GT. KF .OR. KF .GT.  56) .AND.
-     +            ( 58 .GT. KF .OR. KF .GT.  60) .AND.
-     +            ( 71 .GT. KF .OR. KF .GT.  80)
-     +              )   GO TO 400
+     *            ( 30 .GT. KF .OR. KF .GT.  32) .AND.
+     *            ( 51 .GT. KF .OR. KF .GT.  56) .AND.
+     *            ( 58 .GT. KF .OR. KF .GT.  60) .AND.
+     *            ( 71 .GT. KF .OR. KF .GT.  80)
+     *              )   GO TO 400
 C                                           THIS IS A C-HAD
               ISC = 2
   400         CONTINUE
@@ -189,20 +189,20 @@ C-----------------------------------------------------------
                ICODE = 1
                IF( KF.LT.100 ) GO TO 4300
                IF( (101 .GT. KF .OR. KF .GT. 104) .AND.
-     +             (123 .GT. KF .OR. KF .GT. 126) .AND.
-     +             (145 .GT. KF .OR. KF .GT. 158) .AND.
-     +             (241 .GT. KF .OR. KF .GT. 246) .AND.
-     +             (293 .GT. KF .OR. KF .GT. 307)
-     +                  )   GOTO 4300
+     *             (123 .GT. KF .OR. KF .GT. 126) .AND.
+     *             (145 .GT. KF .OR. KF .GT. 158) .AND.
+     *             (241 .GT. KF .OR. KF .GT. 246) .AND.
+     *             (293 .GT. KF .OR. KF .GT. 307)
+     *                  )   GOTO 4300
 C                                           THIS IS A B-HAD
                  ICODE = 3
                  GO TO 4400
  4300          IF( ( 20 .GT. KF .OR. KF .GT.  22) .AND.
-     +             ( 30 .GT. KF .OR. KF .GT.  32) .AND.
-     +             ( 51 .GT. KF .OR. KF .GT.  56) .AND.
-     +             ( 58 .GT. KF .OR. KF .GT.  60) .AND.
-     +             ( 71 .GT. KF .OR. KF .GT.  80)
-     +             )   GO TO 4400
+     *             ( 30 .GT. KF .OR. KF .GT.  32) .AND.
+     *             ( 51 .GT. KF .OR. KF .GT.  56) .AND.
+     *             ( 58 .GT. KF .OR. KF .GT.  60) .AND.
+     *             ( 71 .GT. KF .OR. KF .GT.  80)
+     *             )   GO TO 4400
 C                                          THIS IS A C-HAD
                  ICODE = 2
  4400          CONTINUE

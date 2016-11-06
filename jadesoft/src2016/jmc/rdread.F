@@ -142,17 +142,17 @@ C      PRINT ACTUAL CONST
 C
       WRITE(6,100) (DRCH(I),I=20,32),DBOPT,IRNOPT,EPSOPT
   100 FORMAT(20X,'ACTUAL CONST FOR CENTRAL DETECTOR',/,
-     + 5X,'TIMING BINS IN MM ',6(1X,F7.3),/,
-     + 5X,'ZMAX               ',F9.3,/,
-     + 5X,'ZOFFS              ',F9.3,/,
-     + 5X,'ZRESOL             ',F9.3,/,
-     + 5X,'ZNORM              ',F9.3,/,
-     + 5X,'ZAL                ',F9.3,/,
-     + 5X,'ZSCAL              ',F9.3,/,
-     + 5X,'TILT ANGLE         ',F9.3,/,
-     + 5X,'DOUB HIT RES IN MM',3(1X,F7.3),/,
-     + 5X,'NR OF RDM HITS    ',3(1X,I3),/,
-     + 5X,'EFFICIENCY        ',3(1X,F7.3))
+     * 5X,'TIMING BINS IN MM ',6(1X,F7.3),/,
+     * 5X,'ZMAX               ',F9.3,/,
+     * 5X,'ZOFFS              ',F9.3,/,
+     * 5X,'ZRESOL             ',F9.3,/,
+     * 5X,'ZNORM              ',F9.3,/,
+     * 5X,'ZAL                ',F9.3,/,
+     * 5X,'ZSCAL              ',F9.3,/,
+     * 5X,'TILT ANGLE         ',F9.3,/,
+     * 5X,'DOUB HIT RES IN MM',3(1X,F7.3),/,
+     * 5X,'NR OF RDM HITS    ',3(1X,I3),/,
+     * 5X,'EFFICIENCY        ',3(1X,F7.3))
 C
       CALIB1 = .TRUE.
       CALIBS = CALIB1.AND.CALIB2
@@ -241,14 +241,14 @@ C      ERROR EXITS
 C
    91 WRITE(6,191)
   191 FORMAT(5X,6('*'),3X,'READMC FOUND AN EVENT RECORD BEFORE ALL CALIB
-     +RATION DATA RECORDS WERE READ')
+     *RATION DATA RECORDS WERE READ')
       STOP 777
 C
  98   CONTINUE
       IF(CALIBS)GO TO 99
       WRITE(6,198)
   198 FORMAT(5X,6('*'),3X,'EOF ENCOUNTERED BEFORE ALL CALIBRATION DATA H
-     +AS BEEN READ')
+     *AS BEEN READ')
       STOP 777
 C
  93   WRITE(6,193)

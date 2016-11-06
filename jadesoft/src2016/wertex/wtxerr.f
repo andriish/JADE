@@ -20,15 +20,15 @@ C
 C
       DATA NSTART / 1, 4, 5, 6, 8, 14, 19, 24, 25, 28 /
       DATA DTEXT /
-     +8HNV < 1 O,8HR NV > 2,8H0       ,
-     +8HNT  <= 0,
-     +8HNTR <= 0,
-     +8HDET = 0.,8H0       ,
-     +8HNTR < 2 ,8HAFTER RE,8HJECTING ,8HTRACK WI,8HTH DS/R ,8H> 90 DEG,
-     +8HERROR OF,8H VERTEXC,8HOORDINAT,8HE(S) = 0,8H.0      ,
-     +8HNTR < 2 ,8HAFTER RE,8HJECTING ,8HBAD TRAC,8HK       ,
-     +8HNTR = 1 ,
-     +8HCOLLINEA,8HR 2-PRON,8HG        /
+     *8HNV < 1 O,8HR NV > 2,8H0       ,
+     *8HNT  <= 0,
+     *8HNTR <= 0,
+     *8HDET = 0.,8H0       ,
+     *8HNTR < 2 ,8HAFTER RE,8HJECTING ,8HTRACK WI,8HTH DS/R ,8H> 90 DEG,
+     *8HERROR OF,8H VERTEXC,8HOORDINAT,8HE(S) = 0,8H.0      ,
+     *8HNTR < 2 ,8HAFTER RE,8HJECTING ,8HBAD TRAC,8HK       ,
+     *8HNTR = 1 ,
+     *8HCOLLINEA,8HR 2-PRON,8HG        /
 C
       IF ((IERR.LT.1).OR.(IERR.GT.9)) GOTO 100
 C        IF (HVTXST(4+IERR).GT.0)

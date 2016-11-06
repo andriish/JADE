@@ -81,13 +81,13 @@ C*       THIS ROUTINE CALLS SUBROUTINE SMINVD FOR SOLVING THE       *
 C*       MATRIX EQUATION                                            *
 C********************************************************************
       COMMON /CWORK1/ NT,T(1500),NV,V(200),A(55),B(10),NTIND(7),S(7),
-     +                CHITR(7)
+     *                CHITR(7)
       DIMENSION IT(2),IV(2)
       EQUIVALENCE (T(1),IT(1)),(V(1),IV(1))
       REAL*8 A,B,DET
 C        CONSTANTS
       COMMON /CVTXC/ XB,YB,ZB,RTANK,DTANK,X0INN,SIGX0,SIGZ0,PNTMIN,
-     +               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR
+     *               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR
 C
       IF(NV.LE.0 .OR. NV.GT.20) RETURN
       LV = (NV-1)*10
@@ -127,7 +127,7 @@ C        CHECK IF COLLINEAR 2-PRONG
       J1 = NTIND(1)
       J2 = NTIND(2)
       COSW = T(J1+24)*T(J2+24) * (T(J1+21)*T(J2+21)+T(J1+22)*T(J2+22))
-     +     + SIN(T(J1+4))*SIN(T(J2+4))
+     *     + SIN(T(J1+4))*SIN(T(J2+4))
       COSW = ABS(COSW)
       IF(COSW.GT.COLL2) GOTO 50
 C****
@@ -360,9 +360,9 @@ C************************************************************
       EQUIVALENCE (T(1),IT(1)),(V(1),IV(1))
 C        CONSTANTS
       COMMON /CVTXC/ XB,YB,ZB,RTANK,DTANK,X0INN,SIGX0,SIGZ0,PNTMIN,
-     +               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
-     +               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
-     +               EEXYMX
+     *               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
+     *               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
+     *               EEXYMX
 C
       IF(NT.LE.1) GOTO 100
 C****
@@ -416,7 +416,7 @@ C        DISTANCE IN TANK
       SDPHI = ABS(DPHI)/SQRT(T(J1+8)**2+T(J2+8)**2+PTANK2)
       IF(SDPHI.GT.EEDRMX) GOTO 5
       SDXY = ABS(DXY) / SQRT(1./(1./DXT12+1./DYT12)+
-     +                       1./(1./DXT22+1./DYT22)+STANK2)
+     *                       1./(1./DXT22+1./DYT22)+STANK2)
       IF(SDXY.GT.EEDRMX .AND. (DXY.LT.0..OR.DXY.GT.EEXYMN)) GOTO 5
       ITANK = 1
       GOTO 6
@@ -427,7 +427,7 @@ C        DISTANCE AT BEAM PIPE
       IF(SDPHI.GT.EEDRMX) GOTO 6
       DXY = DXY - DPHIT*DTANK/2.
       SDXY = ABS(DXY) / SQRT(1./(1./DXT12+1./DYT12) +
-     +             1./(1./DXT22+1./DYT22) + STANK2)
+     *             1./(1./DXT22+1./DYT22) + STANK2)
       IF(SDXY.GT.EEDRMX .AND. (DXY.LT.0..OR.DXY.GT.EEXYMN)) GOTO 6
       ITANK = 1
 C        VERTEX WHERE TRACKS ARE PARALLEL
@@ -453,7 +453,7 @@ C        DISTANCE IN CHAMBER
       SDZ = DZ / SQRT(DZT12+DZT22)
       IF(SDZ.GT.EEDTMX) GOTO 8
       SDXY = ABS(DXY)/SQRT(1./(1./DXT12+1./DYT12)+1./(1./DXT22+
-     +       1./DYT22))
+     *       1./DYT22))
       IF(SDXY.GT.EEDRMX .AND. (DXY.LT.0..OR.DXY.GT.EEXYMN)) GOTO 8
 C
     7 IF(NV.EQ.20) GOTO 14
@@ -487,7 +487,7 @@ C****    CLEAN UP
       LV2 = I*10
       DO 16 K=M,NV
       IF(IV(LV1+9).EQ.IV(LV2+9) .OR. IV(LV1+10).EQ.IV(LV2+9) .OR.
-     +   IV(LV1+10).EQ.IV(LV2+10)) GOTO 17
+     *   IV(LV1+10).EQ.IV(LV2+10)) GOTO 17
    16 LV2 = LV2 + 10
       GOTO 19
 C        TWO PAIRS WITH SAME TRACK, TAKE PAIR WITH SMALLER DISTANCE
@@ -524,9 +524,9 @@ C*                                                                 *
 C*       TO BE CALLED ONCE AND BEFORE FIRST CALL TO VTXPRE, VERTEX *
 C*******************************************************************
       COMMON /CVTXC/ XB,YB,ZB,RTANK,DTANK,X0INN,SIGX0,SIGZ0,PNTMIN,
-     +               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
-     +               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
-     +               EEXYMX,PHEMAX,SIG1,SIG2,SIG3,CSECV
+     *               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
+     *               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
+     *               EEXYMX,PHEMAX,SIG1,SIG2,SIG3,CSECV
 C
 C        MEAN VERTEX COORDINATES
       XB = 0.
@@ -669,14 +669,14 @@ C*       A DESCRIPTION OF THE T AND V ARRAYS CAN BE FOUND   *
 C*       IN SUBR. VERTEX                                    *
 C************************************************************
       COMMON /CWORK1/ NT,T(1500),NV,V(200),XXXXX(151),
-     +                JTGOD(50),JTBAD(50),VSAVE(10),V2(20,7)
+     *                JTGOD(50),JTBAD(50),VSAVE(10),V2(20,7)
       DIMENSION IT(2),IV(2),IV2(20,7)
       EQUIVALENCE (T(1),IT(1)),(V(1),IV(1)),(V2(1,1),IV2(1,1))
 C        CONSTANTS
       COMMON /CVTXC/ XB,YB,ZB,RTANK,DTANK,X0INN,SIGX0,SIGZ0,PNTMIN,
-     +               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
-     +               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
-     +               EEXYMX,PHEMAX,SIG1,SIG2,SIG3,CSECV
+     *               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
+     *               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
+     *               EEXYMX,PHEMAX,SIG1,SIG2,SIG3,CSECV
 C
       LOGICAL VREP,RESTOR
 C
@@ -809,7 +809,7 @@ C        COLLECT ALL TRACKS FITTING TO VERTEX
    38 CONTINUE
       IF(IPRVTX.NE.0) GOTO 39
       IF(ABS(V(LV+2)-XB).LT.3.*DISTB .AND. ABS(V(LV+3)-YB).LT.3.*DISTB)
-     +   IPRVTX=NV
+     *   IPRVTX=NV
    39 IF(NTBAD.EQ.0) GOTO 90
       NTGOD = 0
       IF(NV.EQ.20) GOTO 90
@@ -844,7 +844,7 @@ C        TWO TRACK VERTEX
 C        CHECK THIS VERTEX
 C        EXTRAPOLATION LENGTH TRACK 1
       CALL VTXPNT(J1,V(LV+2),V(LV+3),XT1,YT1,ZT1,DXT12,DYT12,DZT12,
-     +            PHIT1,ST1)
+     *            PHIT1,ST1)
       IF(ST1.GT.SIMAX) GOTO 44
       SSJC = ST1
       IF(T(J1+27).EQ.0.) GOTO 143
@@ -854,7 +854,7 @@ C        EXTRAPOLATION LENGTH TRACK 1
       IF(ABS(ST1/T(J1+2)).GT.PHEMAX) GOTO 44
 C        EXTRAPOLATION LENGTH TRACK 2
       CALL VTXPNT(J2,V(LV+2),V(LV+3),XT2,YT2,ZT2,DXT22,DYT22,DZT22,
-     +            PHIT2,ST2)
+     *            PHIT2,ST2)
       IF(ST2.GT.SIMAX) GOTO 44
       SSJC = ST2
       IF(T(J2+27).EQ.0.) GOTO 243
@@ -872,10 +872,10 @@ C        COMPARE TRACK DIRECTIONS WITH BEAM
       DVZ = V(LV+4) - V(LPV+4)
       DV12 = SQRT(DVX**2+DVY**2+DVZ**2)
       COSW1 = (COS(PHIT1)*T(J1+24)*DVX + SIN(PHIT1)*T(J1+24)*DVY +
-     +         SIN(T(J1+4))*DVZ) / DV12
+     *         SIN(T(J1+4))*DVZ) / DV12
       IF(COSW1.LT.CSECV) GOTO 44
       COSW2 = (COS(PHIT2)*T(J2+24)*DVX + SIN(PHIT2)*T(J2+24)*DVY +
-     +        SIN(T(J2+4))*DVZ) / DV12
+     *        SIN(T(J2+4))*DVZ) / DV12
       IF(COSW2.LT.CSECV) GOTO 44
       COSW12 = COSW1 * COSW2
       GOTO 47

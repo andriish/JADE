@@ -32,7 +32,7 @@ C--------------------------------------------------------------C
 C----------------DEDX RESULTS-----------------------
 C      COMMON /CWORK1/ IER,NTRR,TRES(10,60)
        COMMON /CWORK1/ IER,NTRR,TRES(10,60),EWIR(60),XWIR(60),YWIR(60),
-     +                 RWIR(60),ZWIR(60)
+     *                 RWIR(60),ZWIR(60)
        DIMENSION ITRES(10,60)
        EQUIVALENCE (TRES(1,1),ITRES(1,1))
 C----------------END--------------------------------
@@ -166,7 +166,7 @@ C
       XE = ADATA(KT+12)
       YE = ADATA(KT+13)
       SE = R * ATAN2(SR*(CPHI*(XE-X0)+SPHI*(YE-Y0)),
-     +               SR*(SPHI*(XE-X0)-CPHI*(YE-Y0)+R))
+     *               SR*(SPHI*(XE-X0)-CPHI*(YE-Y0)+R))
       IF(ABS(R).GT.1.E5) SE=SQRT((XE-X0)**2+(YE-Y0)**2)
 C
 C --------------------------------------- ORDER CELLS
@@ -261,7 +261,7 @@ C
       INR = (NR-1)*2
       NL = LAND(NW(J),15)
       NH1 = IJC(J)
-C --------------------------------------- AMPLITUDES * DRIFT TIME
+C --------------------------------------- AMPLITUDES & DRIFT TIME
       AR = HDATA(NH1+1)
       AL = HDATA(NH1+2)
       T = HDATA(NH1+3) / 64.
@@ -365,7 +365,7 @@ C --------------------------------------- ATTACHMENT
       AMP = AMP * EXP(TIMCOR*T)
 C --------------------------------------- GAIN SATURATION
       AMP = AMP/(1.-SATSO(INR+1,IPERD)*EXP(-SATSO(INR+2,IPERD)*
-     +                                   SQRT(TTH**2+SATSO(7,IPERD)*T)))
+     *                                   SQRT(TTH**2+SATSO(7,IPERD)*T)))
 C --------------------------------------- EDGE FIELD DISTORTIONS
       IF(NL.GT.3 .AND. NL.LT.12) GOTO 25
       IL = NL
@@ -481,7 +481,7 @@ C
 C
    57 PRINT 571
   571 FORMAT ('  ***** ERROR IN DEDXB1: # OF TRACKS < 0 , > 60 , OR GIVE
-     +N TRACK NO. > MAX.')
+     *N TRACK NO. > MAX.')
       IER=4000
       NTRR=0
       RETURN

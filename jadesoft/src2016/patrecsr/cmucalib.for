@@ -36,19 +36,19 @@ C               NVERSN
 C                                                    19 WORDS
 C
       EQUIVALENCE ( NVERSN,MUCAL(1) ),( DESCRP(1),MUCAL(2) ),
-     +            ( HOVALL(1),MUCAL(17) )
+     *            ( HOVALL(1),MUCAL(17) )
 C----------------------------------------------------19 WORDS SO FAR
 C
 C     HMFFIX(740)                                   370 WORDS
       DIMENSION HMFFIX(740)
       EQUIVALENCE ( HMFFIX(1),MUCAL(20) )
       DIMENSION HFACE(82),HSECT(82),HLAYER(82),HNORM(82),HLONG(82),
-     +          HTRANS(82),HAC(82),HAL(82),HUNIT(82)
+     *          HTRANS(82),HAC(82),HAL(82),HUNIT(82)
       EQUIVALENCE (HMFFIX(1),NFRAMS),(HMFFIX(3),HFACE(1)),
-     +            (HMFFIX(85),HSECT(1)),(HMFFIX(167),HLAYER(1)),
-     +            (HMFFIX(249),HNORM(1)),(HMFFIX(331),HLONG(1)),
-     +            (HMFFIX(413),HTRANS(1)),(HMFFIX(495),HAC(1)),
-     +            (HMFFIX(577),HAL(1)),(HMFFIX(659),HUNIT(1))
+     *            (HMFFIX(85),HSECT(1)),(HMFFIX(167),HLAYER(1)),
+     *            (HMFFIX(249),HNORM(1)),(HMFFIX(331),HLONG(1)),
+     *            (HMFFIX(413),HTRANS(1)),(HMFFIX(495),HAC(1)),
+     *            (HMFFIX(577),HAL(1)),(HMFFIX(659),HUNIT(1))
 C---------------------------------------------------389 WORDS SO FAR
 C
 C
@@ -63,10 +63,10 @@ C     HMFSUR(492)                                   246 WORDS
       DIMENSION HMFSUR(492)
       EQUIVALENCE ( HMFSUR(1),MUCAL(708) )
       DIMENSION HDIST(82),HANG(82),HCLLO(82),HCLHI(82),HCTLO(82),
-     +          HCTHI(82)
+     *          HCTHI(82)
       EQUIVALENCE (HMFSUR(1),HDIST(1)),(HMFSUR(83),HANG(1)),
-     +            (HMFSUR(165),HCLLO(1)),(HMFSUR(247),HCLHI(1)),
-     +            (HMFSUR(329),HCTLO(1)),(HMFSUR(411),HCTHI(1))
+     *            (HMFSUR(165),HCLLO(1)),(HMFSUR(247),HCLHI(1)),
+     *            (HMFSUR(329),HCTLO(1)),(HMFSUR(411),HCTHI(1))
 C---------------------------------------------------953 WORDS SO FAR
 C
 C
@@ -83,8 +83,8 @@ C     HMCELE(4440)                                 2220 WORDS
       EQUIVALENCE ( HMCELE(1),MUCAL(1588) )
       DIMENSION HDTP(634),HLTP(634),HLSF(4,634),HVDRFT(634)
       EQUIVALENCE (HMCELE(1),HVDR),(HMCELE(2),HDTP(1)),
-     +            (HMCELE(636),HLTP(1)),(HMCELE(1270),HLSF(1,1)),
-     +            (HMCELE(3806),HMCEDM),(HMCELE(3807),HVDRFT(1))
+     *            (HMCELE(636),HLTP(1)),(HMCELE(1270),HLSF(1,1)),
+     *            (HMCELE(3806),HMCEDM),(HMCELE(3807),HVDRFT(1))
 C--------------------------------------------------3807 WORDS SO FAR
 C
 C
@@ -101,8 +101,8 @@ C     HFILDA(72)                                     36 WORDS
       INTEGER*4 IFCIND(6)
       INTEGER*2 HFILDA
       EQUIVALENCE (HBLLO(1),HFILDA(1)),(HBLHI(1),HFILDA(7)),
-     +            (HBTLO(1),HFILDA(13)),(HBTHI(1),HFILDA(19)),
-     +            (HBNLIM(1),HFILDA(25)),(IFCIND(1),HFILDA(61))
+     *            (HBTLO(1),HFILDA(13)),(HBTHI(1),HFILDA(19)),
+     *            (HBNLIM(1),HFILDA(25)),(IFCIND(1),HFILDA(61))
 C--------------------------------------------------4160 WORDS SO FAR
 C
 C
@@ -111,10 +111,10 @@ C     IYKIND
       DIMENSION HYKNMI(4),HYKNMO(4),HYKLDM(4),HYKTDM(4)
       INTEGER*2 HYKTDM,HYKLDM,HYKNMI,HYKNMO
       EQUIVALENCE ( HYKNMI(1),MUCAL(4161) ),
-     +            ( HYKNMO(1),MUCAL(4163) ),
-     +            ( HYKLDM(1),MUCAL(4165) ),
-     +            ( HYKTDM(1),MUCAL(4167) ),
-     +            ( BYOKE,MUCAL(4169) ),( IYKIND,MUCAL(4170) )
+     *            ( HYKNMO(1),MUCAL(4163) ),
+     *            ( HYKLDM(1),MUCAL(4165) ),
+     *            ( HYKTDM(1),MUCAL(4167) ),
+     *            ( BYOKE,MUCAL(4169) ),( IYKIND,MUCAL(4170) )
 C--------------------------------------------------4170 WORDS SO FAR
 C
 C
@@ -123,13 +123,13 @@ C    IZOEP1,IZOEP2,IZOEP3,IZOEP4,IZOEP5,CAEP2,
 C    IEPIND,IEPSCT
 C
       EQUIVALENCE ( IZEII,MUCAL(4171) ),( IZEIO,MUCAL(4172) ),
-     +            ( IREP1,MUCAL(4173) ),( IREP2,MUCAL(4174) ),
-     +            ( IREP3,MUCAL(4175) ),( IREP4,MUCAL(4176) ),
-     +            ( IXYEP5,MUCAL(4177) ),( IZOEP1,MUCAL(4178) ),
-     +            ( IZOEP2,MUCAL(4179) ),( IZOEP3,MUCAL(4180) ),
-     +            ( IZOEP4,MUCAL(4181) ),( IZOEP5,MUCAL(4182) ),
-     +            ( CAEP2,MUCAL(4183) ),( IEPIND,MUCAL(4184) ),
-     +            ( IEPSCT,MUCAL(4185) )
+     *            ( IREP1,MUCAL(4173) ),( IREP2,MUCAL(4174) ),
+     *            ( IREP3,MUCAL(4175) ),( IREP4,MUCAL(4176) ),
+     *            ( IXYEP5,MUCAL(4177) ),( IZOEP1,MUCAL(4178) ),
+     *            ( IZOEP2,MUCAL(4179) ),( IZOEP3,MUCAL(4180) ),
+     *            ( IZOEP4,MUCAL(4181) ),( IZOEP5,MUCAL(4182) ),
+     *            ( CAEP2,MUCAL(4183) ),( IEPIND,MUCAL(4184) ),
+     *            ( IEPSCT,MUCAL(4185) )
 C--------------------------------------------------4185 WORDS SO FAR
 C
 C=======================<< MACRO CMUCALIB >>============================

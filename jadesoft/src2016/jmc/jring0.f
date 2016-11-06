@@ -50,54 +50,54 @@ C
       COMMON / CWORK  / NHITS, INEXT, HLIST(1600)
 C
       EQUIVALENCE (HDRIFT(1),HNWTOT),(HDRIFT(2),HIAMPL),
-     +            (HDRIFT(3),HIAMPR),(HDRIFT(4),HITIM)
+     *            (HDRIFT(3),HIAMPR),(HDRIFT(4),HITIM)
 C
       COMMON / CJCELL / NCELL(3),
-     +                  NWIRES(3)
+     *                  NWIRES(3)
       COMMON / CJTRLE / TOTLEN, STPLEN
       COMMON / CJSWLO / ITIMOD, MULSC, ELOSS
 C
       COMMON / CJDRCH / RDEC(4),
-     +                  PSIIN(3),
-     +                  RINCR(3),
-     +                  FIRSTW(3),
-     +                  FSENSW(3),
-     +                  RDEPTH,
-     +                  SWDEPL,
-     +                  YSUSPN,
-     +                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
-     +                  DRIDEV,DRICOS,DRISIN
+     *                  PSIIN(3),
+     *                  RINCR(3),
+     *                  FIRSTW(3),
+     *                  FSENSW(3),
+     *                  RDEPTH,
+     *                  SWDEPL,
+     *                  YSUSPN,
+     *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
+     *                  DRIDEV,DRICOS,DRISIN
       COMMON / CJIONI / POTBEA, ZAROBE,
-     +                  POTTRI, ZAROTR,
-     +                  POTIVE, ZAROIV,
-     +                  POTRH0, ZAROR0,
-     +                  POTJET, ZAROJE,
-     +                  POTRH1, ZAROR1,
-     +                  POTRH2, ZAROR2,
-     +                  POTRH3, ZAROR3,
-     +                  POTOVE, ZAROOV,
-     +                  POTTOF, ZAROTO,
-     +                  POTVES, ZARVES,
-     +                  POTZJL, ZAROJL,
-     +                  POTZJR, ZAROJR
+     *                  POTTRI, ZAROTR,
+     *                  POTIVE, ZAROIV,
+     *                  POTRH0, ZAROR0,
+     *                  POTJET, ZAROJE,
+     *                  POTRH1, ZAROR1,
+     *                  POTRH2, ZAROR2,
+     *                  POTRH3, ZAROR3,
+     *                  POTOVE, ZAROOV,
+     *                  POTTOF, ZAROTO,
+     *                  POTVES, ZARVES,
+     *                  POTZJL, ZAROJL,
+     *                  POTZJR, ZAROJR
 C
       COMMON / CGEO1  / BKGAUS, RPIP,DRPIP,XRLPIP, RBPC,DRBPC,XRLBPC,
-     +                  RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
-     +                  R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
-     +                  R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
-     +                  RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
-     +                  ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
-     +                  ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
-     +                  ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
-     +                  XRJETC,
-     +                  RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
-     +                  BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     +                  XHOL1,XHOL2,YHOL1,YHOL2
+     *                  RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
+     *                  R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
+     *                  R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
+     *                  RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
+     *                  ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
+     *                  ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
+     *                  ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
+     *                  XRJETC,
+     *                  RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
+     *                  BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
+     *                  XHOL1,XHOL2,YHOL1,YHOL2
 C
       COMMON / CJXDAT / XSLOPE, YSLOPE, XL(3), XH(3), R3P, RD3P,
-     +                  S, S2,
-     +                  XSL3L, X3L, XSL3H, X3H, YSL3L, Y3L, YSL3H,
-     +                  YHWIDT, SINHLF, COSHLF, DRITAN
+     *                  S, S2,
+     *                  XSL3L, X3L, XSL3H, X3H, YSL3L, Y3L, YSL3H,
+     *                  YHWIDT, SINHLF, COSHLF, DRITAN
 C
       DATA BINWID / 0.005 /
       DATA PMIN / 0.01 /
@@ -196,7 +196,7 @@ C                              -----    DRIFT TIME BINNING
                 HITIM  = AITIM
 C                                  -----  Z - AMPLITUDES
                 COSANG = SQRT( 1./(1.+SLOPE*SLOPE) +
-     +                               (P(1)*P(1)+P(2)*P(2))/(P(6)*P(6)) )
+     *                               (P(1)*P(1)+P(2)*P(2))/(P(6)*P(6)) )
 C
                 HIAMPL = X(3)+SIGN(0.5,X(3))
                 HIAMPR = ZNORM/COSANG+0.5
@@ -216,7 +216,7 @@ C
                 IF( INEXT .LE. 1601 ) GO TO 450
                    WRITE(6,465)
   465              FORMAT('0MORE THAN 400 JET CHAMBER HITS FOR THIS',
-     +                    ' TRACK. EXCESS HITS LOST.')
+     *                    ' TRACK. EXCESS HITS LOST.')
                    RETURN 1
 C
   450           CALL MVC( HLIST, 2*INEXT-10, HDRIFT, 0, 8 )

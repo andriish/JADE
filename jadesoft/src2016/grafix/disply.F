@@ -61,7 +61,7 @@ C
       DIMENSION DESTLP(5), IARRAY(2,10)
 C
       DATA DESTLP  / 2HL1      ,2HL2      ,2HL3      ,2HL4      ,
-     +               2HL5      /
+     &               2HL5      /
       REAL*8 DESTIN  / 8HPLOTTER  /
       REAL*8 DESTEX  / 8HEXTPLOTT /
 C
@@ -117,7 +117,7 @@ C
         GO TO 4
 C
    2  IF( (LAST.EQ.IVIEW)  .AND.  (JTVW.NE.30) .AND.
-     +    (IVIEW.NE.17.OR.FL22) ) GO TO 3
+     &    (IVIEW.NE.17.OR.FL22) ) GO TO 3
         CALL SETSCL(IVIEW)
         FL22 = .FALSE.
    3  ISTVW  = 0
@@ -397,7 +397,7 @@ C
       NDEST = N
       IF( N .GT. 0 .AND. N .LT. 6 ) GO TO 612
  611  CALL TRMOUT(80,'Enter destination for hardcopy on laser printer (L
-     +1 .. L5) : (1 .. 5)^')
+     *1 .. L5) : (1 .. 5)^')
       CALL FYRINT(NDEST,ID2,ID3,ID4)
  612  IF( NDEST .LT. 1 .OR. NDEST .GT. 5 ) GO TO 611
       CALL HDCDST(DESTLP(NDEST))

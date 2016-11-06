@@ -15,7 +15,7 @@ C
       LOGICAL FOUND
 C
       COMMON / CJVDAT / XSLOPV, YSLOPV, XLV, XHV,
-     +                  SV, SV2, TANLOR
+     *                  SV, SV2, TANLOR
 C
       DIMENSION X1(2),X2(2)
 C
@@ -26,7 +26,7 @@ C
 C
 C        ----- RETURN IF BOTH POINTS ARE NOT IN THIS CELL  -----
       IF(  ( -SV .GT. X1(1) .OR. X1(1) .GT. SV ) .AND.
-     +     ( -SV .GT. X2(1) .OR. X2(1) .GT. SV ) ) RETURN
+     *     ( -SV .GT. X2(1) .OR. X2(1) .GT. SV ) ) RETURN
 C
       FOUND = .TRUE.
       XLOW = AMAX1( AMIN1( X1(1), X2(1) ), -SV )
@@ -55,13 +55,13 @@ C                   CHOOSE CORECT SIGN FOR XMIN
                             DIST = DIST1
    20            XMIN = AMAX1( AMIN1( XMIN, XHIGH ), XLOW )
                  DIST = ABS( SLOPE*XMIN+YITCPT )
-     +                       - SQRT( SV2 - XMIN*XMIN ) + SV
+     *                       - SQRT( SV2 - XMIN*XMIN ) + SV
                  RETURN
 C
 C
 C              ----- TAKE ONE OF THE POINTS AS MINIMAL DISTANCE
   100 DIST = AMIN1( ABS(X1(2)) + SV - SQRT( AMAX1(SV2-X1(1)*X1(1),0.) ),
-     +              ABS(X2(2)) + SV - SQRT( AMAX1(SV2-X2(1)*X2(1),0.) ))
+     *              ABS(X2(2)) + SV - SQRT( AMAX1(SV2-X2(1)*X2(1),0.) ))
            RETURN
 C
 C              ----- MINIMIZE EUCLIDEAN DISTANCE

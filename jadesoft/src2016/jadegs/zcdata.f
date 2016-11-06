@@ -59,8 +59,8 @@ C ----------------------------------------------- Z-CHAMBER CONSTANTS
 C ----------------------------------------------- Z-CHAMBER CONSTANTS 3
       COMMON /CZMKON/ ZCVDR, ZCXCH, ZCTZER, ZCAPED, ZXLI, ZXLO
        COMMON /CZGEO/ RZCHI,RZCHA,NZRPHI,NZZ,Z1ZCH,Z2ZCH,
-     +              ZCHA, ZCHB, ZCHSS, ZCHDL, ZCHDLL,
-     +              DLZZ, DLZPMI, DLZW1, DLZW2
+     *              ZCHA, ZCHB, ZCHSS, ZCHDL, ZCHDLL,
+     *              DLZZ, DLZPMI, DLZW1, DLZW2
 ******END COMMONBLOCKS
 ******ARRAYS AND DECLARATIONS
       REAL WIRLEN(2)

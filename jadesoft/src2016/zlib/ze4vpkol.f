@@ -63,7 +63,7 @@ C
       DATA IMODE / 2 /
 C                                           FORMAT OF ZE4V BANK
       DATA  LH / 31 /, LT / 9 /, LVX / 3 /, LMC / 18 /,
-     + LTCH / 12 /, LTNE / 5 /, LTRE / 5 /
+     & LTCH / 12 /, LTNE / 5 /, LTRE / 5 /
 C                                            FORMAT OF ZEHD BANK
       DATA HVERS/ 1 /, LZHD / 3 /
       DATA LCUT / 12 /
@@ -173,7 +173,7 @@ C                                      PATR - NBANK
       NPLGCL = IW( IBLN('LGCL'))
       IF( NPPATR .LE. 0 .AND. NPLGCL .LE. 0 ) CALL FEHLER (2,*8000 )
       IF( NPLGCL .LE. 0 .AND. IMODE .EQ. 1
-     +.OR.NPLGCL .LE. 0 .AND. IMODE .EQ. 3 ) CALL FEHLER( 2, *8000 )
+     &.OR.NPLGCL .LE. 0 .AND. IMODE .EQ. 3 ) CALL FEHLER( 2, *8000 )
 C                                      IF NOT MC LMC = 0
       IF (MCFLAG.EQ.0) LMC = 0
 C
@@ -337,9 +337,9 @@ C                                      EXTEND BANK
         CALL BCHM( NPZE4V, LT+LTCH, IER )
 C                                      POINTER TO NEXT ZE4V-WORD
       NP = NPZE4V + LHEAD + HW( NPZE4V*2 + 6) * LT
-     +                    + HW( NPZE4V*2 + 8) * LTCH
-     +                    + HW( NPZE4V*2 +10) * LTNE
-     +                    + HW( NPZE4V*2 +12) * LTRE
+     &                    + HW( NPZE4V*2 + 8) * LTCH
+     &                    + HW( NPZE4V*2 +10) * LTNE
+     &                    + HW( NPZE4V*2 +12) * LTRE
         NP2 = NP * 2
 C                                      SUM UP # OF TOTAL AND CH. TRKS
         HW(NPZE4V*2+8 ) = HW(NPZE4V*2+8) + 1
@@ -509,9 +509,9 @@ C                                           ACCEPT THIS TRACK
         CALL BCHM( NPZE4V, LT+LTNE, IER )
 C                                      POINTER TO NEXT ZE4V-WORD
         NP = NPZE4V + LHEAD + HW( NPZE4V*2 + 6) * LT
-     +                      + HW( NPZE4V*2 + 8) * LTCH
-     +                      + HW( NPZE4V*2 +10) * LTNE
-     +                      + HW( NPZE4V*2 +12) * LTRE
+     &                      + HW( NPZE4V*2 + 8) * LTCH
+     &                      + HW( NPZE4V*2 +10) * LTNE
+     &                      + HW( NPZE4V*2 +12) * LTRE
         NP2 = NP * 2
 C                                      SUM UP # OF TOTAL AND NE. TRKS
         HW(NPZE4V*2+10) = HW(NPZE4V*2+10) + 1
@@ -573,8 +573,8 @@ C                                           SAVE AWAY BLANK COMMON
          IF( IEV.LT.IEVLIM) CALL PWRT( NST+1, NST+N, 10000 )
          NPZE4V = IW(IBLN('ZE4V'))
          CALL zSPTHAK( NST+1, NST+N, NST+N+4, THR, ! PMF 11/04/00 SPTHAK->zSPTHAK
-     +                              NST+N+1, SPH,
-     +                              NST+N+5, AKO, IER )
+     &                              NST+N+1, SPH,
+     &                              NST+N+5, AKO, IER )
 C                                      SPHERICITY
          CALL UCOPY( P(1,NST+N+1), RW(NPZE4V+ 9), 4 )
          CALL UCOPY( P(1,NST+N+2), RW(NPZE4V+13), 4 )
@@ -629,8 +629,8 @@ C                                      RUN/EVENT #
       RW(NPZE4V  + 8) = .001*EBEAM( HW(NPZE4V*2+13 ) )
 C
       CALL zSPTHAK( NST+1, NST+N, NST+N+4, THR, ! PMF 11/04/00 SPTHAK->zSPTHAK
-     +                           NST+N+1, SPH,
-     +                           NST+N+5, AKO, IER )
+     &                           NST+N+1, SPH,
+     &                           NST+N+5, AKO, IER )
 C                                      SPHERICITY
       CALL UCOPY( P(1,NST+N+1), RW(NPZE4V+ 9), 4 )
       CALL UCOPY( P(1,NST+N+2), RW(NPZE4V+13), 4 )

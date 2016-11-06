@@ -217,7 +217,7 @@ C---  +Z-DIRECTION (TOWARDS MARKMC J)
       X0 = X
       Y0 = Y
       IF (ISIGNZ.GT.0) GOTO 205
-C---  -Z-DIRECTION (TOWARDS PLUTO * CELLO)
+C---  -Z-DIRECTION (TOWARDS PLUTO & CELLO)
       X0 = -X
       Y0 = -Y
 C

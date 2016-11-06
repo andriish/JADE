@@ -12,14 +12,14 @@ C*       A DESCRIPTION OF THE T AND V ARRAYS CAN BE FOUND   *
 C*       IN SUBR. VERTEX                                    *
 C************************************************************
       COMMON /CWORK1/ NT,T(1500),NV,V(200),XXXXX(151),
-     +                JTGOD(50),JTBAD(50),VSAVE(10),V2(20,7)
+     *                JTGOD(50),JTBAD(50),VSAVE(10),V2(20,7)
       DIMENSION IT(2),IV(2),IV2(20,7)
       EQUIVALENCE (T(1),IT(1)),(V(1),IV(1)),(V2(1,1),IV2(1,1))
 C        CONSTANTS
       COMMON /CVTXC/ XB,YB,ZB,RTANK,DTANK,X0INN,SIGX0,SIGZ0,PNTMIN,
-     +               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
-     +               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
-     +               EEXYMX,PHEMAX,SIG1,SIG2,SIG3,CSECV
+     *               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
+     *               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
+     *               EEXYMX,PHEMAX,SIG1,SIG2,SIG3,CSECV
 C
       LOGICAL VREP,RESTOR
 C
@@ -152,7 +152,7 @@ C        COLLECT ALL TRACKS FITTING TO VERTEX
    38 CONTINUE
       IF(IPRVTX.NE.0) GOTO 39
       IF(ABS(V(LV+2)-XB).LT.3.*DISTB .AND. ABS(V(LV+3)-YB).LT.3.*DISTB)
-     +   IPRVTX=NV
+     *   IPRVTX=NV
    39 IF(NTBAD.EQ.0) GOTO 90
       NTGOD = 0
       IF(NV.EQ.20) GOTO 90
@@ -187,7 +187,7 @@ C        TWO TRACK VERTEX
 C        CHECK THIS VERTEX
 C        EXTRAPOLATION LENGTH TRACK 1
       CALL VTXPNT(J1,V(LV+2),V(LV+3),XT1,YT1,ZT1,DXT12,DYT12,DZT12,
-     +            PHIT1,ST1)
+     *            PHIT1,ST1)
       IF(ST1.GT.SIMAX) GOTO 44
       SSJC = ST1
       IF(T(J1+27).EQ.0.) GOTO 143
@@ -197,7 +197,7 @@ C        EXTRAPOLATION LENGTH TRACK 1
       IF(ABS(ST1/T(J1+2)).GT.PHEMAX) GOTO 44
 C        EXTRAPOLATION LENGTH TRACK 2
       CALL VTXPNT(J2,V(LV+2),V(LV+3),XT2,YT2,ZT2,DXT22,DYT22,DZT22,
-     +            PHIT2,ST2)
+     *            PHIT2,ST2)
       IF(ST2.GT.SIMAX) GOTO 44
       SSJC = ST2
       IF(T(J2+27).EQ.0.) GOTO 243
@@ -215,10 +215,10 @@ C        COMPARE TRACK DIRECTIONS WITH BEAM
       DVZ = V(LV+4) - V(LPV+4)
       DV12 = SQRT(DVX**2+DVY**2+DVZ**2)
       COSW1 = (COS(PHIT1)*T(J1+24)*DVX + SIN(PHIT1)*T(J1+24)*DVY +
-     +         SIN(T(J1+4))*DVZ) / DV12
+     *         SIN(T(J1+4))*DVZ) / DV12
       IF(COSW1.LT.CSECV) GOTO 44
       COSW2 = (COS(PHIT2)*T(J2+24)*DVX + SIN(PHIT2)*T(J2+24)*DVY +
-     +        SIN(T(J2+4))*DVZ) / DV12
+     *        SIN(T(J2+4))*DVZ) / DV12
       IF(COSW2.LT.CSECV) GOTO 44
       COSW12 = COSW1 * COSW2
       GOTO 47

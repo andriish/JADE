@@ -25,7 +25,7 @@ C
 C------------------------------ ADDED BY S.K. --- 17-11-79 -------------
       COMMON /EIGVEC/EIGV11,EIGV12,EIGV21,EIGV22
       COMMON /EIGAB/COSD(2),COSA(2),COSB(2),
-     +          EIGA1,EIGA2,EIGB1,EIGB2,ENECLA,ENECLB,NHITA,NHITB,DNORM
+     &          EIGA1,EIGA2,EIGB1,EIGB2,ENECLA,ENECLB,NHITA,NHITB,DNORM
 C     COMMON /CLVEC/V11,V12,V21,V22
 C-----------------------------------------------------------------------
 C

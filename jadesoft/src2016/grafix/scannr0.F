@@ -4,7 +4,7 @@ C-----------------------------------------------------------------------
       SUBROUTINE SCANNR(INDEX,IRFLG)
 C-----------------------------------------------------------------------
 C
-C   AUTHOR:   J. OLSSON   19/06/79 :  GRAPHICS * OTHER COMMANDS
+C   AUTHOR:   J. OLSSON   19/06/79 :  GRAPHICS & OTHER COMMANDS
 C
 C        MOD: C. BOWDERY  16/03/84 :  COMMAND ND50 ADDED
 C        MOD: C. BOWDERY  20/06/84 :  REVERSE JADISP AND EVDISP CALLS
@@ -427,7 +427,7 @@ C
  119  CALL DEDXDS
       GO TO 1
 C
-C             COMMAND  QP    (DISPLAY Q-PLOT * OTHER Q-OPTIONS)
+C             COMMAND  QP    (DISPLAY Q-PLOT & OTHER Q-OPTIONS)
 C
  120  CALL QPLOTS
       GO TO 1

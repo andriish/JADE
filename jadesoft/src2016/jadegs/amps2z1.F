@@ -22,13 +22,13 @@
      - NZSPRD .LE. 2
      -)THEN
             W = ( AZSSAV(NZSPRD) /
-     +              ( AZSRS0(NZSPRD)+
-     +                AZSRSA(NZSPRD)*SQRT(AL**2+AR**2)/(AL+AR)**2
-     +              )
-     +          )**2
+     *              ( AZSRS0(NZSPRD)+
+     *                AZSRSA(NZSPRD)*SQRT(AL**2+AR**2)/(AL+AR)**2
+     *              )
+     *          )**2
       ELSE
             W = (AZSSAV(NZSPRD)/
-     +             (AZSRS0(NZSPRD)+AZSRSA(NZSPRD)/(AL+AR)))**2
+     *             (AZSRS0(NZSPRD)+AZSRSA(NZSPRD)/(AL+AR)))**2
       ENDIF
       ELSE
           Z = .5*ZAL*(AL-AR)/(AL+AR)
@@ -43,19 +43,19 @@
             NP = IP - 4
             IDT = HW(NP+3)-HW(IP+3)
             IF( NP.GT.NPJETC*2+100 .AND. HW(NP)/8 .EQ. HW(IP)/8.AND.
-     +          IABS(IDT).LT.IDTMAX ) ISEC = ISEC + 1
+     *          IABS(IDT).LT.IDTMAX ) ISEC = ISEC + 1
             NP = IP + 4
             IDT = HW(NP+3)-HW(IP+3)
             IF( NP.LT.NPJETC*2+100+HW(NPJETC*2+99) .AND.
-     +          HW(NP)/8 .EQ. HW(IP)/8.AND.
-     +          IABS(IDT).LT.IDTMAX ) ISEC = ISEC + 1
+     *          HW(NP)/8 .EQ. HW(IP)/8.AND.
+     *          IABS(IDT).LT.IDTMAX ) ISEC = ISEC + 1
             IF( ISEC .EQ. 0 ) IFLAG = 0
       ELSE
              IFLAG = 0
       ENDIF
       ENDIF
         IF(IFLAG.EQ.0 .AND.
-     +     ( HW(IP+1).EQ. 32760 .OR. HW(IP+2).EQ. 32760 ) ) IFLAG = 32
+     *     ( HW(IP+1).EQ. 32760 .OR. HW(IP+2).EQ. 32760 ) ) IFLAG = 32
       ENDIF
       RETURN
       END

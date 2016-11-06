@@ -21,10 +21,10 @@ C*                                                                    *
 C**********************************************************************
       IMPLICIT INTEGER*2 (H)
       COMMON /CZSCAL/ IPVERS,ZALPDI,RESFAC,SECH(5),DUMMY(2),
-     +                TCORR(4,96),XTALK(2,96),PAR(7,1536)
+     *                TCORR(4,96),XTALK(2,96),PAR(7,1536)
       REAL RESFX(2) / 4480., 7000. /
       REAL SECHX(5,2) /12.3, .183, .011 , .365, .106,
-     +                  7.5, .045, .0015, .200, .055/
+     *                  7.5, .045, .0015, .200, .055/
       DATA NRUNL /1/, NRUNH/0/, NRUNE /13000/
 C
 C        READ CALIBRATION CONSTANTS

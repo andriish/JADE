@@ -50,8 +50,8 @@ C
            I = J
    20      IM = I + M*4
            IF( HLIST(IM)   .GT. HLIST(I)   .OR.
-     +        (HLIST(IM)   .EQ. HLIST(I)   .AND.
-     +         HLIST(IM+3) .LE. HLIST(I+3)) ) GO TO 50
+     *        (HLIST(IM)   .EQ. HLIST(I)   .AND.
+     *         HLIST(IM+3) .LE. HLIST(I+3)) ) GO TO 50
 C
 C                            INDICES FOR HLIST
 C
@@ -102,7 +102,7 @@ C
       IR = ISTART + NHITS * 4 - 1
       IT = INEXT - 5
       IL = ISTART - 5
-C                                       H4VHTR * H4VHIT POINTERS
+C                                       H4VHTR & H4VHIT POINTERS
       JR = NHALL + NHITS + 1
       JT = NHITS
       JL = NHALL
@@ -112,8 +112,8 @@ C
       IF( IL .LT. 0 ) GO TO 1100
 C
       IF( HLIST(IT+1) .GT. HITAR(IL+1)  .OR.
-     +   (HLIST(IT+1) .EQ. HITAR(IL+1)  .AND.
-     +    HLIST(IT+4) .LE. HITAR(IL+4)) ) GO TO 1100
+     *   (HLIST(IT+1) .EQ. HITAR(IL+1)  .AND.
+     *    HLIST(IT+4) .LE. HITAR(IL+4)) ) GO TO 1100
 C                                                     REPOSITION OLD HIT
          CALL MVC( HITAR, IR*2, HITAR, IL*2, 8 )
          H4VHIT( JR ) = H4VHIT( JL )

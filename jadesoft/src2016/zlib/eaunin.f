@@ -12,15 +12,15 @@ C
       IMPLICIT INTEGER*2 (H)
 C---------------------------------------- COMMONS FOR LEAD GLASS ENERGY
       COMMON /LINK/   IBLCHK,IREG,NBLK,NBLE,XI,YI,ZI,XF,YF,ZF,XSTART,
-     +                YSTART,ZSTART,PSTART,TRKL(2,50),TRITER,EBITER,
-     +                PMAG,NNEW,NENEW,NLIST(40),ENEW,ICHARG(40,20),
+     *                YSTART,ZSTART,PSTART,TRKL(2,50),TRITER,EBITER,
+     *                PMAG,NNEW,NENEW,NLIST(40),ENEW,ICHARG(40,20),
      +                NBLO,MEICL(50),NEICL(50),EBIT1,NBN1,EBLO1,NBL1
       COMMON /LISE/   IBLCSE,NBSK,NBSE,XSI,YSI,ZSI,XSF,YSF,ZSF,XSTAST,
-     +                YSTAST,ZSTAST,PSTAST,TRSE(3,50),TRISE
+     *                YSTAST,ZSTAST,PSTAST,TRSE(3,50),TRISE
       DIMENSION IRSE(3,50)
       EQUIVALENCE(IRSE(1,1),TRSE(1,1))
       COMMON /CLDAT/ NUMBLO,NBLIST(40),ENLIST(40),IPACL,ECLCO,ECLUN,
-     +               PIMP1,PIMP2
+     *               PIMP1,PIMP2
       COMMON / CONNEC / ICON,SUMPI,CONC(3,10)
       DIMENSION ICONC(3,10)
       EQUIVALENCE(ICONC(1,1),CONC(1,1))
@@ -99,12 +99,12 @@ C                                    TRACK IN ZE4V?
               IPTRK = HW((NP+LT)*2+9)
               IF( ITPF .EQ. 1 .AND. IPTRK .NE. JTRK ) THEN
                 COSOP = RW(NP+1)*RW(NPJ+1) + RW(NP+2)*RW(NPJ+2) +
-     +                RW(NP+3)*RW(NPJ+3)
+     *                RW(NP+3)*RW(NPJ+3)
                 PTOT = RW(NP+6)
                 IF( COSOP .GT. 0.2 .AND. PTOT .GT. 0.02 ) THEN
                   EBISE = -1.
                   IP = NPPATR + (HW((NP+LT)*2+9)-1)*IW(NPPATR+3) +
-     +                 IW(NPPATR+1)
+     *                 IW(NPPATR+1)
                   CALL TRKBSE( IP, NPALSA, EBISE )
 C                                           ENERGY LOSS OF MIN ION. TRK
 C                                           IN COIL, 8.4 CM AL EQUIV,
@@ -171,7 +171,7 @@ C
         IF(ICOP.GT.30) THEN
           WRITE(6,9102) ICOP, RUN, EVENT, JTRK
  9102     FORMAT(' +++ EAUNIN: ICOP=',I3,'>30 IN EVENT',2I8,
-     +           ' TRACK',I4)
+     *           ' TRACK',I4)
           ICOP = 30
          ENDIF
       ELSE

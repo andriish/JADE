@@ -6,7 +6,7 @@ C      THICKNESS XRAD IN RADIATION LENGTH
 C     (ENERGIES IN GEV)
 C
       DIMENSION PGAM(4),P(2,3),TH(2),PHI(2) ,P1(10),P2(10),
-     +          PN1(3),PN2(3)
+     *          PN1(3),PN2(3)
       REAL ME/.511E-03/ , PI/3.14159/
 C
       IF(PGAM(4).LE.0) RETURN 1
@@ -47,9 +47,9 @@ C
       P(I,3)=PGAM(3)/PGAM(4)
       GO TO 7
     5 P(I,1)=(TH(I)*(PGAM(3)*PGAM(1)*COS(PHI(I))/(PGAM(4)*A)+PGAM(2)*
-     +SIN(PHI(I))/A)+PGAM(1)/PGAM(4))
+     *SIN(PHI(I))/A)+PGAM(1)/PGAM(4))
       P(I,2)=(TH(I)*(PGAM(I)*SIN(PHI(I))/A-PGAM(3)*PGAM(2)*COS(PHI(I))/
-     +A)+PGAM(2)/PGAM(4))
+     *A)+PGAM(2)/PGAM(4))
       P(I,3)=(PGAM(3)/PGAM(4)-TH(I)*COS(PHI(I))*A/PGAM(4))
     7 CONTINUE
     3 CONTINUE

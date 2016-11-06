@@ -34,8 +34,8 @@ C
          CALL FEHLTX( 23,'TRACK NOT CHARGED IN ZE4VML')
          WRITE(6,9101) PMIN,  EPMIN
  9101    FORMAT(/' ZE4VMI HAS BEEN CALLED WITH FOLLOWING CUTS:'/,
-     +           ' P - MIN                 :  ',F10.4,/,
-     +           ' MIN E/P FROM LGCL       :  ',F10.4,/)
+     &           ' P - MIN                 :  ',F10.4,/,
+     &           ' MIN E/P FROM LGCL       :  ',F10.4,/)
 C
    10 CONTINUE
 C

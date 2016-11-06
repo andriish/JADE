@@ -42,8 +42,8 @@
 17000 CONTINUE
       WRITE(6,9101) NP,NLIMIT,NMAXP
  9101 FORMAT(' +++++  WARNING FROM THRUST ROUTINE  +++++'/
-     +       2X,I4,' ARE TOO MANY INPUT VECTORS. NLIMIT=',I4,
-     +' INPUT CUTOFF NMAXP=',I4,'.PTHR VAL. FOR NMAXP=NLIMIT WAS TAKEN')
+     *       2X,I4,' ARE TOO MANY INPUT VECTORS. NLIMIT=',I4,
+     *' INPUT CUTOFF NMAXP=',I4,'.PTHR VAL. FOR NMAXP=NLIMIT WAS TAKEN')
       GOTO IZZZ01
 17002 CONTINUE
       DO 13000 J=1,NTOT
@@ -185,9 +185,9 @@
       ITMERR = 1
       WRITE(6,9102) NSEC,NP,NMAXP,NLIMIT
  9102 FORMAT(' +++++++   TIME PROBLEMS IN THRUST - ROUTINE   ++++++++'/
-     +       '        REMAINING TIME IS LESS THAN ',I4,' SECS.'/
-     +       '        ',I4,' ARE TOO MANY INPUT VECTORS.  NMAXP =',I4,
-     +       ' NLIMIT =',I4/
-     +       '         AXIS WAS SET TO Z AXIS AND PTHR = .5')
+     *       '        REMAINING TIME IS LESS THAN ',I4,' SECS.'/
+     *       '        ',I4,' ARE TOO MANY INPUT VECTORS.  NMAXP =',I4,
+     *       ' NLIMIT =',I4/
+     *       '         AXIS WAS SET TO Z AXIS AND PTHR = .5')
       GOTO IZZZ09
       END

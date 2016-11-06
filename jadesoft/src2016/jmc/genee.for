@@ -8,9 +8,9 @@ C  RETURN 1 IF MORE THAN 10000 EVENTS
 C----------------------------------------------------------
 C
       COMMON/CPROD/ NEV,BEAM,PT,APHI,ATHETA,IFLAVR,
-     +       NP,NC,NN,PP(4,500),XM(500),JCH(500),JTP(500),JP(500,2),
-     +       NF,NCF,NNF,PF(4,300),XMF(300),ICF(300),ITF(300),
-     +       PSTRT(3,300)
+     *       NP,NC,NN,PP(4,500),XM(500),JCH(500),JTP(500),JP(500,2),
+     *       NF,NCF,NNF,PF(4,300),XMF(300),ICF(300),ITF(300),
+     *       PSTRT(3,300)
 C
       DATA ICALL / 0 /, ICALIM / 10000 /
       DATA EBEAM /12. /

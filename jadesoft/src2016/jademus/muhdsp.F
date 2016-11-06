@@ -32,7 +32,7 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C                  COMMONS
 C                  -------
-C ( XMIN,YMIN ) * ( XMAX,YMAX ) IN COMMON CGRAPH,ARE THE COORDINATES OF
+C ( XMIN,YMIN ) & ( XMAX,YMAX ) IN COMMON CGRAPH,ARE THE COORDINATES OF
 C                               THE CURRENT VIEW WINDOW IN VIRTUAL SPACE
 C
 C FL22 = .TRUE.                 IF THE CURRENT WINDOW IS DIFFERENT FROM
@@ -291,7 +291,7 @@ C
         IF(DSPDTL(22) .AND..NOT. FL18)
      +    CALL DNUM(IHIT,X+20.,Y+20.,CHARSZ,0.)
 C
-C                  DRAW RAW HIT NOS. IF 'CDTL 39 * 22' ARE BOTH SET
+C                  DRAW RAW HIT NOS. IF 'CDTL 39 & 22' ARE BOTH SET
 C
         IF(DSPDTM(9) .AND. DSPDTL(22) .AND..NOT.FL18)
      +    CALL DNUM(JHIT,X+XOFF,Y+10.,CHARSZ/2.,0.)

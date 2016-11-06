@@ -216,7 +216,7 @@ C
       CALL BCRE( IND, 'JETC', 8, LENGTH, *1000, IER )
       CALL BSAW( 1, 'JETC' )
       IW(IND+1) = 0
-C                                           COPY INFO: HPCELL * HITAR
+C                                           COPY INFO: HPCELL & HITAR
 C
       CALL MVCL( IW, (IND+1)*4, HPCELL, 0, (LENGTH-1)*4 )
 C

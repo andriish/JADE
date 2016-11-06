@@ -90,7 +90,7 @@ C
 C
       LOGICAL SAFEOF,FLGWRT
 C
-C                            FORCE INCLUSION OF ERRPRT * JADE BLOCKDATA
+C                            FORCE INCLUSION OF ERRPRT & JADE BLOCKDATA
 C
       EXTERNAL ERRPRT , JADEBD
 C
@@ -384,7 +384,7 @@ C
       CALL CLOC(MUR2,'MUR2',0)
 C
 C                            IF 'MUR1'/0 OR 'MUR2'/0 ARE MISSING
-C                            DELETE ALL 'MUR1' * 'MUR2' BANKS.
+C                            DELETE ALL 'MUR1' & 'MUR2' BANKS.
 C                            OTHERWISE SKIP THE ANALYSIS.
 C
       IF( MUR1 .GT. 0  .AND. MUR2 .GT. 0 ) GO TO 200

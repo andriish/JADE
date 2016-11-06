@@ -42,8 +42,8 @@ C-----------
       COMMON /CZSCAL/ IPVERS,ZAL,RESFAC,SECH(5)
 C----*----------------TCORR(4,96),XTALK(2,96),PAR(7,1536)-------------
       COMMON /CWORK/ NHIT,IZB(60),IJC(60),IJH(60),NW(60),LH(60),
-     +                LRFL(60),ALU(60),ARU(60),X(60),Y(60),Z(60),S(60),
-     +                G(60),DT(60),DL(60),DW(60),FCORR(60)
+     *                LRFL(60),ALU(60),ARU(60),X(60),Y(60),Z(60),S(60),
+     *                G(60),DT(60),DL(60),DW(60),FCORR(60)
 C                                           DEDX-FLAGS
       LOGICAL LWDEDX
       INTEGER DEDXFL(60)
@@ -120,7 +120,7 @@ C                                           HITS/WORD
         NHPW = 32/JHTQBT
         LJHTQ = (IDATA(IJHTL)-1+NHPW-1)/NHPW + 1
         CALL BCRE( NPJHTQ, 'JHTQ', IDATA(IJHTL-2),
-     +                             LJHTQ, *41, IERJHT )
+     *                             LJHTQ, *41, IERJHT )
         CALL BSAW( 1, 'JHTQ' )
         IDATA(NPJHTQ+1) = JHTQBT
 C                                           CREATION OF BANK MAY HAVE
@@ -137,7 +137,7 @@ C                                           MOVED POINTERS
           IPRJQ = IPRJQ + 1
           WRITE(6,9101) IERJHT
  9101     FORMAT ('  ***** ERROR IN ZSFIT: NOT ENOUGH SPACE FOR JHTQ',
-     +            ' IER=',I5)
+     *            ' IER=',I5)
    43 CONTINUE
 C                                           LOOP OVER ALL TRACKS
       L0 = IDATA(IPATR+1)
@@ -158,7 +158,7 @@ C                                           LOOP OVER ALL TRACKS
         XE = ADATA(KT+12)
         YE = ADATA(KT+13)
         SE = R * ATAN2(SR*(CPHI*(XE-X0)+SPHI*(YE-Y0)),
-     +                 SR*(SPHI*(XE-X0)-CPHI*(YE-Y0)+R))
+     *                 SR*(SPHI*(XE-X0)-CPHI*(YE-Y0)+R))
         IF(ABS(R).GT.1.E5) SE=SQRT((XE-X0)**2+(YE-Y0)**2)
 C                                           COLLECT ALL HITS OF TRACK I
 C
@@ -241,7 +241,7 @@ C                                             POINT IN Z-S
    24     CONTINUE
           IF( IZGOOD .NE.0 ) GO TO 26
             THETA = ATAN2(SR*(CPHI*(X(J)-X0)+SPHI*(Y(J)-Y0)),
-     +                    SR*(SPHI*(X(J)-X0)-CPHI*(Y(J)-Y0)+R))
+     *                    SR*(SPHI*(X(J)-X0)-CPHI*(Y(J)-Y0)+R))
             S(J) = R * THETA
             IF(ABS(R).GT.1.E5) S(J)=SQRT((X(J)-X0)**2+(Y(J)-Y0)**2)
             NHF = NHF + 1

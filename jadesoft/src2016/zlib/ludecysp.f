@@ -33,11 +33,11 @@ C...FUNCTIONS : MOMENTUM IN TWO-PARTICLE DECAYS AND FOUR-PRODUCT
    10    CONTINUE
          WRITE(6,9102) LDPRM
  9102    FORMAT(' -----------------------------------------------'/
-     +          ' | LUDECY: SPECIAL VERSION                     |'/
-     +          ' |         FORCING SEMIELECTRONIC DECAY OF     |'/
-     +          ' |         PRIMARY QUARKS                      |'/
-     +          ' |         LDPRM:',8I3,6X,'|'/
-     +          ' -----------------------------------------------')
+     *          ' | LUDECY: SPECIAL VERSION                     |'/
+     *          ' |         FORCING SEMIELECTRONIC DECAY OF     |'/
+     *          ' |         PRIMARY QUARKS                      |'/
+     *          ' |         LDPRM:',8I3,6X,'|'/
+     *          ' -----------------------------------------------')
       ENDIF
       IDLOOP = 0
 C
@@ -60,16 +60,16 @@ C
 C                                 Modification for semielectronic decays
       KFF = K(IP,2)*LDPRM(5)
       IF( LDPRM(5).EQ.0  .OR.
-     +    ( (101 .GT. KFF .OR. KFF .GT. 104) .AND.
-     +      (145 .GT. KFF .OR. KFF .GT. 158) .AND.
-     +      (241 .GT. KFF .OR. KFF .GT. 246) .AND.
-     +      (293 .GT. KFF .OR. KFF .GT. 307)
-     +  ) )  GOTO 10021
+     *    ( (101 .GT. KFF .OR. KFF .GT. 104) .AND.
+     *      (145 .GT. KFF .OR. KFF .GT. 158) .AND.
+     *      (241 .GT. KFF .OR. KFF .GT. 246) .AND.
+     *      (293 .GT. KFF .OR. KFF .GT. 307)
+     *  ) )  GOTO 10021
          IDLOOP = IDLOOP + 1
          IF(IDLOOP .GT. 2) THEN
             WRITE(6,4774) IDLOOP, IP, KFA, IDB(KFA)
 4774        FORMAT(' LOOP CONDITION IN LUDECY'/  ' IDLOOP=',I3,
-     +             ' IP=',I4,'KFA=',I4,'IDB(KFA)=',I4)
+     *             ' IP=',I4,'KFA=',I4,'IDB(KFA)=',I4)
          ELSE
             IDC=IDB(76+5*IFLA+KSP)
          ENDIF
@@ -77,11 +77,11 @@ C                                 Modification for semielectronic decays
 C
 10021 KFF = K(IP,2)*LDPRM(4)
       IF( LDPRM(4).EQ.0  .OR.
-     +    ( ( 20 .GT. KFF .OR. KFF .GT.  22) .AND.
-     +      ( 53 .GT. KFF .OR. KFF .GT.  56) .AND.
-     +      ( 58 .GT. KFF .OR. KFF .GT.  60) .AND.
-     +      ( 80 .NE. KFF)
-     +  ) )    GOTO 10061
+     *    ( ( 20 .GT. KFF .OR. KFF .GT.  22) .AND.
+     *      ( 53 .GT. KFF .OR. KFF .GT.  56) .AND.
+     *      ( 58 .GT. KFF .OR. KFF .GT.  60) .AND.
+     *      ( 80 .NE. KFF)
+     *  ) )    GOTO 10061
          IDLOOP = IDLOOP + 1
          IF(IDLOOP .GT. 2) THEN
             WRITE(6,4774) IDLOOP, IP, KFA, IDB(KFA)
@@ -142,7 +142,7 @@ C...CHOOSE DECAY MULTIPLICITY IN PHASE SPACE MODEL
       PSP=PS
       CNDE=DPAR(11)*ALOG(MAX((P(IP,5)-PS-PSQ)/DPAR(12),1.03))
       IF(KFA.EQ.26.OR.KFA.EQ.36.OR.(KFA.GE.83.AND.KFA.LE.90))
-     +CNDE=CNDE+DPAR(13)
+     &CNDE=CNDE+DPAR(13)
   140 GAUSS=SQRT(-2.*CNDE*ALOG(RANF(0)))*SIN(2.*PAR(20)*RANF(0))
       ND=0.5+0.5*NP+0.25*NQ+CNDE+GAUSS
       IF(MMAT.EQ.3) ND=3
@@ -158,7 +158,7 @@ C...FORM HADRONS FROM FLAVOUR CONTENT
   160 IFL1(JT)=-IFL2
   170 JT=2+2*(NQ/4)*INT(RANF(0)+0.5)
       IF(MIN(IABS(IFL1(1)),IABS(IFL1(JT))).GT.10.OR.(NQ.EQ.4.AND.
-     +MIN(IABS(IFL1(3)),IABS(IFL1(6-JT))).GT.10)) GOTO 140
+     &MIN(IABS(IFL1(3)),IABS(IFL1(6-JT))).GT.10)) GOTO 140
       CALL LUIFLD(IFL1(1),0,IFL1(JT),IFLDMP,K(N+ND-NQ/2+1,2))
       IF(NQ.EQ.4) CALL LUIFLD(IFL1(3),0,IFL1(6-JT),IFLDMP,K(N+ND,2))
 
@@ -264,8 +264,8 @@ C...LORENTZ TRANSFORM DECAY PRODUCTS TO LAB FRAME
       IF(MMAT.EQ.1) THEN
 C...MATRIX ELEMENTS FOR OMEGA AND PHI DECAYS
       WT=(P(N+1,5)*P(N+2,5)*P(N+3,5))**2-(P(N+1,5)*FOUR(N+2,N+3))**2
-     +-(P(N+2,5)*FOUR(N+1,N+3))**2-(P(N+3,5)*FOUR(N+1,N+2))**2
-     ++2.*FOUR(N+1,N+2)*FOUR(N+1,N+3)*FOUR(N+2,N+3)
+     &-(P(N+2,5)*FOUR(N+1,N+3))**2-(P(N+3,5)*FOUR(N+1,N+2))**2
+     &+2.*FOUR(N+1,N+2)*FOUR(N+1,N+3)*FOUR(N+2,N+3)
       IF(MAX(WT*DPAR(9)/P(IP,5)**6,0.001).LT.RANF(0)) GOTO 230
 
       ELSEIF(MMAT.EQ.3.OR.MMAT.EQ.4) THEN
@@ -291,7 +291,7 @@ C...SCALE BACK ENERGY, COLOUR REARRANGEMENT POSSIBLE FOR FOUR JETS
 C...LOW INVARIANT MASS FOR SYSTEM WITH SPECTATOR QUARK GIVES PARTICLE,
 C...NOT TWO JETS, READJUST MOMENTA ACCORDINGLY
       IF(P(N+3,5)**2+P(N+4,5)**2+2.*FOUR(N+3,N+4).LE.(FPAR(2)+P(N+3,5)+
-     +P(N+4,5)-DPAR(15))**2) THEN
+     &P(N+4,5)-DPAR(15))**2) THEN
       CALL LUIFLD(MOD(K(N+3,2),500),0,MOD(K(N+4,2),500),IFLDMP,K(N+3,2))
       P(N+3,5)=ULMASS(1,K(N+3,2))
       DO 360 J=1,3
@@ -300,7 +300,7 @@ C...NOT TWO JETS, READJUST MOMENTA ACCORDINGLY
       HA=P(N+1,4)**2-P(N+2,4)**2
       HB=HA-(P(N+1,5)**2-P(N+2,5)**2)
       HC=(P(N+1,1)-P(N+2,1))**2+(P(N+1,2)-P(N+2,2))**2+
-     +(P(N+1,3)-P(N+2,3))**2
+     &(P(N+1,3)-P(N+2,3))**2
       HD=(P(IP,4)-P(N+3,4))**2
       HE=HA**2-2.*HD*(P(N+1,4)**2+P(N+2,4)**2)+HD**2
       HF=HD*HC-HB**2
@@ -319,7 +319,7 @@ C...NOT TWO JETS, READJUST MOMENTA ACCORDINGLY
 
 C...ALSO CHECK INVARIANT MASS OF OTHER TWO JETS, START OVER IF TOO SMALL
       IF(MMAT.EQ.4.AND.IABS(K(N+1,2)).GE.500.AND.P(N+1,5)**2+P(N+2,5)
-     +**2+2.*FOUR(N+1,N+2).LE.(FPAR(2)+P(N+1,5)+P(N+2,5))**2) GOTO 120
+     &**2+2.*FOUR(N+1,N+2).LE.(FPAR(2)+P(N+1,5)+P(N+2,5))**2) GOTO 120
   380 N=N+ND
 
       K(IP,1)=K(IP,1)+2000

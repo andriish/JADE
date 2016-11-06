@@ -23,9 +23,9 @@ C
 C
       INTEGER*2 NAME(3)
       INTEGER*2 NANAC(3)/2HMU,2HAN,2HAC/,
-     +          NCOOR(3)/2HMU,2HCO,2HOR/,
-     +          NANAF(3)/2HMU,2HAN,2HAF/,
-     +          NCUTS(3)/2HMU,2HCU,2HTS/
+     *          NCOOR(3)/2HMU,2HCO,2HOR/,
+     *          NANAF(3)/2HMU,2HAN,2HAF/,
+     *          NCUTS(3)/2HMU,2HCU,2HTS/
 C
       COMMON /CMUPRN/ MUPRIN,MUHPR,IANAC,ICOOR,IANAF,LANAC,LCOOR,LANAF,
      +                ITOTAL,LTOTAL,ICUTS,LCUTS
@@ -96,7 +96,7 @@ C
 C
    20 CONTINUE
 C
-C                            COUNT  TOTAL  NO.  OF  MESSAGES  OUTPUT  *
+C                            COUNT  TOTAL  NO.  OF  MESSAGES  OUTPUT  &
 C                            COMPARE WITH JOB LIMIT .
 C
       ITOTAL = ITOTAL + 1

@@ -35,34 +35,27 @@ C
 C
       JHITS = 0
       JNEW  = 1
-C     
-      write(*,*) 'RDMERG |',IL1,IL2,IH1,IH2,ILN,N1,N2
+C
   100 IF( ILN .GT. IH2 ) RETURN
 C
 C                       CHECK IF DATA LEFT IN H2
 C
-      write(*,*) 'RDMERG 2'
       IF( IL2 .GT. IH2 ) GO TO 400
 C
-      write(*,*) 'RDMERG 3'
 C                       CHECK IF DATA LEFT IN H1
 C
       IF( IL1 .GT. IH1 ) GO TO 500
 C
-      write(*,*) 'RDMERG 4'
 C                       COMPARE WIRE NUMBERS.
 C                       IF SAME NUMBER COMPARE DRIFT TIMES
 C
       IF( H1(IL1) .LT. H2(IL2) ) GO TO 200
-      write(*,*) 'RDMERG 5'
       IF( H1(IL1).EQ.H2(IL2) .AND. H1(IL1+3).GE.H2(IL2+3) ) GO TO 200
-      write(*,*) 'RDMERG 6'
 C
 C                       TAKE THE NEXT RANDOM HIT AND PLACE INTO OUTPUT
 C                       AREA WHICH STARTS FROM BEGINNING OF H2. IE.
 C                       MOVE DATA FROM HIGH END OF H2 TO ILN  POSITION
 C
-      write(*,*) 'RDMERG 7'
       CALL MVC( H2, ILN*2, H2, (IL2-1)*2, 8 )
       IL2 = IL2 + 4
       GO TO 300
@@ -71,14 +64,12 @@ C                       TAKE THE NEXT REAL HIT AND PLACE INTO OUTPUT
 C                       AREA WHICH STARTS FROM BEGINNING OF H2. IE.
 C                       MOVE DATA FROM H1 TO H2 TO ILN POSITION.
 C
-      write(*,*) 'RDMERG 8'
   200 CALL MVC( H2, ILN*2, H1, (IL1-1)*2, 8 )
       IL1 = IL1 + 4
 C
       JHITS = JHITS + 1
       H4VJH(JHITS) = JNEW
 C
-      write(*,*) 'RDMERG 9'
   300 ILN  = ILN  + 4
       JNEW = JNEW + 1
       GO TO 100

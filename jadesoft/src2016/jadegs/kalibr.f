@@ -7,7 +7,7 @@ C
 C        HANDLES STANDARD JADE CALIBRATION DATA
 C
 C   FRIDAY 13.3.1987   CALL TO CNEWID ADDED, RUN VERTICES FOR NEW ID CAL
-C                J.OLSSON * J. SPITZER
+C                J.OLSSON & J. SPITZER
 C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)

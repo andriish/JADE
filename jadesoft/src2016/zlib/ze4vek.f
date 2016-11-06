@@ -215,48 +215,48 @@ C
  1014 FORMAT(1X,32I2,I12)
 C
       WRITE(6,9101) JHBIT(32),ISCUT,
-     +              JHBIT(31),ICHCUT,
-     +              JHBIT(30),COSCUT,
-     +              JHBIT(29),PCUT,
-     +              JHBIT(28),
-     +              JHBIT(27),NDCUT,
-     +              JHBIT(26),RSCUT,
-     +              JHBIT(25),DLOCUT,DHICUT,IDVERS
+     *              JHBIT(31),ICHCUT,
+     *              JHBIT(30),COSCUT,
+     *              JHBIT(29),PCUT,
+     *              JHBIT(28),
+     *              JHBIT(27),NDCUT,
+     *              JHBIT(26),RSCUT,
+     *              JHBIT(25),DLOCUT,DHICUT,IDVERS
  9101 FORMAT(' CUTS USED IN ZE4VEK (0=CUT IS DISABLED)'/
-     +       ' --------------------------------------'/
-     +       2X,I3,2X,'ISCAN      <',I3,T40,
-     +       2X,I3,2X,'ICHECK     >=',I3/
-     +       2X,I3,2X,'COSTH      <=',F6.3,T40,
-     +       2X,I3,2X,'P          > ',F6.3/
-     +       2X,I3,2X,'TRACK IN ZE4V?',T40,
-     +       2X,I3,2X,'NDEDX      > ',I3/
-     +       2X,I3,2X,'RELDE      < ',F6.3,T40,
-     +       2X,I3,2X,F6.3,' < DELDEDX/SIGMA < ',F6.3,' IDVERS=',I3)
+     *       ' --------------------------------------'/
+     *       2X,I3,2X,'ISCAN      <',I3,T40,
+     *       2X,I3,2X,'ICHECK     >=',I3/
+     *       2X,I3,2X,'COSTH      <=',F6.3,T40,
+     *       2X,I3,2X,'P          > ',F6.3/
+     *       2X,I3,2X,'TRACK IN ZE4V?',T40,
+     *       2X,I3,2X,'NDEDX      > ',I3/
+     *       2X,I3,2X,'RELDE      < ',F6.3,T40,
+     *       2X,I3,2X,F6.3,' < DELDEDX/SIGMA < ',F6.3,' IDVERS=',I3)
       WRITE(6,9102) JHBIT(24),SUMCUT,
-     +              JHBIT(23),ENECUT,
-     +              JHBIT(22),PCHCUT,
-     +              JHBIT(21),ESHCUT,
-     +              JHBIT(20),
-     +              JHBIT(19),AMICUT
+     *              JHBIT(23),ENECUT,
+     *              JHBIT(22),PCHCUT,
+     *              JHBIT(21),ESHCUT,
+     *              JHBIT(20),
+     *              JHBIT(19),AMICUT
  9102 FORMAT(2X,I3,2X,'UNIQUENESS < ',F6.3,T40,
-     +       2X,I3,2X,'NEAR BY E  < ',F6.3/
-     +       2X,I3,2X,'P(CHI**2)  > ',F6.3,T40,
-     +       2X,I3,2X,'LG10(ESHAD)> ',F6.3/
-     +       2X,I3,2X,'PHOT PARTNER?',T40,
-     +       2X,I3,2X,'MIN(MIJ)   < ',F6.3)
+     *       2X,I3,2X,'NEAR BY E  < ',F6.3/
+     *       2X,I3,2X,'P(CHI**2)  > ',F6.3,T40,
+     *       2X,I3,2X,'LG10(ESHAD)> ',F6.3/
+     *       2X,I3,2X,'PHOT PARTNER?',T40,
+     *       2X,I3,2X,'MIN(MIJ)   < ',F6.3)
       WRITE(6,9103) JHBIT(18),
-     +              JHBIT(17),
-     +              JHBIT(16),
-     +              JHBIT(15),
-     +              JHBIT(14),
-     +              JHBIT(13),EPCUT,JEVERS,
-     +              JHBIT(12),EPHCUT
+     *              JHBIT(17),
+     *              JHBIT(16),
+     *              JHBIT(15),
+     *              JHBIT(14),
+     *              JHBIT(13),EPCUT,JEVERS,
+     *              JHBIT(12),EPHCUT
  9103 FORMAT(2X,I3,2X,'OBSOLETE',T40,
-     +       2X,I3,2X,'OBSOLETE'/
-     +       2X,I3,2X,'OBSOLETE',T40,
-     +       2X,I3,2X,'OBSOLETE'/
-     +       2X,I3,2X,'OBSOLETE',T40,
-     +       2X,I3,2X,'E/P        > ',F6.3,' JEVERS=',I3/
-     +       2X,I3,2X,'E/P        < ',F6.3)
+     *       2X,I3,2X,'OBSOLETE'/
+     *       2X,I3,2X,'OBSOLETE',T40,
+     *       2X,I3,2X,'OBSOLETE'/
+     *       2X,I3,2X,'OBSOLETE',T40,
+     *       2X,I3,2X,'E/P        > ',F6.3,' JEVERS=',I3/
+     *       2X,I3,2X,'E/P        < ',F6.3)
       RETURN
       END

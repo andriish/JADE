@@ -12,16 +12,16 @@ C
       DIMENSION X1(2),X2(2)
       LOGICAL FOUND
       COMMON / CJXDAT / XSLOPE, YSLOPE, XL(3), XH(3), R3P, RD3P,
-     +                  S, S2,
-     +                  XSL3L, X3L, XSL3H, X3H, YSL3L, Y3L, YSL3H,
-     +                  YHWIDT, SINHLF, COSHLF, DRITAN
+     *                  S, S2,
+     *                  XSL3L, X3L, XSL3H, X3H, YSL3L, Y3L, YSL3H,
+     *                  YHWIDT, SINHLF, COSHLF, DRITAN
 C
       SLOPE = 1.E5
       FOUND = .FALSE.
 C
 C        ----- RETURN IF BOTH POINTS ARE NOT IN THIS CELL  -----
       IF(  ( -S .GT. X1(1) .OR. X1(1) .GT. S ) .AND.
-     +     ( -S .GT. X2(1) .OR. X2(1) .GT. S )  ) RETURN
+     *     ( -S .GT. X2(1) .OR. X2(1) .GT. S )  ) RETURN
 C
       FOUND = .TRUE.
       XLOW = AMAX1( AMIN1( X1(1), X2(1) ), -S )
@@ -51,13 +51,13 @@ C                   CHOOSE CORECT SIGN FOR XMIN
    20            XMIN = AMAX1( AMIN1( XMIN, XHIGH ), XLOW )
 CCCCCC CHANGED   DIST = DIST - SQRT( S2 - XMIN*XMIN ) + S
                  DIST = ABS( SLOPE*XMIN+YITCPT )
-     +                       - SQRT( S2 - XMIN*XMIN ) + S
+     *                       - SQRT( S2 - XMIN*XMIN ) + S
                  RETURN
 C
 C
 C              ----- TAKE ONE OF THE POINTS AS MINIMAL DISTANCE
   100   DIST = AMIN1( ABS(X1(2)) + S - SQRT( AMAX1(S2-X1(1)*X1(1),0.) ),
-     +                ABS(X2(2)) + S - SQRT( AMAX1(S2-X2(1)*X2(1),0.) ))
+     *                ABS(X2(2)) + S - SQRT( AMAX1(S2-X2(1)*X2(1),0.) ))
            RETURN
 C
 C              ----- MINIMIZE EUCLIDEAN DISTANCE

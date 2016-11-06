@@ -65,10 +65,8 @@ C
       GO TO 2
 C
 C                       GENERATE RANDOM HITS IN END SECTION OF HWORK
-  6   CONTINUE
-      write(*,*)' RDM 1', 'NHITS= ', NHITS
 C
-      CALL RDRDMH( IRAN, HWORK(NHITS*4+1) )
+    6 CALL RDRDMH( IRAN, HWORK(NHITS*4+1) )
 C
 C                       MERGE ALL HITS IN HWORK
 C                       'JETC' HAS  100 HEADER WORDS.
@@ -80,7 +78,6 @@ C                       INEFFICIENCIES
 C
       CALL RDINEF( EPS, NHNEW, HWORK, INEFLO )
       NHD = NHNEW - INEFLO
-      write(*,*)' RDM 2 ',NHNEW, NHD
 C
 C                       DOUBLE PULSE RESOLUTION
 C
@@ -92,14 +89,13 @@ CCC  DEAD CELLS
       IDEAD = 0
       IF( NHD .GT. 0 ) CALL RDDDCL( NHNEW, HWORK, IDEAD )
       NHD = NHD - IDEAD
-      write(*,*)' RDM 3'
+
 C
 C                  ADJUST LENGTH OF BANK, CONSTRUCT  CELL  POINTERS  AND
 C                  ERASE ZERO WIRE NUMBERS
 C
       IF( NHD .LE. 0 ) GO TO 1000
       LD = ( NHD - NHITS ) * 2
-      write(*,*)' RDM 3a  ',IPJ, LD, IER 
       IF( LD .NE. 0 ) CALL  BCHM( IPJ, LD, IER )
       CALL RDPOIN( HDATA(IPJ*2+3), NHNEW, HWORK )
 C
@@ -112,16 +108,12 @@ C
       CALL BCRE( IND, 'HTSL', 8, LENGTH, *1500, IER )
       CALL BSAW( 1, 'HTSL' )
       HDATA(IND*2 + 1) = JHITS
-      write(*,*)' RDM 88'
-      write(*,*)4*IND + 2,  JHITS * 2 
       CALL MVCL( HDATA, 4*IND + 2, H4VJH, 0, JHITS * 2 )
-      write(*,*)' RDM 89'
       RETURN
 C
 C                  DELETE BANK AND HEAD POINTER BECAUSE ALL POINTS  WERE
 C                  ERASED
 C
-      write(*,*)' RDM 99'
  1000 CALL BDLS( 'JETC', IDATA(IPJ-2) )
       CALL BDLS( 'PATR', 12 )
       RETURN

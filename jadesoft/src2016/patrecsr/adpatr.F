@@ -15,7 +15,7 @@ C
       NPHEAD = IW(IPHEAD)
 C
       IF( NRUN .GE. 24200 .OR.
-     +  ( NRUN .LT. 100 .AND. HW(NPHEAD*2+8) .GT. 1985 ) ) THEN
+     *  ( NRUN .LT. 100 .AND. HW(NPHEAD*2+8) .GT. 1985 ) ) THEN
         FLINLM(2) = 1.0
         GFP(3) = 2.0
         ZFITLM(1) = 70.

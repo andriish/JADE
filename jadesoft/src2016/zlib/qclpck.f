@@ -31,7 +31,7 @@ C
       IF( FIRST ) THEN
          FIRST = .FALSE.
          WRITE(6,9201) NLUN, (KLUN(I,1),KLUN(I,2),(PLUN(I,J),J=1,5),
-     +                 I=1,NLUN)
+     *                 I=1,NLUN)
  9201    FORMAT(2X,' NLUN ',I5/(1X,2I8,5F12.3))
       ENDIF
 
@@ -50,8 +50,8 @@ C                                      GET FLAV. OF EVT
             IF( KLUN(L,1).LT.2000 ) THEN
                CHARGE = FLOAT(LUCHGE(KLUN(L,2)))/3.
                 IF( CHARGE.NE.0. .OR.
-     +              ((IMODE.EQ.0 .OR. IMODE .EQ. 5)
-     +                         .AND.IABS(KLUN(L,2)).EQ.1) ) THEN
+     *              ((IMODE.EQ.0 .OR. IMODE .EQ. 5)
+     *                         .AND.IABS(KLUN(L,2)).EQ.1) ) THEN
                   N = N + 1
                   P(1,NST+N) = PLUN(L,1)
                   P(2,NST+N) = PLUN(L,2)
@@ -63,8 +63,8 @@ C                                      GET FLAV. OF EVT
                   HP(15,NST+N) = 0
                   HP(16,NST+N) = IABS(KLUN(L,2))
                   IF((IMODE.EQ.2 .OR. IMODE .EQ. 5)
-     +                     .AND.CHARGE.NE.0.
-     +                     .AND. IABS(KLUN(L,2)).NE.7 ) THEN
+     *                     .AND.CHARGE.NE.0.
+     *                     .AND. IABS(KLUN(L,2)).NE.7 ) THEN
                      XM = .1396
                      HP(16,NST+N) = 0
                   ENDIF

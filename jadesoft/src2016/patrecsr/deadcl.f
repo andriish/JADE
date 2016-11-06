@@ -183,7 +183,7 @@ C
       NPJETC = IW(IPJETC)
       IF( NPJETC.LE.0 ) GO TO 8000
         IF( HW(NPJETC*2+CELL+4) -
-     +      HW(NPJETC*2+CELL+3) .GT. 0 ) GO TO 8000
+     *      HW(NPJETC*2+CELL+3) .GT. 0 ) GO TO 8000
 C                                           CELL HAS NO HITS
 C                                           HAS THE T2 BIT BEEN SET?
           NPTRIG = IW(IPTRIG)

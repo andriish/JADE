@@ -19,12 +19,12 @@ C RETURN FLAG  ISTF :
 C                       = -1         NO TRIGGER BANK.
 C                       = N4ST = 0,1,2,.....9 NUMBER OF ENDWALL STREETS
 C                              WITH >/= 4/5 GROUPS FIRED.
-C                              FOR N4ST.GT.9, N4ST IS SET TO 9 *
+C                              FOR N4ST.GT.9, N4ST IS SET TO 9 &
 C                              A WARNING MESSAGE IS PRINTED
-C                       = 130 + N4ST, ENDWALL QUADRANTS 1 * 3 EACH
+C                       = 130 + N4ST, ENDWALL QUADRANTS 1 & 3 EACH
 C                         HAVE ONE OR MORE STREETS WITH >/= 3/5
 C                         GROUPS FIRED
-C                       = 240 + N4ST, ENDWALL QUADRANTS 2 * 4 EACH
+C                       = 240 + N4ST, ENDWALL QUADRANTS 2 & 4 EACH
 C                         HAVE ONE OR MORE STREETS WITH >/= 3/5
 C                         GROUPS FIRED
 C                       = 400 + N4ST, ALL 4 ENDWALL QUADRANTS CONTAIN
@@ -40,15 +40,15 @@ C-----------------------------------------------------------------------
       DIMENSION ILIS3(36),ILIS4(36)
       DATA NGR1/3/,NGM1/3/,NGR2/4/,NGM2/4/
       DATA NOISY/0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-     +           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0/
+     &           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0/
       DATA KAPUT/0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,
-     +           0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,
-     +           0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,
-     +           0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,
-     +           0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,
-     +           0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,
-     +           0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,
-     +           0,0,0,0,0/
+     &           0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,
+     &           0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,
+     &           0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,
+     &           0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,
+     &           0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,
+     &           0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0,
+     &           0,0,0,0,0/
 C
 C..INITIALISE..
       DO 5 I=1,36
@@ -116,7 +116,7 @@ C..NOW SET UP FLAGS FOR ENDWALL QUADRANTS..
       IF(N4ST.LT.10) GOTO 110
       WRITE(6,60) HRUN,HEV,N4ST
    60 FORMAT(1H ,/,' ***** MEWT3 : RUN ',I5,1X,'EVENT ',I5,
-     +/,' !!!!! ',I3,' MUON STREETS WITH >/=4/5 GROUPS FIRED.SET TO 9')
+     &/,' !!!!! ',I3,' MUON STREETS WITH >/=4/5 GROUPS FIRED.SET TO 9')
       N4ST = 9
   110 CONTINUE
       ISTF = ISTF + N4ST

@@ -16,17 +16,17 @@ C   REMOVED THE BLOCK DATA SETTING OF /CFLAG/
 C   THIS IS DONE IN JADEBD ALREADY!    J.O.  10.6.1986
 C
       COMMON/CGEO1/BKGAUS, RPIP,DRPIP,XRLPIP, RBPC,DRBPC,XRLBPC,
-     +             RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
-     +             R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
-     +             R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
-     +             RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
-     +             ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
-     +             ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
-     +             ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
-     +             XRJETC,
-     +             RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
-     +             BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     +             XHOL1,XHOL2,YHOL1,YHOL2
+     *             RITNK,DRITNK,XRLTKI, R0ROH,DR0ROH,XR0ROH,
+     *             R1ROH,DR1ROH,XR1ROH, R2ROH,DR2ROH,XR2ROH,
+     *             R3ROH,DR3ROH,XR3ROH, ROTNK,DROTNK,XRLTKO,
+     *             RTOF,DRTOF,XRTOF, RCOIL, DRCOIL, XRCOIL,
+     *             ZJM,DZJM,XRZJM, ZJP,DZJP,XRZJP,
+     *             ZTKM,DZTKM,XRZTKM, ZTKP,DZTKP,XRZTKP,
+     *             ZBPPL,ZBPMI,ZTOFPL,ZTOFMI,
+     *             XRJETC,
+     *             RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
+     *             BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
+     *             XHOL1,XHOL2,YHOL1,YHOL2
       COMMON/CLGHIT/AMPLG(3000)
       DIMENSION DC(3)
       LOGICAL * 1 LFLAG
@@ -77,10 +77,10 @@ C                                           BLOCKS
       R1=R(1)**2+R(2)**2
       RADIUS = SQRT( R1 )
       IF(RADIUS.GT.OUTR2 .OR. R(3).GT.ZENDPL+DEPEND
-     +  .OR. R(3).LT.ZENDMI-DEPEND) RETURN
+     *  .OR. R(3).LT.ZENDMI-DEPEND) RETURN
       IF( .NOT.
-     +  ( ZLGMI+5..LE.R(3).AND.R(3).LE.ZLGPL-5..AND.RADIUS.GT.RLG-5. ))
-     +                             GO TO 1000
+     *  ( ZLGMI+5..LE.R(3).AND.R(3).LE.ZLGPL-5..AND.RADIUS.GT.RLG-5. ))
+     *                             GO TO 1000
 C
 C                                           CENTRAL PART
 C

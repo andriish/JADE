@@ -89,7 +89,7 @@ C
 C
 C                            DETERMINE HOW MANY FIELDS (NFIELD) IN THE
 C                            COMMAND STRING (CHARS). STORE STARTING
-C                            AND ENDING POSITIONS IN ISTAFL * IENDFL
+C                            AND ENDING POSITIONS IN ISTAFL & IENDFL
 C                            FOR EACH FIELD.
 C
   15  NEXFLD = 1
@@ -124,7 +124,7 @@ C
       IF( LSTCMD .NE. 112 .OR. .NOT.LCARET ) GO TO 23
           WRITE(6,22)
   22      FORMAT(' Command WRIT will not be repeated if only CR was ente
-     +red!')
+     &red!')
           GO TO 10
   23  IF( LSTCMD .GT. 0 ) GO TO 30
 C

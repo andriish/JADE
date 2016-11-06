@@ -193,8 +193,8 @@ C           REJECT TRACKS WHICH HAVE BEEN MARKED BAD IN IEEFG
 C
             IF(IEEFG(I).NE.0 .OR. IEEFG(J).NE.0)  GOTO 900
             IF(IPRO.GT.1)
-     +         WRITE(6,1500) I,J,KTRK(17,I),KTRK(17,J),
-     +                           KTRK(20,I),KTRK(20,J)
+     *         WRITE(6,1500) I,J,KTRK(17,I),KTRK(17,J),
+     *                           KTRK(20,I),KTRK(20,J)
  1500          FORMAT(' KOMAKS,  I J KTRK17 ',4I5,' KTRK20 ',2I4)
  901        IF( KTRK(17,I).LT.MNHIT)    GOTO 905
             IF( KTRK(17,J).LT.MNHIT)    GOTO 905
@@ -243,9 +243,9 @@ C
             R1I    = SQRT(VTRK(1,I)**2 + VTRK(2,I)**2)
             R1J    = SQRT(VTRK(1,J)**2 + VTRK(2,J)**2)
             ZVI    = VTRK(3,I) +
-     +               (V0-R1I) * VTRK(6,I)/SQRT(1.-VTRK(6,I)**2)
+     *               (V0-R1I) * VTRK(6,I)/SQRT(1.-VTRK(6,I)**2)
             ZVJ    = VTRK(3,J) +
-     +               (V0-R1J) * VTRK(6,J)/SQRT(1.-VTRK(6,J)**2)
+     *               (V0-R1J) * VTRK(6,J)/SQRT(1.-VTRK(6,J)**2)
             ZIJ    = ABS(ZVI-ZVJ)
             NRPATR = IDATA(INPA-2)
             DZI0   = VTRK(6,I)
@@ -335,7 +335,7 @@ C
 C
             IF(IPRO.GT.1)          WRITE(6,1580) I,J,D,DVL,COSIJ,CHI1
  1580       FORMAT(' KOMAKS, I J ',2I3,
-     +             ' D DVL ',2E12.4,' COSIJ CHI1 ',2E12.4)
+     *             ' D DVL ',2E12.4,' COSIJ CHI1 ',2E12.4)
 C
 C *** SLC 12/3/86 ********************* NEXT 2 IF'S COMMENTED OUT
 CC          IF(COSIJ.LT.-0.7)           GOTO 530
@@ -394,26 +394,26 @@ C ------------------------------------- FILL RESULT COMMON/KOMAK/
             IF(IPRO.LE.1)               GOTO 550
                WRITE(6,1600)NRUN,NEVT
                WRITE(6,1610)I,J,V(1),V(2),DVL,D,DD,ALPHA,
-     +                      VMASS,COSIJ,P,PX,PY,PZ,
-     +                     PI,ELOSI,PXI,PYI,PZI,
-     +                      PJ,ELOSJ,PXJ,PYJ,PZJ,
-     +                      CHI1,ALPH12,CHI22,TL,RMIN0(I),RMIN0(J),
-     +                      DZI,DZJ,DZI0,DZJ0,VMMIN,VMMAX,ZPOS
+     *                      VMASS,COSIJ,P,PX,PY,PZ,
+     *                     PI,ELOSI,PXI,PYI,PZI,
+     *                      PJ,ELOSJ,PXJ,PYJ,PZJ,
+     *                      CHI1,ALPH12,CHI22,TL,RMIN0(I),RMIN0(J),
+     *                      DZI,DZJ,DZI0,DZJ0,VMMIN,VMMAX,ZPOS
 C
  1600          FORMAT(/' KOMAKS: *****  RUN# =',I6,' -',I6)
  1610          FORMAT(' # KOMAKS # (I,J)=(',2I6,')  V(',2F9.3,')',
-     +         ' DVL=',F10.3,' D,DD=',2F9.3,' ALPHA=',F8.3/
-     +         ' #########  VMASS=',F7.3,'  COSIJ=',F7.3,'   P= ',F7.3,
-     +         '  P(',3F10.3,')    '/
-     +         '   #######  PI= ',F7.3,'  ELOSI=',F7.3,
-     +         '   PI=(',3F10.3,')'/
-     +         '     #####  PJ= ',F7.3,'  ELOSJ=',F7.3,
-     +         '   PJ=(',3F10.3,')'/
-     +         '       ### CHI**2=',F10.3,2X,F10.3,3X,F12.3,
-     +         ' TL=',F10.3,'   RMIN(I,J)=',2F10.3/
-     +         '         #  ',
-     +         '      DZ(I,J)=(',2F10.3,')  DZ0(I,J)=(',2F10.3,') '/
-     +         '  (VMMIN,VMMAX)=',2F9.3,' ZPOS ',E12.4)
+     *         ' DVL=',F10.3,' D,DD=',2F9.3,' ALPHA=',F8.3/
+     *         ' #########  VMASS=',F7.3,'  COSIJ=',F7.3,'   P= ',F7.3,
+     *         '  P(',3F10.3,')    '/
+     *         '   #######  PI= ',F7.3,'  ELOSI=',F7.3,
+     *         '   PI=(',3F10.3,')'/
+     *         '     #####  PJ= ',F7.3,'  ELOSJ=',F7.3,
+     *         '   PJ=(',3F10.3,')'/
+     *         '       ### CHI**2=',F10.3,2X,F10.3,3X,F12.3,
+     *         ' TL=',F10.3,'   RMIN(I,J)=',2F10.3/
+     *         '         #  ',
+     *         '      DZ(I,J)=(',2F10.3,')  DZ0(I,J)=(',2F10.3,') '/
+     *         '  (VMMIN,VMMAX)=',2F9.3,' ZPOS ',E12.4)
 C
  550        CONTINUE
             GOTO 500
@@ -475,11 +475,11 @@ C
 C
       DIMENSION A(3,3)
       DET=A(1,1)*A(2,2)*A(3,3)
-     +   +A(1,2)*A(2,3)*A(3,1)
-     +   +A(1,3)*A(2,1)*A(3,2)
-     +   -A(1,1)*A(2,3)*A(3,2)
-     +   -A(1,3)*A(2,2)*A(3,1)
-     +   -A(1,2)*A(2,1)*A(3,3)
+     &   +A(1,2)*A(2,3)*A(3,1)
+     &   +A(1,3)*A(2,1)*A(3,2)
+     &   -A(1,1)*A(2,3)*A(3,2)
+     &   -A(1,3)*A(2,2)*A(3,1)
+     &   -A(1,2)*A(2,1)*A(3,3)
          RETURN
          END
 C
@@ -513,7 +513,7 @@ C       VERTEX CHAMBER GAS
 C- - - - - - - - -   CIJONV  - - - - - - - - - - - - - - - - - - - - - -
 C
       COMMON / CIJONV / POTVXC, ZAROVC,
-     +                  POTVGA, ZAROVG
+     *                  POTVGA, ZAROVG
 C
 C                            GIVES AVERAGE IONISATION POTENTIAL
 C                            AND VALUE FOR Z*RHO/A IN
@@ -664,7 +664,7 @@ C
       X21 = X2 -1.
       FACLOG = ALOG( B * X21 )
       DX = ( XLOW - X + A * ( X2 / X21 * FACLOG - 1. ) ) /
-     +     ( 1. + 2.*A/(X21*X21) * ( FACLOG - X2 ) )
+     *     ( 1. + 2.*A/(X21*X21) * ( FACLOG - X2 ) )
       ADX = ABS( DX )
       INCREM = INCREM + 1
       IF( ADX .LE. DXOLD ) INCREM = 0
@@ -1060,7 +1060,7 @@ C
 C                                           ERROR PART
  8100 WRITE(6,9101)
  9101 FORMAT(/' ++++ RFDRPZ ++++      NOT ENOUGH SPACE TO ACCOMODATE ALL
-     + HITS IN BANK RFWK,1 '//)
+     * HITS IN BANK RFWK,1 '//)
       IER = 4
       RETURN
       END
@@ -1999,9 +1999,9 @@ C
 C
 C
       CHI1=X(1)**2*SSRI+X(3)**2*SI+SSZI
-     +    +2.*(X(1)*X(3)*SRI-X(3)*SZI-X(1)*SRZI)
-     +    +X(2)**2*SSRJ+X(4)**2*SJ+SSZJ
-     +    +2.*(X(2)*X(4)*SRJ-X(4)*SZJ-X(2)*SRZJ)
+     &    +2.*(X(1)*X(3)*SRI-X(3)*SZI-X(1)*SRZI)
+     &    +X(2)**2*SSRJ+X(4)**2*SJ+SSZJ
+     &    +2.*(X(2)*X(4)*SRJ-X(4)*SZJ-X(2)*SRZJ)
       SIJ=SI+SJ-3.
       CHI1=CHI1/SIJ
       IF(NN.EQ.1) CHIMIN=CHI1
@@ -2025,7 +2025,7 @@ C
 C-----------------------------------------------------------------------
 C      WRITE(6,9100)KI,R0,RI(KI),ZI(KI),IZFT(KI),FZI(KI),KIMAX
 C9100  FORMAT(' KI=',I3,'   R0=',F10.3,'   RI=',F10.5,'    ZI=',F10.3,
-C    *      '     IZFT=',I5,'     FZI=',F10.3,'  KIMAX=',I3)
+C    &      '     IZFT=',I5,'     FZI=',F10.3,'  KIMAX=',I3)
 C-----------------------------------------------------------------------
        IF(CHIMAX.GE.FZI(KI)) GO TO 30
        KIMAX=KI
@@ -2046,7 +2046,7 @@ C
 C-----------------------------------------------------------------------
 C      WRITE(6,9200)KJ,R0,RJ(KJ),ZJ(KJ),JZFT(KJ),FZJ(KJ),KJMAX
 C9200  FORMAT(' KJ=',I3,'   R0=',F10.3,'   RJ=',F10.5,'    ZJ=',F10.3,
-C    *      '     JZFT=',I5,'     FZJ=',F10.3,'  KJMAX=',I3)
+C    &      '     JZFT=',I5,'     FZJ=',F10.3,'  KJMAX=',I3)
 C-----------------------------------------------------------------------
        IF(CHJMAX.GT.FZJ(KJ)) GO TO 40
        KJMAX=KJ
@@ -2056,8 +2056,8 @@ C
 C-----------------------------------------------------------------------
 C     WRITE(6,9000)I,J,SIJ,CHI1,CHI10,DZI,DZJ,DZIOPT,DZJOPT,CHMAX,CHIMIN
 C9000 FORMAT(' (I,J)=',2I5,' SIJ=',F5.1,
-C    *      ' CHI1(',2F10.2,') DZ=((',2F6.3,' ))',
-C    *      ' DZOPT=(',2F6.3,') CHMAX,CHIMIN=',2F10.1/)
+C    &      ' CHI1(',2F10.2,') DZ=((',2F6.3,' ))',
+C    &      ' DZOPT=(',2F6.3,') CHMAX,CHIMIN=',2F10.1/)
 C-----------------------------------------------------------------------
       IF(CHIMAX-CHJMAX) 23,22,22
  22   IZFT(KIMAX)=100
@@ -2097,25 +2097,25 @@ C     LFLAG=0
       IF(LFLAG.NE.500)  LFLAG=0
 C-----------------------------------------------------------------------
 C     WRITE(6,9300) DZI0,DZJ0,DZI,DZJ,DZIOPT,DZJOPT,SIJ,PI,PJ,
-C    *              THI0,THJ0,THI,THJ,CHI1,
-C    *              CHI2,CHMAX,(X(LL),LL=1,4)
+C    &              THI0,THJ0,THI,THJ,CHI1,
+C    &              CHI2,CHMAX,(X(LL),LL=1,4)
 C9300 FORMAT(' ########## DZ0=(',2F7.3,')  DZ=(',2F7.3,')  ',
-C    *      '  DZ1=(',2F7.3,')    SIJ=',F5.1/
-C    *      '  PI,PJ=',2F7.3,' TH0=',2F8.3,' TH=',2F8.3/
-C    *      '  CHI1,CHI2=',2F10.4,'    CHMAX=',F10.3,' X(4)',4F9.3/)
+C    &      '  DZ1=(',2F7.3,')    SIJ=',F5.1/
+C    &      '  PI,PJ=',2F7.3,' TH0=',2F8.3,' TH=',2F8.3/
+C    &      '  CHI1,CHI2=',2F10.4,'    CHMAX=',F10.3,' X(4)',4F9.3/)
 C-----------------------------------------------------------------------
 C
 C1010 LFLAG=500
 C-----------------------------------------------------------------------
 C     IF(LFLAG.NE.500) GO TO 1011
 C     WRITE(6,9400) I,J,DZI0,DZJ0,DZI,DZJ,DZIOPT,DZJOPT,SIJ,PI,PJ,
-C    *              THI0,THJ0,THI,THJ,CHI1,
-C    *              CHIMIN,CHMAX,(X(LL),LL=1,4),NHITIB,NHITJB,LFLAG
+C    &              THI0,THJ0,THI,THJ,CHI1,
+C    &              CHIMIN,CHMAX,(X(LL),LL=1,4),NHITIB,NHITJB,LFLAG
 C9400 FORMAT(' (I,J)=',2I5,'  DZ0=(',2F6.3,') DZ=(',2F6.3,') ',
-C    *      ' DZ1=(',2F6.3,') SIJ=',F5.1/
-C    *      '  PI,PJ=',2F7.3,' TH0=',2F8.3,' TH=',2F8.3/
-C    *      '  CHI1,CHIMIN=',2F10.4,'    CHMAX=',F10.3,' X(4)',4F9.3,
-C    *      '  NHITIB,NHITJB=',2I3,'  LFLAG=',I4/)
+C    &      ' DZ1=(',2F6.3,') SIJ=',F5.1/
+C    &      '  PI,PJ=',2F7.3,' TH0=',2F8.3,' TH=',2F8.3/
+C    &      '  CHI1,CHIMIN=',2F10.4,'    CHMAX=',F10.3,' X(4)',4F9.3,
+C    &      '  NHITIB,NHITJB=',2I3,'  LFLAG=',I4/)
 C1011  CONTINUE
 C-----------------------------------------------------------------------
 C   CALCULATE Z-COORDINATE OF THE SECONDARY VERTEX

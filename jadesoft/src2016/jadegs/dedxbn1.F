@@ -44,7 +44,7 @@ C--------------------------------------------------------------C
       IMPLICIT INTEGER*2 (H)
 C----------------DEDX RESULTS-----------------------
        COMMON /CWORK1/ IER,NTRR,TRES(10,60),EWIR(60),XWIR(60),YWIR(60),
-     +                 RWIR(60),ZWIR(60)
+     *                 RWIR(60),ZWIR(60)
        DIMENSION ITRES(10,60)
        EQUIVALENCE (TRES(1,1),ITRES(1,1))
 C----------------END--------------------------------
@@ -63,12 +63,12 @@ C
       INTEGER  NPVECT(0:1)
       INTEGER ONE / 1 /, ZFLAG
       INTEGER RUN2PR(20) /
-     +       0, 1400, 2600, 3730, 6000, 7592,10000,11021,13088,14605,
-     +   15690,16803,17988,19068,21123,21705,22651,24201,25454,27938 /
+     *       0, 1400, 2600, 3730, 6000, 7592,10000,11021,13088,14605,
+     *   15690,16803,17988,19068,21123,21705,22651,24201,25454,27938 /
       LOGICAL MC
       REAL CMASS(4)
       REAL*4 AMASS(0:7) / 2*.1396, .511E-3, .1057, .1396, .4937,
-     +                     .9383, .1396 /
+     *                     .9383, .1396 /
       REAL*4 VDDATA / .00592 /
 C
       IPVERS=JPOINT(IPN+1)
@@ -109,10 +109,10 @@ C-
 C
       IF(ICALL.EQ.1 .AND. NDDINN .EQ. 0 ) PRINT 911, NHFCUT,PMCUT
   911 FORMAT('  -----------       ( LAST CHANGE 10/11/87 )       '/
-     +       '  -----------       NEW Z-CALIBRATION FOR OVERFLOW-HITS'/
-     +       '  -----------       CORRECT DE/DX FOR OVERFLOW-HITS'/
-     +       '  -----------       N(DE/DX)  >=',I8/
-     +       '  -----------       PMOM / Q  >=',F12.4/)
+     *       '  -----------       NEW Z-CALIBRATION FOR OVERFLOW-HITS'/
+     *       '  -----------       CORRECT DE/DX FOR OVERFLOW-HITS'/
+     *       '  -----------       N(DE/DX)  >=',I8/
+     *       '  -----------       PMOM / Q  >=',F12.4/)
 C
       IF(IJETC.EQ.0 .OR.IJHTL.EQ.0 .OR.IPATR.EQ.0) GOTO 56
       IF( .NOT. MC) THEN
@@ -230,7 +230,7 @@ C
           XE = ADATA(KT+12)
           YE = ADATA(KT+13)
           SE = R * ATAN2(SR*(CPHI*(XE-X0)+SPHI*(YE-Y0)),
-     +                   SR*(SPHI*(XE-X0)-CPHI*(YE-Y0)+R))
+     *                   SR*(SPHI*(XE-X0)-CPHI*(YE-Y0)+R))
           IF(ABS(R).GT.1.E5) SE=SQRT((XE-X0)**2+(YE-Y0)**2)
 C
 C --------------------------------------- ORDER CELLS
@@ -317,9 +317,9 @@ C                                           REMOVE HITS IN CORNERS
                 IF( ILAY.LE.1 .OR. ILAY.GT.14 ) THEN
                   IF( T.GT.90. ) THEN
                     IF( ( ILAY.EQ.16 .AND. LRFLAG.EQ.1 ) .OR.
-     +                  ( ILAY.EQ. 1 .AND. LRFLAG.EQ.0 ) .OR.
-     +                  ( ILAY.EQ.15 .AND. LRFLAG.EQ.1 .AND.
-     +                    T.GT.180. .AND. NR.EQ.2 ) ) THEN
+     *                  ( ILAY.EQ. 1 .AND. LRFLAG.EQ.0 ) .OR.
+     *                  ( ILAY.EQ.15 .AND. LRFLAG.EQ.1 .AND.
+     *                    T.GT.180. .AND. NR.EQ.2 ) ) THEN
                       IZB(NHIT) = 0
                     ENDIF
                   ENDIF
@@ -372,8 +372,8 @@ C
 C------- RECONSTRUCT SINGLE SIDE OVERFLOW AMPLITUDES
 C------- FROM FITTED ZR-TRACK-PARAMETERS
                 IF(NHRZ.GE.10 .AND.
-     +             .NOT. (ALR.LT.4095. .AND. ARR.LT.4095.) .AND.
-     +             .NOT. (ARR.GE.4095. .AND. ALR.GE.4095.) ) THEN
+     *             .NOT. (ALR.LT.4095. .AND. ARR.LT.4095.) .AND.
+     *             .NOT. (ARR.GE.4095. .AND. ALR.GE.4095.) ) THEN
                   LRFLAG = LRFL(J)
                   CALL ZSXY(NH1,LRFLAG,XJET1,YJET1,XJET2,YJET2)
                   ZTH = PZ0 + PZ1*SQRT(XJET1**2+YJET1**2)
@@ -461,7 +461,7 @@ C --------------------------------------- FINITE GATE LENGTH
                 AMP = AMP / (1.-0.25*TGAM-0.60*TGAM**2)
 C --------------------------------------- SATURATION
                 AMP = AMP/(1.-SATTO(INR+1,IPERD)*
-     +                     EXP(-SATTO(INR+2,IPERD)*SQRT(T)))
+     *                     EXP(-SATTO(INR+2,IPERD)*SQRT(T)))
                 AMP = AMP/(1.-SATQUA(NR,IPERD)*T**2/1000.)
                 AMP = AMP*9.67/SATFAC(NR,IPERD)
 C --------------------------------------- GAS PRESSURE
@@ -476,7 +476,7 @@ C --------------------------------------- ATTACHMENT
                 AMP = AMP * EXP(TIMCOR*T)
 C --------------------------------------- GAIN SATURATION
                AMP = AMP/(1.-SATSO(INR+1,IPERD)*EXP(-SATSO(INR+2,IPERD)*
-     +                                   SQRT(TTH**2+SATSO(7,IPERD)*T)))
+     *                                   SQRT(TTH**2+SATSO(7,IPERD)*T)))
 C --------------------------------------- EDGE FIELD DISTORTIONS
                 IF(NL.LE.3 .OR. NL.GE.12) THEN
                   IL = NL
@@ -503,7 +503,7 @@ C                                           WRITE COORDINATES FOR
 C                                           REQUESTED TRACK
                   IF( I .EQ. ISNGTR ) THEN
                     CALL ZSXY( NH1, LRFL(J),XWIR(NHF),YWIR(NHF),
-     +                                       XJET2,YJET2)
+     *                                       XJET2,YJET2)
                     RWIR(NHF) = SQRT( XWIR(NHF)**2+YWIR(NHF)**2)
                     EWIR(NHF) = AMP
                     CALL AMPS2Z( NH1, IJETC, ZWIR(NHF), WWW, IZGOOD )
@@ -531,7 +531,7 @@ C                                           IF NOT YET DONE
             NPHTI2 = IDATA(IBLN('HTII'))*2
             IF( NPHTI2.LE.0 .AND. NPHTS2.GT.0 ) THEN
               CALL CCRE( NPHTII, 'HTII', IDATA(NPHTSL-2),
-     +                   IDATA(NPHTSL), IER )
+     *                   IDATA(NPHTSL), IER )
               NPHTI2 = NPHTII*2
               IF( NPHTI2.GT.0 ) THEN
                 HDATA(NPHTI2+1) = HDATA(NPHTS2+1)
@@ -568,7 +568,7 @@ C                                           WITH GENERATING TRACK
                         NPV = IDATA(NPV+1)+(IPART-1)*IDATA(NPV+2)+NPV
                         ITYPE = IDATA(NPV+7)
                         PTOT = SQRT(ADATA(NPV+1)**2+ADATA(NPV+2)**2
-     +                                          +ADATA(NPV+3)**2)
+     *                                          +ADATA(NPV+3)**2)
                       ENDIF
                     ENDIF
                   ENDIF
@@ -590,7 +590,7 @@ C                                           REQUESTED TRACK
                 IF( I .EQ. ISNGTR ) THEN
                   NH1 = IJC(J)
                   CALL ZSXY( NH1, LRFL(J),XWIR(NHF),YWIR(NHF),
-     +                                    XJET2,YJET2)
+     *                                    XJET2,YJET2)
                   RWIR(NHF) = SQRT( XWIR(NHF)**2+YWIR(NHF)**2)
                   EWIR(NHF) = G(NHF)
                   CALL AMPS2Z( NH1, IJETC, ZWIR(NHF), WWW, IZGOOD )
@@ -849,7 +849,7 @@ CH 18/10/86      IF(X0.LE.1.E-15)GO TO 10
     2 CONTINUE
 CCC 2 WRITE(6,997)X0,SIGX,Y0,SIGY
   997 FORMAT(' *** AHIFTL: HOPELESS PARAMETERS. NO FIT ***',/,
-     + 13X,'X0,SIGX,Y0,SIGY:',4E12.4)
+     * 13X,'X0,SIGX,Y0,SIGY:',4E12.4)
       GO TO 4
     3 CONTINUE
 CCC 3 WRITE(6,998)
@@ -903,7 +903,7 @@ C        LIMIT OF ITERATIONS REACHED
    82 CONTINUE
 CCC82 WRITE(6,999)ITRMAX
   999 FORMAT(' *** AHIFTL: LIMIT OF',I4,' ITERATIONS REACHED, FIT STOPPE
-     +D ***')
+     *D ***')
       GO TO 91
    83 CONTINUE
 CCC83 WRITE(6,998)
@@ -1153,24 +1153,24 @@ C----- BHABHA - COS(THETA) - CORRECTION (03/06/87)
      4 0.9896,-0.066,0.432,0.93, 0.07,  0.9810,-0.030,0.515,1.15, 0.31,
      6 0.9944,-0.059,0.257,0.42,-0.29,  0.9845, 0.008,0.420,0.66,-0.04,
      8 0.9856,-0.002,0.417,1.10, 0.70,  0.9878, 0.015,0.413,0.62,-0.12,
-     + 0.9828, 0.021,0.391,0.61, 0.01,  0.9851, 0.036,0.416,0.99, 0.54,
+     * 0.9828, 0.021,0.391,0.61, 0.01,  0.9851, 0.036,0.416,0.99, 0.54,
      2 0.9845, 0.026,0.456,1.41, 1.03,  0.9855, 0.044,0.490,1.02, 0.21,
      4 0.9836, 0.020,0.474,0.87, 0.25,  0.9849, 0.008,0.492,1.07, 0.44,
      6 0.9837, 0.031,0.510,0.71,-0.25,  0.9823, 0.027,0.490,0.65,-0.31,
      8 0.9824,-0.040,0.262,0.68, 0.10,  0.9948,-0.025,0.347,0.44,-0.46,
-     + 0.9974,-0.099,0.426,1.96, 1.71,  0.9934,-0.074,0.369,1.18, 0.56,
+     * 0.9974,-0.099,0.426,1.96, 1.71,  0.9934,-0.074,0.369,1.18, 0.56,
      2 0.9876,-0.072,0.477,0.97, 0.08,  0.9794,-0.031,0.539,0.99,-0.11,
      4 0.9722, 0.004,0.628,1.18, 0.39,  0.9767,-0.025,0.468,0.96, 0.25,
      6 0.9745,-0.061,0.580,1.50, 0.70,  0.9896,-0.044,0.283,0.34,-0.63,
      8 0.9465,-0.105,0.577,2.05, 1.26,  0.9527,-0.035,0.425,0.80, 0.07,
-     + 0.9331,-0.003,0.565,1.71, 1.27,  0.9432,-0.081,0.756,2.36, 1.53,
+     * 0.9331,-0.003,0.565,1.71, 1.27,  0.9432,-0.081,0.756,2.36, 1.53,
      2 0.9537,-0.085,0.607,1.80, 1.02,  0.9543,-0.108,0.704,2.21, 1.24,
      3 0.9672,-0.079,0.463,1.64, 1.16,  0.9563,-0.015,0.533,1.18, 0.38,
      4 0.9589,-0.011,0.480,0.77,-0.15,  0.9589,-0.030,0.503,1.39, 0.75,
      8 0.9585,-0.051,0.537,1.41, 0.61,  0.9611,-0.038,0.385,0.97, 0.31/
 C----- CHARGE- MOMENTUM - CORRECTION (03/06/87)
       DATA APPQ/ 0.00410,  0.00535,  0.00517,  0.00319,
-     + 0.00561,  0.00393,  0.00364,  0.00327,  0.00369,
+     * 0.00561,  0.00393,  0.00364,  0.00327,  0.00369,
      1 0.00200,  0.00284,  0.00339,  0.00389,  0.00554,
      1 0.00387,  0.00291,  0.00407,  0.00638,  0.00599,
      2 0.00320,  0.00501,  0.00638,  0.00539,  0.00510,
@@ -1179,7 +1179,7 @@ C----- CHARGE- MOMENTUM - CORRECTION (03/06/87)
      3 0.01216,  0.00773,  0.00787,  0.01058,  0.01143/
 C-
       DATA APP1/-0.00082, -0.00509, -0.00552,  0.00127,
-     + 0.00384,  0.00270,  0.00227,  0.00062,  0.00327,
+     * 0.00384,  0.00270,  0.00227,  0.00062,  0.00327,
      1 0.00020,  0.00267,  0.00267,  0.00316,  0.00317,
      1 0.00261,  0.00246,  0.00143,  0.00228,  0.00285,
      2 0.00426,  0.00534,  0.00645,  0.00515,  0.00366,
@@ -1188,7 +1188,7 @@ C-
      3 0.00831,  0.00711,  0.00779,  0.00703,  0.00827/
 C-
       DATA APP2/  0.000033, 0.000158, 0.000396,-0.000192,
-     + -0.000240,-0.000201,-0.000115, 0.000075,-0.000133,
+     * -0.000240,-0.000201,-0.000115, 0.000075,-0.000133,
      1  0.000024,-0.000042,-0.000148,-0.000103,-0.000237,
      1 -0.000128,-0.000195,-0.000173,-0.000108,-0.000167,
      2 -0.000236,-0.000278,-0.000391,-0.000322,-0.000087,

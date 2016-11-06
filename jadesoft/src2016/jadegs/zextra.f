@@ -25,8 +25,8 @@ C ----------------------------------------------- BOS COMMON
 C ----------------------------------------------- END BOS DECLARATIONS
 C ----------------------------------------------- Z-CHAMBER CONSTANTS
        COMMON /CZGEO/ RZCHI,RZCHA,NZRPHI,NZZ,Z1ZCH,Z2ZCH,
-     +              ZCHA, ZCHB, ZCHSS, ZCHDL, ZCHDLL,
-     +              DLZZ, DLZPMI, DLZW1, DLZW2
+     *              ZCHA, ZCHB, ZCHSS, ZCHDL, ZCHDLL,
+     *              DLZZ, DLZPMI, DLZW1, DLZW2
 C ----------------------------------------------- EXTR. TRACK COMMON
       COMMON/CZEXT/XT, YT, ZT,XI1,YI1,ZI1,XI2,YI2,ZI2
 C                  XT, YT, ZT    COORDS OF LAST MEASURED PT ON TRK
@@ -58,13 +58,13 @@ C
       DYT= RW(IPT+16)
       IER= 1
       IF(DXT.EQ.0. .OR. DYT.EQ.0. .OR. RW(IPT+28).EQ.0.)
-     +                                 WRITE(6,9000) KRUN,KREC,II,
-     +                                 XT,YT,ZT,DXT,DYT,RW(IPT+28)
+     *                                 WRITE(6,9000) KRUN,KREC,II,
+     *                                 XT,YT,ZT,DXT,DYT,RW(IPT+28)
       IF(DXT.EQ.0. .OR. DYT.EQ.0. .OR. RW(IPT+28).EQ.0.)
-     +                                 GOTO 99
+     *                                 GOTO 99
  9000 FORMAT(' -------- ZEXTRA --- EVENT ',I6,I6,' TRACK ',I3,
-     +       ' ZERO CURVATURE OR DIRECTION VECTOR',
-     +      /'          XT,YT,ZT,DXT,DYT,CURV: ',6E12.4)
+     *       ' ZERO CURVATURE OR DIRECTION VECTOR',
+     *      /'          XT,YT,ZT,DXT,DYT,CURV: ',6E12.4)
       PHI= ATAN2(DYT,DXT)
       R  = 1./RW(IPT+28)
 

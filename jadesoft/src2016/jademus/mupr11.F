@@ -21,7 +21,7 @@ C PMF 03.11.98
 #include "cmubcs.for"
       LOGICAL BADT,BADL,BADX,BADY,BADZ,WOTZ,WOTY,WOTX,FOUR
 C
-C  FIND MUR1/1 * MUR1/2.
+C  FIND MUR1/1 & MUR1/2.
       CALL CLOC(IP11,'MUR1',1)
       IF(IP11.LE.0)GO TO 97
       CALL CLOC(IP12,'MUR1',2)
@@ -63,9 +63,9 @@ C  FIND MUR1/1 * MUR1/2.
       IF (I.EQ.1) WRITE(6,100)
       WRITE(6,101)I,ICHAM,IHIT,ITD,ITL,IZ,IY,IX,JZ,JY,JX,IFOUR
   100 FORMAT('0 MUR1/1    MUON COORDINATES'/
-     + ' ',19X,'       ....VALIDITY OF....       NORMAL COOR 1.HIT'/
-     + '    HIT# CHAMBER HIT       TIME LONG   Z  Y  X         Z  Y ',
-     + ' X    LOST')
+     * ' ',19X,'       ....VALIDITY OF....       NORMAL COOR 1.HIT'/
+     * '    HIT# CHAMBER HIT       TIME LONG   Z  Y  X         Z  Y ',
+     * ' X    LOST')
   101 FORMAT(' ',I5,I9,'  /',I2,5X,I6,I4,2X,3I3,7X,3I3,I8)
    10 CONTINUE
       RETURN

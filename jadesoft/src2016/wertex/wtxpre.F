@@ -42,8 +42,8 @@ C
 C%MACRO MVERTEX1
 C     MACRO FOR VERTEX-FIT ROUTINES
       COMMON /CWORK1/ NT,T(2000),NV,V(200),A(300),B(24),NTIND(20),S(20),
-     +                CHITR(20),
-     +                JTGOD(50),JTBAD(50),VSAVE(10),V2(20,20)
+     *                CHITR(20),
+     *                JTGOD(50),JTBAD(50),VSAVE(10),V2(20,20)
 C
       DIMENSION IT(2),IV(2)
       EQUIVALENCE (T(1),IT(1)),(V(1),IV(1))
@@ -55,9 +55,9 @@ C
 C
 C        CONSTANTS
       COMMON /CVTXC/ XB,YB,ZB,RTANK,DTANK,X0INN,SIGX0,SIGZ0,PNTMIN,
-     +               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
-     +               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
-     +               EEXYMX,PHEMAX,SIG1
+     *               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,
+     *               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,
+     *               EEXYMX,PHEMAX,SIG1
       REAL*8 AA,BB,CC,DD,EE,RR,DR,DR1M
       REAL*8 PHI,SPHI,CPHI,XD,YD,PARKOR,DSR,DPHI
       REAL H03
@@ -199,7 +199,7 @@ C     ZS PARAMETERS
       T(JT+38) = PROJL
 C     TRUE COVARIANCES FROM COMFIT
       IF ((LT.NE.64).OR.(IDATA(KT+2).NE.301).OR.(IDATA(KT+44).NE.3))
-     +   GOTO 139
+     &   GOTO 139
 C     RAMCKE TEST
       IF (ADATA(KT+52).EQ.0.0) GOTO 139
       T(JT+32) = ADATA(KT+52)
@@ -237,8 +237,8 @@ C
 C---- START ITERATION AT RUNVERTEX ?
 C
       IF (TBIT(MODE,31)) T(JT+15) =
-     +      ( ATAN2( SR*(RVX - XM), SR*(YM - RVY) )
-     +      - T(JT+3) ) * T(JT+2)
+     &      ( ATAN2( SR*(RVX - XM), SR*(YM - RVY) )
+     &      - T(JT+3) ) * T(JT+2)
 C
 C---- MC WITHOUT MULTIPLE SCATTERING ?
 C
@@ -290,7 +290,7 @@ C        ANY INTERSECT ?
 C        MULT. SCATTERING IN INNER TANK WALL (AND VTXC)
       BETA = 1.
       TH2 = (14.1/(PT*BETA))**2 * X0ID * T(JT+24)
-     +      * ( 1. + 1./9. * ALOG10( X0ID / T(JT+24) ) )**2
+     &      * ( 1. + 1./9. * ALOG10( X0ID / T(JT+24) ) )**2
       T(JT+16) = SQRT(TH2)
    17 CONTINUE
 C
@@ -323,7 +323,7 @@ C        MULT. SCATTERING IN BEAMPIPE
       BETA = 1.
       TH2VX = 0.
       IF (X0VX.GT.0.) TH2VX = (14.1/(PT*BETA))**2 * X0VX * T(JT+24)
-     +      * ( 1. + 1./9. * ALOG10( X0VX / T(JT+24) ) )**2
+     &      * ( 1. + 1./9. * ALOG10( X0VX / T(JT+24) ) )**2
       T(JT+17) = SQRT(TH2VX)
   172 CONTINUE
 C

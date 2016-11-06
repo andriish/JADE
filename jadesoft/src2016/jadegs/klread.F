@@ -194,9 +194,9 @@ C
 C------------------  C O D E  ------------------------------------------
 C
  2900 FORMAT(/' FIRST CALL TO KLREAD, EVENT DATE: ',6I5,
-     +             ' TZERO:',3F6.2/)
+     *             ' TZERO:',3F6.2/)
  2901 FORMAT(/' KLREAD WARNING : NO "SPINNING" BLOCK DATA. LG RECAL ',
-     +        'NOT POSSIBLE'/)
+     *        'NOT POSSIBLE'/)
  2902 FORMAT(' KLREAD ERROR: EVENT TIME =',I12,'FOR EVENT',2I6)
  2903 FORMAT(' KLREAD ERROR CODE',I4,' FORCE NORMAL END OF PROGRAM.')
 C
@@ -246,8 +246,8 @@ C---
          ICALIB(1)=100
          DO 2 I=1,NBANKS
             ICALIB(I+1) = ICALIB(I) + MAXL(I)
-           WRITE(6,9501) I, ICALIB(I), MAXL(I), ICALIB(I+1)
-9501       FORMAT(1X,4I10)
+C           WRITE(6,9501) I, ICALIB(I), MAXL(I), ICALIB(I+1)
+C9501       FORMAT(1X,4I10)
     2    CONTINUE
 C---
 C---     CLEAR ALL BANKS EXCEPT MUCA.
@@ -270,10 +270,9 @@ C---     FILES. "KUNITA" AND "LUNITA" ARE LISTS OF FORTRAN UNIT NUMBERS
 C---     FOR THE STARTING AND UPDATE FILES RESPECTIVELY.
 C---
          ITP = NCALI
-         write(*,*)ITP , NCALI
          DO 30 I=1,NCALI
             LUNIT=LUNITA(ITP)
-          write(*,*) LUNIT
+          write(*,*) 'FIXME'
             READ(LUNIT,ERR=304) NDUUM,ITM1
 C            READ(LUNIT,ERR=304,END=305) NDUUM,ITM1
             REWIND LUNIT
@@ -314,7 +313,6 @@ C     IF(ICALO.EQ.1) PRINT 8756
 C8756 FORMAT(' XV ENLARGED BY .1')
       IEVTIM=KTMCON(ITIME,NOW,LASTIM)
 C
-
 C                          CHECK IF EVENT TIME IN RANGE OF CONSTANTS
       IF(IEVTIM.LT.LSTIME(1)) GOTO 9001
 C
@@ -364,8 +362,7 @@ CCCCC
 C PMF 16/11/98: Read the first word before begin of the record, i.e. the length NWORD
 C               of the record, go back in the record by one unit and then CALL EVREA1
 C               in order to read the record. Otherwise EVREA1 does not work correctly.
-         
-         
+
        REWIND LUNIT  
        IF(IREAD.EQ.1) THEN
 C         READ(LUNIT,ERR=320,END=321) NWORDS
@@ -438,8 +435,8 @@ C    *PRINT 2005, LENDH,LREC,NHEAD,ICALIB(IBANK+1)
       CALL MVCL(ACALIB,IPNTR,HKDAT,0,LENDH)
 C IF VTXC THEN COPY TO CVCCAL
       IF (IBANK.EQ.14)
-     +  CALL MVCL( VCDATE, 0, ACALIB, IPNTR, 4336 -51*4 )
-*PMF 12/11/00     *  CALL MVCL( VCDATE, 0, ACALIB, IPNTR, 4336 )
+     &  CALL MVCL( VCDATE, 0, ACALIB, IPNTR, 4336 -51*4 )
+*PMF 12/11/00     &  CALL MVCL( VCDATE, 0, ACALIB, IPNTR, 4336 )
       GOTO 7
 C
 C---

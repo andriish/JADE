@@ -22,21 +22,21 @@ C
       EQUIVALENCE ( HW(1), IW(1) )
 C
       COMMON / CWORK / HBP(24), HTOF(42), IRES(8), NLGBR(42), NLGQ(8),
-     +                 NTAG(2)
+     *                 NTAG(2)
 C
 C MASK IS BLOCK DATA SET IN RDTRIG
       COMMON /CMASK/ MASK(16),MASK4,MASK3,MASK2,MASK1,HKRE(3,8)
 C
 C
       COMMON /CTRIGG/ IHIST(3),NBPTFW,TAGADC,IDUM1(4),HDUM1,
-     +  HLGBRT,HLGBST,HLGQT,HLGTOT(4,2),HECAPT(4),HLGTL,HLGTH,HTGTRG,
-     +                HDUM2(9),IWIDBS,NRNBSL,NRNBSH,NTOFBS,IDUM2(10),
-     +                NTOFC,NTOFC1,NTOFC2,NTBGC,NTBGC1,NTBGC2,
-     +                IWCOLL,IWCOLN,IWMPRG,HFMPRL,HFMPRH,HWCOLN,HMPRON,
-     +                IWCTBG,NTFCOL,NTFCLN,NTFBS2,IDUM3(9),
-     +  HITCLL(3),HITWLL(3),HITSUM(3),HCHAMB(3),HMASK(16,3),HDEADC(10),
-     +  HACC1,HACC2,HACC3,HACC4,HACCM,HDUM6,IWIDT2,HACCB1,HACCB2,
-     +  HT1ACC,HT1PSP,IDUM4(8)
+     *  HLGBRT,HLGBST,HLGQT,HLGTOT(4,2),HECAPT(4),HLGTL,HLGTH,HTGTRG,
+     *                HDUM2(9),IWIDBS,NRNBSL,NRNBSH,NTOFBS,IDUM2(10),
+     *                NTOFC,NTOFC1,NTOFC2,NTBGC,NTBGC1,NTBGC2,
+     *                IWCOLL,IWCOLN,IWMPRG,HFMPRL,HFMPRH,HWCOLN,HMPRON,
+     *                IWCTBG,NTFCOL,NTFCLN,NTFBS2,IDUM3(9),
+     *  HITCLL(3),HITWLL(3),HITSUM(3),HCHAMB(3),HMASK(16,3),HDEADC(10),
+     *  HACC1,HACC2,HACC3,HACC4,HACCM,HDUM6,IWIDT2,HACCB1,HACCB2,
+     *  HT1ACC,HT1PSP,IDUM4(8)
 C                                           BIT PACKING FUNCTION
       IBPAT(NUM) = MAX0( MIN0(NUM,7)*2, 1 )
 C
@@ -276,15 +276,15 @@ C                                           THRESHOLDS
       ITAG = ITAG + 1
       HW(NLATC2+20) = hLOR( HW(NLATC2+20), hint(MASK(13)) ) ! PMF 10/06/99: hlor,hint
       IF( NTAG(1) .GT. HLGTH )
-     +     HW(NLATC2+20) = hLOR( HW(NLATC2+20), hint( MASK(14) ) ) ! PMF 10/06/99: hlor,hint
+     *     HW(NLATC2+20) = hLOR( HW(NLATC2+20), hint( MASK(14) ) ) ! PMF 10/06/99: hlor,hint
  2410 IF( NTAG(2) .LT. HLGTL ) GO TO 3000
       ITAG = ITAG + 1
       HW(NLATC2+20) = hLOR( HW(NLATC2+20), hint( MASK(15) ) ) ! PMF 10/06/99: hlor,hint
       IF( NTAG(2) .GT. HLGTH )
-     +     HW(NLATC2+20) = hLOR( HW(NLATC2+20), hint( MASK(16) ) ) ! PMF 10/06/99: hlor,hint
+     *     HW(NLATC2+20) = hLOR( HW(NLATC2+20), hint( MASK(16) ) ) ! PMF 10/06/99: hlor,hint
 C  LUMI BIT
       IF( NTAG(1) .GT. HLGTH.AND.NTAG(2).GT.HLGTH )
-     +                        HW(NLATC2+20) = HW(NLATC2+20) + 64
+     *                        HW(NLATC2+20) = HW(NLATC2+20) + 64
  3000 CONTINUE
 C
 C ------------------------------------  T1- ACCEPT CONDITIONS
@@ -327,7 +327,7 @@ C
 C                 COLLINEAR TOF, WIDE MULTIPRONG
 C
       IF(IMPRG.EQ.1 .AND. NTOF.LE.HFMPRH .AND. NTOF.GE.HFMPRL )
-     +                                    IPOST = LOR( IPOST, MASK(7) )
+     *                                    IPOST = LOR( IPOST, MASK(7) )
 C -------------------------------------------------
 C                                           FINAL TRIGGER WORDS
 C
@@ -360,8 +360,8 @@ C
       COMMON /CMASK/ MASK(16),MASK4,MASK3,MASK2,MASK1,HKRE(3,8)
 C
       COMMON / CWORK / HTOF(42),NLGBR(42),NLGQ(8),NTAG(2),HTBG(42),
-     +                 NBG(42),NBS(7),HBG(42),NECA(2),NETOT(2),
-     +                 NQARR(8),NBARR(7)
+     *                 NBG(42),NBS(7),HBG(42),NECA(2),NETOT(2),
+     *                 NQARR(8),NBARR(7)
 C
 C  HTOF:  TOF COUNTER LATCHES
 C  NLGBR: ENERGY OF BARREL SUB-GROUPS, IMMEDIATELY BEHIND TOF-COUNTER
@@ -377,14 +377,14 @@ C  NQARR: LATCHES FOR END CAP QUADRANTS
 C  NBARR: LATCHES FOR SEPTANTS
 C
       COMMON /CTRIGG/ IHIST(3),NBPTFW,TAGADC,IDUM1(4),HDUM1,
-     +  HLGBRT,HLGBST,HLGQT,HLGTOT(4,2),HECAPT(4),HLGTL,HLGTH,HTGTRG,
-     +                HDUM2(9),IWIDBS,NRNBSL,NRNBSH,NTOFBS,IDUM2(10),
-     +                NTOFC,NTOFC1,NTOFC2,NTBGC,NTBGC1,NTBGC2,
-     +                IWCOLL,IWCOLN,IWMPRG,HFMPRL,HFMPRH,HWCOLN,HMPRON,
-     +                IWCTBG,NTFCOL,NTFCLN,NTFBS2,IDUM3(9),
-     +  HITCLL(3),HITWLL(3),HITSUM(3),HCHAMB(3),HMASK(16,3),HDEADC(10),
-     +  HACC1,HACC2,HACC3,HACC4,HACCM,HDUM6,IWIDT2,HACCB1,HACCB2,
-     +  HT1ACC,HT1PSP,IDUM4(8)
+     *  HLGBRT,HLGBST,HLGQT,HLGTOT(4,2),HECAPT(4),HLGTL,HLGTH,HTGTRG,
+     *                HDUM2(9),IWIDBS,NRNBSL,NRNBSH,NTOFBS,IDUM2(10),
+     *                NTOFC,NTOFC1,NTOFC2,NTBGC,NTBGC1,NTBGC2,
+     *                IWCOLL,IWCOLN,IWMPRG,HFMPRL,HFMPRH,HWCOLN,HMPRON,
+     *                IWCTBG,NTFCOL,NTFCLN,NTFBS2,IDUM3(9),
+     *  HITCLL(3),HITWLL(3),HITSUM(3),HCHAMB(3),HMASK(16,3),HDEADC(10),
+     *  HACC1,HACC2,HACC3,HACC4,HACCM,HDUM6,IWIDT2,HACCB1,HACCB2,
+     *  HT1ACC,HT1PSP,IDUM4(8)
 C
       DATA HELP/0,0/
 C
@@ -651,17 +651,17 @@ C                                           THRESHOLDS
       HW(NLATC2+24) = hLOR( HW(NLATC2+24), hint( MASK(6) ) ) ! PMF 10/06/99: hlor,hint 
       HW(NLATC2+28) = hLOR( HW(NLATC2+28), hint( MASK(13)) ) ! PMF 10/06/99: hlor,hint 
       IF( NTAG(1) .GT. HLGTH )
-     +     HW(NLATC2+28) = hLOR( HW(NLATC2+28), hint( MASK(14) ) ) ! PMF 10/06/99: hlor,hint 
+     *     HW(NLATC2+28) = hLOR( HW(NLATC2+28), hint( MASK(14) ) ) ! PMF 10/06/99: hlor,hint 
  2410 IF( NTAG(2) .LT. HLGTL ) GO TO 3000
       ITAG = ITAG + 1
       HW(NLATC2+24) = hLOR( HW(NLATC2+24), hint( MASK(3) ) ) ! PMF 10/06/99: hlor,hint 
       HW(NLATC2+24) = hLOR( HW(NLATC2+24), hint( MASK(7) ) ) ! PMF 10/06/99: hlor,hint 
       HW(NLATC2+28) = hLOR( HW(NLATC2+28), hint( MASK(15) ) ) ! PMF 10/06/99: hlor,hint 
       IF( NTAG(2) .GT. HLGTH )
-     +     HW(NLATC2+28) = hLOR( HW(NLATC2+28), hint( MASK(16) ) ) ! PMF 10/06/99: hlor,hint 
+     *     HW(NLATC2+28) = hLOR( HW(NLATC2+28), hint( MASK(16) ) ) ! PMF 10/06/99: hlor,hint 
 C  LUMI BIT
       IF( NTAG(1) .GT. HLGTH.AND.NTAG(2).GT.HLGTH )
-     +                        HW(NLATC2+24) = HW(NLATC2+24) + 16
+     *                        HW(NLATC2+24) = HW(NLATC2+24) + 16
  3000 CONTINUE
 C
 C  - - - - - - - - - - - - -   END OF LATCHES - - - - - -

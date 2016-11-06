@@ -63,12 +63,12 @@ C
          NBANK = NNVTXC
          IF( IPVTXC .GT. 0 ) GO TO 80
             LNHARD = (HEAD(15) .GE. 5  .AND.  HEAD(16) .EQ. 1984)
-     +                                .OR.   HEAD(16) .GE. 1985
+     &                                .OR.   HEAD(16) .GE. 1985
             IPBPCH = IDATA(IBLN('BPCH'))
             NEWDET = LVTXC .OR. (IEVTP.EQ.0 .AND. LNHARD)
             IF( NEWDET .AND. IPBPCH .LE. 0 ) WRITE(6,40) NNVTXC
    40       FORMAT(' VTXC BANK NR',I3,' (GIVEN BY COMMAND VTXC) NOT EXIS
-     +TING')
+     &TING')
    50 NBANK = 10
       CALL CLOC( IPVTXC, 'VTXC', NBANK )
       IF( IPVTXC .LE. 0 )  GO TO 2000
@@ -99,7 +99,7 @@ C
                IPAC = IPVTH2 + ILHDVT + (I-1)*ILTLVT + 1
                IF( IPAC .LE. IPVTH2+ILVTHT ) GO TO 300
       CALL TRMOUT(80,'DISPVC : VTHT-BANK --> NUMBER OF TRACKS IN HEADER
-     +IS WRONG !^')
+     &IS WRONG !^')
                GO TO 800
   300          NHTS = HDATA(IPAC)
 C
@@ -142,7 +142,7 @@ C
                IPAC = IPVPA2 + ILHDVP + (I-1)*ILTLVP + 5
                IF( IPAC .LE. IPVPA2+ILVPAT ) GO TO 1100
       CALL TRMOUT(80,'DISPVC : VPAT-BANK --> NUMBER OF TRACKS IN HEADER
-     +IS WRONG !^')
+     &IS WRONG !^')
                GO TO 1350
  1100          NHTL   = HDATA(IPAC)
                NIDT   = HDATA(IPAC-4)
@@ -150,7 +150,7 @@ C
                IPHWDS = IDATA(IBLN('HWDS'))
                IF( FLVCDO(15) .AND. IPHWDS .GT. 0 ) IPPATR = IPHWDS
                IPTRK  = IPPATR + IDATA(IPPATR+1)
-     +                                 + (NIDT-1)*IDATA(IPPATR+3)
+     &                                 + (NIDT-1)*IDATA(IPPATR+3)
 C
                LCOMFT = .FALSE.
                IF( IDATA(IPPATR+3).LT.64 ) GOTO 1190
@@ -191,7 +191,7 @@ C
                IPACR = IPVPR2 + ILHDVR + (I-1)*ILTLVR + 5
                IF( IPACR .LE. IPVPR2+ILVPRE ) GO TO 1370
       CALL TRMOUT(80,'DISPVC : VPAT-BANK --> NUMBER OF TRACKS IN HEADER
-     +IS WRONG !^')
+     &IS WRONG !^')
                GO TO 1400
  1370          NHTLR  = HDATA(IPACR)
                NIDTR  = HDATA(IPACR-4)
@@ -199,7 +199,7 @@ C
                IPHWDS = IDATA(IBLN('HWDS'))
                IF( FLVCDO(15) .AND. IPHWDS .GT. 0 ) IPPATR = IPHWDS
                IPTRK  = IPPATR + IDATA(IPPATR+1)
-     +                                 + (NIDTR-1)*IDATA(IPPATR+3)
+     &                                 + (NIDTR-1)*IDATA(IPPATR+3)
 C
                DO 1380 J = 1, NHTLR
                   IPHLR = HDATA(IPACR+J)
@@ -242,32 +242,32 @@ C
                     CALL HITMRK( JNDEX, -X2, Y2, 1.5, 0 )
  1600         IF( .NOT. FLVCDO(2) ) GO TO 1700
                     IF( IFLH .LT. 0 .OR. IFLH .EQ. 2 )
-     +                         CALL PLYGON( 8, 1.75, -X1, Y1, 0 )
+     &                         CALL PLYGON( 8, 1.75, -X1, Y1, 0 )
                     IF( IFLH .GT. 0 )
-     +                         CALL PLYGON( 8, 1.75, -X2, Y2, 0 )
+     &                         CALL PLYGON( 8, 1.75, -X2, Y2, 0 )
  1700         IF( .NOT. FLVCDO(3) ) GO TO 1750
                     IDSC = -1
                     IF( HTUSED(IIA) .EQ. 1 ) IDSC = 0
                     IF( IFLP .LT. 0 .OR. IFLP .EQ. 2 )
-     +                         CALL PLYGON( 4, 2.75, -X1, Y1, IDSC )
+     &                         CALL PLYGON( 4, 2.75, -X1, Y1, IDSC )
                     IF( IFLP .GT. 0 )
-     +                         CALL PLYGON( 4, 2.75, -X2, Y2, IDSC )
+     &                         CALL PLYGON( 4, 2.75, -X2, Y2, IDSC )
  1750         IF( .NOT. FLVCDO(7) ) GO TO 1800
                     IF( IFLPR .LT. 0 .OR. IFLPR .EQ. 2 )
-     +                         CALL PLYGON( 3, 2.75, -X1, Y1, 0 )
+     &                         CALL PLYGON( 3, 2.75, -X1, Y1, 0 )
                     IF( IFLPR .GT. 0 )
-     +                         CALL PLYGON( 3, 2.75, -X2, Y2, 0 )
+     &                         CALL PLYGON( 3, 2.75, -X2, Y2, 0 )
  1800         IF( INDEX .NE. 20 .OR.
-     +            ABS(XMAX-XMIN) .GT. 0.5*ABS(XMAXST(20) - XMINST(20))
-     +            .OR. .NOT. FLVCDO(1) )
-     +                                                GO TO 1900
+     &            ABS(XMAX-XMIN) .GT. 0.5*ABS(XMAXST(20) - XMINST(20))
+     &            .OR. .NOT. FLVCDO(1) )
+     &                                                GO TO 1900
                     CALL HITSCL( -X1, Y1, 1.5 )
                     CALL HITSCL( -X2, Y2, 1.5 )
 C
                     IF( .NOT. FLVCDO(5) ) GO TO 1900
                        IF( ABS(XMAX-XMIN) .GT.
-     +                                0.2*ABS(XMAXST(20) - XMINST(20)) )
-     +                                                GO TO 1900
+     &                                0.2*ABS(XMAXST(20) - XMINST(20)) )
+     &                                                GO TO 1900
                           CALL HITPNT( -X1, Y1, -X2, Y2, IIA )
                           GO TO 1900
 C
@@ -275,7 +275,7 @@ C
                LZDSP = .FALSE.
                IF( FLVCDO(1) ) LZDSP = .TRUE.
                IF( FLVCDO(1) .OR. FLVCDO(2) .OR. .NOT.FLVCDO(3) )
-     +                                             GO TO 1815
+     &                                             GO TO 1815
                   IF( IFLP .NE. 0 ) LZDSP = .TRUE.
  1815          IF( (.NOT.DSPDTL(9)) .OR. DSPDTL(10) ) GO TO 1820
                   IF( LZDSP ) CALL HITMRK( JNDEX, ZET, R, 1.5, 0 )

@@ -28,21 +28,21 @@ C
       CALL CORE(HWORK,107)
       WRITE(cHWORK,1)           ! PMF 17/11/99: UNIT=JUSCRN changed to cHWORK
     1 FORMAT(' NR   ADC(L)  ADC(R)   TDC(L)  TDC(R)   TDC1(L)  TDC1(R)
-     + ADCF(L)  ADCF(R)   TDCF(L)  TDCF(R)   TDC(SPARE)')
+     & ADCF(L)  ADCF(R)   TDCF(L)  TDCF(R)   TDC(SPARE)')
       CALL SYSSYM(XS,YS,SIZE,HWORK,107,0.)
       YS = YS - .9*DEL
       DO 6 I = 1,42
          IF( I .GT. 16 ) GO TO 3
             CALL CORE(HWORK,106)
             WRITE(cHWORK,2) I,(HADC(J,I),J=1,2),(HTDC(J,I),J=1,2), ! PMF 17/11/99: JUSCRN changed to cHWORK
-     +         (HTDC1(J,I),J=1,2),(HADCF(J,I),J=1,2),(HTDCF(J,I),J=1,2),
-     +                                                         HTSPAR(I)
+     &         (HTDC1(J,I),J=1,2),(HADCF(J,I),J=1,2),(HTDCF(J,I),J=1,2),
+     &                                                         HTSPAR(I)
     2       FORMAT(' ',I2,2X,I6,2X,I6,3X,I6,2X,I6,3(3X,I7,2X,I7),3X,I10)
             CALL SYSSYM(XS,YS,SIZE,HWORK,106,0.)
             GO TO 5
     3    CALL CORE(HWORK,55)
          WRITE(cHWORK,4) I,(HADC(J,I),J=1,2),(HTDC(J,I),J=1,2), ! PMF 17/11/99: UNIT=JUSCRN changed to cHWORK
-     +                     (HTDC1(J,I),J=1,2)
+     &                     (HTDC1(J,I),J=1,2)
     4    FORMAT(' ',I2,2X,I6,2X,I6,3X,I6,2X,I6,3X,I7,2X,I7)
          CALL SYSSYM(XS,YS,SIZE,HWORK,55,0.)
     5    YS = YS - .9*DEL
