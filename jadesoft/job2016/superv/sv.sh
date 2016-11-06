@@ -9,11 +9,11 @@
 ##########################################
 
 # Check current platform
-if [ `uname` != 'AIX' ] ; then
-   echo Current platform is not supported.
-   exit
-fi
-. ../../Init_jade_env.ksh
+#if [ `uname` != 'Linux' ] ; then
+ #  echo Current platform is not supported.
+  # exit
+#fi
+#. ../../Init_jade_env.sh
 
 # Time stamp:
 echo
@@ -24,12 +24,12 @@ echo
 SVSTART=ON
 
 # Set input BOS file (no more than 78 characters)
-MCBOS=`pwd`/mc_t86-05-17.bos
+MCBOS=`pwd`/1.bos
 
 # Set calibration file: Use either AUPDAT1 or ( BUPDAT0 and BUPDAT1 )
-AUPDAT0=${JADE_CAL}/aupdat1.b
-#BUPDAT0=${JADE_CAL}/bupdat0.b
-#BUPDAT1=${JADE_CAL}/bupdat1.b
+AUPDAT0=$JADE_CAL/aupdat1.b
+#BUPDAT0=$JADE_CAL/bupdat0.b
+#BUPDAT1=$JADE_CAL/bupdat1.b
 
 # Set the name of the .hist, .bos and .bnk ouput files for this run
 NAME=sv_t86-05-17
@@ -46,7 +46,8 @@ if [ $SVSTART = 'ON' ] ; then
 fi
 
 # Execute:
-time superv << EOF
+#time superv << EOF
+cat  << EOF
 LIST
 
 C Initialise random number generator

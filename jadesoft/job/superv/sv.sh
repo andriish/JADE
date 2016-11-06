@@ -9,11 +9,11 @@
 ##########################################
 
 # Check current platform
-if [ `uname` != 'Linux' ] ; then
-   echo Current platform is not supported.
-   exit
-fi
-. ../../Init_jade_env.sh
+#if [ `uname` != 'Linux' ] ; then
+#   echo Current platform is not supported.
+#   exit
+#fi
+#. ../../Init_jade_env.sh
 
 # Time stamp:
 echo
