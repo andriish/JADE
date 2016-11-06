@@ -25,4 +25,6 @@ cd  ../Tests
 cp *updat*.b /tmp/
 cat mcjadecard.txt | mcjade
 h2root sherpa34gev.hist
+
+export GFORTRAN_CONVERT_UNIT='big_endian;native:2'
 cat supervcard.txt | superv
