@@ -1,4 +1,19 @@
 #!/bin/bash
+cd main2016
+
+
+for d in $(ls -d */); do
+cd $d 
+cp ../../main/$d/*.f ./
+cp ../../main/$d/*.F ./
+cp ../../main/$d/*.for ./
+cp ../../main_patched/$d/*.f ./
+cp ../../main_patched/$d/*.F ./
+cp ../../main_patched/$d/*.for ./
+cd ..
+done
+
+
 cd src2016
 
 

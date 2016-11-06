@@ -250,17 +250,10 @@ C... Set calibration constants reading options
             LBMC(I)=0
          ENDIF
       ENDDO
-      
-C      CCALF(1)='/home/andriish/superv/aupdat1.b'
-C      CCALF(2)='/home/andriish/superv/bupdat0.b'
-C      CCALF(3)='/home/andriish/superv/bupdat1.b'
-C      CMCBOSF='/home/andriish/superv/mc_t86-05-17.bos'
-      
 C... Input file with events in BOS format
       INQUIRE(FILE=CMCBOSF,EXIST=LEXIST)
       IF( LEXIST ) THEN
-         OPEN(IUNIT,FILE=CMCBOSF(1:LENOCC(CMCBOSF))
-     +,STATUS='UNKNOWN',FORM='UNFORMATTED')
+         OPEN(IUNIT,FILE=CMCBOSF,STATUS='UNKNOWN',FORM='UNFORMATTED')
       ELSE
          WRITE(*,'(A)') 'USER: Input BOS file does not exist!'
          WRITE(*,'(A)') '... will stop now!'
@@ -275,24 +268,18 @@ C... Calibration files
          IF( I.EQ.1 ) LEX(I)=(INDEX(CCALFU,'AUPDAT1').NE.0)
          IF( I.EQ.2 ) LEX(I)=(INDEX(CCALFU,'BUPDAT0').NE.0)
          IF( I.EQ.3 ) LEX(I)=(INDEX(CCALFU,'BUPDAT1').NE.0)
-C         IF( LEX(I) ) 
-         INQUIRE(FILE=CCALF(I)(1:LENOCC(CCALF(I)))
-     +,EXIST=LEX(I))
-       LEX(I)=.TRUE.
+         IF( LEX(I) ) INQUIRE(FILE=CCALF(I),EXIST=LEX(I))
       ENDDO
 C  - Get constants from AUPDAT1
       IF( LEX(1) ) THEN
-      OPEN(LUNITA(2),FILE=CCALF(1)(1:LENOCC(CCALF(1))),
-     +STATUS='OLD',FORM='UNFORMATTED')
+      OPEN(LUNITA(2),FILE=CCALF(1),STATUS='UNKNOWN',FORM='UNFORMATTED')
       GOTO 100
       ENDIF
 C  - Get constants from BUPDAT0 and/or BUPDAT1
       IF( LEX(2) )
-     >     OPEN(LUNITA(1),FILE=CCALF(2)(1:LENOCC(CCALF(2))),
-     +STATUS='OLD',FORM='UNFORMATTED')
+     >     OPEN(LUNITA(1),FILE=CCALF(2),STATUS='OLD',FORM='UNFORMATTED')
       IF( LEX(3) )
-     >     OPEN(LUNITA(2),FILE=CCALF(3)(1:LENOCC(CCALF(3))),
-     +STATUS='OLD',FORM='UNFORMATTED')
+     >     OPEN(LUNITA(2),FILE=CCALF(3),STATUS='OLD',FORM='UNFORMATTED')
       IF( .NOT.( LEX(2) .OR. LEX(3) ) ) THEN
          WRITE(*,'(A)') 'USER: No calibration files specified!'
          WRITE(*,'(A)') '... will stop now!'
@@ -612,8 +599,6 @@ C---------------------------------------------------------------------
 C
 20000 CONTINUE
 C Suppress smearing of MC until first event to process is read
-      
-      write(*,*)'nosmear flag ',  ICOUNT,IEVTF-1
       IF( ICOUNT.LT.IEVTF-1 ) THEN
          NOSMEAR=.TRUE.
       ELSE
