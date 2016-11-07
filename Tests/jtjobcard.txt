@@ -4,6 +4,7 @@ JTUPLE 1=44 3='jt_sherpa34gev_final.hbook'
 CALIB './aupdat1.b'
 ZE4VMODE on
 PEDRO on
+MAXREC 10000
 STOP
 
 
