@@ -1,4 +1,4 @@
-latexfile=porting
+latexfile=JADE2016
 newname?=FFC
 STYLE?=draft
 
@@ -65,15 +65,18 @@ endif
 	rm -rf TAR
 
 
-figures=Figures/figure0.eps  Figures/figure0.pdf\
-        Figures/figure1.eps  Figures/figure1.pdf 
-tables=Tables/constants.txt Tables/constants_lhcb13.txt\
-       Tables/ee10_tab.txt Tables/eez0_tab.txt Tables/heradis_tab.txt\
-       Tables/heraphp_tab.txt Tables/lhcb_tab.txt Tables/average_tab2.txt\
-       Tables/average_cov.txt Tables/excited_tab.txt Tables/pdg_tab.txt
-constanttables=ConstantTables/pp_ALICE_7TeV.txt ConstantTables/pp_ATLAS_7TeV.txt\
-               ConstantTables/av_David.txt ConstantTables/pp_CDF_2TeV.txt
-
+figures=
+#Figures/figure0.eps  Figures/figure0.pdf\
+#        Figures/figure1.eps  Figures/figure1.pdf 
+tables=
+#Tables/constants.txt Tables/constants_lhcb13.txt\
+ #      Tables/ee10_tab.txt Tables/eez0_tab.txt Tables/heradis_tab.txt\
+  #     Tables/heraphp_tab.txt Tables/lhcb_tab.txt Tables/average_tab2.txt\
+   #    Tables/average_cov.txt Tables/excited_tab.txt Tables/pdg_tab.txt
+constanttables=
+#ConstantTables/pp_ALICE_7TeV.txt ConstantTables/pp_ATLAS_7TeV.txt\
+ #              ConstantTables/av_David.txt ConstantTables/pp_CDF_2TeV.txt
+#
 
 $(latexfile)-$(STYLE).dvi :  $(figures) $(constanttables) $(tables) $(latexfile).bst\
                     $(latexfile).bib $(latexfile)-abs.tex $(latexfile)-txt.tex $(latexfile)-tab.tex\

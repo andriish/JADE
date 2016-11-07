@@ -1,0 +1,268 @@
+\section{Introduction to JADE experiment}
+The description of JADE experiment can be found elsewhwre.\cite{Bartel:1986ua}
+Physics cases for the available JADE data can be discussed elsewhere\cite{Bartel:1986ua}.
+The case of JADE data preservation can be found interesting as a mode of data preservation that can be used for other experimnts.
+The main part of the preservation is the  software, data and documentation.
+\section{JADE software}
+JADE software description can be found in the JADE computing notes and elsewhwre.
+Briefly it consists of approximately 50.000 lines of IBM Fortran77 and similar codes 
+that were compiled on AIX4.3 systems with IBM Fortran compiler and corresponding runtime.
+The dependancies include CERNLIB.
+
+
+\subsection{Porting JADE software}
+This section describes the process of porting JADE software to modern systems.
+Please skip it if you are not interested.
+As of 2016 these systems are not available on the market\footnote{aapart from few on e-Bay},
+therefor e the idea is to port the software on modern wide 
+The main problems with the porting software to the modern systems are
+\begin{itemize}
+\item  compiler-specific Fortran features
+\item  big-little endianess for the calculs
+\item  big-little endianess for the I/O
+\item  build system 
+\item  porting CERNLIB
+\end{itemize}
+
+The following platforms were considered:
+\setlength{\tabcolsep}{0.0em}
+%\begin{table}[htbp]\tiny\centering
+\begin{sidewaystable}[htbp]\scriptsize\centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}\hline
+    & Origin/Now & Hardware, num               &        &OS             & arch(bits)               & Fortran/FC                &Build system                    & CERNLIB/runtime  \\\hline\hline
+A   & 198x/Dead         &  ?                          & ?      &?              &   ?(32be)                & 77?/xlf?                  &?                               & DESYLIB/?     \\
+B   & 2003/Not tried    &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/xlf 7.1                &make 3.78 and ksh scripts       & 2002/?/32bit     \\
+C   &      Not tried    &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/g77 0.5 (gcc2.95)      &make 3.78 and ksh scripts       & 2002/?/32bit     \\
+D   &      Not avail.   &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/xlf 7.1                &make 3.78 and cmake?            & 2002/?/32bit     \\
+E   &      Not avail.   &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/g77 0.5 (gcc2.95)      &make 3.78 and cmake?            & 2002/?/32bit     \\
+F   & 2016/Runs         &  pSeries\@QEMU2.7, many   & 3/10   &CentOS7.2 & ppc64+ppc(64be+32be)     & 90/xlf 15.1 (trial)       &make 3.81 and cmake 2.8.11      & 2006/gfortran/32bit     \\
+G   & 2016/Runs         &  pSeries\@QEMU2.7, many   & 3/10   &CentOS7.2 & ppc64+ppc(64be+32be)     & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11      & 2006/gfortran/32bit     \\
+H   & 2016/Runs         &  Intel/AMD, many            &10/10   &CentOS7.2 & x8664+i686(64le+32le)   & 90/gfortran 4.8.5         &make 3.81 and sh scripts        & 2006/gfortran/32bit     \\
+I   & 2016/Runs         &  Intel/AMD, many            &10/10   &CentOS7.2 & x8664+i686(64le+32le)   & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11      & 2006/gfortran/32bit     \\
+J   &      Not avail.   &  Intel/AMD, many            &10/10   &CentOS7.2 & x8664+i686(64le+32le)   & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11      & minicernlib?/gfortran/32bit     \\
+\hline
+\end{tabular}
+\caption{Status}
+\label{tab:status}
+\end{sidewaystable}
+%\end{table}
+
+
+Because of cernlib issues everything was tested in 32 bit mode.
+Maybe that would worth to copy the needed cernlib routines to have them separately?
+Will minicernlib work?The hardest part is graphics.
+
+The MC generation can be done on any platform and put into HepMC3 format.
+Practicaly it is visible for G and H.
+The conversion to any be and le JADE MC formats can be done on any platform between F and J,
+as HepMC3 works only with gcc4 and compatible compilers. 
+
+
+
+\subsubsection{CERNLIB}
+Compilation of cernlib for CentOS7 and especially in 32bit mode is an issue.
+CERNLIB is needed for i686 and ppc architectures.
+Both were build using CentOS7.2 64 machines (virtual or real).
+
+
+
+The missing packages for i686, cernlib and xbae, were recompiled from CentOS6 source rpms via mock on x8664
+\begin{verbatim}
+mock
+\end{verbatim}
+
+
+
+For ppc the mock environment is not available, so the build was done manualy.
+All needed 32 bit packages were installed from CentOS7 AltArch repository.
+The two missing packages, cernlib and xbae were recompiled from CentOS6 source rpms.
+\begin{Verbatim}[fontsize=\tiny]
+LDFLAGS=' -L/usr/lib   -Wl,-z -Wl,relro' CC='gcc -m32 ' CXX='g++ -m32 '   rpmbuild --target=ppc  --rebuild xbae-4.60.4-12.el6.src.rpm -D'_lib lib' -D'libdir /usr/lib'
+\end{Verbatim}
+The cernlib source rpm was patched, but still has some issues, with using user flags, so
+a brute force trick is to replace /usr/bin/gfortran with a wrapper with explicit -m32 -L/usr/lib flags.
+Same trick for /usr/bin/rm:   add -f option.
+
+The full list of used 32 bit rpms follows (geven for ppc architecture).
+
+
+\begin{minipage}{0.5\textwidth} 
+\begin{Verbatim}[fontsize=\tiny]
+blas-3.4.2-5.el7.ppc
+blas-devel-3.4.2-5.el7.ppc
+cernlib-2006-36.el7.centos.ppc
+cernlib-debuginfo-2006-36.el7.centos.ppc
+cernlib-devel-2006-36.el7.centos.ppc
+cernlib-packlib-gfortran-2006-36.el7.centos.ppc
+cernlib-static-2006-36.el7.centos.ppc
+cernlib-utils-2006-36.el7.centos.ppc
+compat-libstdc++-33-3.2.3-72.el7.ppc
+expat-2.1.0-8.el7.ppc
+fontconfig-2.10.95-7.el7.ppc
+freetype-2.4.11-11.el7.ppc
+geant321-2006-36.el7.centos.ppc
+glib2-2.42.2-5.el7.ppc
+glibc-2.17-106.el7_2.8.ppc
+glibc-devel-2.17-106.el7_2.8.ppc
+kuipc-2006-36.el7.centos.ppc
+lapack-3.4.2-5.el7.ppc
+lapack-devel-3.4.2-5.el7.ppc
+libffi-3.0.13-16.el7.ppc
+libgcc-4.8.5-4.el7.ppc
+libgfortran-4.8.5-4.el7.ppc
+libgfortran-static-4.8.5-4.el7.ppc
+libICE-1.0.9-2.el7.ppc
+libjpeg-turbo-1.2.90-5.el7.ppc
+libjpeg-turbo-devel-1.2.90-5.el7.ppc
+libpng-1.5.13-7.el7_2.ppc
+libpng-devel-1.5.13-7.el7_2.ppc
+libselinux-2.2.2-6.el7.ppc
+libSM-1.2.2-2.el7.ppc
+libstdc++-4.8.5-4.el7.ppc
+libstdc++-devel-4.8.5-4.el7.ppc
+libuuid-2.23.2-26.el7_2.3.ppc
+\end{Verbatim}
+\end{minipage}
+\begin{minipage}{0.5\textwidth} 
+\begin{Verbatim}[fontsize=\tiny]
+libX11-1.6.3-2.el7.ppc
+libX11-devel-1.6.3-2.el7.ppc
+libXau-1.0.8-2.1.el7.ppc
+libXau-devel-1.0.8-2.1.el7.ppc
+libXaw-1.0.12-5.el7.ppc
+libXaw-devel-1.0.12-5.el7.ppc
+libxcb-1.11-4.el7.ppc
+libXext-1.3.3-3.el7.ppc
+libXext-devel-1.3.3-3.el7.ppc
+libXft-2.3.2-2.el7.ppc
+libXft-devel-2.3.2-2.el7.ppc
+libXmu-1.1.2-2.el7.ppc
+libXmu-devel-1.1.2-2.el7.ppc
+libXp-1.0.2-2.1.el7.ppc
+libXp-devel-1.0.2-2.1.el7.ppc
+libXpm-3.5.11-3.el7.ppc
+libXpm-devel-3.5.11-3.el7.ppc
+libXrender-0.9.8-2.1.el7.ppc
+libXt-1.1.4-6.1.el7.ppc
+libXt-devel-1.1.4-6.1.el7.ppc
+motif-2.3.4-7.el7.ppc
+motif-devel-2.3.4-7.el7.ppc
+nss-softokn-freebl-3.16.2.3-14.2.el7_2.ppc
+nss-softokn-freebl-devel-3.16.2.3-14.2.el7_2.ppc
+patchy-gfortran-2006-36.el7.centos.ppc
+paw-gfortran-2006-36.el7.centos.ppc
+pcre-8.32-15.el7_2.1.ppc
+pkgconfig-0.27.1-4.el7.ppc
+xbae-4.60.4-12.el7.centos.ppc
+xbae-devel-4.60.4-12.el7.centos.ppc
+xz-libs-5.1.2-12alpha.el7.ppc
+zlib-1.2.7-15.el7.ppc
+zlib-devel-1.2.7-15.el7.ppc
+\end{Verbatim}
+\end{minipage}
+
+A similar list is needed for the i686 architecture.
+
+
+
+\subsubsection{Endianness}
+The I/O endianess  can be controled in gfortran runtime with the 
+GFORTRAN\_CONVERT\_UNIT environment variable, e.g.
+\begin{verbatim}
+export GFORTRAN_CONVERT_UNIT='big_endian;native:2'
+\end{verbatim}
+
+\subsubsection{cmake}
+The cmake file is selfdocumented.
+Since version 2 cmake  has a first class Fortran support with descent dependency tracking.
+This replaces self developed scripts in kors shell.
+
+\subsubsection{Compiler specific issues}
+Few changes were needed after the porting in   was done.
+In many places the types were changed from LOGICAL to CHARCTER
+and from INTEGER to CHARECTER.
+
+As the line lenghth is not limited, some symbols were removed in the end of lines.
+
+HOLLERITH constants are represented in IBM Fortran via
+\begin{verbatim}
+'ABCD'
+\end{verbatim}
+were replaced with
+\begin{verbatim}
+4HABCD
+\end{verbatim}
+for GNU fortran. This format is also accepted by the IBM compillers.
+Similar issue was with the hexademical constants, which are in the form 
+\begin{verbatim}
+Z1000
+\end{verbatim}
+in IBM fortran. These were replaced with 
+\begin{verbatim}
+Z'1000'
+\end{verbatim}
+The form is accepted by GNU Fortran and IBM compiuller.
+One compiller specific routine was added: hfix (gfortran is missing it.)
+
+\subsubsection{Sources treatment}
+The modified  sources were put into a separate directory src2016 and main2016.
+Some used scripts are in the directory scripts2016.
+
+
+\subsection{Using JADE software}
+The basic usage of JADE software is described elsewhere.
+The documentations stays valid.
+Below we describe the environment for JADE and the process of generation of new MC with the JADE software.
+
+\subsubsection{Environment for JADE software}
+JADE software does not need special environment to run.
+However, a virtual machine with all software installed can be downloaded 
+from wwwjade.mpp.mpg.de as well as the installation ISOS.
+
+\subsubsection{MC generation}
+
+The setup of MC generators is ommited.
+The only requirement for the MC enerator is to produce the 
+output in HepMC2/HepMC3/HEPEVT format.
+After that the utility convert\_example\_JADE.exe can be used.
+It can produce JADE MC ASCII  files, as well as JADE MC le and be binary files.
+
+\begin{Verbatim}[fontsize=\tiny]
+convert_example_JADE.exe hepmc2_jade  sherpa34gev.hepmc2   bsherpa34gev.jade Mode=0
+convert_example_JADE.exe hepmc2_jade  sherpa34gev.hepmc2   asherpa34gev.jade Mode=1
+\end{Verbatim}
+In the later the sherpa34gev.hepmc2 is the input file in hepmc2 format and the bsherpa34gev.jade is an output in JADE binary format.
+The options are given in the help of convert\_example\_JADE.exe.
+
+The resulted files can be used for the superv simulation and reconstruction utility.
+\subsubsection{Analysis}
+An utility that converts the final reconstructed data to PAW format is added.
+These data can be converted to ROOT format with h2root utility and analyzed on arbitrary systems with ROOT.
+
+
+
+\section{JADE data}
+The JADE data is stored in MPCDF.
+It can be accessed via 
+
+\section{JADE documentation}
+Technical noteas are available in hard copies in MPP (and DESY library?).
+Papers are available on InSpire from CERN library or KEK.
+The data preservation documentation is available on wwwjade.mpp.mpg.de.
+
+\section{Conclusions}
+The case of JADE data preservation was studied.
+
+\section{TODO}
+\begin{itemize}
+\item fix this document, 5h
+\item Copy the data to RZG, 5h
+\item Do testst on different platforms with MC, 10h
+\item do something with docs? Scan them?, xxx
+\item Fix MC conversion utility, add be le options there., 1h
+\item Fix the webpage, 5h
+\item Provide VMS., 10h
+\end{itemize}
+
+
+
