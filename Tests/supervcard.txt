@@ -18,11 +18,11 @@ VTXFIT OFF
 C Calibration constants
 C - Name of the calibration file
 AUPDAT0
-'/tmp/aupdat1.b'
+'./aupdat1.b'
 BUPDAT0
-'/tmp/bupdat0.b'
+'./bupdat0.b'
 BUPDAT1
-'/tmp/bupdat1.b'
+'./bupdat1.b'
 
 
 C - Calibration constants reading flags
@@ -68,7 +68,7 @@ LEVEL7 'PATR LGCL'
 
 C Control histograms
 HISTO   ON
-SVHIST 'sv_t86-05-17.hist'
+SVHIST 'sv_sherpa34gev.hist'
 C
 STOP
 EOF

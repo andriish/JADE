@@ -57,7 +57,7 @@ ENDIF(FCNAME STREQUAL "pgf90")
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 #if ("${CMAKE_Fortran_FLAGS}" STREQUAL "" )
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
-   set(CMAKE_Fortran_FLAGS            "-m32 -std=legacy -m32 -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+   set(CMAKE_Fortran_FLAGS            "-m32 -std=legacy -m32 -g -ffixed-line-length-none -finit-local-zero -fbacktrace -fcheck=all  -fautomatic -O0   -fno-align-commons ")
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")

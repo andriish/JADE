@@ -73,7 +73,9 @@ C     options to surpress RZOUT warnings?
       endif
 
 C     Perform user specific initialization
-      call jzinit
+CAV I SUSPECT THERE IS ANOTHER ROUTINE WITH THIS NAME
+C DUMMY ONE?
+      call jzinituu
 C
 C     Begin of file loop:
 C
@@ -166,7 +168,7 @@ C     Dump JADE event record:
 C
 C     Perform analysis of current event:
 C     (Use information stored in common block /XDATA/)
-         call jzevnt
+         call jzevntuu
 C
 C     End Of Event Loop:
 C

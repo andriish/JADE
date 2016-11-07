@@ -1,0 +1,11 @@
+LIST
+*ZE4VFILE 'ze_sherpa34gev.ze4v'
+JTUPLE 1=44 3='jz_sherpa34gev_final.hbook'
+ZE4VFORM 1
+PEDRO on
+TRKCUT 20 12 350.0 100.0 0.1
+STOP
+
+
+
+CAV ZE4VFORM=1 is MC

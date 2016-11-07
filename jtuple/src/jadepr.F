@@ -3,7 +3,6 @@ C
 C Print out event in readable format
 C
 #include "xdata.inc"
-
 C General part
       WRITE(*,5900) IXREVN
      +     ,IXRUN,IXEVENT

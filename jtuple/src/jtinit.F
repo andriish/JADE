@@ -24,7 +24,7 @@ C     Open file for ascii BOS bank writing:
       if( lbankw ) then
          open( iobank, file=cbankf, status='unknown', form='formatted' )
       endif
-
+      write(*,*)' lmc, langl',  lmc, langl 
 C     Book ntuple and histos:
       call jtbknt( lmc, langl )
 

@@ -1,4 +1,4 @@
-      subroutine jzinit
+      subroutine jzinituu
       implicit none
 
 #include "jzffr.inc"
@@ -19,7 +19,6 @@ C     Initialise statistics counters:
       nrejlg= 0
       ntotcl= 0
       ntottk= 0
-
 C     Book ntuple:
       call jtbknt( lmc, langl )
 

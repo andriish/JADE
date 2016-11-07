@@ -41,7 +41,7 @@ FIND_PATH(CERNLIB_LIBRARY_DIR NAMES libgeant.a libmathlib.a PATHS
 if (CERNLIB_LIBRARY_DIR)
    set(CERNLIB_FOUND TRUE)
 endif (CERNLIB_LIBRARY_DIR)
-set(cernlibs kernlib packlib mathlib graflib grafX11)  
+set(cernlibs kernlib packlib mathlib graflib grafX11 )  
 if (CERNLIB_FOUND)
   if (NOT CERNLIB_FIND_QUIETLY)
     MESSAGE(STATUS "Looking for CERNLIB... - found ${CERNLIB_LIBRARY_DIR}")

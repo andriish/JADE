@@ -29,8 +29,11 @@ C  08.10.02, STK: move jet calculations to new routines
       INTEGER IDIM, NTRAK
       REAL PTRAK(IDIM,*)
       REAL T,TMA,TMI,MH,ML,BT,BW,CP,DP,S,A,AKP
+
+      
       REAL TVAL(3),TVEC(3,3),EVAL(3),EVEC(3,3),AVEC(3)
       INTEGER IERR
+      write(*,*)'Im event shape routine!', IDIM, NTRAK
 C
       IF( NTRAK.GT.2 ) THEN
 C       Event shapes:
@@ -105,5 +108,6 @@ C       Event shapes:
       ENDIF
 C
 C  The End:
+      write(*,*) T, TMA, TMI
       RETURN
       END

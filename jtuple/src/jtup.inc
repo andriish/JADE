@@ -9,7 +9,7 @@
 *     Creation:       07/04/2005 15.04.19
 *
 *********************************************************
-*
+*     
       LOGICAL         CHAIN
       CHARACTER*128   CFILE
       INTEGER         IDNEVT,NCHEVT,ICHEVT

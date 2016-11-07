@@ -161,11 +161,15 @@ void WriterJADE::write_event(const GenEvent &evt)
 	if (quarks.size()>2)
 	{
 	std::sort(quarks.begin(),quarks.end());	
-	if (   evt.particles().at(quarks.at(0).second)->pid()==-evt.particles().at(quarks.at(1).second)->pid())
+	double sumE=0;
+	for (int y=0;y<quarks.size();y++) if (   evt.particles().at(quarks.at(0).second)->pid()==-evt.particles().at(quarks.at(y).second)->pid())
+	sumE=quarks.at(0).first+quarks.at(y).first;
+
+	if (sumE>0.5*fJ->BEAM) 
 	fJ->IFLAVR=std::abs(evt.particles().at(quarks.at(0).second)->pid());
 	else
 	fJ->IFLAVR=0;
-	}
+    }
 	
 	fJ->NP=0;
 	fJ->NF=0;

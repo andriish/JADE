@@ -2,6 +2,8 @@
       implicit none
       integer ievt
 
+
+
 #include "bos.inc"
 #include "jtffr.inc"
 #include "jtstat.inc"
@@ -657,6 +659,9 @@ C     Hadron-level observables:
 
 
 C     Commit this event to ntuple:
+CAV
+      call HLDIR('//PAWC','T')
+      call HLDIR('//QQJT200','T')
       call hfnt( 10 )
 
 C     The End:

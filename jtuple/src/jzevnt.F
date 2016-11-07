@@ -1,4 +1,4 @@
-      subroutine jzevnt
+      subroutine jzevntuu
       implicit none
 C
 C Fill JADE ntuple from ze4v data
@@ -317,6 +317,8 @@ C     Clusters only:
      &     , njcedc, njcrdc )
 
 C     Commit this event to ntuple:
+CAV
+      call HLDIR('//PAWC','T')
       call hfnt( 10 )
 
 C     The End:
