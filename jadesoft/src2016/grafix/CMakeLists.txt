@@ -189,5 +189,7 @@ ${SRCGRAFIX}/zfitds.F
 ${SRCGRAFIX}/zfit.F
 ${SRCGRAFIX}/zinter.F
 ${SRCGRAFIX}/ztrgvw.F
+${SRCGRAFIX}/grblock.F
+
 )
 ADD_LIBRARY(${GRAFIXLIB} grafix ${GRAFIX_src})

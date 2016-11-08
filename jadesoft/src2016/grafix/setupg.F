@@ -20,15 +20,19 @@ C------------------  C O D E  -----------------------------------------
 C
 C                            DEFINE THE STANDARD COMMANDS
 C
+      write(*,*)'STp'
       CALL DEFCMD
 C
 C                            READ THE PROFILE IF EXISTING
 C
+      write(*,*)'STp1'
       CALL PROFIL
+      write(*,*)'STp2'
 C
 C                            EXECUTE THE DEFAULT SETTINGS MACRO
 C
       CALL SETDF         ! PMF 18/11/99: SETDEF changed to SETDF
+      write(*,*)'STp3'
 C
 C                            SCALE SETTING
 C

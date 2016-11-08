@@ -131,7 +131,7 @@ C     Finish job:
 C     Close hbook file after flushing ntuple:
       call hrout( 0, icycle, ' ' )
       
-      call HLDIR(' ','A')
+C      call HLDIR(' ','A')
       
       call hrend( 'JTUPLE' )
       close( iohbk )

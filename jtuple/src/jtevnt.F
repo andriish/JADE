@@ -660,8 +660,8 @@ C     Hadron-level observables:
 
 C     Commit this event to ntuple:
 CAV
-      call HLDIR('//PAWC','T')
-      call HLDIR('//QQJT200','T')
+C      call HLDIR('//PAWC','T')
+C      call HLDIR('//QQJT200','T')
       call hfnt( 10 )
 
 C     The End:

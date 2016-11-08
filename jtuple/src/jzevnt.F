@@ -318,7 +318,7 @@ C     Clusters only:
 
 C     Commit this event to ntuple:
 CAV
-      call HLDIR('//PAWC','T')
+C      call HLDIR('//PAWC','T')
       call hfnt( 10 )
 
 C     The End:

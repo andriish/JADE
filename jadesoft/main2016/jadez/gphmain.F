@@ -81,7 +81,9 @@ C
 C                            CLEAR SCREEN AND INITIALISE BOS
 C
       CALL CLRCON
+      write(*,*)'BBINT'
       CALL BINT(LDATA,LDATA,200,1)
+      write(*,*)'BBINT2'
 C
 C                            SET UP DEFAULT GRAPHICS VALUES
 C
@@ -89,7 +91,9 @@ C
 C
 C                            CALL MAIN ANALYSIS SUPERVISOR ROUTINE.
 C
+      write(*,*)'BBINT3'
       CALL SUPERV
+            write(*,*)'BBINT4'
 C
 C                            END SCAN SESSION AND TERMINATE PLOT10.
 C                            OK IS INPUT ARGUMENT.
@@ -108,4 +112,4 @@ C
 C                            BLOCK DATA FOR GRAPHICS PROGRAM
 C
 C #include "grblock.for" PMF 5.11.98
-C #include "grblock.F"
+#include "grblock.F"

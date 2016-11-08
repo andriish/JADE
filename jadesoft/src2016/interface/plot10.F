@@ -110,6 +110,7 @@ C - Default settings for the 'screen window'
       TLINE=0
 
 C - Default settings for the 'virtual window'
+      write(*,*)'DEBUGA', XTMIN,XTMAX,YTMIN,YTMAX
       CALL DWINDO(XTMIN,XTMAX,YTMIN,YTMAX)
 
 C - Colour settings in JADEZ
@@ -185,7 +186,8 @@ C   Normalization is done using the 'maximal screen' dimensions.
       XO=AMIN1(XMAX0/XTERM,1.)
       YU=AMAX1(YMIN0/YTERM,0.)
       YO=AMIN1(YMAX0/YTERM,1.)
-      IF( XO.LE.XU .OR. YO.LE.YU ) CALL PABORT(2)
+       write(*,*)'DEBUG1',XO,XU , YO,YU
+C      IF( XO.LE.XU .OR. YO.LE.YU ) CALL PABORT(2)
       CALL ISVP(NTV,XU,XO,YU,YO)
       CALL ISELNT(NTV)
 
@@ -224,10 +226,16 @@ C
 Code:
       DTEST=.TRUE.
       IF( .NOT.INIT ) CALL PABORT(1)
+       write(*,*)'DEBUG2',  XMI , XMA, YMI, YMA
+C      XMI=0.0 
+C      XMA=4095.0 
+C      YMI=0.0 
+C      YMA=4095.0
       IF( XMA.LE.XMI .OR. YMA.LE.YMI ) CALL PABORT(2)
+      write(*,*)'DEBUG21',  XMI , XMA, YMI, YMA
       IF( .NOT.TTEST )
      +     CALL TWINDO(INT(XTMIN),INT(XTMAX),INT(YTMIN),INT(YTMAX))
-
+       write(*,*)'DEBUG22',  XMI , XMA, YMI, YMA
 C - Update dimensions of the 'virtual window' in /PLOT10/
       XMIN=XMI
       XMAX=XMA
@@ -261,6 +269,7 @@ C
       IMPLICIT NONE
       REAL XMI,XMA,YMI,YMA
 Code:
+      write(*,*)'DEBUG3'
       CALL DWINDO(XMI,XMI+XMA,YMI,YMI+YMA)
 C
       RETURN
