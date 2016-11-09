@@ -80,9 +80,12 @@ C
       IF( JUSCRN .LE. 0  .OR. JUSCRN .GT. 99 ) JUSCRN = 6
 C
       IRET  = 0
-      IHEAD = IBLN('HEAD')
-      IMTCO = IBLN('MTCO')
-      IMUCO = IBLN('MUCO')
+      IHEAD = IBLN(4HHEAD)
+      IMTCO = IBLN(4HMTCO)
+      IMUCO = IBLN(4HMUCO)
+      
+      WRITE(*,*)'EVREAD ENTER   ', IHEAD, IMTCO, IMUCO
+      
 C                                            CADMIN FLAG
       FLG100 = .FALSE.
       IF( IFLG .EQ. 100 ) FLG100 = .TRUE.
@@ -100,6 +103,7 @@ C
 C                            DO WE HAVE A 'HEAD' BANK I.E. AN EVENT ?
 C                            IF NOT THEN SKIP NEXT SECTION
 C
+
    1  IF( IDATA(IHEAD) .LE. 0 ) GO TO 10
         IHD  = IDATA( IHEAD )
         IRUN = HDATA( IHD*2 + 10 )
@@ -107,7 +111,9 @@ C
 C                            IS IT LEGAL HERE ?
 C
         IF( FLG100  .OR. LBREAD(3) )    GO TO 2
+          write(*,*) 'DEBUG 77' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
         IF( .NOT. ( LBREAD(1) .AND. .NOT. LBREAD(2) ) ) GO TO 3
+          write(*,*) 'DEBUG 78' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
 C
 C                            BANK 'MTCO' WAS LAST SO THIS OUGHT TO BE
 C                            A RECORD WITH 'MUCO' NOT 'HEAD'
@@ -126,6 +132,7 @@ C
 C                            RECOVER FROM THIS ERROR
 C
           GO TO 2
+          write(*,*) 'It was 2'
 C
 C                            MONTE CARLO DATA WITHOUT CALIBRATION
 C                            FAKING REAL DATA? PRINT WARNING AND STOP
@@ -214,6 +221,7 @@ C
   11    LBREAD(1) = .TRUE.
         LBREAD(2) = .FALSE.
         LBREAD(3) = .FALSE.
+
 C
 C                            PROCESS 'MTCO' BANK.
 C
@@ -234,8 +242,10 @@ C
 C
 C                            COPY THE CALIBRATION CONSTANTS INTO COMMON
 C
+          write(*,*) 'DEBUG 70888' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
         CALL RDMTCO( 'DE' )
 C
+                    write(*,*) 'DEBUG 79999' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
         GO TO 1000
 C
 C                            DO WE HAVE AN 'MUCO' BANK RECORD? THIS IS

@@ -72,7 +72,8 @@ C
       IF(HEAD(18).GT.100) GO TO 1000
       IF(IPHALG.EQ.0) GO TO 1000
 C
-      IPALGN = IDATA(IBLN('ALGN'))
+      IPALGN = IDATA(IBLN(4HALGN))
+      write(*,*) 'try align block'
       IF(IPALGN.GT.0) GO TO 1
       JELL1 = JELL1 + 1
       IF(JELL1.LT.2 .AND. NDDINN .EQ. 0 ) WRITE(6,9901)
