@@ -27,7 +27,7 @@ VERTEX   ON
 C First and last event to be tracked
 C     LAST=0: process until end of 4-vector 'CPROD' file
 FIRST   2
-LAST    10000
+LAST    100
 C 4-Vector print out
 MCNPRI  100
 
