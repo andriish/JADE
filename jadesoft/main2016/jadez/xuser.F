@@ -58,10 +58,10 @@ C
 C                            CHECK WHETHER CALL AT END OF JOB
 C
 CAV
-      IF( INDEXX .EQ. 20 ) then
-      INDEXX=2
-      write(*,*) 'FUNNY INDEXX', INDEXX
-      endif 
+C      IF( INDEXX .EQ. 20 ) then
+C      INDEXX=2
+C      write(*,*) 'FUNNY INDEXX', INDEXX
+C      endif 
       
       IF( INDEXX .EQ. 100 ) GO TO 1100
 C
