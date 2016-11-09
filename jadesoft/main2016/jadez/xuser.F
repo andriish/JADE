@@ -166,6 +166,7 @@ C                            S/R SCANNR TO HANDLE THE INTERACTIVE
 C                            DIALOGUE WITH THE "HUMAN USER" !
 C
  3000 IF( SSTPS(INDEXX) .OR. PSTPS(INDEXX) ) CALL SCANNR( INDEXX,IRFLG )
+      write(*,*)'D1 ILSTOP===',ILSTOP
       IF( ILSTOP .EQ. 0 ) GO TO 3001
       KNTR = 0
 C
