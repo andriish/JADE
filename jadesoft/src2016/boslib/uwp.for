@@ -2,7 +2,7 @@ C   14/10/82            MEMBER NAME  UWP      (S)           FORTRAN77
       SUBROUTINE UWP(BIN,NA,NB)
 C
       REAL*4 BIN(2)
-      REAL*8 FMT(13),FMTF/8H  F12.4,/,FMTG/8H  G12.4,/,
+      CHARACTER*8 FMT(13),FMTF/8H  F12.4,/,FMTG/8H  G12.4,/,
      1     FMTI/8H    I12,/,FMTA/8H  8X,A4,/,FMT1/8H        /,
      2     FMT2/8H(11X,   /
       INTEGER NEQ/0/,LIM(2,8)
@@ -85,10 +85,12 @@ C
       IF(N.LE.10) GOTO 55
       FMT(3)=FMT1
       JB=MOD(IB,1000)
-      WRITE(6,FMT) IA,JB,(BIN(II),II=IA,IB)
+        WRITE(6,FMT) IA,JB,(BIN(II),II=IA,IB)
+CAV         WRITE(6,*) IA,JB,(BIN(II),II=IA,IB)
       GOTO 60
    55 FMT(3)=FMT2
       WRITE(6,FMZ) (BIN(II),II=IA,IB)
+CAV      WRITE(6,*) (BIN(II),II=IA,IB)
    60 CONTINUE
       GOTO 100
 C     ENTRY WITH SPPRESSSION OF ZEROS IN SEVERAL LINES
