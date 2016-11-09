@@ -3,8 +3,7 @@
 ########################################
 
 # Add the source files
-SET(JADEZ_src ${SRCJADEZ}/gphmain.F 
-# ${SRCJADEZ}/xuser.F
+SET(JADEZ_src ${SRCJADEZ}/gphmain.F  ${SRCJADEZ}/xuser.F
 )
 
 # Define the executable in terms of the source files
