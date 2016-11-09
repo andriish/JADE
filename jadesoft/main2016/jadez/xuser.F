@@ -1,7 +1,8 @@
 C   18/01/84 401181641  MEMBER NAME  USER     (S)           FORTRAN
 C
 C-----------------------------------------------------------------------
-      SUBROUTINE USER( INDEX )
+      SUBROUTINE USER( INDEXX )
+C      IMPLICIT NONE
 C-----------------------------------------------------------------------
 C
 C   AUTHOR:   L. O'NEILL   ?/??/78 :  USER ROUTINE FOR JADEZ
@@ -48,6 +49,7 @@ C
 C
 #include "cdata.for"
 C
+      INTEGER INDEXX
       DATA NREC / 0 /
 C--- PMF 09/05/00: Flags for reading the calibration constants in klread
       INTEGER LBMC
@@ -57,11 +59,11 @@ C------------------  C O D E  ------------------------------------------
 C
 C                            CHECK WHETHER CALL AT END OF JOB
 C
-      IF( INDEX .EQ. 100 ) GO TO 1100
+      IF( INDEXX .EQ. 100 ) GO TO 1100
 C
 C                            CHECK FOR INDEX = 0
 C
-      IF( INDEX .GT. 0 ) GO TO 1
+      IF( INDEXX .GT. 0 ) GO TO 1
 C
 C                - 0 -       INITIALISATION.
 C
@@ -81,7 +83,7 @@ C PMF 09/05/00: Force the read of selected calibration data
          LBMC(I)=1
       ENDDO
 C
-      INDEX = INDEX + 1
+      INDEXX = INDEXX + 1
       RETURN
 C
 C                            HANDLE POSITIVE INDEX VALUES.
@@ -90,7 +92,7 @@ C                            E.G. IF LEVEL 7 HAS JUST BEEN DONE --> 100700000810
 C                            CARRY OUT TASKS FOR THE LEVEL THEN
 C                            GO AND CALL SCANNR (IF A "STOP" REQUESTED)
 C
-  1   GO TO (1001,1002,1003,1004,1005,1006,1007,1008,1009,1010),INDEX
+  1   GO TO (1001,1002,1003,1004,1005,1006,1007,1008,1009,1010),INDEXX
 C
 C                - 1 -       NEW RUN
 C
@@ -157,9 +159,10 @@ C
 C
 C                            IF A "STOP" HAS BEEN REQUESTED, THEN CALL
 C                            S/R SCANNR TO HANDLE THE INTERACTIVE
-C                            DIALOGUE WITH THE "HUMAN USER" !
+C                            DIALOGUE WITH THE "HUMAN USER" OR PHYSICIST
 C
- 3000 IF( SSTPS(INDEX) .OR. PSTPS(INDEX) ) CALL SCANNR( INDEX,IRFLG )
+ 3000 IF( SSTPS(INDEXX) .OR. PSTPS(INDEXX) ) CALL SCANNR( INDEXX,IRFLG )
+            WRITE(*,*)'WOWXX',ILSTOP
       IF( ILSTOP .EQ. 0 ) GO TO 3001
       KNTR = 0
 C
@@ -168,7 +171,7 @@ C
       IF( NSET .EQ. 0 ) GO TO 3001
       IF( NSET .NE. LABEL ) GO TO 3003
 C
-      WRITE(JUSCRN,101) LABEL,INDEX
+      WRITE(JUSCRN,101) LABEL,INDEXX
   101 FORMAT('PROGRAM HALTED BY LABEL=',I5,'   USER INDEX=',I5)
 C
       CALL TRMOUT(80,'DO YOU WISH TO STOP AT SUBSEQUENT USER ENTRIES^')
@@ -176,19 +179,22 @@ C
       CALL DECIDE(IANSWR)
       IF( IANSWR .EQ. 2 ) ILSTOP = 0
 C
-      CALL SCANNR( INDEX,IRFLG )
+      CALL SCANNR( INDEXX,IRFLG )
 C
  3003 IF( KNTR .EQ. 10 ) GO TO 3001
       GO TO 3002
 C
 C                            INCREMENT INDEX TO GO TO NEXT LEVEL
 C
- 3001 IF( INDEX .NE. 8 ) GO TO 4000
+ 3001 IF( INDEXX .NE. 8 ) GO TO 4000
 C
 C                            SCRATCH EXISTING MUON RESULTS BEFORE L9
 C
       CALL BMLT(2,'MUR1MUR2')
+      WRITE(*,*)'WOW1'
       CALL BDLM
- 4000 INDEX = INDEX + 1
+       WRITE(*,*)'WOW2'
+ 4000 INDEXX = INDEXX + 1
+      WRITE(*,*)'WOW3'
       RETURN
       END

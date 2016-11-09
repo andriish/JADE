@@ -25,6 +25,8 @@ C----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
+
+            
       character*4 IHLP
       integer*2 HERR
       CHARACTER*8   DDN,VOLSR
@@ -42,16 +44,16 @@ C
       DATA  VOLSR/'        '/
 C      
       DATA  IHLP /'F22B','OW.H','ELP.','DATA','SET ','    ',5*'    '/
-CAV
-      COMMON / CZGEO  / RZCHI,RZCHA,NZRPSI,NZZ,Z1ZCH,Z2ZCH,ZCHA,ZCHB,
-     +                  ZCHSS,ZCHDL,ZCHDLL,DLZZ,DLZPHI,DLZW1,DLZW2
-      DATA  RZCHI,RZCHA /864.5, 884.5/
-      DATA  NZRPSI,NZZ /24,16/
-      DATA  Z1ZCH,Z2ZCH /-1200.,1200./
-      DATA  ZCHA,ZCHB,ZCHSS /5.,15.,1./
-      DATA  ZCHDL,ZCHDLL /100.,20./, DLZZ,DLZPHI /150.,227.63/
-      DATA  DLZW1,DLZW2 /228.94,231.58/
 
+CAV
+C      COMMON / CZGEO  / RZCHI,RZCHA,NZRPSI,NZZ,Z1ZCH,Z2ZCH,ZCHA,ZCHB,
+C     +                  ZCHSS,ZCHDL,ZCHDLL,DLZZ,DLZPHI,DLZW1,DLZW2
+C      DATA  RZCHI,RZCHA /864.5, 884.5/
+C      DATA  NZRPSI,NZZ /24,16/
+C      DATA  Z1ZCH,Z2ZCH /-1200.,1200./
+C      DATA  ZCHA,ZCHB,ZCHSS /5.,15.,1./
+C      DATA  ZCHDL,ZCHDLL /100.,20./, DLZZ,DLZPHI /150.,227.63/
+C      DATA  DLZW1,DLZW2 /228.94,231.58/
 CAV
 C
 C------------------  C O D E  -----------------------------------------
