@@ -198,7 +198,8 @@ C                            DO WE HAVE AN 'MTCO' BANK RECORD? IF SO
 C                            CHECK THAT THE LAST RECORD WAS NOT 'MTCO'
 C                            OR 'MUCO', THEN SET FLAGS AND PROCESS BANK.
 C
-  10  IF( IDATA(IMTCO) .LE. 0 ) GO TO 20
+  10    write(*,*)'Label 10,   IDATA(IMTCO)=', IDATA(IMTCO), LBREAD(1),LBREAD(2),LBREAD(3) 
+        IF( IDATA(IMTCO) .LE. 0 ) GO TO 20
         IF( FLG100 .OR. LBREAD(3) .OR. NRECS .EQ. 1 ) GO TO 11
 C
           IF( LBREAD(1) .AND. .NOT. LBREAD(2) ) WRITE(JUSCRN,12) NRECS
