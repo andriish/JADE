@@ -43,8 +43,6 @@ C
 C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
-      INTEGER IW
-      COMMON /BCS/ IW(60000)
 C
 #include "cgraph.for"
 C
@@ -65,8 +63,8 @@ C
 CAV
       IF( INDEXX .EQ. 20 ) then
       
-      write(*,*) 'FUNNY INDEXX', INDEXX
-      write(*,*) 'Will return. I suspect you haveve passed a constant'
+      write(*,*) 'FUNNY INDEXX value', INDEXX
+      write(*,*) 'Will return. I suspect you have passed a constant'
       RETURN
       endif 
       

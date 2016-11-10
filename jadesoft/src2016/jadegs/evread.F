@@ -93,33 +93,27 @@ C                                            CADMIN FLAG
 C
 C                            MAIN READ STATEMENT.
 C
- 1000 write(*,*)'L1000 : IHEAD IMTCO=',IHEAD ,IMTCO,IDATA(IMTCO)
-      CALL BSLT
-      write(*,*)'L1000a: IHEAD IMTCO=',IHEAD ,IMTCO,IDATA(IMTCO)
+ 1000 CALL BSLT      
       CALL BDLG
-      write(*,*)'L1000b: IHEAD IMTCO=',IHEAD ,IMTCO,IDATA(IMTCO)
       NRECS = NRECS + 1
       CALL BREAD(NUNIT,*60,*70)
-      write(*,*)'L1000c: IHEAD IMTCO=',IHEAD ,IMTCO,IDATA(IMTCO)
       CALL USER(20)              ! PMF 07/07/99 added for additional checks
                                 !     14/06/00 set MC smearing veto in user routine
 C
 C                            DO WE HAVE A 'HEAD' BANK I.E. AN EVENT ?
 C                            IF NOT THEN SKIP NEXT SECTION
 C
-       write(*,*)'IHEAD IMTCO=',IHEAD ,IMTCO,  'IDATA(IHEAD)=',IDATA(IHEAD)
-        write(*,*) 'DEBUG 75' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
    1  IF( IDATA(IHEAD) .LE. 0 ) GO TO 10
         IHD  = IDATA( IHEAD )
         IRUN = HDATA( IHD*2 + 10 )
 C
 C                            IS IT LEGAL HERE ?
 C
-          write(*,*) 'DEBUG 76' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
+C          write(*,*) 'DEBUG 76' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
         IF( FLG100  .OR. LBREAD(3) )    GO TO 2
-          write(*,*) 'DEBUG 77' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
+C          write(*,*) 'DEBUG 77' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
         IF( .NOT. ( LBREAD(1) .AND. .NOT. LBREAD(2) ) ) GO TO 3
-          write(*,*) 'DEBUG 78' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
+C          write(*,*) 'DEBUG 78' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
 C
 C                            BANK 'MTCO' WAS LAST SO THIS OUGHT TO BE
 C                            A RECORD WITH 'MUCO' NOT 'HEAD'
@@ -138,7 +132,6 @@ C
 C                            RECOVER FROM THIS ERROR
 C
           GO TO 2
-          write(*,*) 'It was 2'
 C
 C                            MONTE CARLO DATA WITHOUT CALIBRATION
 C                            FAKING REAL DATA? PRINT WARNING AND STOP
@@ -202,8 +195,7 @@ C                            DO WE HAVE AN 'MTCO' BANK RECORD? IF SO
 C                            CHECK THAT THE LAST RECORD WAS NOT 'MTCO'
 C                            OR 'MUCO', THEN SET FLAGS AND PROCESS BANK.
 C
-  10    write(*,*)'Label 10,   IDATA(IMTCO)=', IDATA(IMTCO), LBREAD(1),LBREAD(2),LBREAD(3) 
-        IF( IDATA(IMTCO) .LE. 0 ) GO TO 20
+  10    IF( IDATA(IMTCO) .LE. 0 ) GO TO 20
         IF( FLG100 .OR. LBREAD(3) .OR. NRECS .EQ. 1 ) GO TO 11
 C
           IF( LBREAD(1) .AND. .NOT. LBREAD(2) ) WRITE(JUSCRN,12) NRECS

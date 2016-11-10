@@ -9,11 +9,8 @@ C PMF 28/10/98: Read IW(INIR) explicitly BEFORE calling BFWR and
 C perform then a backspace. Otherwise BFWR does not work correctly
 C on the current platforms.
 C PMF 07/07/99: correct bug
-       write(*,*)'ONE', INIR,IW(INIR)
       READ(IUN,ERR=101,END=102) IW(INIR)
       BACKSPACE (IUN)
-             write(*,*)'TWO', INIR,IW(INIR)
-
       CALL BFRD(IUN,IW(INIR),IW(INIR+1))
       IF(IW(INIR)) 102,101,10
   100 RETURN
