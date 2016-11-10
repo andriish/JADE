@@ -80,9 +80,9 @@ C
       IF( JUSCRN .LE. 0  .OR. JUSCRN .GT. 99 ) JUSCRN = 6
 C
       IRET  = 0
-      IHEAD = IBLN(4HHEAD)
-      IMTCO = IBLN(4HMTCO)
-      IMUCO = IBLN(4HMUCO)
+      IHEAD = IBLN('HEAD')
+      IMTCO = IBLN('MTCO')
+      IMUCO = IBLN('MUCO')
       
       WRITE(*,*)'EVREAD ENTER   ', IHEAD, IMTCO, IMUCO, IFLG
       
@@ -103,7 +103,7 @@ C
 C                            DO WE HAVE A 'HEAD' BANK I.E. AN EVENT ?
 C                            IF NOT THEN SKIP NEXT SECTION
 C
-       write(*,*)'IDATA(IHEAD)=',IDATA(IHEAD)
+       write(*,*)'IHEAD IMTCO=',IHEAD ,IMTCO,  'IDATA(IHEAD)=',IDATA(IHEAD)
         write(*,*) 'DEBUG 75' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
    1  IF( IDATA(IHEAD) .LE. 0 ) GO TO 10
         IHD  = IDATA( IHEAD )
