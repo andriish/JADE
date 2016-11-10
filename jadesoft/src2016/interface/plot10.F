@@ -776,7 +776,7 @@ C
       END
 
 ************************************************************************
-      SUBROUTINE EOUTST(NBYTES,SOURCE)
+      SUBROUTINE EOUTST(INBYTES,SOURCE)
       IMPLICIT NONE
 *
 *     Output of an array of four characters packed per word.
@@ -789,6 +789,9 @@ C
       INTEGER ITYP/1/
       EQUIVALENCE (HTYP(1),ITYP)
 Code:
+CAV 
+      INTEGER INBYTES    
+      NBYTES=INBYTES
 C - use CERNLIB routine BLOW (M426) to unpack full words into bytes
       NBYTES=MIN(NBYTES,136)
       CALL BLOW(SOURCE,TARGET,NBYTES,8)

@@ -1,7 +1,7 @@
 C   18/01/84 401181641  MEMBER NAME  USER     (S)           FORTRAN
 C
 C-----------------------------------------------------------------------
-      SUBROUTINE USER( INDEXX )
+      SUBROUTINE USER( INDEX )
 C-----------------------------------------------------------------------
 C
 C   AUTHOR:   L. O'NEILL   ?/??/78 :  USER ROUTINE FOR JADEZ
@@ -14,10 +14,10 @@ C        THIS IS THE INTERACTIVE VERSION FOR THE GRAPHICS PROGRAM.
 C
 C-----------------------------------------------------------------------
 C
-C        INDEXX IS PASSED FROM SUPERV TO INDICATE WHICH LEVEL HAS BEEN
+C        INDEX IS PASSED FROM SUPERV TO INDICATE WHICH LEVEL HAS BEEN
 C        COMPLETED. THE MEANING OF THE VALUES IS EXPLAINED BELOW.
 C
-C        INDEXX=0   INITIAL CALL, BEFORE FIRST EVENT READ.
+C        INDEX=0   INITIAL CALL, BEFORE FIRST EVENT READ.
 C              1   CALLED AT THE BEGINNING OF EACH NEW RUN.
 C              2   CALLED IMMEDIATELY AFTER EVENT IS READ INTO /BCS/.
 C              3   LEAD GLASS ENERGIES HAVE BEEN COMPUTED.
@@ -30,15 +30,15 @@ C              9   MUON ANALYSIS HAS BEEN DONE
 C             10   UNUSED LEVEL
 C            100   END OF JOB CALL
 C
-C   ON RETURN, IF INDEXX =  1 : THE SUPERVISOR WILL DROP CURRENT EVENT
+C   ON RETURN, IF INDEX =  1 : THE SUPERVISOR WILL DROP CURRENT EVENT
 C                              AND READ THE NEXT ONE.
 C                         11 : EVENT WILL BE WRITTEN OUT AND NEW EVENT
 C                              WILL BE READ
 C                         12 : JOB WILL BE TERMINATED NORMALLY
 C
-C   OTHERWISE THE SUPERVISOR WILL GO TO THE LEVEL GIVEN BY "INDEXX" ON
+C   OTHERWISE THE SUPERVISOR WILL GO TO THE LEVEL GIVEN BY "INDEX" ON
 C   RETURN FROM "USER". THUS, TO CONTINUE WITH THE ANALYSIS, THIS
-C   ROUTINE MUST INCREMENT "INDEXX" BEFORE PASSING CONTROL BACK.
+C   ROUTINE MUST INCREMENT "INDEX" BEFORE PASSING CONTROL BACK.
 C
 C-----------------------------------------------------------------------
 C
@@ -58,16 +58,18 @@ C
 C                            CHECK WHETHER CALL AT END OF JOB
 C
 CAV
-C      IF( INDEXX .EQ. 20 ) then
-C      INDEXX=2
-C      write(*,*) 'FUNNY INDEXX', INDEXX
-C      endif 
+      IF( INDEX .EQ. 20 ) then
       
-      IF( INDEXX .EQ. 100 ) GO TO 1100
+      write(*,*) 'FUNNY INDEX', INDEX
+      write(*,*) 'Will return. I suspect you haveve passed a constant'
+      RETURN
+      endif 
+      
+      IF( INDEX .EQ. 100 ) GO TO 1100
 C
-C                            CHECK FOR INDEXX = 0
+C                            CHECK FOR INDEX = 0
 C
-      IF( INDEXX .GT. 0 ) GO TO 1
+      IF( INDEX .GT. 0 ) GO TO 1
 C
 C                - 0 -       INITIALISATION.
 C
@@ -87,16 +89,16 @@ C PMF 09/05/00: Force the read of selected calibration data
          LBMC(I)=1
       ENDDO
 C
-      INDEXX = INDEXX + 1
+      INDEX = INDEX + 1
       RETURN
 C
-C                            HANDLE POSITIVE INDEXX VALUES.
-C                            JUMP TO APPROPRIATE SECTION USING INDEXX
+C                            HANDLE POSITIVE INDEX VALUES.
+C                            JUMP TO APPROPRIATE SECTION USING INDEX
 C                            E.G. IF LEVEL 7 HAS JUST BEEN DONE --> 100700000810
 C                            CARRY OUT TASKS FOR THE LEVEL THEN
 C                            GO AND CALL SCANNR (IF A "STOP" REQUESTED)
 C
-  1   GO TO (1001,1002,1003,1004,1005,1006,1007,1008,1009,1010),INDEXX
+  1   GO TO (1001,1002,1003,1004,1005,1006,1007,1008,1009,1010),INDEX
 C
 C                - 1 -       NEW RUN
 C
@@ -165,7 +167,7 @@ C                            IF A "STOP" HAS BEEN REQUESTED, THEN CALL
 C                            S/R SCANNR TO HANDLE THE INTERACTIVE
 C                            DIALOGUE WITH THE "HUMAN USER" !
 C
- 3000 IF( SSTPS(INDEXX) .OR. PSTPS(INDEXX) ) CALL SCANNR( INDEXX,IRFLG )
+ 3000 IF( SSTPS(INDEX) .OR. PSTPS(INDEX) ) CALL SCANNR( INDEX,IRFLG )
       write(*,*)'D1 ILSTOP===',ILSTOP
       IF( ILSTOP .EQ. 0 ) GO TO 3001
       KNTR = 0
@@ -175,27 +177,27 @@ C
       IF( NSET .EQ. 0 ) GO TO 3001
       IF( NSET .NE. LABEL ) GO TO 3003
 C
-      WRITE(JUSCRN,101) LABEL,INDEXX
-  101 FORMAT('PROGRAM HALTED BY LABEL=',I5,'   USER INDEXX=',I5)
+      WRITE(JUSCRN,101) LABEL,INDEX
+  101 FORMAT('PROGRAM HALTED BY LABEL=',I5,'   USER INDEX=',I5)
 C
       CALL TRMOUT(80,'DO YOU WISH TO STOP AT SUBSEQUENT USER ENTRIES^')
       CALL TRMOUT(80,'IN THIS EVENT?^')
       CALL DECIDE(IANSWR)
       IF( IANSWR .EQ. 2 ) ILSTOP = 0
 C
-      CALL SCANNR( INDEXX,IRFLG )
+      CALL SCANNR( INDEX,IRFLG )
 C
  3003 IF( KNTR .EQ. 10 ) GO TO 3001
       GO TO 3002
 C
-C                            INCREMENT INDEXX TO GO TO NEXT LEVEL
+C                            INCREMENT INDEX TO GO TO NEXT LEVEL
 C
- 3001 IF( INDEXX .NE. 8 ) GO TO 4000
+ 3001 IF( INDEX .NE. 8 ) GO TO 4000
 C
 C                            SCRATCH EXISTING MUON RESULTS BEFORE L9
 C
       CALL BMLT(2,'MUR1MUR2')
       CALL BDLM
- 4000 INDEXX = INDEXX + 1
+ 4000 INDEX = INDEX + 1
       RETURN
       END
