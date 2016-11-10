@@ -43,6 +43,8 @@ C
 C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
+      INTEGER IW
+      COMMON /BCS/ IW(60000)
 C
 #include "cgraph.for"
 C
