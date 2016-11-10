@@ -11,6 +11,7 @@ C on the current platforms.
 C PMF 07/07/99: correct bug
       READ(IUN,ERR=101,END=102) IW(INIR)
       BACKSPACE (IUN)
+C
       CALL BFRD(IUN,IW(INIR),IW(INIR+1))
       IF(IW(INIR)) 102,101,10
   100 RETURN

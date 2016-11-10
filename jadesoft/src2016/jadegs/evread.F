@@ -84,7 +84,7 @@ C
       IMTCO = IBLN('MTCO')
       IMUCO = IBLN('MUCO')
       
-      WRITE(*,*)'EVREAD ENTER   ', IHEAD, IMTCO, IMUCO, IFLG
+      WRITE(*,*)'EVREAD ENTER   ', IHEAD, IMTCO, IMUCO
       
 C                                            CADMIN FLAG
       FLG100 = .FALSE.
@@ -103,6 +103,7 @@ C
 C                            DO WE HAVE A 'HEAD' BANK I.E. AN EVENT ?
 C                            IF NOT THEN SKIP NEXT SECTION
 C
+
    1  IF( IDATA(IHEAD) .LE. 0 ) GO TO 10
         IHD  = IDATA( IHEAD )
         IRUN = HDATA( IHD*2 + 10 )
