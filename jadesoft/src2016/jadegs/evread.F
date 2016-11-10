@@ -93,10 +93,14 @@ C                                            CADMIN FLAG
 C
 C                            MAIN READ STATEMENT.
 C
- 1000 CALL BSLT
+ 1000 write(*,*)'L1000 : IHEAD IMTCO=',IHEAD ,IMTCO
+      CALL BSLT
+      write(*,*)'L1000a: IHEAD IMTCO=',IHEAD ,IMTCO
       CALL BDLG
+      write(*,*)'L1000b: IHEAD IMTCO=',IHEAD ,IMTCO
       NRECS = NRECS + 1
       CALL BREAD(NUNIT,*60,*70)
+      write(*,*)'L1000c: IHEAD IMTCO=',IHEAD ,IMTCO
       CALL USER(20)              ! PMF 07/07/99 added for additional checks
                                 !     14/06/00 set MC smearing veto in user routine
 C
