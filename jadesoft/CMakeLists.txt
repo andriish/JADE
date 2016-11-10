@@ -87,7 +87,7 @@ endif (CERNLIB_FOUND)
 ####################################################################################################
 
 
-#set(CERN_LIBRARIES ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a -lc)
+set(CERN_LIBRARIES ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a -lc)
 
 #INCLUDE(${CMAKE_MODULE_PATH}/SetUpLAPACK.cmake)
 

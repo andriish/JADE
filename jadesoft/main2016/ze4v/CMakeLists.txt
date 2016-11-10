@@ -14,7 +14,7 @@ ADD_EXECUTABLE(${ZE4VEXE} ${ZE4V_src})
 
 # This links foo to the bar library
 TARGET_LINK_LIBRARIES(${ZE4VEXE} -Wl,--start-group ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
- ${CERN_LIBRARIES}  X11 -Wl,--end-group)
+ ${CERN_LIBRARIES} -Wl,--end-group)
 
 # Uncomment if you need to link to BLAS and LAPACK
 #TARGET_LINK_LIBRARIES(${ZE4VEXE} ${BLAS_LIBRARIES}
