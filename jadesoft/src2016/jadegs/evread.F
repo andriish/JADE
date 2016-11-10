@@ -111,7 +111,7 @@ C
 C                            IS IT LEGAL HERE ?
 C
         IF( FLG100  .OR. LBREAD(3) )    GO TO 2
-          write(*,*) 'DEBUG 77a' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD),HDATA( IHD*2 + 10 )
+          write(*,*) 'DEBUG 77' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
         IF( .NOT. ( LBREAD(1) .AND. .NOT. LBREAD(2) ) ) GO TO 3
           write(*,*) 'DEBUG 78' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
 C

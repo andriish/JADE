@@ -16,7 +16,7 @@ ADD_EXECUTABLE(${JADEZEXE} ${JADEZ_src})
 # This links foo to the bar library
 #-lpatrecsr -ltoflib -ltagg -lboslib -ljadegs -linterface -ljademus -lsource -lwertex -lpatrecsr
 TARGET_LINK_LIBRARIES(${JADEZEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
- ${CERN_LIBRARIES} X11 gfortran -Wl,--end-group)
+ ${CERN_LIBRARIES} X11 -Wl,--end-group)
 
 # Uncomment if you need to link to BLAS and LAPACK
 #TARGET_LINK_LIBRARIES(${JADEZEXE} ${BLAS_LIBRARIES}
