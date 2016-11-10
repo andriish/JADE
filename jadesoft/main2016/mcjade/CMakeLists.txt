@@ -4,6 +4,7 @@
 
 # Add the source files
 SET(MCJADE_src ${SRCMCJADE}/mcjade.f ${SRCMCJADE}/mcmain.f  ${SRCMCJADE}/mcrand.f  ${SRCMCJADE}/mcuser.f ${SRCSUPERV}/showb.f)
+#SET(MCJADE_src ${SRCMCJADE}/mcjade.f ${SRCMCJADE}/mcmain_nohbook.f  ${SRCMCJADE}/mcrand.f  ${SRCMCJADE}/mcuser_nohbook.f ${SRCSUPERV}/showb.f)
 
 # Define the executable in terms of the source files
 ADD_EXECUTABLE(${MCJADEEXE} ${MCJADE_src})
