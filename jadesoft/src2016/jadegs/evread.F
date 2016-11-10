@@ -93,11 +93,11 @@ C                                            CADMIN FLAG
 C
 C                            MAIN READ STATEMENT.
 C
- 1000 write(*,*)'L1000 : IHEAD IMTCO=',IHEAD ,IMTCO
+ 1000 write(*,*)'L1000 : IHEAD IMTCO=',IHEAD ,IMTCO,IDATA(IMTCO)
       CALL BSLT
-      write(*,*)'L1000a: IHEAD IMTCO=',IHEAD ,IMTCO
+      write(*,*)'L1000a: IHEAD IMTCO=',IHEAD ,IMTCO,IDATA(IMTCO)
       CALL BDLG
-      write(*,*)'L1000b: IHEAD IMTCO=',IHEAD ,IMTCO
+      write(*,*)'L1000b: IHEAD IMTCO=',IHEAD ,IMTCO,IDATA(IMTCO)
       NRECS = NRECS + 1
       CALL BREAD(NUNIT,*60,*70)
       write(*,*)'L1000c: IHEAD IMTCO=',IHEAD ,IMTCO
