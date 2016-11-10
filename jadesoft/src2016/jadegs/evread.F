@@ -110,6 +110,7 @@ C
 C
 C                            IS IT LEGAL HERE ?
 C
+          write(*,*) 'DEBUG 76' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
         IF( FLG100  .OR. LBREAD(3) )    GO TO 2
           write(*,*) 'DEBUG 77' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
         IF( .NOT. ( LBREAD(1) .AND. .NOT. LBREAD(2) ) ) GO TO 3
