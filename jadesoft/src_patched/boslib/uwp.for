@@ -2,7 +2,7 @@ C   14/10/82            MEMBER NAME  UWP      (S)           FORTRAN77
       SUBROUTINE UWP(BIN,NA,NB)
 C
       REAL*4 BIN(2)
-      REAL*8 FMT(13),FMTF/8H  F12.4,/,FMTG/8H  G12.4,/,
+      CHARACTER*8 FMT(13),FMTF/8H  F12.4,/,FMTG/8H  G12.4,/,
      1     FMTI/8H    I12,/,FMTA/8H  8X,A4,/,FMT1/8H        /,
      2     FMT2/8H(11X,   /
       INTEGER NEQ/0/,LIM(2,8)

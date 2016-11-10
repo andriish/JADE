@@ -80,9 +80,9 @@ C
       IF( JUSCRN .LE. 0  .OR. JUSCRN .GT. 99 ) JUSCRN = 6
 C
       IRET  = 0
-      IHEAD = IBLN(4HHEAD)
-      IMTCO = IBLN(4HMTCO)
-      IMUCO = IBLN(4HMUCO)
+      IHEAD = IBLN('HEAD')
+      IMTCO = IBLN('MTCO')
+      IMUCO = IBLN('MUCO')
       
       WRITE(*,*)'EVREAD ENTER   ', IHEAD, IMTCO, IMUCO
       
@@ -93,7 +93,7 @@ C                                            CADMIN FLAG
 C
 C                            MAIN READ STATEMENT.
 C
- 1000 CALL BSLT
+ 1000 CALL BSLT      
       CALL BDLG
       NRECS = NRECS + 1
       CALL BREAD(NUNIT,&60,&70)
@@ -110,10 +110,11 @@ C
 C
 C                            IS IT LEGAL HERE ?
 C
+C          write(*,*) 'DEBUG 76' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
         IF( FLG100  .OR. LBREAD(3) )    GO TO 2
-          write(*,*) 'DEBUG 77' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
+C          write(*,*) 'DEBUG 77' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
         IF( .NOT. ( LBREAD(1) .AND. .NOT. LBREAD(2) ) ) GO TO 3
-          write(*,*) 'DEBUG 78' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
+C          write(*,*) 'DEBUG 78' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
 C
 C                            BANK 'MTCO' WAS LAST SO THIS OUGHT TO BE
 C                            A RECORD WITH 'MUCO' NOT 'HEAD'
@@ -132,7 +133,6 @@ C
 C                            RECOVER FROM THIS ERROR
 C
           GO TO 2
-          write(*,*) 'It was 2'
 C
 C                            MONTE CARLO DATA WITHOUT CALIBRATION
 C                            FAKING REAL DATA? PRINT WARNING AND STOP
@@ -196,7 +196,7 @@ C                            DO WE HAVE AN 'MTCO' BANK RECORD? IF SO
 C                            CHECK THAT THE LAST RECORD WAS NOT 'MTCO'
 C                            OR 'MUCO', THEN SET FLAGS AND PROCESS BANK.
 C
-  10  IF( IDATA(IMTCO) .LE. 0 ) GO TO 20
+  10    IF( IDATA(IMTCO) .LE. 0 ) GO TO 20
         IF( FLG100 .OR. LBREAD(3) .OR. NRECS .EQ. 1 ) GO TO 11
 C
           IF( LBREAD(1) .AND. .NOT. LBREAD(2) ) WRITE(JUSCRN,12) NRECS
