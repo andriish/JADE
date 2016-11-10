@@ -42,7 +42,8 @@ h2root jt_sherpa34gev_final.hbook
 
 
 
-
-
+exit
+#TO run jadez do
+# export big endian and run on the sv_sherpa
 
 
