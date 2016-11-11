@@ -122,7 +122,8 @@ ${SRCJADEGS}/zsrftv.F
 ${SRCJADEGS}/zsxy.F
 ${SRCJADEGS}/zvertf.F
 ${SRCJADEGS}/zrecal.F
+${SRCJADEGS}/zbug.f
 )
-#NOTE, PMF contains a bug? here zrecal.F is taken from zebra
+#NOTE, PMF contains a bug? here zrecal.F and zbug.g is taken from zebra
 
 ADD_LIBRARY(${JADEGSLIB} jadegs ${JADEGS_src})

@@ -134,8 +134,14 @@ ${TOP}/src/cfopei.c
 ${TOP}/src/fchtak.c
 ${TOP}/src/spaces.F
 ${TOP}/src/vdot.F
+${TOP}/src/blow.F
+${TOP}/src/jbytet.F
+${TOP}/src/chtoi.F
+${TOP}/src/itoch.F
+${TOP}/src/upkch.F
 ${TOP}/src/indexc.F
 ${TOP}/src/JBOOK.cxx
+${TOP}/src/JHIGZ.cxx
 )
 
 

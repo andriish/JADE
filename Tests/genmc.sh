@@ -22,14 +22,14 @@ cd ../Tests
 #../HepMC3/outputs/bin/convert_example_JADE.exe hepmc2_jade  sherpa34gev.hepmc2   bsherpa34gev.jade Mode=0:events_limit=100
 #../HepMC3/outputs/bin/convert_example_JADE.exe hepmc2_jade  sherpa34gev.hepmc2   asherpa34gev.jade Mode=1:events_limit=100
 cd ../jadesoft
-#cmake CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran
-#make -f Makefile
-#sh scripts2016/install.sh
+cmake CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran
+make -f Makefile
+sh scripts2016/install.sh
 . scripts2016/Init_jade_env.sh
 cd  ../Tests
 #cat mcjadecard.txt | mcjade
 
-
+exit
 
 #h2root sherpa34gev.hist
 #export GFORTRAN_CONVERT_UNIT='big_endian;native:2'
