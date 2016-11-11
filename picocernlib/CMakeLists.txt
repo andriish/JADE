@@ -1,11 +1,11 @@
 # CMake project file for FOO from 
-
+#-L../../../rootlibs/usr/lib/root   -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lstdc++
 ##################################################
 # Define the project and the depencies that it has
 ##################################################
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
-PROJECT(PICOCERNLIB Fortran C)
+PROJECT(PICOCERNLIB Fortran C CXX)
 
 SET(VERSION 2016)
 
@@ -16,6 +16,10 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -m32")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -m32 -std=c++11 -I/usr/include/root   ")
+
+
 
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
@@ -32,16 +36,12 @@ endif()
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
 #PPC64 only
    set(CMAKE_Fortran_FLAGS           " -qfixed=256 -q32  -melf32ppc -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
-   find_library(GFORTRAN_LIBRARY NAMES libgfortran.so.3  gfortran HINTS /usr/lib )
-   list(APPEND CERN_LIBRARIES  ${GFORTRAN_LIBRARY})
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "sun.*")
 #NOT WELL TESTED
 #Local variables are static by default. Alternate is STATIC statement. 
    set(CMAKE_Fortran_FLAGS           "  -ftrap=%none -f77 -e -m32  -g  ")	
-   list(APPEND CERN_LIBRARIES  /usr/lib/libgfortran.so.3)
-   list(APPEND CERN_LIBRARIES  /lib/libgcc_s.so.1)
 endif()
 
 #message(STATUS "Fortran compiler : ${Fortran_COMPILER_NAME}")
@@ -132,6 +132,10 @@ ${TOP}/src/cfclos.c
 ${TOP}/src/vxinvb.c
 ${TOP}/src/cfopei.c
 ${TOP}/src/fchtak.c
+${TOP}/src/spaces.F
+${TOP}/src/vdot.F
+${TOP}/src/indexc.F
+${TOP}/src/JBOOK.cxx
 )
 
 

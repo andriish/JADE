@@ -31,27 +31,82 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 #set(CERNLIB_FIND_QUIETLY FALSE)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CERNLIB_FIND_REQUIRED ON)
-INCLUDE(${CMAKE_MODULE_PATH}/FindCERNLIB.cmake)
-
-#SET_COMPILE_FLAG(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}" Fortran 
-#"-m32 -std=legacy -m32 -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons " ) 
 
 
-#INCLUDE(${CMAKE_MODULE_PATH}/SetFortranFlags.cmake) 
-# Locate and set parallelization libraries.  There are some CMake peculiarities
-# taken care of here, such as the fact that the FindOpenMP routine doesn't know
-# about Fortran.
-#INCLUDE(${CMAKE_MODULE_PATH}/SetParallelizationLibrary.cmake)
-# Setup the LAPACK libraries.  This also takes care of peculiarities, such as
-# the fact the searching for MKL requires a C compiler, and that the results
-# are not stored in the cache. 
-#INCLUDE(${CMAKE_MODULE_PATH}/SetUpLAPACK.cmake)
+ ################################################################################
+ #    Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH    #
+ #                                                                              #
+ #              This software is distributed under the terms of the             # 
+ #         GNU Lesser General Public Licence version 3 (LGPL) version 3,        #  
+ #                  copied verbatim in the file "LICENSE"                       #
+ ################################################################################
+# - Try to find CERNLIB
+# Once done this will define
+#
+#  CERNLIB_FOUND - system has CERNLIB
+#### (not needed)  CERNLIB_INCLUDE_DIR - the CERNLIB include directory
+#  CERNLIB_LIBRARIES - The libraries needed to use CERNLIB
+#### (not needed)  CERNLIB_DEFINITIONS - Compiler switches required for using CERNLIB
+#
 
-# There is an error in CMAKE with this flag for pgf90.  Unset it
-GET_FILENAME_COMPONENT(FCNAME ${CMAKE_Fortran_COMPILER} NAME)
-IF(FCNAME STREQUAL "pgf90")
-    UNSET(CMAKE_SHARED_LIBRARY_LINK_Fortran_FLAGS)
-ENDIF(FCNAME STREQUAL "pgf90")
+if (CERNLIB_INCLUDE_DIR AND CERNLIB_LIBRARY_DIR)
+  SET (CERNLIB_INCLUDE_DIR CERNLIB_INCLUDE_DIR-NOTFOUND)
+  SET (CERNLIB_LIB_DIR CERNLIB_LIB_DIR-NOTFOUND)
+  SET (CERNLIB_PLISTS_LIB_DIR CERNLIB_PLISTS_LIB_DIR-NOTFOUND)
+endif (CERNLIB_INCLUDE_DIR AND CERNLIB_LIBRARY_DIR)
+
+MESSAGE(STATUS "Looking for CERNLIB...")
+
+FIND_PATH(CERNLIB_INCLUDE_DIR NAMES CERNLIB PATHS
+  ${SIMPATH}/cern/include
+  $ENV{CERN_ROOT}/include
+#CentOS
+  /usr/include/cernlib/2006
+  NO_DEFAULT_PATH
+)
+
+FIND_PATH(CERNLIB_LIBRARY_DIR NAMES libgeant.a libmathlib.a PATHS
+  ${SIMPATH}/cern/lib
+  $ENV{CERN_ROOT}/lib
+#CentOS
+  /usr/lib/cernlib/2006/lib
+  NO_DEFAULT_PATH
+)
+
+if (CERNLIB_LIBRARY_DIR)
+   set(CERNLIB_FOUND TRUE)
+endif (CERNLIB_LIBRARY_DIR)
+set(cernlibs kernlib packlib mathlib graflib grafX11)  
+if (CERNLIB_FOUND)
+  if (NOT CERNLIB_FIND_QUIETLY)
+    MESSAGE(STATUS "Looking for CERNLIB... - found ${CERNLIB_LIBRARY_DIR}")
+  endif (NOT CERNLIB_FIND_QUIETLY)
+  
+  SET(LD_LIBRARY_PATH ${LD_LIBRARY_PATH} ${CERNLIB_LIBRARY_DIR})
+set(CERN_LIBRARIES)
+foreach(_cpt ${cernlibs})
+#one can link with static
+#  find_library(CERN_${_cpt}_LIBRARY lib${_cpt}.a ${_cpt} HINTS ${CERNLIB_LIBRARY_DIR})
+#or dynamic cernlib
+  find_library(CERN_${_cpt}_LIBRARY lib${_cpt}.so ${_cpt} HINTS ${CERNLIB_LIBRARY_DIR})
+  if(CERN_${_cpt}_LIBRARY)
+    mark_as_advanced(CERN_${_cpt}_LIBRARY)
+    list(APPEND CERN_LIBRARIES ${CERN_${_cpt}_LIBRARY})
+  endif()
+endforeach()
+list(REMOVE_DUPLICATES CERN_LIBRARIES)
+  
+else (CERNLIB_FOUND)
+  if (CERNLIB_FIND_REQUIRED)
+    message(FATAL_ERROR "Looking for CERNLIB... - Not found")
+  endif (CERNLIB_FIND_REQUIRED)
+endif (CERNLIB_FOUND)
+####################################################################################################
+
+
+set(CERN_LIBRARIES ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a -lc  -L${CMAKE_SOURCE_DIR}/../ROOTLIBS 
+-lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lstdc++)
+
 
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
