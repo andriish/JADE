@@ -1,5 +1,6 @@
 #include "TText.h"
 #include "TPad.h"
+#include "TApplication.h"
 #include "TCanvas.h"
 #include "TTree.h"
 #include "TBox.h"
@@ -12,8 +13,27 @@
 #include <string>
 #include <sstream>
 
-TCanvas*   J_GLOBAL_C;
-TPad*   J_GLOBAL_P;
+
+
+
+TApplication* jApplication;
+int UPDATER;
+std::map<int,TCanvas*>   jCanvas;
+TPad*   jPad;
+int jTextAlignment;
+int jTextSize;
+int jTextColor;
+std::map<int,double>  gSX,gSY;
+std::map<int,double>  grSX,grSY;
+
+int jNT;
+
+#ifdef DEBUG
+ #define DDDD if(1) 
+#else
+ #define DDDD if(0) 
+#endif
+
 extern "C" {
 /*
 void igstrt_()
@@ -28,7 +48,19 @@ void igstrt_()
 
 void iswn_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)
 {
-J_GLOBAL_C= new TCanvas();
+DDDD printf("iswn_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)  %i %f %f %f %f\n", NTS, XTMIN, XTMAX, YTMIN, YTMAX);
+//if (jCanvas) return;
+//jCanvas= new TCanvas("Main window","Hallo",0.2*(XTMAX-XTMIN),0.2*(YTMAX-YTMIN));
+//if (jCanvas.find(0)==jCanvas.end())  { jCanvas[0]= new TCanvas("Hallo window","Hallo",768,1024); jCanvas[0]->cd();}
+//else {jCanvas[1]= new TCanvas("Main window","JADE ROOT event display",768,1024); jCanvas[1]->cd();}
+
+
+if (jCanvas.find(NTS)==jCanvas.end())   jCanvas[NTS]= new TCanvas(Form("jCanvas%i",NTS),Form("JADE Display %i",NTS),gSX[NTS]*(XTMAX-XTMIN),gSX[NTS]*(YTMAX-YTMIN)); 
+	jCanvas[NTS]->cd();
+     //gPad->Range(-gSX[NTS]*(XTMAX-XTMIN), -gSX[NTS]*(YTMAX-YTMIN)  ,gSX[NTS]*(XTMAX-XTMIN),gSX[NTS]*(YTMAX-YTMIN)  );
+
+
+
 
 
 }
@@ -36,10 +68,7 @@ J_GLOBAL_C= new TCanvas();
 
 void isvp_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)
 {
-
-J_GLOBAL_C->cd();
-J_GLOBAL_P= new TPad("AAA","AAA",XTMIN,XTMAX,YTMIN,YTMAX);
-
+//1.0/(YTMAX-YTMIN);
 }
 // CALL SETCOL('*INI')
 /*
@@ -55,15 +84,16 @@ void setcol_(const char*)
 //CALL IGFIN
 void igfin_()
 {
-if (J_GLOBAL_C) delete 	J_GLOBAL_C;
-if (J_GLOBAL_P) delete 	J_GLOBAL_P;
+if (jCanvas) delete 	jCanvas;
+if (jPad) delete 	jPad;
 }	
 */
 //`iclrwk_'
 
 void iclrwk_()
 {
-if (J_GLOBAL_P) J_GLOBAL_P->Clear();
+puts("iclrwk_()\n");
+gPad->Clear();
 }	
 
 
@@ -78,6 +108,7 @@ void iclwk_()
 
 void igbox_(float& x1, float & x2,float& y1, float & y2)
 {
+DDDD printf("void igbox_(float& x1, float & x2,float& y1, float & y2) %f %f %f %f\n",x1,y1,x2,y2);
 TBox* B= new TBox(x1,y1,x2,y2);
 B->SetFillColor(1);
 B->SetFillStyle(1);
@@ -121,23 +152,61 @@ A value of 0.0 indicates that the parameter value must be reset to its default v
 
 }
 
+
+//`iginit_'
+void iginit_(int a)
+{
+jApplication=new TApplication("Jade display",0,0);
+jTextSize=0.01;
+jTextColor=kRed;
+jTextAlignment=12;
+
+gSX[8]=0.25;
+gSY[8]=0.25;
+
+gSX[9]=0.25;
+gSY[9]=0.25;
+
+
+
+grSX[8]=0.15/768;
+grSY[8]=0.15/1024;
+
+grSX[9]=0.15/768;
+grSY[9]=0.15/1024;
+UPDATER=0;
+/*
+gSX[8]=0.25;
+gSY[8]=0.25;
+
+gSX[9]=0.25;
+gSY[9]=0.25;
+
+
+
+grSX[8]=0.015;
+grSY[8]=0.015;
+
+grSX[9]=0.015;
+grSY[9]=0.015;
+*/
+
+
+}	
+
 //`igend_'
 void igend_()
 {
 	
-	
+jApplication->Run();	
 }	
-//`iginit_'
-void iginit_(int& a)
-{
-	
-	
-}	
+
+
 //`igloc_'
 
 void igloc_(int *is, int nt, int BN, float &a,float &b,float &c,float &d)
 {
-	
+DDDD printf("igloc_(int *is, int nt, int BN, float &a,float &b,float &c,float &d)\n");
 }	
 
 //`igmess_'
@@ -154,12 +223,14 @@ void igmeta_(int& LUN, int& KWTYPE)
 }	
 //`igpave_'
 //(X1,X2,Y1,Y2,DZ,ISBOX,ISFRAM,CHOPT)
-void igpave_()
+void igpave_(float& x1, float&  x2,float& y1,float y2,int*, int*,const char* )
 {
-	TPaveLabel* P= new TPaveLabel();
-	
-	
-	P->Draw();
+	DDDD printf("igpave_(float& x1, float&  x2,float& y1,float y2, %f %f %f %f\n",x1,y1,x2,y2);
+//	double f=0.1;
+   gPad->cd();
+	TPave* P= new TPave(gSX[jNT]*x1,gSY[jNT]*y1,gSX[jNT]*x2,gSY[jNT]*y2);
+	P->Paint("NDC");
+   //gPad->Update();
 }	
 /*`
 `igrng_'
@@ -171,10 +242,19 @@ void igpave_()
 //`ipl_'
 void ipl_(int&n, float* x, float* y)
 {
-		TPolyLine* P=new TPolyLine(n,x,y);
+	Double_t X[100];
+	Double_t Y[100];
+	for (int i=0;i<n;i++){X[i]=x[i]*grSX[jNT]; Y[i]=y[i]*grSY[jNT];}
+	DDDD printf("ipl_(int&n, float x, float y) %i\n", n);
+	gPad->cd();
+	TPolyLine* P=new TPolyLine(n,X,Y);
 	P->SetLineWidth(1);
 	P->SetLineStyle(1);
+	P->Paint();
 	P->Draw();
+	//gPad->SaveAs("2.C");
+	UPDATER++:
+	if (UPDATER%1000==0)gPad->Update();
 	
 }	
 
@@ -182,19 +262,43 @@ void ipl_(int&n, float* x, float* y)
 //`ipm_'
 void ipm_(int&n, float* x, float* y)
 {
-		TPolyMarker* P=new TPolyMarker(n,x,y);
+	
+	gPad->cd();
+
+	Double_t X[100];
+	Double_t Y[100];
+	for (int i=0;i<n;i++){X[i]=x[i]*grSX[jNT]; Y[i]=y[i]*grSY[jNT];}
+
+
+	DDDD printf("void ipm_(int&n, float* x, float* y) %i,%f %f\n", n, x[0], y[0]);
+	TPolyMarker* P=new TPolyMarker(n,X,Y);
 	//P->SetLineWidth(1);
 	//P->SetLineStyle(1);
+	P->Paint();
 	P->Draw();
+		//gPad->SaveAs("3.C");
+	//gPad->Update();
 	
 }	
 
 
 //`ischh_'
-void ischh_(float &h)
+void ischh_(float& h)
 {
+/*
+GKS
+ CALL ISCHH
+ (CHH)
+Action: This routine sets the character height attribute for use by future invocations of ITX. The routine
+IGSET (see section 4.11) can also be used with the parameter CHHE.
+Parameter description:
+CHH
+ Character height. The default set by IGSSE is 0.01. The height is given in world coordi-
+nates and it must be positive.
+*/
 //gStyle->SetFontSize(h);
- 
+ DDDD printf(" ischh  %f\n",h);
+ jTextSize=h;
 } 
 //`iscr_'
 void iscr_(int &w, int &ci, float &r,float&g,float&b)
@@ -206,11 +310,12 @@ void iscr_(int &w, int &ci, float &r,float&g,float&b)
 //`iselnt_'
 void iselnt_(int & t)
 {
-	
+//DDDD printf("void iselnt_(int & t)  %i\n",t);
+	jNT=t;
 	
 }	
 
-void isfaci_(int* col )
+void isfaci_(int& a )
 {
 /*
 Action: This routine sets the fill area colour index attribute for use by future invocations of IFA. The
@@ -220,9 +325,11 @@ ICOLI
  Fill area colour index.
 
 */
+DDDD printf("isfaci_(int& col )   %i\n",a);
+
 }	
 
-void isfais_(int* sty )
+void isfais_(int& a )
 {
 /*
 Action: This routine sets the fill area interior style attribute for use by future invocations of IFA. The
@@ -241,9 +348,13 @@ INTS
 
 
 */
+
+
+DDDD printf("isfais_(int& sty )  %i\n",a);
+
 }	
 
-void isln_(int *a)
+void isln_(int &a)
 {
 /*
 Action: This routine sets the line type attribute for use b
@@ -263,11 +374,13 @@ Line type (positive number).
 4
  Dashed-dotted lines
 */
+
+DDDD printf("isln_(int *a)  %i\n",a);
 }
 
 
 
-void islwsc_(int* a)
+void islwsc_(float& a)
 {
 /*
 Action: This routine sets the width of a line for use by future invocations of the polyline drawing routine
@@ -280,14 +393,14 @@ Parameter description:
 WIDTH
  Line width scale factor.
 */
-
+DDDD printf("islwsc_(int& a)  %f\n",a);
 
 
 }
 
 
 
-void ismk_(int *a)
+void ismk_(int &a)
 {
 /*
 Action: This routine sets the marker type attribute for use by future invocations of IPM. All workstations
@@ -305,9 +418,9 @@ Marker type (positive number)
 4 Circle shape (◦).
 5 X shape (×).
 */
-	
+	DDDD printf("ismk_(int &a)  %i\n",a);
 }	
-void ismksc_(int* a)
+void ismksc_(int& a)
 {
 /*
 Action: This routine sets the marker scale factor. This scale factor is applied on the nominal size of the
@@ -318,6 +431,7 @@ SSFM
  Scale factor applied to markers. (≥ 0.)
 */	
 	
+		DDDD printf("ismksc_  %i\n",a);
 	
 }	
 
@@ -357,7 +471,7 @@ void hlabel_(int*id , int N,char** clab,const char* opt)
 
 }
 
-void iuwk_(int*a, int*b)
+void iuwk_(int&a, int&b)
 {
 /*
 GKS
@@ -379,22 +493,29 @@ IRFLG
  update current view
 */
 
-gPad->Update();
+DDDD printf("iuwk_(int&a, int&b) %i, %i\n",a,b);
+//jCanvas[*a]->Update();
 
 }
 
 
-void itx_(float*x, float*y, char* txt)
+void itx_(float &x, float &y, char* txt)
 {
-	
-	   TText *t = new TText(*x,*y,txt);
-   t->SetTextAlign(22);
-   t->SetTextColor(kRed+2);
-   t->SetTextFont(43);
-   t->SetTextSize(40);
-   t->SetTextAngle(45);
+ DDDD printf("void itx_(float &x, float &y, char* txt)   %f %f %s\n", x,y, txt);
+   gPad->cd();
+   
+   TText *t = new TText(grSX[jNT]*x,grSY[jNT]*y,txt);
+   t->SetNDC(false);
+   t->SetTextAlign(jTextAlignment);
+   t->SetTextColor(jTextColor);
+   t->SetTextSize(jTextSize*grSY[jNT]);
+   //t->SetTextAngle(45);
    t->Draw();
-	
+   
+   gPad->Update();
+   //gPad->SaveAs("1.pdf");
+   //gPad->SaveAs("1.root");
+   //gPad->SaveAs("1.C");
 }	
 
 void mzebra_(int *a){}
@@ -422,7 +543,7 @@ B
 
 
 }
-void istxal_(int* a, int *b)
+void istxal_(int& a, int& b)
 {/*
 GKS
  CALL ISTXAL
@@ -448,15 +569,16 @@ Vertical alignment specifier (0≤ITXALV≤5)
 3 Middle of tallest characters.
 */
 
-
+jTextAlignment=10*a+b;
 
 
 }
 
 
 
-void istxci_(int* a)
+void istxci_(int& a)
 {
+DDDD printf("istxci_(int& a), %i\n",a);
 /*
 Text colour index.
 GKS
@@ -469,10 +591,10 @@ ICOLI
 3.6.3
  Fill area interior style
 */
-
+jTextColor=a;
 
 }
-void isplci_(int*a)
+void isplci_(int&a)
 {/*
 GKS
  CALL ISPLCI
@@ -483,13 +605,13 @@ Parameter description:
 ICOLI
  Polyline colour index.
 */
-
+DDDD printf("isplci_(int&a), %i\n",a);
 
 }
 
 
 
-void ispmci_(int* a)
+void ispmci_(int& a)
 {
 /*
 Polymarker colour index.
