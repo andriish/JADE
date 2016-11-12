@@ -1,3 +1,5 @@
+#include "TColor.h"
+#include "TMath.h"
 #include "TText.h"
 #include "TPad.h"
 #include "TApplication.h"
@@ -19,10 +21,16 @@
 TApplication* jApplication;
 int UPDATER;
 std::map<int,TCanvas*>   jCanvas;
+std::map<int,TColor>   jColors;
 TPad*   jPad;
 int jTextAlignment;
 int jTextSize;
+int jTextAngle;
 int jTextColor;
+
+int jPolymarkerColor;
+int jPolyLineColor;
+
 std::map<int,double>  gSX,gSY;
 std::map<int,double>  grSX,grSY;
 
@@ -55,10 +63,12 @@ DDDD printf("iswn_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)
 //else {jCanvas[1]= new TCanvas("Main window","JADE ROOT event display",768,1024); jCanvas[1]->cd();}
 
 
-if (jCanvas.find(NTS)==jCanvas.end())   jCanvas[NTS]= new TCanvas(Form("jCanvas%i",NTS),Form("JADE Display %i",NTS),gSX[NTS]*(XTMAX-XTMIN),gSX[NTS]*(YTMAX-YTMIN)); 
-	jCanvas[NTS]->cd();
-     //gPad->Range(-gSX[NTS]*(XTMAX-XTMIN), -gSX[NTS]*(YTMAX-YTMIN)  ,gSX[NTS]*(XTMAX-XTMIN),gSX[NTS]*(YTMAX-YTMIN)  );
-
+if (jCanvas.find(NTS)==jCanvas.end())   jCanvas[NTS]= new TCanvas(Form("jCanvas%i",NTS),Form("JADE Display %i",NTS),768,768); 
+	jCanvas[NTS]->Divide(1,1);
+	jCanvas[NTS]->cd(1);
+    jCanvas[NTS]->Range(2*XTMIN,2*YTMIN,2*XTMAX,2*YTMAX);
+    jCanvas[NTS]->GetPad(1)->Range(2*XTMIN,2*YTMIN,2*XTMAX,2*YTMAX);
+gPad->Update();
 
 
 
@@ -93,7 +103,19 @@ if (jPad) delete 	jPad;
 void iclrwk_()
 {
 puts("iclrwk_()\n");
-gPad->Clear();
+//gPad->Clear("D");
+if (jCanvas.find(jNT)!=jCanvas.end())
+{
+if (jCanvas.find(8)!=jCanvas.end())jCanvas[8]->SaveAs("8.C");
+if (jCanvas.find(8)!=jCanvas.end())jCanvas[8]->SaveAs("8.root");
+if (jCanvas.find(9)!=jCanvas.end())jCanvas[9]->SaveAs("9.C");
+if (jCanvas.find(9)!=jCanvas.end())jCanvas[9]->SaveAs("9.root");
+jCanvas[jNT]->Clear();
+gPad->Modified(); gPad->Update();
+jCanvas[jNT]->Update();
+jCanvas[jNT]->Update();
+//jCanvas[jNT]->SaveAs("1.C");
+}
 }	
 
 
@@ -119,6 +141,7 @@ B->Draw();
 
 void ixbox_(float& x1, float & x2,float& y1, float & y2, int mode)
 {
+DDDD printf("void ixbox_(float& x1, float & x2,float& y1, float & y2) %f %f %f %f\n",x1,y1,x2,y2);
 TBox* B= new TBox(x1,y1,x2,y2);
 B->SetFillColor(1);
 B->SetFillStyle(1);
@@ -149,6 +172,7 @@ Floating point value of the parameter (must be specified as a REAL number).
 A value of 0.0 indicates that the parameter value must be reset to its default value.
 */
 
+jTextAngle=atan(val)*180.0/TMath::Pi();
 
 }
 
@@ -160,6 +184,7 @@ jApplication=new TApplication("Jade display",0,0);
 jTextSize=0.01;
 jTextColor=kRed;
 jTextAlignment=12;
+jTextAngle=0;
 
 gSX[8]=0.25;
 gSY[8]=0.25;
@@ -169,11 +194,11 @@ gSY[9]=0.25;
 
 
 
-grSX[8]=0.15/768;
-grSY[8]=0.15/1024;
+grSX[8]=0.1/768;
+grSY[8]=0.1/1024;
 
-grSX[9]=0.15/768;
-grSY[9]=0.15/1024;
+grSX[9]=0.1/768;
+grSY[9]=0.1/1024;
 UPDATER=0;
 /*
 gSX[8]=0.25;
@@ -228,7 +253,8 @@ void igpave_(float& x1, float&  x2,float& y1,float y2,int*, int*,const char* )
 	DDDD printf("igpave_(float& x1, float&  x2,float& y1,float y2, %f %f %f %f\n",x1,y1,x2,y2);
 //	double f=0.1;
    gPad->cd();
-	TPave* P= new TPave(gSX[jNT]*x1,gSY[jNT]*y1,gSX[jNT]*x2,gSY[jNT]*y2);
+	//TPave* P= new TPave(gSX[jNT]*x1,gSY[jNT]*y1,gSX[jNT]*x2,gSY[jNT]*y2);
+	TPave* P= new TPave(x1,y1,x2,y2);
 	P->Paint("NDC");
    //gPad->Update();
 }	
@@ -242,18 +268,19 @@ void igpave_(float& x1, float&  x2,float& y1,float y2,int*, int*,const char* )
 //`ipl_'
 void ipl_(int&n, float* x, float* y)
 {
-	Double_t X[100];
-	Double_t Y[100];
-	for (int i=0;i<n;i++){X[i]=x[i]*grSX[jNT]; Y[i]=y[i]*grSY[jNT];}
+	//Double_t X[100];
+	//Double_t Y[100];
+//	for (int i=0;i<n;i++){X[i]=x[i]*grSX[jNT]; Y[i]=y[i]*grSY[jNT];}
 	DDDD printf("ipl_(int&n, float x, float y) %i\n", n);
 	gPad->cd();
-	TPolyLine* P=new TPolyLine(n,X,Y);
+	//TPolyLine* P=new TPolyLine(n,X,Y);
+	TPolyLine* P=new TPolyLine(n,x,y);
 	P->SetLineWidth(1);
 	P->SetLineStyle(1);
 	P->Paint();
 	P->Draw();
 	//gPad->SaveAs("2.C");
-	UPDATER++:
+	UPDATER++;
 	if (UPDATER%1000==0)gPad->Update();
 	
 }	
@@ -265,13 +292,14 @@ void ipm_(int&n, float* x, float* y)
 	
 	gPad->cd();
 
-	Double_t X[100];
-	Double_t Y[100];
-	for (int i=0;i<n;i++){X[i]=x[i]*grSX[jNT]; Y[i]=y[i]*grSY[jNT];}
+	//Double_t X[100];
+///	Double_t Y[100];
+	//for (int i=0;i<n;i++){X[i]=x[i]*grSX[jNT]; Y[i]=y[i]*grSY[jNT];}
 
 
 	DDDD printf("void ipm_(int&n, float* x, float* y) %i,%f %f\n", n, x[0], y[0]);
-	TPolyMarker* P=new TPolyMarker(n,X,Y);
+	//TPolyMarker* P=new TPolyMarker(n,X,Y);
+	TPolyMarker* P=new TPolyMarker(n,x,y);
 	//P->SetLineWidth(1);
 	//P->SetLineStyle(1);
 	P->Paint();
@@ -419,6 +447,16 @@ Marker type (positive number)
 5 X shape (×).
 */
 	DDDD printf("ismk_(int &a)  %i\n",a);
+//switch (a):
+//{
+//case 1: gStyle->SetMarkerStyle(kPoint); break
+//case 2: gStyle->SetMarkerStyle(kPoint); break
+//case 3: gStyle->SetMarkerStyle(kPoint); break
+//case 4: gStyle->SetMarkerStyle(kCircle); break
+//case 5: gStyle->SetMarkerStyle(kPoint); break
+//default: break;
+//}
+
 }	
 void ismksc_(int& a)
 {
@@ -432,7 +470,7 @@ SSFM
 */	
 	
 		DDDD printf("ismksc_  %i\n",a);
-	
+	gStyle->SetMarkerSize(1.0+0.1*a);
 }	
 
 /*
@@ -495,27 +533,52 @@ IRFLG
 
 DDDD printf("iuwk_(int&a, int&b) %i, %i\n",a,b);
 //jCanvas[*a]->Update();
+//	jCanvas[jNT]->GetPad(1)->Modified();  
+	//jCanvas[jNT]->GetPad(1)->Update();  
 
+
+	jCanvas[jNT]->Modified();  
+	jCanvas[jNT]->Update();  
+	gPad->Modified();
+	gPad->Update();
 }
 
-
+bool HasSpecialCharacters(const char *str)
+{
+    return str[strspn(str, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_")] != 0;
+}
 void itx_(float &x, float &y, char* txt)
 {
  DDDD printf("void itx_(float &x, float &y, char* txt)   %f %f %s\n", x,y, txt);
-   gPad->cd();
    
-   TText *t = new TText(grSX[jNT]*x,grSY[jNT]*y,txt);
-   t->SetNDC(false);
+   
+   jCanvas[jNT]->cd(1);
+   //TAttText::Modify();
+   //gPad->PaintText(x,y,txt);
+   //TText *t = new TText(grSX[jNT]*x,grSY[jNT]*y,txt);
+   TText *t;
+   //if (HasSpecialCharacters(txt))
+   //t = new TText(x,y,"S");
+   //else
+   t = new TText(x,y,txt);
+   //t->SetNDC(false);
    t->SetTextAlign(jTextAlignment);
    t->SetTextColor(jTextColor);
-   t->SetTextSize(jTextSize*grSY[jNT]);
-   //t->SetTextAngle(45);
+   //t->SetTextSize(jTextSize*grSY[jNT]);
+   t->SetTextSize(0.04);
+   t->SetTextAngle(jTextAngle);
    t->Draw();
-   
-   gPad->Update();
+
+jCanvas[jNT]->Modified();  
+
+	 //jCanvas[jNT]->SaveAs("1.C");  
+
+   //gPad->Modify();
+   //gPad->Update();
    //gPad->SaveAs("1.pdf");
    //gPad->SaveAs("1.root");
    //gPad->SaveAs("1.C");
+
 }	
 
 void mzebra_(int *a){}
@@ -523,7 +586,7 @@ void mzpaw_(int *a){}
 
 
 
-void ixsetco_(int*i, float r, float g, float b)
+void ixsetco_(int&i, float r, float g, float b)
 {/*
 
 CALL IXSETCO
@@ -539,9 +602,7 @@ G
 B
  Blue intensity between 0.0 and 1.0.
 */
-
-
-
+jColors[i]=TColor(i,r,g,b);
 }
 void istxal_(int& a, int& b)
 {/*
@@ -606,7 +667,7 @@ ICOLI
  Polyline colour index.
 */
 DDDD printf("isplci_(int&a), %i\n",a);
-
+//if (jColors.find(a)!=jColors.end()) jPolyLineColor=jColors.at(a);
 }
 
 
@@ -624,14 +685,10 @@ Parameter description:
 ICOLI
  Polymarker colour index.
 */
-
-
-
-
-
+//if (jColors.find(a)!=jColors.end()) jPolymarkerColor=jColors.at(a);
 }
 
-void istxfp_(int *a, float *prec)
+void istxfp_(int &a, float *prec)
 {
 /*
 GKS
@@ -651,7 +708,7 @@ depends on the underlying graphics package used.
 */
 }
 
-void ixsettc_(int*a)
+void ixsettc_(int&a)
 {
 /*
 CALL IXSETTC
@@ -661,7 +718,7 @@ Parameter description:
 INDEX
  Colour index defined my IXSETCOL.
 */
-
+//if (jColor.find(a)!=jColor.end()) jTextColor=jColor.at(a);
 }
 
 
