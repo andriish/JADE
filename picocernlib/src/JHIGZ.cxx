@@ -114,6 +114,7 @@ if (jCanvas.find(NTS)==jCanvas.end())   {
    else
    {
 jCanvas[NTS]->cd(1);   
+gPad->Update();
 }   
 
 }
