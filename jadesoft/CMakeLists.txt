@@ -12,7 +12,7 @@ SET(VERSION 0.0.1)
 # Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CERNLIB_FIND_REQUIRED ON)
 
 

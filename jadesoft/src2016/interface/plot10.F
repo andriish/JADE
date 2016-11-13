@@ -795,7 +795,6 @@ CAV
 C - use CERNLIB routine BLOW (M426) to unpack full words into bytes
       NBYTES=MIN(NBYTES,136)
       CALL BLOW(SOURCE,TARGET,NBYTES,8)
-
 C - test the byteorder of the present machine and
 C     print out each ASCII character coded in the INTEGER*4
 C     array TARGET

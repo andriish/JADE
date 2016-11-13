@@ -21,7 +21,8 @@
 
 TApplication* jApplication;
 int UPDATER;
-std::map<int,TCanvas*>   jCanvas;
+//std::map<int,TCanvas*>   jCanvas;
+TCanvas*   jCanvas;
 std::map<int,TColor>   jColors;
 TPad*   jPad;
 int jTextAlignment;
@@ -78,7 +79,8 @@ YMAX
  Y coordinate of the upper right hand corner in WC space.
 
 */
-DDDD printf("iswn_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)  %i %f %f %f %f\n", NTS, XTMIN, XTMAX, YTMIN, YTMAX);
+//DDDD 
+printf("iswn_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)  %i %f %f %f %f\n", NTS, XTMIN, XTMAX, YTMIN, YTMAX);
 
 std::vector<double> a;
 a.push_back(XTMIN);
@@ -86,34 +88,93 @@ a.push_back(YTMIN);
 a.push_back(XTMAX);
 a.push_back(YTMAX);
 gWN[NTS]=a;
+
+//if (NTS==8&&gWN.find(9)==gWN.end())gWN[9]=a;
+
 }
 
 
 void isvp_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)
 {
+/*	
+	
+Action: This routine sets the boundaries of the viewport of a normalization transformation. The viewport
+must be specified in normalized device coordinates. The boundaries of the viewport have two roles:
+1 Together with the boundaries of the window (which are in world coordinates) they determine a
+transformation from world coordinates to normalized device coordinates consisting of separate X
+and Y scale factors and a translation in two dimensions.
+2 When the clipping indicator is 1 (see ISCLIP), primitives are clipped to the boundary of the view-
+port (once the primitives are transformed to normalized device coordinates)
+The normalization transformation is selected with the routine ISELNT.
+Parameter description:
+3.2. The coordinate systems and transformations
+ 17
+NT
+ Normalization transformation index (0<NT<1000000).
+XMIN
+ X coordinate of the lower left hand corner in NDC space (0.0 ≤XMIN≤ 1.0).
+XMAX
+ X coordinate of the upper right hand corner in NDC space (0.0 ≤XMAX≤ 1.0).
+YMIN
+ Y coordinate of the lower left hand corner in NDC space (0.0 ≤YMIN≤ 1.0).
+YMAX
+ Y coordinate of the upper right hand corner in NDC space (0.0 ≤YMAX≤ 1.0).
+The last four parameters must satisfy the conditions XMIN < XMAX and YMIN < YMAX.
+
+
+*/
 //DDDD 
 printf("void isvp_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)  %i %f %f %f %f\n", NTS, XTMIN, XTMAX, YTMIN, YTMAX);
 
-if (jCanvas.find(NTS)==jCanvas.end())   {
-    jCanvas[NTS]= new TCanvas(Form("jCanvas%i",NTS),Form("JADE Display %i",NTS),768,768); 
-    jCanvas[NTS]->Divide(1,1);
-    jCanvas[NTS]->cd(1);
-}
-	jCanvas[NTS]->cd();
-      
-     if (  (XTMIN-XTMAX)*  (YTMIN-YTMAX)<0.99) 
-     {
-    TPad* pad= new TPad(Form("jCanvas%iPad%i",NTS,jCanvas[NTS]->GetListOfPrimitives()->GetSize()+1),"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
+if (!jCanvas)   {
+    jCanvas= new TCanvas("jCanvas","JADE Display",768,768); 
+    jPad= new TPad("jPad","Jpad",0,0,1,1); 
+   jPad->SetFillStyle(4000);
+   jPad->SetFillColor(0);
+   jPad->SetFrameFillStyle(4000);
+    jPad->Draw();
 
+    jPad->cd();
+    if (gWN.find(NTS)!=gWN.end())
+//gPad->Range(2*gWN[NTS][0],2*gWN[NTS][1],2*gWN[NTS][2],2*gWN[NTS][3]);
+gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]);
+else
+{
+printf("Error in void isvp_\n",NTS);
+
+}
+    gPad->Update();
+    
+
+}
+	jCanvas->cd();
+      
+     //if (  (XTMIN-XTMAX)*  (YTMIN-YTMAX)<0.99) 
+     if ( NTS==9) 
+     {
+  //  TPad* pad= new TPad(Form("jCanvas%iPad%i",NTS,jCanvas[NTS]->GetListOfPrimitives()->GetSize()+1),"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
+    TPad* pad= new TPad(Form("jCanvasPad%i",jCanvas->GetListOfPrimitives()->GetSize()+1),"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
    pad->SetFillStyle(4000);
    pad->SetFillColor(0);
    pad->SetFrameFillStyle(4000);
+    gPad->Update();
     pad->Draw();
     pad->cd();
+        if (gWN.find(NTS)!=gWN.end())
+//gPad->Range(2*gWN[NTS][0],2*gWN[NTS][1],2*gWN[NTS][2],2*gWN[NTS][3]);
+gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]);
+else
+printf("Error in void isvp_\n",NTS);
+    gPad->Update();
    }
-   else
+   if (NTS==8)
    {
-jCanvas[NTS]->cd(1);   
+jCanvas->cd(1);   
+    if (gWN.find(NTS)!=gWN.end())
+//gPad->Range(2*gWN[NTS][0],2*gWN[NTS][1],2*gWN[NTS][2],2*gWN[NTS][3]);
+gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]);
+else
+printf("Error in void isvp_\n",NTS);
 gPad->Update();
 }   
 
@@ -125,11 +186,14 @@ void iselnt_(int & t)
 {
 //DDDD printf("void iselnt_(int & t)  %i\n",t);
 	jNT=t;
-
 if (gWN.find(t)!=gWN.end())
+//gPad->Range(2*gWN[t][0],2*gWN[t][1],2*gWN[t][2],2*gWN[t][3]);
 gPad->Range(gWN[t][0],gWN[t][1],gWN[t][2],gWN[t][3]);
 else
+{
 printf("Error in void iselnt_(int & t)  %i\n",t);
+
+}
 }	
 
 
@@ -147,8 +211,7 @@ void setcol_(const char*)
 //CALL IGFIN
 void igfin_()
 {
-if (jCanvas) delete 	jCanvas;
-if (jPad) delete 	jPad;
+
 }	
 */
 //`iclrwk_'
@@ -156,19 +219,7 @@ if (jPad) delete 	jPad;
 void iclrwk_()
 {
 puts("iclrwk_()\n");
-//gPad->Clear("D");
-//if (jCanvas.find(jNT)!=jCanvas.end())
-//{
-//if (jCanvas.find(8)!=jCanvas.end())jCanvas[8]->SaveAs("8.C");
-//if (jCanvas.find(8)!=jCanvas.end())jCanvas[8]->SaveAs("8.root");
-//if (jCanvas.find(9)!=jCanvas.end())jCanvas[9]->SaveAs("9.C");
-//if (jCanvas.find(9)!=jCanvas.end())jCanvas[9]->SaveAs("9.root");
-//jCanvas[jNT]->Clear();
-//gPad->Modified(); gPad->Update();
-//jCanvas[jNT]->Update();
-//jCanvas[jNT]->Update();
-//jCanvas[jNT]->SaveAs("1.C");
-//}
+//if (jCanvas) if(jCanvas->GetPad(1))jCanvas->GetPad(1)->Clear();
 }	
 
 
@@ -184,7 +235,8 @@ void iclwk_()
 
 void igbox_(float& x1, float & x2,float& y1, float & y2)
 {
-DDDD printf("void igbox_(float& x1, float & x2,float& y1, float & y2) %f %f %f %f\n",x1,y1,x2,y2);
+//DDDD 
+printf("void igbox_(float& x1, float & x2,float& y1, float & y2) %f %f %f %f\n",x1,y1,x2,y2);
 TBox* B= new TBox(x1,y1,x2,y2);
 B->SetFillColor(1);
 B->SetFillStyle(1);
@@ -195,7 +247,8 @@ B->Draw();
 
 void ixbox_(float& x1, float & x2,float& y1, float & y2, int mode)
 {
-DDDD printf("void ixbox_(float& x1, float & x2,float& y1, float & y2) %f %f %f %f\n",x1,y1,x2,y2);
+//DDDD 
+printf("void ixbox_(float& x1, float & x2,float& y1, float & y2) %f %f %f %f\n",x1,y1,x2,y2);
 TBox* B= new TBox(x1,y1,x2,y2);
 B->SetFillColor(1);
 B->SetFillStyle(1);
@@ -240,36 +293,13 @@ jTextSize=0.01;
 jTextColor=kRed;
 jTextAlignment=12;
 jTextAngle=0;
-
-gSX[8]=0.25;
-gSY[8]=0.25;
-
-gSX[9]=0.25;
-gSY[9]=0.25;
-
-
-
-grSX[8]=0.1/768;
-grSY[8]=0.1/1024;
-
-grSX[9]=0.1/768;
-grSY[9]=0.1/1024;
-UPDATER=0;
-/*
-gSX[8]=0.25;
-gSY[8]=0.25;
-
-gSX[9]=0.25;
-gSY[9]=0.25;
-
-
-
-grSX[8]=0.015;
-grSY[8]=0.015;
-
-grSX[9]=0.015;
-grSY[9]=0.015;
-*/
+jNT=0;
+std::vector<double> az;
+az.push_back(0);
+az.push_back(0);
+az.push_back(2*4096);
+az.push_back(2*4096);
+gWN[0]=az;
 
 
 }	
@@ -303,15 +333,14 @@ void igmeta_(int& LUN, int& KWTYPE)
 }	
 //`igpave_'
 //(X1,X2,Y1,Y2,DZ,ISBOX,ISFRAM,CHOPT)
-void igpave_(float& x1, float&  x2,float& y1,float y2,int*, int*,const char* )
+void igpave_(float& x1, float&  x2,float& y1,float& y2,int*, int*,const char* )
 {
-	DDDD printf("igpave_(float& x1, float&  x2,float& y1,float y2, %f %f %f %f\n",x1,y1,x2,y2);
+	//DDDD 
+	printf("igpave_(float& x1, float&  x2,float& y1,float y2, %f %f %f %f\n",x1,y1,x2,y2);
 //	double f=0.1;
    gPad->cd();
-	//TPave* P= new TPave(gSX[jNT]*x1,gSY[jNT]*y1,gSX[jNT]*x2,gSY[jNT]*y2);
 	TPave* P= new TPave(x1,y1,x2,y2);
-	P->Paint("NDC");
-   //gPad->Update();
+	P->Draw();
 }	
 /*`
 `igrng_'
@@ -323,21 +352,15 @@ void igpave_(float& x1, float&  x2,float& y1,float y2,int*, int*,const char* )
 //`ipl_'
 void ipl_(int&n, float* x, float* y)
 {
-	//Double_t X[100];
-	//Double_t Y[100];
-//	for (int i=0;i<n;i++){X[i]=x[i]*grSX[jNT]; Y[i]=y[i]*grSY[jNT];}
-	//DDDD 	printf("ipl_(int&n, float x, float y) %i,%f %f\n", n, x[0], y[0]);
+	//DDDD 		printf("ipl_(int&n, float x, float y) %i,%f %f\n", n, x[0], y[0]);
 	gPad->cd();
 	//TPolyLine* P=new TPolyLine(n,X,Y);
 	TPolyLine* P=new TPolyLine(n,x,y);
 	P->SetLineWidth(2);
 	P->SetLineStyle(1);
-	P->Paint();
 	P->Draw();
 	//gPad->Update();
 	//gPad->SaveAs("2.C");
-	UPDATER++;
-	if (UPDATER%1000==0)gPad->Update();
 	
 }	
 
@@ -346,18 +369,14 @@ void ipl_(int&n, float* x, float* y)
 void ipm_(int&n, float* x, float* y)
 {
 	gPad->cd();
-
 //	DDDD  printf("void ipm_(int&n, float* x, float* y) %i,%f %f\n", n, x[0], y[0]);
-	//TPolyMarker* P=new TPolyMarker(n,X,Y);
 	TPolyMarker* P=new TPolyMarker(n,x,y);
 	//P->SetLineWidth(1);
 	//P->SetLineStyle(1);
 	P->SetMarkerColor(kBlack);
-	P->SetMarkerSize(0.1);
-	P->SetMarkerStyle(kStar);
-	P->Paint();
+//	P->SetMarkerSize(0.1);
+//	P->SetMarkerStyle(kStar);
 	P->Draw();
-	
 }	
 
 
@@ -548,9 +567,10 @@ void ixsync_(bool mode)
 
 Action: Associates alphanumeric labels with a histogram. This routine can be called for a histogram after it has been filled, and then the labels specified will be shown on the respective axes. The routine can also be called before a histogram is filled , and in this case, when filling, a certain order can be imposed. By default the entries will be automatically ordered.
 */
-void hlabel_(int*id , int N,char** clab,const char* opt)
+void hlabel_(int id , int N,char* clab,const char* opt)
 {
-
+//DDDD
+//printf("  hlabel_(int*id , int N,char** clab,const char* opt)  %i %i %s   \n",id,N,clab);
 
 }
 
@@ -577,13 +597,7 @@ IRFLG
 */
 
 DDDD printf("iuwk_(int&a, int&b) %i, %i\n",a,b);
-//jCanvas[*a]->Update();
-//	jCanvas[jNT]->GetPad(1)->Modified();  
-	//jCanvas[jNT]->GetPad(1)->Update();  
-
-
-	jCanvas[jNT]->Modified();  
-	jCanvas[jNT]->Update();  
+ 
 	gPad->Modified();
 	gPad->Update();
 }
@@ -594,32 +608,23 @@ bool HasSpecialCharacters(const char *str)
 }
 void itx_(float &x, float &y, char* txt)
 {
- DDDD printf("void itx_(float &x, float &y, char* txt)   %f %f %s\n", x,y, txt);
-   
+ //DDDD  printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i\n", x,y, txt, jTextAlignment);
+   std::string vn(txt);
+while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
    
    //TText *t = new TText(grSX[jNT]*x,grSY[jNT]*y,txt);
    TText *t;
-   //if (HasSpecialCharacters(txt))
-   //t = new TText(x,y,"S");
-   //else
-   t = new TText(x,y,txt);
+   t = new TText(x,y,vn.c_str());
    //t->SetNDC(false);
-   t->SetTextAlign(jTextAlignment);
+   t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
    t->SetTextColor(jTextColor);
+   t->SetTextColor(kRed);
+   t->SetTextFont(82);
    //t->SetTextSize(jTextSize*grSY[jNT]);
-   t->SetTextSize(0.04);
+   t->SetTextSize(0.015);
    t->SetTextAngle(jTextAngle);
    t->Draw();
 
-//jCanvas[jNT]->Modified();  
-
-	 //jCanvas[jNT]->SaveAs("1.C");  
-
-   //gPad->Modify();
-   //gPad->Update();
-   //gPad->SaveAs("1.pdf");
-   //gPad->SaveAs("1.root");
-   //gPad->SaveAs("1.C");
 
 }	
 
@@ -671,8 +676,9 @@ Vertical alignment specifier (0≤ITXALV≤5)
 2 Same as 2.
 3 Middle of tallest characters.
 */
+int bb=1;
 
-jTextAlignment=10*a+b;
+jTextAlignment=10*a+bb;
 
 
 }

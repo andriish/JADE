@@ -71,8 +71,30 @@ C
 C
 C     **** SET UP SCALES ETC ****
 C
+      character*8 MY
+      character*1 AMYSTR(16)
+      character*8 MYL
+      integer le
+      write(*,*)'we call hemsym', XPOS,YPOS,HBUF(1:KCNT)
+      AMYSTR='                '
+      
+      le=0
+      DO 500 I=1,KCNT
+      HJ=HBUF(I)
+      DO 100 K=1,40
+      IF(HLETS(K).EQ.HBUF(I)) then 
+      le=le+1
+      call UHTOC(HLETS(K),1,AMYSTR(le),1)
+      end if
+ 100  continue
+ 500  continue
+      write(*,*)'-->',AMYSTR(1:le)
+      call ITX(XPOS,YPOS,AMYSTR(1:le))
+      
+      
       KLM=0
       SCAL=AGT/7.0
+      SCAL=AGT/2.0 !AV
       IXB=0
       C=COS(THETA)
       S=SIN(THETA)
@@ -86,6 +108,8 @@ C
    10 CONTINUE
       K=40
    12 IFLAG=0
+        call UHTOC(HLETS(K),1,MY,1)
+        write(*,*)'we->',HLETS(K),'K=',K, MY
       IP=HPTRS(K)
 C
 C     **** GET COORDINATES ****
