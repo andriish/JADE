@@ -1,4 +1,5 @@
 #include "TColor.h"
+#include "TList.h"
 #include "TMath.h"
 #include "TText.h"
 #include "TPad.h"
@@ -34,8 +35,11 @@ int jPolyLineColor;
 std::map<int,double>  gSX,gSY;
 std::map<int,double>  grSX,grSY;
 
-int jNT;
 
+std::map<int,std::vector<double> >  gWN;
+
+int jNT;
+//#define DEBUG 0
 #ifdef DEBUG
  #define DDDD if(1) 
 #else
@@ -56,30 +60,74 @@ void igstrt_()
 
 void iswn_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)
 {
+/*Action: This routine sets the boundaries of the window of a normalization transformation. The window
+must be specified in world coordinates. The boundaries of the window, together with the boundaries of
+the viewport (which are in normalized device coordinates) determine a transformation from world coor-
+dinates to normalized device coordinates consisting of separate X and Y scale factors and a translation in
+two dimensions. The normalization transformation is selected by using routine ISELNT.
+Parameter description:
+NT
+ Normalization transformation index (0<NT<1000000).
+XMIN
+ X coordinate of the lower left hand corner in WC space.
+XMAX
+ X coordinate of the upper right hand corner in WC space.
+YMIN
+ Y coordinate of the lower left hand corner in WC space.
+YMAX
+ Y coordinate of the upper right hand corner in WC space.
+
+*/
 DDDD printf("iswn_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)  %i %f %f %f %f\n", NTS, XTMIN, XTMAX, YTMIN, YTMAX);
-//if (jCanvas) return;
-//jCanvas= new TCanvas("Main window","Hallo",0.2*(XTMAX-XTMIN),0.2*(YTMAX-YTMIN));
-//if (jCanvas.find(0)==jCanvas.end())  { jCanvas[0]= new TCanvas("Hallo window","Hallo",768,1024); jCanvas[0]->cd();}
-//else {jCanvas[1]= new TCanvas("Main window","JADE ROOT event display",768,1024); jCanvas[1]->cd();}
 
-
-if (jCanvas.find(NTS)==jCanvas.end())   jCanvas[NTS]= new TCanvas(Form("jCanvas%i",NTS),Form("JADE Display %i",NTS),768,768); 
-	jCanvas[NTS]->Divide(1,1);
-	jCanvas[NTS]->cd(1);
-    jCanvas[NTS]->Range(2*XTMIN,2*YTMIN,2*XTMAX,2*YTMAX);
-    jCanvas[NTS]->GetPad(1)->Range(2*XTMIN,2*YTMIN,2*XTMAX,2*YTMAX);
-gPad->Update();
-
-
-
-
+std::vector<double> a;
+a.push_back(XTMIN);
+a.push_back(YTMIN);
+a.push_back(XTMAX);
+a.push_back(YTMAX);
+gWN[NTS]=a;
 }
 
 
 void isvp_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)
 {
-//1.0/(YTMAX-YTMIN);
+//DDDD 
+printf("void isvp_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)  %i %f %f %f %f\n", NTS, XTMIN, XTMAX, YTMIN, YTMAX);
+
+if (jCanvas.find(NTS)==jCanvas.end())   {
+    jCanvas[NTS]= new TCanvas(Form("jCanvas%i",NTS),Form("JADE Display %i",NTS),768,768); 
+    jCanvas[NTS]->Divide(1,1);
+    jCanvas[NTS]->cd(1);
 }
+	jCanvas[NTS]->cd();
+      
+     if (  (XTMIN-XTMAX)*  (YTMIN-YTMAX)<0.99) 
+     {
+    TPad* pad= new TPad(Form("jCanvas%iPad%i",NTS,jCanvas[NTS]->GetListOfPrimitives()->GetSize()+1),"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
+    pad->Draw();
+    pad->cd();
+   }
+   else
+   {
+jCanvas[NTS]->cd(1);   
+}   
+
+}
+
+
+//`iselnt_'
+void iselnt_(int & t)
+{
+//DDDD printf("void iselnt_(int & t)  %i\n",t);
+	jNT=t;
+
+if (gWN.find(t)!=gWN.end())
+gPad->Range(gWN[t][0],gWN[t][1],gWN[t][2],gWN[t][3]);
+else
+printf("Error in void iselnt_(int & t)  %i\n",t);
+}	
+
+
 // CALL SETCOL('*INI')
 /*
 void setcol_(const char*)
@@ -104,24 +152,25 @@ void iclrwk_()
 {
 puts("iclrwk_()\n");
 //gPad->Clear("D");
-if (jCanvas.find(jNT)!=jCanvas.end())
-{
-if (jCanvas.find(8)!=jCanvas.end())jCanvas[8]->SaveAs("8.C");
-if (jCanvas.find(8)!=jCanvas.end())jCanvas[8]->SaveAs("8.root");
-if (jCanvas.find(9)!=jCanvas.end())jCanvas[9]->SaveAs("9.C");
-if (jCanvas.find(9)!=jCanvas.end())jCanvas[9]->SaveAs("9.root");
-jCanvas[jNT]->Clear();
-gPad->Modified(); gPad->Update();
-jCanvas[jNT]->Update();
-jCanvas[jNT]->Update();
+//if (jCanvas.find(jNT)!=jCanvas.end())
+//{
+//if (jCanvas.find(8)!=jCanvas.end())jCanvas[8]->SaveAs("8.C");
+//if (jCanvas.find(8)!=jCanvas.end())jCanvas[8]->SaveAs("8.root");
+//if (jCanvas.find(9)!=jCanvas.end())jCanvas[9]->SaveAs("9.C");
+//if (jCanvas.find(9)!=jCanvas.end())jCanvas[9]->SaveAs("9.root");
+//jCanvas[jNT]->Clear();
+//gPad->Modified(); gPad->Update();
+//jCanvas[jNT]->Update();
+//jCanvas[jNT]->Update();
 //jCanvas[jNT]->SaveAs("1.C");
-}
+//}
 }	
 
 
 //`iclwk_'
 void iclwk_()
 {
+	puts("iclwk_()\n");
 //terminates usage of ws
 }
 
@@ -178,8 +227,9 @@ jTextAngle=atan(val)*180.0/TMath::Pi();
 
 
 //`iginit_'
-void iginit_(int a)
+void iginit_(int& a)
 {
+DDDD printf("iginit_(int a)   %i\n",a);	
 jApplication=new TApplication("Jade display",0,0);
 jTextSize=0.01;
 jTextColor=kRed;
@@ -271,14 +321,15 @@ void ipl_(int&n, float* x, float* y)
 	//Double_t X[100];
 	//Double_t Y[100];
 //	for (int i=0;i<n;i++){X[i]=x[i]*grSX[jNT]; Y[i]=y[i]*grSY[jNT];}
-	DDDD printf("ipl_(int&n, float x, float y) %i\n", n);
+	//DDDD 	printf("ipl_(int&n, float x, float y) %i,%f %f\n", n, x[0], y[0]);
 	gPad->cd();
 	//TPolyLine* P=new TPolyLine(n,X,Y);
 	TPolyLine* P=new TPolyLine(n,x,y);
-	P->SetLineWidth(1);
+	P->SetLineWidth(2);
 	P->SetLineStyle(1);
 	P->Paint();
 	P->Draw();
+	//gPad->Update();
 	//gPad->SaveAs("2.C");
 	UPDATER++;
 	if (UPDATER%1000==0)gPad->Update();
@@ -289,23 +340,18 @@ void ipl_(int&n, float* x, float* y)
 //`ipm_'
 void ipm_(int&n, float* x, float* y)
 {
-	
 	gPad->cd();
 
-	//Double_t X[100];
-///	Double_t Y[100];
-	//for (int i=0;i<n;i++){X[i]=x[i]*grSX[jNT]; Y[i]=y[i]*grSY[jNT];}
-
-
-	DDDD printf("void ipm_(int&n, float* x, float* y) %i,%f %f\n", n, x[0], y[0]);
+//	DDDD  printf("void ipm_(int&n, float* x, float* y) %i,%f %f\n", n, x[0], y[0]);
 	//TPolyMarker* P=new TPolyMarker(n,X,Y);
 	TPolyMarker* P=new TPolyMarker(n,x,y);
 	//P->SetLineWidth(1);
 	//P->SetLineStyle(1);
+	P->SetMarkerColor(kBlack);
+	P->SetMarkerSize(0.1);
+	P->SetMarkerStyle(kStar);
 	P->Paint();
 	P->Draw();
-		//gPad->SaveAs("3.C");
-	//gPad->Update();
 	
 }	
 
@@ -335,13 +381,7 @@ void iscr_(int &w, int &ci, float &r,float&g,float&b)
 	
 	
 }	
-//`iselnt_'
-void iselnt_(int & t)
-{
-//DDDD printf("void iselnt_(int & t)  %i\n",t);
-	jNT=t;
-	
-}	
+
 
 void isfaci_(int& a )
 {
@@ -403,7 +443,7 @@ Line type (positive number).
  Dashed-dotted lines
 */
 
-DDDD printf("isln_(int *a)  %i\n",a);
+//DDDD printf("isln_(int *a)  %i\n",a);
 }
 
 
@@ -552,9 +592,6 @@ void itx_(float &x, float &y, char* txt)
  DDDD printf("void itx_(float &x, float &y, char* txt)   %f %f %s\n", x,y, txt);
    
    
-   jCanvas[jNT]->cd(1);
-   //TAttText::Modify();
-   //gPad->PaintText(x,y,txt);
    //TText *t = new TText(grSX[jNT]*x,grSY[jNT]*y,txt);
    TText *t;
    //if (HasSpecialCharacters(txt))
@@ -569,7 +606,7 @@ void itx_(float &x, float &y, char* txt)
    t->SetTextAngle(jTextAngle);
    t->Draw();
 
-jCanvas[jNT]->Modified();  
+//jCanvas[jNT]->Modified();  
 
 	 //jCanvas[jNT]->SaveAs("1.C");  
 
