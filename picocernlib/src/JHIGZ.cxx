@@ -104,6 +104,10 @@ if (jCanvas.find(NTS)==jCanvas.end())   {
      if (  (XTMIN-XTMAX)*  (YTMIN-YTMAX)<0.99) 
      {
     TPad* pad= new TPad(Form("jCanvas%iPad%i",NTS,jCanvas[NTS]->GetListOfPrimitives()->GetSize()+1),"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
+
+   pad->SetFillStyle(4000);
+   pad->SetFillColor(0);
+   pad->SetFrameFillStyle(4000);
     pad->Draw();
     pad->cd();
    }
