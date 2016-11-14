@@ -47,6 +47,8 @@ int jNT;
  #define DDDD if(0) 
 #endif
 
+#define BIGK 2.0
+
 extern "C" {
 /*
 void igstrt_()
@@ -128,7 +130,7 @@ printf("void isvp_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)
 
 if (!jCanvas)   {
     jCanvas= new TCanvas("jCanvas","JADE Display",768,768); 
-    jPad= new TPad("jPad","Jpad",0,0,1,1); 
+    jPad= new TPad("Jpad","Jpad",0,0,1,1); 
    jPad->SetFillStyle(4000);
    jPad->SetFillColor(0);
    jPad->SetFrameFillStyle(4000);
@@ -136,8 +138,8 @@ if (!jCanvas)   {
 
     jPad->cd();
     if (gWN.find(NTS)!=gWN.end())
-//gPad->Range(2*gWN[NTS][0],2*gWN[NTS][1],2*gWN[NTS][2],2*gWN[NTS][3]);
-gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]);
+gPad->Range(BIGK*gWN[NTS][0],BIGK*gWN[NTS][1],BIGK*gWN[NTS][2],BIGK*gWN[NTS][3]);
+//gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]);
 else
 {
 printf("Error in void isvp_\n",NTS);
@@ -147,37 +149,44 @@ printf("Error in void isvp_\n",NTS);
     
 
 }
-	jCanvas->cd();
+     jCanvas->cd();
       
-     //if (  (XTMIN-XTMAX)*  (YTMIN-YTMAX)<0.99) 
      if ( NTS==9) 
      {
   //  TPad* pad= new TPad(Form("jCanvas%iPad%i",NTS,jCanvas[NTS]->GetListOfPrimitives()->GetSize()+1),"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
-    TPad* pad= new TPad(Form("jCanvasPad%i",jCanvas->GetListOfPrimitives()->GetSize()+1),"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
-   pad->SetFillStyle(4000);
-   pad->SetFillColor(0);
-   pad->SetFrameFillStyle(4000);
+    
+    if (jCanvas->GetListOfPrimitives()->FindObject("Jpad")) jCanvas->GetListOfPrimitives()->FindObject("Jpad")->Delete();
+    TString pname=Form("jCanvasPad%2.2f_%2.2f_%2.2f_%2.2f",XTMIN, YTMIN, XTMAX, YTMAX);
+    TPad* pad=(TPad*)(jCanvas->GetListOfPrimitives()->FindObject(pname));
+    if (!pad) pad= new TPad(pname,"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
+    
+    pad->SetFillStyle(4000);
+    pad->SetFillColor(0);
+    pad->SetFrameFillStyle(4000);
     gPad->Update();
     pad->Draw();
     pad->cd();
-        if (gWN.find(NTS)!=gWN.end())
-//gPad->Range(2*gWN[NTS][0],2*gWN[NTS][1],2*gWN[NTS][2],2*gWN[NTS][3]);
-gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]);
-else
-printf("Error in void isvp_\n",NTS);
+    if (gWN.find(NTS)!=gWN.end())
+    gPad->Range(BIGK*gWN[NTS][0],BIGK*gWN[NTS][1],BIGK*gWN[NTS][2],BIGK*gWN[NTS][3]);
+//gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]);
+    else
+    printf("Error in void isvp_\n",NTS);
     gPad->Update();
-   }
+    }
+   
    if (NTS==8)
    {
-jCanvas->cd(1);   
-    if (gWN.find(NTS)!=gWN.end())
-//gPad->Range(2*gWN[NTS][0],2*gWN[NTS][1],2*gWN[NTS][2],2*gWN[NTS][3]);
-gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]);
-else
-printf("Error in void isvp_\n",NTS);
-gPad->Update();
-}   
-
+   if (jCanvas->GetListOfPrimitives()->FindObject("Jpad")) 
+   { ((TPad*)(jCanvas->GetListOfPrimitives()->FindObject("Jpad")))->cd();
+   if (gWN.find(NTS)!=gWN.end())
+   gPad->Range(BIGK*gWN[NTS][0],BIGK*gWN[NTS][1],BIGK*gWN[NTS][2],BIGK*gWN[NTS][3]);
+//gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]); 
+   }
+   else
+   printf("Error in void isvp_\n",NTS);
+   gPad->Update();
+   }   
+   printf("jCanvas->GetListOfPrimitives()->GetSize()=%i\n",jCanvas->GetListOfPrimitives()->GetSize());
 }
 
 
@@ -187,8 +196,8 @@ void iselnt_(int & t)
 //DDDD printf("void iselnt_(int & t)  %i\n",t);
 	jNT=t;
 if (gWN.find(t)!=gWN.end())
-//gPad->Range(2*gWN[t][0],2*gWN[t][1],2*gWN[t][2],2*gWN[t][3]);
-gPad->Range(gWN[t][0],gWN[t][1],gWN[t][2],gWN[t][3]);
+gPad->Range(BIGK*gWN[t][0],BIGK*gWN[t][1],BIGK*gWN[t][2],BIGK*gWN[t][3]);
+//gPad->Range(gWN[t][0],gWN[t][1],gWN[t][2],gWN[t][3]);
 else
 {
 printf("Error in void iselnt_(int & t)  %i\n",t);
@@ -219,7 +228,8 @@ void igfin_()
 void iclrwk_()
 {
 puts("iclrwk_()\n");
-//if (jCanvas) if(jCanvas->GetPad(1))jCanvas->GetPad(1)->Clear();
+//if (jCanvas) if(jCanvas->GetPad(1)) jCanvas->GetPad(1)->Clear();
+//if(gPad) gPad->Clear();
 }	
 
 
@@ -227,6 +237,7 @@ puts("iclrwk_()\n");
 void iclwk_()
 {
 	puts("iclwk_()\n");
+	//if (gPad) gPad->Clear();
 //terminates usage of ws
 }
 
@@ -243,6 +254,7 @@ B->SetFillStyle(1);
 B->SetLineWidth(1);
 B->SetLineColor(1);
 B->Draw();
+gPad->Update();
 }	
 
 void ixbox_(float& x1, float & x2,float& y1, float & y2, int mode)
@@ -255,6 +267,7 @@ B->SetFillStyle(1);
 B->SetLineWidth(1);
 B->SetLineColor(1);
 B->Draw();
+gPad->Update();
 }	
 
 
@@ -264,7 +277,7 @@ void igrng_(float *a, float*b)
 	
 }	
 
-void igset_(char* , float val){
+void igset_(char* , float& val){
 /*
 CALL IGSET
  (CHNAME,VAL)
@@ -278,9 +291,9 @@ is an UPPERCASE character string.
 Floating point value of the parameter (must be specified as a REAL number).
 A value of 0.0 indicates that the parameter value must be reset to its default value.
 */
-
-jTextAngle=atan(val)*180.0/TMath::Pi();
-
+DDDD printf("  void igset_(char* , float& val){  %f\n",val);
+//jTextAngle=atan(val)*180.0/TMath::Pi();
+jTextAngle=val*180.0/TMath::Pi();
 }
 
 
@@ -373,8 +386,8 @@ void ipm_(int&n, float* x, float* y)
 	TPolyMarker* P=new TPolyMarker(n,x,y);
 	//P->SetLineWidth(1);
 	//P->SetLineStyle(1);
-	P->SetMarkerColor(kBlack);
-//	P->SetMarkerSize(0.1);
+	P->SetMarkerColor(kGreen);
+	P->SetMarkerSize(1.0);
 //	P->SetMarkerStyle(kStar);
 	P->Draw();
 }	
@@ -596,7 +609,8 @@ IRFLG
  update current view
 */
 
-DDDD printf("iuwk_(int&a, int&b) %i, %i\n",a,b);
+//DDDD 
+printf("iuwk_(int&a, int&b) %i, %i\n",a,b);
  
 	gPad->Modified();
 	gPad->Update();
@@ -608,7 +622,7 @@ bool HasSpecialCharacters(const char *str)
 }
 void itx_(float &x, float &y, char* txt)
 {
- //DDDD  printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i\n", x,y, txt, jTextAlignment);
+ //DDDD   printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%f\n", x,y, txt, jTextAlignment,jTextAngle );
    std::string vn(txt);
 while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
    
@@ -627,6 +641,31 @@ while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
 
 
 }	
+
+void itxl_(float &x, float &y, char* txt, int& l)
+{
+ //DDDD   printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%f\n", x,y, txt, jTextAlignment,jTextAngle );
+   std::string vn(txt);
+while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
+
+vn=vn.substr(0,std::min((int)(vn.length()),l));   
+   //TText *t = new TText(grSX[jNT]*x,grSY[jNT]*y,txt);
+   TText *t;
+   t = new TText(x,y,vn.c_str());
+   //t->SetNDC(false);
+   t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
+   t->SetTextColor(jTextColor);
+   t->SetTextColor(kRed);
+   t->SetTextFont(82);
+   //t->SetTextSize(jTextSize*grSY[jNT]);
+   t->SetTextSize(0.015);
+   t->SetTextAngle(jTextAngle);
+   t->Draw();
+
+
+}	
+
+
 
 void mzebra_(int *a){}
 void mzpaw_(int *a){}
