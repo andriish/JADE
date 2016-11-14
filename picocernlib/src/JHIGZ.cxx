@@ -620,11 +620,24 @@ bool HasSpecialCharacters(const char *str)
 {
     return str[strspn(str, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_")] != 0;
 }
+
+bool invalidChar (char c) 
+{  
+    return !(c>=0 && c <128);   
+} 
+void stripUnicode(std::string & str) 
+{ 
+    str.erase(remove_if(str.begin(),str.end(), invalidChar), str.end());  
+}
+
 void itx_(float &x, float &y, char* txt)
 {
  //DDDD   printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%f\n", x,y, txt, jTextAlignment,jTextAngle );
    std::string vn(txt);
+stripUnicode(vn);
 while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
+   
+   
    
    //TText *t = new TText(grSX[jNT]*x,grSY[jNT]*y,txt);
    TText *t;

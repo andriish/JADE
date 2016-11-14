@@ -75,6 +75,7 @@ CAV
       character*8 MY
       character*1 AMYSTR(16)
       character*8 MYL
+      REAL  ta
       integer le
 C      write(*,*)'we call hemsym', XPOS,YPOS,HBUF(1:KCNT)
       AMYSTR='                '
@@ -90,8 +91,9 @@ C      write(*,*)'we call hemsym', XPOS,YPOS,HBUF(1:KCNT)
  100  continue
  500  continue
 CAV      write(*,*)'-->',AMYSTR(1:le),'->', le
-      call  igset(' ',THETA)
-      call ITXL(XPOS,YPOS,AMYSTR(1:le),le)
+      ta=tan(THETA)
+      call  igset('TANG',THETA)
+      call ITX(XPOS,YPOS,AMYSTR(1:le))
       
       return
 CAV      

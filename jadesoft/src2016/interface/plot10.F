@@ -1148,7 +1148,9 @@ C      to ensure equidistant character output !!!
       ENDDO
 
 C - Restore inclination angle and text height
+      WRITE(*,*)'Hi!'
       CALL IGSET('TANG',0.)
+      WRITE(*,*)'Hi2!'
       CALL ISCHH(YCHAR*.5)
 
 C

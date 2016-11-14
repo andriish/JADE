@@ -57,5 +57,5 @@ cat  jtjobcard.txt   | jtjob
 exit
 #TO run jadez do
 # export big endian and run on the sv_sherpa
-
+export GFORTRAN_CONVERT_UNIT='big_endian;native:50'
 
