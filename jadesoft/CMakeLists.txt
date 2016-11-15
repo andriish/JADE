@@ -87,8 +87,8 @@ endif (CERNLIB_FOUND)
 ####################################################################################################
 
 
-#set(CERN_LIBRARIES ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a -lc  -L${CMAKE_SOURCE_DIR}/../ROOTLIBS 
-#-lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lstdc++)
+set(CERN_LIBRARIES ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a -lc  -L${CMAKE_SOURCE_DIR}/../ROOTLIBS 
+-lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lstdc++)
 
 #INCLUDE(${CMAKE_MODULE_PATH}/SetUpLAPACK.cmake)
 

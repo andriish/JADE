@@ -29,6 +29,7 @@ int jTextAlignment;
 int jTextSize;
 int jTextAngle;
 int jTextColor;
+int jLineColor;
 
 int jPolymarkerColor;
 int jPolyLineColor;
@@ -304,6 +305,8 @@ DDDD printf("iginit_(int a)   %i\n",a);
 jApplication=new TApplication("Jade display",0,0);
 jTextSize=0.01;
 jTextColor=kRed;
+jLineColor=kBlack;
+jPolyLineColor=kBlack;
 jTextAlignment=12;
 jTextAngle=0;
 jNT=0;
@@ -365,12 +368,14 @@ void igpave_(float& x1, float&  x2,float& y1,float& y2,int*, int*,const char* )
 //`ipl_'
 void ipl_(int&n, float* x, float* y)
 {
-	//DDDD 		printf("ipl_(int&n, float x, float y) %i,%f %f\n", n, x[0], y[0]);
+	//DDDD 		
+	printf("ipl_(int&n, float x, float y) %i,%f %f\n", n, x[0], y[0]);
 	gPad->cd();
 	//TPolyLine* P=new TPolyLine(n,X,Y);
 	TPolyLine* P=new TPolyLine(n,x,y);
 	P->SetLineWidth(2);
 	P->SetLineStyle(1);
+	P->SetLineColor(jPolyLineColor);
 	P->Draw();
 	//gPad->Update();
 	//gPad->SaveAs("2.C");
@@ -386,7 +391,7 @@ void ipm_(int&n, float* x, float* y)
 	TPolyMarker* P=new TPolyMarker(n,x,y);
 	//P->SetLineWidth(1);
 	//P->SetLineStyle(1);
-	P->SetMarkerColor(kGreen);
+	P->SetMarkerColor(jPolymarkerColor);
 	P->SetMarkerSize(1.0);
 //	P->SetMarkerStyle(kStar);
 	P->Draw();
@@ -766,8 +771,12 @@ Parameter description:
 ICOLI
  Polyline colour index.
 */
-DDDD printf("isplci_(int&a), %i\n",a);
+//DDDD 
+printf("isplci_(int&a), %i\n",a);
 //if (jColors.find(a)!=jColors.end()) jPolyLineColor=jColors.at(a);
+
+jPolyLineColor=a;
+if  (a==14) jPolyLineColor=kRed;
 }
 
 
@@ -786,6 +795,8 @@ ICOLI
  Polymarker colour index.
 */
 //if (jColors.find(a)!=jColors.end()) jPolymarkerColor=jColors.at(a);
+
+jPolymarkerColor=a;
 }
 
 void istxfp_(int &a, float *prec)
@@ -822,9 +833,9 @@ INDEX
 }
 
 
-void ixsetlc_(int*a)
+void ixsetlc_(int&a)
 {
-
+jLineColor=a;
 
 
 
@@ -832,7 +843,7 @@ void ixsetlc_(int*a)
 
 
 
-void ixsetmc_(int*a)
+void ixsetmc_(int&a)
 {
 
 
