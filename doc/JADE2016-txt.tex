@@ -28,21 +28,21 @@ The following platforms were considered:
 \setlength{\tabcolsep}{0.0em}
 %\begin{table}[htbp]\tiny\centering
 \begin{sidewaystable}[htbp]\scriptsize\centering
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|}\hline
-    & Origin/Now & Hardware, num               &        &OS             & arch(bits)               & Fortran/FC                &Build system                    & CERNLIB/runtime  \\\hline\hline
-A   & 198x/Dead         &  ?                          & ?      &?              &   ?(32be)                & 77?/xlf?                  &?                               & DESYLIB/?     \\
-B   & 2003/Not tried    &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/xlf 7.1                &make 3.78 and ksh scripts       & 2002/?/32bit     \\
-C   &      Not tried    &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/g77 0.5 (gcc2.95)      &make 3.78 and ksh scripts       & 2002/?/32bit     \\
-D   &      Not avail.   &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/xlf 7.1                &make 3.78 and cmake?            & 2002/?/32bit     \\
-E   &      Not avail.   &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/g77 0.5 (gcc2.95)      &make 3.78 and cmake?            & 2002/?/32bit     \\
-F   & 2016/Runs         &  pSeries\@QEMU2.7, many   & 3/10   &CentOS7.2 & ppc64+ppc(64be+32be)     & 90/xlf 15.1 (trial)       &make 3.81 and cmake 2.8.11      & 2006/gfortran/32bit     \\
-G   & 2016/Runs         &  pSeries\@QEMU2.7, many   & 3/10   &CentOS7.2 & ppc64+ppc(64be+32be)     & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11      & 2006/gfortran/32bit     \\
-H   & 2016/Runs         &  Intel/AMD, many            &10/10   &CentOS7.2 & x8664+i686(64le+32le)   & 90/gfortran 4.8.5         &make 3.81 and sh scripts        & 2006/gfortran/32bit     \\
-I   & 2016/Runs         &  Intel/AMD, many            &10/10   &CentOS7.2 & x8664+i686(64le+32le)   & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11      & 2006/gfortran/32bit     \\
-J   &      Not avail.   &  Intel/AMD, many            &10/10   &CentOS7.2 & x8664+i686(64le+32le)   & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11      & minicernlib?/gfortran/32bit     \\
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}\hline
+    & Origin/Now        & Hardware, num               &        &OS             & arch(bits)               & Fortran/FC                &Build system              &GUI      & CERNLIB/runtime  \\\hline\hline
+A   & 198x/Dead         &  IBM/370,Nord?              & ?      &?              &   ?(32be)                & 77?/xlf?                  &?                         &NORD? & DESYLIB/?     \\
+B   & 2003/Not tried    &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/xlf 7.1                &make 3.78 and ksh scripts &HIGZ  & 2002/?/32bit     \\
+C   &      Not tried    &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/g77 0.5 (gcc2.95)      &make 3.78 and ksh scripts &HIGZ      & 2002/?/32bit     \\
+D   &      Not avail.   &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/xlf 7.1                &make 3.78 and cmake?      &HIGZ      & 2002/?/32bit     \\
+E   &      Not avail.   &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/g77 0.5 (gcc2.95)      &make 3.78 and cmake?      &HIGZ      & 2002/?/32bit     \\
+F   & 2016/Runs         &  pSeries\@QEMU2.7, many   & 3/10   &CentOS7.2 & ppc64+ppc(64be+32be)     & 90/xlf 15.1 (trial)       &make 3.81 and cmake 2.8.11       &HIGZ      & 2006/gfortran/32bit     \\
+G   & 2016/Runs         &  pSeries\@QEMU2.7, many   & 3/10   &CentOS7.2 & ppc64+ppc(64be+32be)     & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11       &HIGZ      & 2006/gfortran/32bit     \\
+H   & 2016/Runs         &  Intel/AMD, many            &10/10   &CentOS7.2 & x8664+i686(64le+32le)   & 90/gfortran 4.8.5         &make 3.81 and sh scripts        &HIGZ      & 2006/gfortran/32bit     \\
+I   & 2016/Runs         &  Intel/AMD, many            &10/10   &CentOS7.2 & x8664+i686(64le+32le)   & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11      &HIGZ      & 2006/gfortran/32bit     \\
+J   & 2016/Runs         &  Intel/AMD, many            &10/10   &CentOS7.2 & x8664+i686(64le+32le)   & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11      &ROOT      & picocernlib/gfortran/32bit     \\
 \hline
 \end{tabular}
-\caption{Status}
+\caption{Status of different platforms.  Picocernlib is a small set of CERNLIB routines plus some ROOT backend fro plotting. }
 \label{tab:status}
 \end{sidewaystable}
 %\end{table}
