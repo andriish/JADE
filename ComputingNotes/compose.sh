@@ -27,7 +27,14 @@ pdftk A=FIRST1.pdf B=SECOND3.pdf  shuffle A B  output FS.pdf
 #mkdir -p Separate
 
 #exit
-#pdftk  FS.pdf cat 1-4 output     Separate/0Index.pdf
+pdftk  FS.pdf cat 1-4 output     Separate/0Index.pdf
+mkdir -p  temp
+pdftk  FS.pdf cat 1 output     Separate/0Index1.pdf
+pdftk  FS.pdf cat 2 output     Separate/0Index2.pdf
+pdftk  FS.pdf cat 3 output     Separate/0Index3.pdf
+pdftk  FS.pdf cat 4 output     Separate/0Index4.pdf
+exit
+
 touch                            Separate/1Doesntexist.pdf
 pdftk  FS.pdf cat 5-26 output    Separate/XAShortGuideTo.pdf
 pdftk  FS.pdf cat 27-30 output   Separate/XImportantNote.pdf
