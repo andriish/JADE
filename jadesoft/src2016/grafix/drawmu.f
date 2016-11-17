@@ -1,7 +1,7 @@
 C   15/02/84 605031744  MEMBER NAME  DRAWMU   (S)           FORTRAN
 C
 C-----------------------------------------------------------------------
-      SUBROUTINE DRAWMU( XPOS , YPOS )
+      SUBROUTINE DRAWMU_OLD( XPOS , YPOS )
 C-----------------------------------------------------------------------
 C
 C   AUTHOR:   J. OLSSON    3/05/84 :  DRAW MU SYMBOL

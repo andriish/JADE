@@ -1121,7 +1121,8 @@ C         HEIGHT=64./35.*HGHT
 C         WIDTH=30.5/64.*HEIGHT
 C      ENDIF
       HEIGHT=HGHT*1.3
-      WIDTH=HEIGHT*55./117.
+CAV      WIDTH=HEIGHT*55./117.
+      WIDTH=HEIGHT*125./117. !FFTGJ
       CALL ISCHH(HEIGHT*.5)
       CALL IGSET('TANG',THETA)
 
@@ -1136,7 +1137,8 @@ C      to ensure equidistant character output !!!
          W=.5*WIDTH*CS
          H=.45*HEIGHT*(1+SN)
          IF( NSTR.GT.0 ) THEN
-            CALL ITX(XS+W,YS+H,CSTR(I)) ! normal text
+C            CALL ITX(XS+W,YS+H,CSTR(I)) ! normal text
+            CALL ITXN(XS+W,YS+H,CSTR(I),1) ! normal text
          ELSE
             CALL ISTXFP(0,2)
             CALL ITX(XS+W,YS+H
@@ -1148,9 +1150,7 @@ C      to ensure equidistant character output !!!
       ENDDO
 
 C - Restore inclination angle and text height
-      WRITE(*,*)'Hi!'
       CALL IGSET('TANG',0.)
-      WRITE(*,*)'Hi2!'
       CALL ISCHH(YCHAR*.5)
 
 C

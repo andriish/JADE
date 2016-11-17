@@ -1,4 +1,5 @@
 #include "TColor.h"
+#include "TLatex.h"
 #include "TList.h"
 #include "TMath.h"
 #include "TText.h"
@@ -16,36 +17,48 @@
 #include <string>
 #include <sstream>
 
+#define JADEZROOT
 
-
-
+#ifndef JADEZROOT
 TApplication* jApplication;
+#endif
 int UPDATER;
 //std::map<int,TCanvas*>   jCanvas;
 TCanvas*   jCanvas;
 std::map<int,int>   jColors;
 TPad*   jPad;
 int jTextAlignment;
-int jTextSize;
+float jTextSize;
 int jTextAngle;
 int jTextColor;
 int jLineColor;
+int jLineStyle;
+int jFillAreaColor;
 
-int jPolymarkerColor;
+int jPolyMarkerColor;
 int jPolyLineColor;
+float jPolyMarkerSize;
+float jPolyLineWidth;
 
 std::map<int,double>  gSX,gSY;
 std::map<int,double>  grSX,grSY;
 
 
 
-
+#include <TApplication.h>
+#include <TRootEmbeddedCanvas.h>
+#include "Frame.h"
+Frame* jFrame;
+void showFrame() {
+    // Popup the GUI...
+    jFrame=new Frame(gClient->GetRoot(),200,200);
+}
 
 
 std::map<int,std::vector<double> >  gWN;
 
 int jNT;
-//#define DEBUG 0
+#define DEBUG 1
 #ifdef DEBUG
  #define DDDD if(1) 
 #else
@@ -134,7 +147,9 @@ The last four parameters must satisfy the conditions XMIN < XMAX and YMIN < YMAX
 printf("void isvp_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)  %i %f %f %f %f\n", NTS, XTMIN, XTMAX, YTMIN, YTMAX);
 
 if (!jCanvas)   {
-    jCanvas= new TCanvas("jCanvas","JADE Display",768,768); 
+   // jCanvas= new TCanvas("jCanvas","JADE Display",768,768); 
+    jCanvas =jFrame->fEcanvas->GetCanvas();
+    
     jPad= new TPad("Jpad","Jpad",0,0,1,1); 
    jPad->SetFillStyle(4000);
    jPad->SetFillColor(0);
@@ -211,23 +226,7 @@ printf("Error in void iselnt_(int & t)  %i\n",t);
 }	
 
 
-// CALL SETCOL('*INI')
-/*
-void setcol_(const char*)
-{
-	
-	
-	
-}	
-*/
 
-/*
-//CALL IGFIN
-void igfin_()
-{
-
-}	
-*/
 //`iclrwk_'
 
 void iclrwk_()
@@ -282,7 +281,7 @@ void igrng_(float *a, float*b)
 	
 }	
 
-void igset_(char* , float& val){
+void igset_(char* a, float& val){
 /*
 CALL IGSET
  (CHNAME,VAL)
@@ -296,7 +295,7 @@ is an UPPERCASE character string.
 Floating point value of the parameter (must be specified as a REAL number).
 A value of 0.0 indicates that the parameter value must be reset to its default value.
 */
-DDDD printf("  void igset_(char* , float& val){  %f\n",val);
+DDDD printf("  void igset_(char* , float& val){ %s %f\n",a,val);
 //jTextAngle=atan(val)*180.0/TMath::Pi();
 jTextAngle=val*180.0/TMath::Pi();
 }
@@ -306,11 +305,17 @@ jTextAngle=val*180.0/TMath::Pi();
 void iginit_(int& a)
 {
 DDDD printf("iginit_(int a)   %i\n",a);	
+#ifndef JADEZROOT
 jApplication=new TApplication("Jade display",0,0);
+#else
+showFrame();
+#endif
 jTextSize=0.01;
 jTextColor=kRed;
 jLineColor=kBlack;
 jPolyLineColor=kBlack;
+
+jFillAreaColor=kWhite;
 jTextAlignment=12;
 jTextAngle=0;
 jNT=0;
@@ -320,6 +325,11 @@ az.push_back(0);
 az.push_back(2*4096);
 az.push_back(2*4096);
 gWN[0]=az;
+jPolyMarkerSize=1.1;
+jPolyLineWidth=1.0;
+
+jLineStyle=kSolid;
+
 /*
 
 ixsetco 11 0.400000 0.400000 0.400000
@@ -351,8 +361,9 @@ jColors[7]=kCyan;
 //`igend_'
 void igend_()
 {
-	
+#ifndef JADEZROOT
 jApplication->Run();	
+#endif
 }	
 
 
@@ -397,12 +408,17 @@ void igpave_(float& x1, float&  x2,float& y1,float& y2,int*, int*,const char* )
 void ipl_(int&n, float* x, float* y)
 {
 	//DDDD 		
-	printf("ipl_(int&n, float x, float y) %i,%f %f\n", n, x[0], y[0]);
+	//printf("ipl_(int&n, float x, float y) %i,%f %f\n", n, x[0], y[0]);
+	float l=0;
+	if (n==2) {l=pow(x[0]-x[1],2)+pow(y[0]-y[1],2);
+		if (l>10000)
+		printf("ipl_(int&n, float x, float y) %i,%f %f   %f %f\n", n, x[0], y[0], x[1], y[1]);
+	}
 	gPad->cd();
 	//TPolyLine* P=new TPolyLine(n,X,Y);
 	TPolyLine* P=new TPolyLine(n,x,y);
-	P->SetLineWidth(2);
-	P->SetLineStyle(1);
+	P->SetLineWidth(jPolyLineWidth);
+	P->SetLineStyle(jLineStyle);
 	P->SetLineColor(jPolyLineColor);
 	P->Draw();
 	//gPad->Update();
@@ -419,8 +435,8 @@ void ipm_(int&n, float* x, float* y)
 	TPolyMarker* P=new TPolyMarker(n,x,y);
 	//P->SetLineWidth(1);
 	//P->SetLineStyle(1);
-	P->SetMarkerColor(jPolymarkerColor);
-	P->SetMarkerSize(1.0);
+	P->SetMarkerColor(jPolyMarkerColor);
+	P->SetMarkerSize(jPolyMarkerSize);
 //	P->SetMarkerStyle(kStar);
 	P->Draw();
 }	
@@ -441,8 +457,11 @@ CHH
 nates and it must be positive.
 */
 //gStyle->SetFontSize(h);
- DDDD printf(" ischh  %f\n",h);
- jTextSize=h;
+ DDDD printf(" ischh  %f,  NOT IMPLEMENTED\n",h);
+ if (h<1) jTextSize=h;
+if (h>10)
+ jTextSize=0.01;
+
 } 
 //`iscr_'
 void iscr_(int &w, int &ci, float &r,float&g,float&b)
@@ -513,7 +532,13 @@ Line type (positive number).
  Dashed-dotted lines
 */
 
-//DDDD printf("isln_(int *a)  %i\n",a);
+DDDD printf("isln_(int *a)  %i\n",a);
+
+if (a==1)jLineStyle=kSolid;
+if (a==2)jLineStyle=kDashed;
+if (a==3)jLineStyle=kDotted;
+if (a==4)jLineStyle= kDashDotted;
+
 }
 
 
@@ -532,7 +557,7 @@ WIDTH
  Line width scale factor.
 */
 DDDD printf("islwsc_(int& a)  %f\n",a);
-
+jPolyLineWidth=a;
 
 }
 
@@ -568,7 +593,7 @@ Marker type (positive number)
 //}
 
 }	
-void ismksc_(int& a)
+void ismksc_(int a)
 {
 /*
 Action: This routine sets the marker scale factor. This scale factor is applied on the nominal size of the
@@ -603,22 +628,12 @@ SSFM
 */
 void ixsync_(bool mode)
 {
-	
+	printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
 	
 }	
 
 
-/*
- CALL HLABEL (ID,NLAB,*CLAB*,CHOPT)
 
-Action: Associates alphanumeric labels with a histogram. This routine can be called for a histogram after it has been filled, and then the labels specified will be shown on the respective axes. The routine can also be called before a histogram is filled , and in this case, when filling, a certain order can be imposed. By default the entries will be automatically ordered.
-*/
-void hlabel_(int id , int N,char* clab,const char* opt)
-{
-//DDDD
-//printf("  hlabel_(int*id , int N,char** clab,const char* opt)  %i %i %s   \n",id,N,clab);
-
-}
 
 void iuwk_(int&a, int&b)
 {
@@ -649,25 +664,15 @@ IRFLG
 	gPad->Update();
 }
 
-bool HasSpecialCharacters(const char *str)
-{
-    return str[strspn(str, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_")] != 0;
-}
 
-bool invalidChar (char c) 
-{  
-    return !(c>=0 && c <128);   
-} 
-void stripUnicode(std::string & str) 
-{ 
-    str.erase(remove_if(str.begin(),str.end(), invalidChar), str.end());  
-}
 
 void itx_(float &x, float &y, char* txt)
 {
- //DDDD   printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%f\n", x,y, txt, jTextAlignment,jTextAngle );
+ //DDDD   
+ printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%f\n", x,y, txt, jTextAlignment,jTextAngle );
    std::string vn(txt);
-stripUnicode(vn);
+if (vn.size()>0)vn[vn.size()-1]=0;
+//stripUnicode(vn);
 while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
    
    
@@ -681,12 +686,72 @@ while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
  //  t->SetTextColor(kRed);
    t->SetTextFont(82);
    //t->SetTextSize(jTextSize*grSY[jNT]);
-   t->SetTextSize(0.015);
+   t->SetTextSize(jTextSize);
    t->SetTextAngle(jTextAngle);
    t->Draw();
 
 
 }	
+
+
+void itxn_(float &x, float &y, char* txt, int& n)
+{
+ //DDDD   
+ printf("void itxn_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%f\n", x,y, txt, jTextAlignment,jTextAngle );
+   std::string vn(txt);
+if (vn.size()>0)vn[vn.size()-1]=0;
+//stripUnicode(vn);
+while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
+vn=vn.substr(0,std::min((int)vn.size(),n));
+   
+   
+   //TText *t = new TText(grSX[jNT]*x,grSY[jNT]*y,txt);
+   TText *t;
+   t = new TText(x,y,vn.c_str());
+   //t->SetNDC(false);
+   t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
+   t->SetTextColor(jTextColor);
+ //  t->SetTextColor(kRed);
+   t->SetTextFont(82);
+   //t->SetTextSize(jTextSize*grSY[jNT]);
+   t->SetTextSize(jTextSize);
+   t->SetTextAngle(jTextAngle);
+   t->Draw();
+
+
+}	
+
+
+
+
+void drawpi_(float &x, float &y)
+{
+DDDD   printf("void drawpi_(float &x, float &y)   %f %f , jTextAlignment=%i  jTextAngle=%f\n", x,y, jTextAlignment,jTextAngle );
+   TLatex *t;
+   t = new TLatex();
+   t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
+   t->SetTextColor(jTextColor);
+   t->SetTextFont(82);
+   t->SetTextSize(0.015);
+   t->SetTextAngle(jTextAngle);
+   t->DrawLatex(x,y,"#pi");
+}
+
+void drawmu_(float &x, float &y)
+{
+DDDD   printf("void drawmu_(float &x, float &y)   %f %f , jTextAlignment=%i  jTextAngle=%f\n", x,y,  jTextAlignment,jTextAngle );
+   TLatex *t;
+   t = new TLatex();
+   t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
+   t->SetTextColor(jTextColor);
+   t->SetTextFont(82);
+   t->SetTextSize(jTextSize);
+   t->SetTextAngle(jTextAngle);
+   t->DrawLatex(x,y,"#mu");
+}
+
+
+
 
 void itxl_(float &x, float &y, char* txt, int& l)
 {
@@ -820,9 +885,10 @@ Parameter description:
 ICOLI
  Polymarker colour index.
 */
-if (jColors.find(a)!=jColors.end()) jPolymarkerColor=jColors.at(a);
+if (jColors.find(a)!=jColors.end()) jPolyMarkerColor=jColors.at(a);
 
-//jPolymarkerColor=a;
+//jPolyMarkerColor=a;
+//printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
 }
 
 void istxfp_(int &a, float *prec)
@@ -843,6 +909,7 @@ IPREC
 Text font. The value of IFONTText precision (0≤IPREC≤2).
 depends on the underlying graphics package used.
 */
+printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
 }
 
 void ixsettc_(int&a)
@@ -856,11 +923,13 @@ INDEX
  Colour index defined my IXSETCOL.
 */
 if (jColors.find(a)!=jColors.end()) jTextColor=jColors.at(a);
+printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
 }
 
 
 void ixsetlc_(int&a)
 {
+DDDD printf("ixsetlc_(int&a), %i\n",a);
 jLineColor=a;
 
 
@@ -872,45 +941,49 @@ jLineColor=a;
 void ixsetmc_(int&a)
 {
 
-
-
-
-}
-
-
-
-
-
-
-
-
-void ixsetfc_(int*a)
-{
-
-
-
+if (jColors.find(a)!=jColors.end())  jPolyMarkerColor=a;
+//printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
 
 }
 
 
 
 
-void ixsetln_(int*a)
+
+
+
+
+void ixsetfc_(int&a)
 {
+if (jColors.find(a)!=jColors.end())  jFillAreaColor=a;
+
+printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
+
+}
 
 
 
+
+void ixsetln_(int&a)
+{
+printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
+
+jPolyLineWidth=a;
 
 }
 
 
 void igsse_(int*a , int* b)
 {
-
+printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
 
 }
 
-void igterm_(){}
+void igterm_(){
+	
+	printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
+	
+	}
 
 
 

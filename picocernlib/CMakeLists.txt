@@ -142,6 +142,7 @@ ${TOP}/src/itoch.F
 ${TOP}/src/upkch.F
 ${TOP}/src/indexc.F
 ${TOP}/src/JBOOK.cxx
+${TOP}/src/JINTERFACE.F
 #${TOP}/graflib/higz/ikernel/iclrwk.F
 #${TOP}/graflib/higz/ikernel/iclwk.F
 #${TOP}/graflib/higz/ig/igbox.F
@@ -194,6 +195,8 @@ ${TOP}/src/JBOOK.cxx
 #${TOP}/graflib/higz/ikernel/ixsettc.F
 #${TOP}/graflib/higz/ikernel/ixsync.F
 ${TOP}/src/JHIGZ.cxx
+    ${TOP}/src/Frame.cxx
+    ${TOP}/src/Frame_Dict.cxx
 )
 
 

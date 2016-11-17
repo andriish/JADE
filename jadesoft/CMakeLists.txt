@@ -5,7 +5,7 @@
 ##################################################
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
-PROJECT(JADESOFT Fortran)
+PROJECT(JADESOFT Fortran CXX)
 
 SET(VERSION 0.0.1)
 
@@ -87,8 +87,13 @@ endif (CERNLIB_FOUND)
 ####################################################################################################
 
 
+#set(CERN_LIBRARIES ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a -lc  -L${CMAKE_SOURCE_DIR}/../ROOTLIBS -L/usr/lib64/root
+#-lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lstdc++)
+
 set(CERN_LIBRARIES ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a -lc  -L${CMAKE_SOURCE_DIR}/../ROOTLIBS -L/usr/lib64/root
--lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lstdc++)
+ -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic -L/usr/lib64/root -lGui -lstdc++)
+
+
 
 #INCLUDE(${CMAKE_MODULE_PATH}/SetUpLAPACK.cmake)
 
@@ -141,6 +146,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 SET(MCJADEEXE bin/mcjade)
 SET(SUPERVEXE bin/superv)
 SET(JADEZEXE bin/jadez)
+SET(JADEZROOTEXE bin/jadezroot)
 SET(ZE4VEXE bin/ze4v)
 
 # Define the library name
@@ -1044,6 +1050,73 @@ ELSE()
     SET(CMAKE_INSTALL_PREFIX /usr/local)
 ENDIF(WIN32)
 INSTALL(TARGETS ${JADEZEXE} RUNTIME DESTINATION bin)
+
+
+
+
+
+
+########################################################################################################################3
+
+
+
+
+
+
+########################################
+# Set up how to compile the source files
+########################################
+
+# Add the source files
+SET(JADEZROOT_src ${SRCJADEZ}/gphmain2.F  ${SRCJADEZ}/xuser.F  ${SRCJADEZ}/gphmain.cxx
+)
+
+# Define the executable in terms of the source files
+ADD_EXECUTABLE(${JADEZROOTEXE} ${JADEZROOT_src})
+
+#####################################################
+# Add the needed libraries and special compiler flags
+#####################################################
+
+# This links foo to the bar library
+#-lpatrecsr -ltoflib -ltagg -lboslib -ljadegs -linterface -ljademus -lsource -lwertex -lpatrecsr
+TARGET_LINK_LIBRARIES(${JADEZROOTEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+ ${CERN_LIBRARIES} X11 -Wl,--end-group)
+
+target_include_directories(${JADEZROOTEXE} PUBLIC /usr/include/root)
+
+
+# Uncomment if you need to link to BLAS and LAPACK
+#TARGET_LINK_LIBRARIES(${JADEZROOTEXE} ${BLAS_LIBRARIES}
+#                                ${LAPACK_LIBRARIES}
+#                                ${CMAKE_THREAD_LIBS_INIT})
+#####################################
+# Tell how to install this executable
+#####################################
+
+IF(WIN32)
+    SET(CMAKE_INSTALL_PREFIX "C:\\Program Files")
+ELSE()
+    SET(CMAKE_INSTALL_PREFIX /usr/local)
+ENDIF(WIN32)
+INSTALL(TARGETS ${JADEZROOTEXE} RUNTIME DESTINATION bin)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+########################################################################################################################3
 ########################################
 # Set up how to compile the source files
 ########################################

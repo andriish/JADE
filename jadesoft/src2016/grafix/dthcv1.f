@@ -21,19 +21,21 @@ C
 C
       COMMON / CGRAP2 / BCMD, DSPDTM(30)
 C
-      DIMENSION  ARMAS(5) , HLABEL(6)
+      DIMENSION  ARMAS(5) , PLABEL(6)
 C
       DATA ARMAS / 0.000511, 0.105659, 0.139567, 0.49367, 0.93828 /
 C
 C                       LOWER CASE 'e', BLANK, BLANK, K, LOWER CASE p
 C
-      DATA HLABEL / 2He , 2H  , 2H  , 2HK , 2Hp , 2H  /
+      CHARACTER PLABEL*2
+      DATA PLABEL / 'e ', '  ', '  '  , 'K ', 'p ', '  '  /
 C
 C------------------  C O D E  ------------------------------------------
 C
 C     DMINAW = 7.2
 C     IF( BCMD .GT. 4.0 ) DMINAW = BCMD
 C
+       write(*,*)'DTHCV1( FRAC1 , LARGE , SMALL )',FRAC1 , LARGE , SMALL
        DO  1  IMS = 1,5
          FMASS  = ARMAS(IMS)
 C        FMASS2 = FMASS**2
@@ -96,8 +98,9 @@ C
 C
         IF( IMS .EQ. 2 ) GO TO 6
         IF( IMS .EQ. 3 ) GO TO 5
+          write(*,*)'DEX at',XLABEL, YLABEL
           CALL MOVEA( XLABEL, YLABEL )
-          CALL EOUTST( 1, HLABEL(IMS) )
+          CALL EOUTST( 1, PLABEL(IMS) )
           GO TO 1
 C
   5     IF( LARGE ) XLABEL = XLABEL - 0.5
