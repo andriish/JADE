@@ -157,6 +157,7 @@ if (!jCanvas)   {
     jPad->Draw();
 
     jPad->cd();
+        gPad->Update();
     if (gWN.find(NTS)!=gWN.end())
 gPad->Range(BIGK*gWN[NTS][0],BIGK*gWN[NTS][1],BIGK*gWN[NTS][2],BIGK*gWN[NTS][3]);
 //gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]);
@@ -175,7 +176,11 @@ printf("Error in void isvp_\n",NTS);
      {
   //  TPad* pad= new TPad(Form("jCanvas%iPad%i",NTS,jCanvas[NTS]->GetListOfPrimitives()->GetSize()+1),"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
     
-    if (jCanvas->GetListOfPrimitives()->FindObject("Jpad")) jCanvas->GetListOfPrimitives()->FindObject("Jpad")->Delete();
+    if (jCanvas->GetListOfPrimitives()->FindObject("Jpad")) 
+    {
+		jCanvas->GetListOfPrimitives()->FindObject("Jpad")->Clear();
+		jCanvas->GetListOfPrimitives()->FindObject("Jpad")->Delete();
+	}
     TString pname=Form("jCanvasPad%2.2f_%2.2f_%2.2f_%2.2f",XTMIN, YTMIN, XTMAX, YTMAX);
     TPad* pad=(TPad*)(jCanvas->GetListOfPrimitives()->FindObject(pname));
     if (!pad) pad= new TPad(pname,"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
@@ -185,6 +190,7 @@ printf("Error in void isvp_\n",NTS);
     pad->SetFrameFillStyle(4000);
     gPad->Update();
     pad->Draw();
+    gPad->Update();
     pad->cd();
     if (gWN.find(NTS)!=gWN.end())
     gPad->Range(BIGK*gWN[NTS][0],BIGK*gWN[NTS][1],BIGK*gWN[NTS][2],BIGK*gWN[NTS][3]);
@@ -201,6 +207,7 @@ printf("Error in void isvp_\n",NTS);
    if (gWN.find(NTS)!=gWN.end())
    gPad->Range(BIGK*gWN[NTS][0],BIGK*gWN[NTS][1],BIGK*gWN[NTS][2],BIGK*gWN[NTS][3]);
 //gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]); 
+   gPad->Update();
    }
    else
    printf("Error in void isvp_\n",NTS);
@@ -233,7 +240,8 @@ void iclrwk_()
 {
 puts("iclrwk_()\n");
 //if (jCanvas) if(jCanvas->GetPad(1)) jCanvas->GetPad(1)->Clear();
-//if(gPad) gPad->Clear();
+if(gPad) gPad->Clear();
+if (jCanvas) if (jCanvas->GetListOfPrimitives()->FindObject("Jpad")) jCanvas->GetListOfPrimitives()->FindObject("Jpad")->Clear();
 }	
 
 
@@ -393,6 +401,7 @@ void igpave_(float& x1, float&  x2,float& y1,float& y2,int*, int*,const char* )
 	//DDDD 
 	printf("igpave_(float& x1, float&  x2,float& y1,float y2, %f %f %f %f\n",x1,y1,x2,y2);
 //	double f=0.1;
+   printf("%s \n", gPad->GetName());
    gPad->cd();
 	TPave* P= new TPave(x1,y1,x2,y2);
 	P->Draw();
@@ -635,7 +644,7 @@ void ixsync_(bool mode)
 
 
 
-void iuwk_(int&a, int&b)
+void iuwk_(int a, int b)
 {
 /*
 GKS
@@ -657,9 +666,8 @@ IRFLG
  update current view
 */
 
-//DDDD 
-//printf("iuwk_(int&a, int&b) %i, %i\n",a,b);
- 
+DDDD printf("iuwk_(int&a, int&b) %i, %i\n",a,b);
+ if (jCanvas) jCanvas->Update();
 	gPad->Modified();
 	gPad->Update();
 }
@@ -668,8 +676,7 @@ IRFLG
 
 void itx_(float &x, float &y, char* txt)
 {
- //DDDD   
- printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%f\n", x,y, txt, jTextAlignment,jTextAngle );
+ //DDDD    printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%f\n", x,y, txt, jTextAlignment,jTextAngle );
    std::string vn(txt);
 if (vn.size()>0)vn[vn.size()-1]=0;
 //stripUnicode(vn);
@@ -696,8 +703,7 @@ while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
 
 void itxn_(float &x, float &y, char* txt, int& n)
 {
- //DDDD   
- printf("void itxn_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%f\n", x,y, txt, jTextAlignment,jTextAngle );
+ //DDDD    printf("void itxn_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%f\n", x,y, txt, jTextAlignment,jTextAngle );
    std::string vn(txt);
 if (vn.size()>0)vn[vn.size()-1]=0;
 //stripUnicode(vn);

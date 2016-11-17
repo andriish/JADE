@@ -745,7 +745,6 @@ C - Goto home position if needed
 
 C - Print out character using 'screen window' coordinates
       CALL ISELNT(NTS)
-      write(*,*)'ANCHO:', XPOS0+XCHAR/2.,YPOS0+YCHAR/2.,CHARM
       CHARm(1)=CHARA
       CALL ITXN(XPOS0+XCHAR/2.,YPOS0+YCHAR/2.,CHARM,1)
 
