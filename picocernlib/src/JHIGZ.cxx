@@ -23,7 +23,7 @@ TApplication* jApplication;
 int UPDATER;
 //std::map<int,TCanvas*>   jCanvas;
 TCanvas*   jCanvas;
-std::map<int,TColor>   jColors;
+std::map<int,int>   jColors;
 TPad*   jPad;
 int jTextAlignment;
 int jTextSize;
@@ -36,6 +36,10 @@ int jPolyLineColor;
 
 std::map<int,double>  gSX,gSY;
 std::map<int,double>  grSX,grSY;
+
+
+
+
 
 
 std::map<int,std::vector<double> >  gWN;
@@ -316,7 +320,31 @@ az.push_back(0);
 az.push_back(2*4096);
 az.push_back(2*4096);
 gWN[0]=az;
+/*
 
+ixsetco 11 0.400000 0.400000 0.400000
+ixsetco 12 0.000000 0.700000 1.000000
+ixsetco 13 1.000000 0.600000 0.000000
+ixsetco 14 0.000000 0.900000 0.000000
+ixsetco 15 0.000000 1.000000 0.500000
+ixsetco 16 1.000000 0.000000 0.000000
+ixsetco 17 8.000000 1.000000 0.000000
+ixsetco 18 1.000000 1.000000 0.000000
+ixsetco 19 0.000000 0.000000 0.500000
+ixsetco 20 0.000000 1.000000 0.000000
+ixsetco 100 1.000000 1.000000 1.000000
+ixsetco 101 0.000000 0.000000 0.000000
+
+ */ 
+
+jColors[0]=kWhite;
+jColors[1]=kBlack;
+jColors[2]=kRed;
+jColors[3]=kGreen;
+jColors[4]=kBlue;
+jColors[5]=kYellow;
+jColors[6]=kViolet;
+jColors[7]=kCyan;
 
 }	
 
@@ -650,7 +678,7 @@ while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
    //t->SetNDC(false);
    t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
    t->SetTextColor(jTextColor);
-   t->SetTextColor(kRed);
+ //  t->SetTextColor(kRed);
    t->SetTextFont(82);
    //t->SetTextSize(jTextSize*grSY[jNT]);
    t->SetTextSize(0.015);
@@ -673,7 +701,7 @@ vn=vn.substr(0,std::min((int)(vn.length()),l));
    //t->SetNDC(false);
    t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
    t->SetTextColor(jTextColor);
-   t->SetTextColor(kRed);
+ //  t->SetTextColor(kRed);
    t->SetTextFont(82);
    //t->SetTextSize(jTextSize*grSY[jNT]);
    t->SetTextSize(0.015);
@@ -686,7 +714,7 @@ vn=vn.substr(0,std::min((int)(vn.length()),l));
 
 
 
-void ixsetco_(int&i, float r, float g, float b)
+void ixsetco_(int&i, float &r, float &g, float &b)
 {/*
 
 CALL IXSETCO
@@ -702,7 +730,8 @@ G
 B
  Blue intensity between 0.0 and 1.0.
 */
-jColors[i]=TColor(i,r,g,b);
+printf("ixsetco %i %f %f %f\n",i,r,g,b);
+jColors[i]=TColor::GetColor(r,g,b);
 }
 void istxal_(int& a, int& b)
 {/*
@@ -769,11 +798,12 @@ ICOLI
 */
 //DDDD 
 printf("isplci_(int&a), %i\n",a);
-//if (jColors.find(a)!=jColors.end()) jPolyLineColor=jColors.at(a);
+if (jColors.find(a)!=jColors.end()) jPolyLineColor=jColors.at(a);
 
-jPolyLineColor=a;
-if  (a==14) jPolyLineColor=kRed;
+//jPolyLineColor=a;
+//if  (a==14) jPolyLineColor=kRed;
 }
+
 
 
 
@@ -790,9 +820,9 @@ Parameter description:
 ICOLI
  Polymarker colour index.
 */
-//if (jColors.find(a)!=jColors.end()) jPolymarkerColor=jColors.at(a);
+if (jColors.find(a)!=jColors.end()) jPolymarkerColor=jColors.at(a);
 
-jPolymarkerColor=a;
+//jPolymarkerColor=a;
 }
 
 void istxfp_(int &a, float *prec)
@@ -825,7 +855,7 @@ Parameter description:
 INDEX
  Colour index defined my IXSETCOL.
 */
-//if (jColor.find(a)!=jColor.end()) jTextColor=jColor.at(a);
+if (jColors.find(a)!=jColors.end()) jTextColor=jColors.at(a);
 }
 
 

@@ -1,5 +1,6 @@
 #!/bin/bash
 export LD_LIBRARY_PATH=//usr/lib64/SHERPA-MC/://usr/lib64/SHERPA-MC/:$LD_LIBRARY_PATH:$(pwd)/../ROOTLIBS
+export PATH=$PATH:$(pwd)/../jadesoft/bin
 #Sherpa -f Runeesherpa_0.12.dat EVENT_OUTPUT=HepMC_GenEvent[out.hepmc2] HEPMC_TREE_LIKE=1  EVENTS=100
 #mv out.hepmc2.hepmc2g   sherpa34gev.hepmc2
 cd ../HepMC3/
@@ -15,7 +16,7 @@ cd ../HepMC3/
 
 #####
 cd ../picocernlib
-cmake CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran
+#cmake CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran
 make -f Makefile
 ####
 cd ../Tests
@@ -24,10 +25,8 @@ cd ../Tests
 #../HepMC3/outputs/bin/convert_example_JADE.exe hepmc2_jade  sherpa34gev.hepmc2   bsherpa34gev.jade Mode=0:events_limit=100
 #../HepMC3/outputs/bin/convert_example_JADE.exe hepmc2_jade  sherpa34gev.hepmc2   asherpa34gev.jade Mode=1:events_limit=100
 cd ../jadesoft
-cmake CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran
+#cmake CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran
 make -f Makefile
-sh scripts2016/install.sh
-. scripts2016/Init_jade_env.sh
 cd  ../Tests
 #cat mcjadecard.txt | mcjade
 
