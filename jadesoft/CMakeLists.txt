@@ -87,7 +87,7 @@ endif (CERNLIB_FOUND)
 ####################################################################################################
 
 
-set(CERN_LIBRARIES ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a -lc  -L${CMAKE_SOURCE_DIR}/../ROOTLIBS 
+set(CERN_LIBRARIES ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a -lc  -L${CMAKE_SOURCE_DIR}/../ROOTLIBS -L/usr/lib64/root
 -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lstdc++)
 
 #INCLUDE(${CMAKE_MODULE_PATH}/SetUpLAPACK.cmake)
@@ -97,7 +97,7 @@ set(CERN_LIBRARIES ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a -lc  -L${
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
-   set(CMAKE_Fortran_FLAGS            "-m32 -std=legacy -m32 -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+   set(CMAKE_Fortran_FLAGS            " -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
@@ -108,7 +108,7 @@ endif()
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
 #PPC64 only
    set(CMAKE_Fortran_FLAGS           " -qfixed=256 -q32  -melf32ppc -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
-   find_library(GFORTRAN_LIBRARY NAMES libgfortran.so.3  gfortran HINTS /usr/lib )
+   find_library(GFORTRAN_LIBRARY NAMES libgfortran.so.3  gfortran HINTS /usr/lib /usr/lib64 )
    list(APPEND CERN_LIBRARIES  ${GFORTRAN_LIBRARY})
 endif()
 
@@ -128,16 +128,20 @@ message(STATUS "Fortran compiler        : ${Fortran_COMPILER_NAME}")
 message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
 message(STATUS "CERN libraries          : ${CERN_LIBRARIES}")
 
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+
+
 ############################################################
 # Define the actual files and folders that make up the build
 ############################################################
 
 # Define the executable name
 #SET(FOOEXE foo)
-SET(MCJADEEXE mcjade)
-SET(SUPERVEXE superv)
-SET(JADEZEXE jadez)
-SET(ZE4VEXE ze4v)
+SET(MCJADEEXE bin/mcjade)
+SET(SUPERVEXE bin/superv)
+SET(JADEZEXE bin/jadez)
+SET(ZE4VEXE bin/ze4v)
 
 # Define the library name
 SET(BOSLIB boslib)

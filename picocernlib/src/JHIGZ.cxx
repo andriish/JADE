@@ -615,7 +615,7 @@ IRFLG
 */
 
 //DDDD 
-printf("iuwk_(int&a, int&b) %i, %i\n",a,b);
+//printf("iuwk_(int&a, int&b) %i, %i\n",a,b);
  
 	gPad->Modified();
 	gPad->Update();
@@ -683,10 +683,6 @@ vn=vn.substr(0,std::min((int)(vn.length()),l));
 
 }	
 
-
-
-void mzebra_(int *a){}
-void mzpaw_(int *a){}
 
 
 

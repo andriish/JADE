@@ -41,6 +41,13 @@ std::map<int, TH1F*> gmapTH1F;
 std::map<int, TTree*> gmapTTree;
 std::map<std::string, TFile*> gmapTFile;
 extern "C" {
+	
+
+void mzebra_(int *a){}
+void mzpaw_(int *a){}
+
+	
+	
 void hlimit_(int a){}
 void hcdir_(char*,char*){   
 //Do better

@@ -15,9 +15,9 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -m32")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g   -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN  ")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -m32 -std=c++11 -I/usr/include/root   ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g  -std=c++11 -I/usr/include/root   ")
 
 
 
@@ -25,7 +25,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -m32 -std=c++11 -I/usr/include/ro
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
-   set(CMAKE_Fortran_FLAGS            " -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN           -m32 -std=legacy -m32 -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+   set(CMAKE_Fortran_FLAGS            "    -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN  -DCERNLIB_QX_SC         -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
@@ -61,6 +61,7 @@ SET(LIB ${CMAKE_SOURCE_DIR}/lib)
 SET(BIN ${CMAKE_SOURCE_DIR}/bin)
 
 include_directories( ${TOP}/include  ${TOP}/ffread )
+#   ${TOP}/graflib/higz )
 
 
 
@@ -141,6 +142,57 @@ ${TOP}/src/itoch.F
 ${TOP}/src/upkch.F
 ${TOP}/src/indexc.F
 ${TOP}/src/JBOOK.cxx
+#${TOP}/graflib/higz/ikernel/iclrwk.F
+#${TOP}/graflib/higz/ikernel/iclwk.F
+#${TOP}/graflib/higz/ig/igbox.F
+#${TOP}/graflib/higz/ig/igend.F
+#${TOP}/graflib/higz/ig/iginit.F
+#${TOP}/graflib/higz/ig/igloc.F
+#${TOP}/graflib/higz/ig/igmess.F
+#${TOP}/graflib/higz/ig/igmeta.F
+#${TOP}/graflib/higz/ig/igpave.F
+#${TOP}/graflib/higz/ig/igrng.F
+#${TOP}/graflib/higz/ig/igtext.F
+#${TOP}/graflib/higz/ig/igset.F
+#${TOP}/graflib/higz/ig/igerr.F
+#${TOP}/graflib/higz/ig/igsse.F
+#${TOP}/graflib/higz/ig/igterm.F
+#${TOP}/graflib/higz/ikernel/ipl.F
+#${TOP}/graflib/higz/ikernel/ipm.F
+#${TOP}/graflib/higz/ikernel/ischh.F
+#${TOP}/graflib/higz/ikernel/iscr.F
+#${TOP}/graflib/higz/ikernel/iselnt.F
+#${TOP}/graflib/higz/ikernel/isfaci.F
+#${TOP}/graflib/higz/ikernel/isfais.F
+#${TOP}/graflib/higz/ikernel/isln.F
+#${TOP}/graflib/higz/ikernel/islwsc.F
+#${TOP}/graflib/higz/ikernel/ismk.F
+#${TOP}/graflib/higz/ikernel/ismksc.F
+#${TOP}/graflib/higz/ikernel/isplci.F
+#${TOP}/graflib/higz/ikernel/ispmci.F
+#${TOP}/graflib/higz/ikernel/istxal.F
+#${TOP}/graflib/higz/ikernel/istxci.F
+#${TOP}/graflib/higz/ikernel/istxfp.F
+#${TOP}/graflib/higz/ikernel/isvp.F
+#${TOP}/graflib/higz/ikernel/iswn.F
+#${TOP}/graflib/higz/ikernel/itx.F
+#${TOP}/graflib/higz/ikernel/iuwk.F
+#${TOP}/graflib/higz/iz/izatt.F
+#${TOP}/graflib/higz/iz/izcda.F
+#${TOP}/graflib/higz/iz/izcfa.F
+#${TOP}/graflib/higz/iz/izgadr.F
+#${TOP}/graflib/higz/iz/izincf.F
+#${TOP}/graflib/higz/iz/izpush.F
+#${TOP}/graflib/higz/iz/izscan.F
+#${TOP}/graflib/higz/iz/izstcc.F
+#${TOP}/graflib//higz/higzcc/x11int.c
+#${TOP}/src/floarg.F
+#${TOP}/graflib/higz/ikernel/ixsetfc.F
+#${TOP}/graflib/higz/ikernel/ixsetlc.F
+#${TOP}/graflib/higz/ikernel/ixsetln.F
+#${TOP}/graflib/higz/ikernel/ixsetmc.F
+#${TOP}/graflib/higz/ikernel/ixsettc.F
+#${TOP}/graflib/higz/ikernel/ixsync.F
 ${TOP}/src/JHIGZ.cxx
 )
 
