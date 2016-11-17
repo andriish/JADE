@@ -93,7 +93,7 @@ C      write(*,*)'we call hemsym', XPOS,YPOS,HBUF(1:KCNT)
 CAV      write(*,*)'-->',AMYSTR(1:le),'->', le
       ta=tan(THETA)
       call  igset('TANG',THETA)
-      call ITX(XPOS,YPOS,AMYSTR(1:le))
+      call ITXN(XPOS,YPOS,AMYSTR(1:le),le)
       
       return
 CAV      
