@@ -65,7 +65,7 @@ int jNT;
  #define DDDD if(0) 
 #endif
 
-#define BIGK 2.0
+#define BIGK 1.0
 
 extern "C" {
 /*
@@ -532,7 +532,7 @@ Line type (positive number).
  Dashed-dotted lines
 */
 
-DDDD printf("isln_(int *a)  %i\n",a);
+//DDDD printf("isln_(int *a)  %i\n",a);
 
 if (a==1)jLineStyle=kSolid;
 if (a==2)jLineStyle=kDashed;

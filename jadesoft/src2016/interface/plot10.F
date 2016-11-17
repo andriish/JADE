@@ -718,14 +718,15 @@ C
 #include "cplot10.for"
 *
       INTEGER ICHAR
-      CHARACTER*1 CHAR
+      CHARACTER*1 CHARA
+      CHARACTER CHARM(8)
 Code:
 C NB.: alignment of character in HIGZ = middle/middle
 C      beam position before writing = bottom/left
 C      beam position after writing = bottom/right
 
 C- Convert to ASCII
-      CALL ITOCH(ICHAR,CHAR)
+      CALL ITOCH(ICHAR,CHARA)
 
 C - Force correct alignment at the top of the screen
       IF( YPOS0.GT.YTMAX-YCHAR ) YPOS0=YTMAX-YCHAR 
@@ -744,7 +745,9 @@ C - Goto home position if needed
 
 C - Print out character using 'screen window' coordinates
       CALL ISELNT(NTS)
-      CALL ITX(XPOS0+XCHAR/2.,YPOS0+YCHAR/2.,CHAR)
+      write(*,*)'ANCHO:', XPOS0+XCHAR/2.,YPOS0+YCHAR/2.,CHARM
+      CHARm(1)=CHARA
+      CALL ITXN(XPOS0+XCHAR/2.,YPOS0+YCHAR/2.,CHARM,1)
 
 C - Update beam position
       XPOS0=XPOS0+XCHAR

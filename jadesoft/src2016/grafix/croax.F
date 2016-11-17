@@ -96,8 +96,8 @@ C
       CALL DRAWR(-IS*FSCA*F3,-FSCA*F2)
       CALL MOVER(IS*(F3+1.4)*FSCA,FSCA*F2*.5)
       IS = IPER(IX,I)
-1     CALL EOUTST(2,HTX(IS))
-      write(*,*)'(2,HTX(IS))', HTX(IS)
+1     continue
+      CALL EOUTST(2,HTX(IS))
       RETURN
 C
       END
