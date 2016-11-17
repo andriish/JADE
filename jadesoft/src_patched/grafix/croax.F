@@ -28,7 +28,8 @@ C
 C
       DIMENSION  ISGN(4,3),IPER(4,3),HTX(4)
 C
-      DATA HTX /2HX ,2HY ,2HZ ,2H  /
+      character*2 HTX
+      DATA HTX /'X ','Y ','Z ','  '/
       DATA ISGN / 1,1,1,1,1,-1,1,-1,-1,1,1,1 /
       DATA IPER / 2,1,2,2,3,2,1,3,1,3,3,1 /
       DATA FSCA1 /25./, F1,F2,F3 /3.5,1.,2.5/,FX,FY /.08,.05/,FFX /.05/
@@ -38,6 +39,8 @@ C------------------  C O D E  ------------------------------------------
 C
 C                            IF OPTION 48 IS ON, DRAW NO AXES
 C
+
+       write(*,*)' CROAX(INDEX) ',  INDEX, DSPDTM(18) 
       IF( DSPDTM(18) ) RETURN
 C
       IF( INDEX .LT. 0  .OR.  INDEX .EQ. 13  .OR.  INDEX .EQ. 15) RETURN
@@ -94,6 +97,7 @@ C
       CALL MOVER(IS*(F3+1.4)*FSCA,FSCA*F2*.5)
       IS = IPER(IX,I)
 1     CALL EOUTST(2,HTX(IS))
+      write(*,*)'(2,HTX(IS))', HTX(IS)
       RETURN
 C
       END
