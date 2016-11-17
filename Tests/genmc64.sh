@@ -7,9 +7,9 @@ cd ../HepMC3/
 export GFORTRAN_CONVERT_UNIT='native'
 export BLAS_LIBRARY_PATH=/usr/lib64
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BLAS_LIBRARY_PATH
-export BLAS_SEARCH_LIBS=/usr/lib/libblas.so
+export BLAS_SEARCH_LIBS=/usr/lib64/libblas.so
 rm -rf outputs CMakeFiles
-cmake CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran  -DHEPMC_ENABLE_ROOTIO=OFF -DHEPMC_BUILD_EXAMPLES=ON -DCMAKE_CXX_FLAGS=-m32  -DCMAKE_Fortran_FLAGS=" -m32 -fno-automatic -fno-backslash -ffixed-line-length-132"
+cmake CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran  -DHEPMC_ENABLE_ROOTIO=OFF -DHEPMC_BUILD_EXAMPLES=ON -DCMAKE_CXX_FLAGS=-m64  -DCMAKE_Fortran_FLAGS=" -m32 -fno-automatic -fno-backslash -ffixed-line-length-132"
 make clean
 make -j 8
 
