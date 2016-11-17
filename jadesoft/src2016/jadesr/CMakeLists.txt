@@ -1,3 +1,0 @@
-SET(JADESR_src
-)
-ADD_LIBRARY(${JADESRLIB} jadesr ${JADESR_src})
