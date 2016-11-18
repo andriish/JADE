@@ -8,7 +8,8 @@
 #include "Frame.h"
 
 Frame::Frame(const TGWindow *p,UInt_t w,UInt_t h)
-: TGMainFrame(p,w,h) {
+    : TGMainFrame(p,w,h)
+{
     // Creates widgets of the example
     fEcanvas = new TRootEmbeddedCanvas ("Ecanvas",this,1024,1024);
     AddFrame(fEcanvas, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY,
@@ -25,11 +26,12 @@ Frame::Frame(const TGWindow *p,UInt_t w,UInt_t h)
     SetWindowName("JADE DIsplay Frame");
     MapSubwindows();
     Resize(GetDefaultSize());
-    
+
     MapWindow();
-    
+
 }
-void Frame::DoDraw() {
+void Frame::DoDraw()
+{
     // Draws function graphics in randomly choosen interval
     TF1 *f1 = new TF1("f1","sin(x)/x",0,gRandom->Rndm()*10);
     f1->SetFillColor(19);
@@ -49,7 +51,8 @@ void Frame::CloseWindow()
     TGMainFrame::CloseWindow();
     gApplication->Terminate(0);
 }
-Frame::~Frame() {
+Frame::~Frame()
+{
     // Clean up used widgets: frames, buttons, layouthints
     //fMain->Cleanup();
     //delete fMain;

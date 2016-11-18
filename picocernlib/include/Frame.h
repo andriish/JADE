@@ -2,7 +2,8 @@
 class TGWindow;
 class TGMainFrame;
 class TRootEmbeddedCanvas;
-class Frame : public TGMainFrame {
+class Frame : public TGMainFrame
+{
 public:
     TGMainFrame         *fMain;
     TRootEmbeddedCanvas *fEcanvas;

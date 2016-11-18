@@ -18,14 +18,14 @@
 #include "G__ci.h"
 #include "FastAllocString.h"
 extern "C" {
-extern void G__cpp_setup_tagtableFrame_Dict();
-extern void G__cpp_setup_inheritanceFrame_Dict();
-extern void G__cpp_setup_typetableFrame_Dict();
-extern void G__cpp_setup_memvarFrame_Dict();
-extern void G__cpp_setup_globalFrame_Dict();
-extern void G__cpp_setup_memfuncFrame_Dict();
-extern void G__cpp_setup_funcFrame_Dict();
-extern void G__set_cpp_environmentFrame_Dict();
+    extern void G__cpp_setup_tagtableFrame_Dict();
+    extern void G__cpp_setup_inheritanceFrame_Dict();
+    extern void G__cpp_setup_typetableFrame_Dict();
+    extern void G__cpp_setup_memvarFrame_Dict();
+    extern void G__cpp_setup_globalFrame_Dict();
+    extern void G__cpp_setup_memfuncFrame_Dict();
+    extern void G__cpp_setup_funcFrame_Dict();
+    extern void G__set_cpp_environmentFrame_Dict();
 }
 
 
