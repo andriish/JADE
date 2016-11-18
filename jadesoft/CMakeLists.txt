@@ -12,14 +12,46 @@ SET(VERSION 2.99)
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
-set(CERNLIB_FIND_REQUIRED ON)
 
 
-set(CERN_LIBRARIES ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a -lc  -L${CMAKE_SOURCE_DIR}/../ROOTLIBS -L/usr/lib64/root
- -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic -L/usr/lib64/root -lGui -lstdc++)
+########################################################################
+#set(JEXTERN_LIBRARIES  ${CERN_STATIC_LIBRARIES})
+#set(JEXTERN_LIBRARIES  ${CERN_DYNAMIC_LIBRARIES})
+
+set (ROOT_FIND_COMPONENTS Core RIO Tree Graf)
+  find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
+  if (ROOT_CONFIG)
+     message(STATUS "ROOTConfig.cmake found and will be used: ${ROOT_CONFIG}")
+     include(${ROOT_CONFIG})
+     message(STATUS "ROOT use file: ${ROOT_USE_FILE}")
+     include(${ROOT_USE_FILE})
+     if(ROOT_LIBRARIES AND ROOT_INCLUDE_DIRS)
+       set(ROOT_FOUND TRUE)
+     endif()
+  else()
+     message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
+     find_package(ROOT QUIET REQUIRED COMPONENTS Core Cint RIO Tree  Graf)
+  endif()
+
+  message(STATUS "ROOT includes: ${ROOT_INCLUDE_DIRS}")
+  message(STATUS "ROOT libraries: ${ROOT_LIBRARIES}")
+  message(STATUS "ROOT_FOUND: ${ROOT_FOUND}")
+
+  if(ROOT_FOUND)
+    include_directories(${ROOT_INCLUDE_DIRS})
+#    add_definitions(-DHEPMC_ROOTIO)
+  else()
+    message(STATUS "PICOCERNLIB warning: ROOT needed for ROOTIO but not found")
+    message(STATUS "PICOCERNLIB: Skipping HepMC ROOT IO libraries")
+#    set(HEPMC_ENABLE_ROOTIO OFF)
+  endif()
+set(JEXTERN_LIBRARIES  ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a ${ROOT_LIBRARIES})
+
+set(JEXTERN_GRAPH_LIBRARIES X11)
+########################################################################
+
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
-
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
    set(CMAKE_Fortran_FLAGS            " -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
 endif()
@@ -32,22 +64,19 @@ endif()
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
 #PPC64 only
    set(CMAKE_Fortran_FLAGS           " -qfixed=256 -q32  -melf32ppc -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
-   find_library(GFORTRAN_LIBRARY NAMES libgfortran.so.3  gfortran HINTS /usr/lib /usr/lib64 )
-   list(APPEND CERN_LIBRARIES  ${GFORTRAN_LIBRARY})
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "sun.*")
 #NOT WELL TESTED
 #Local variables are static by default. Alternate is STATIC statement. 
-   set(CMAKE_Fortran_FLAGS           "  -ftrap=%none -f77 -e -m32  -g  ")	
-   list(APPEND CERN_LIBRARIES  /usr/lib/libgfortran.so.3)
-   list(APPEND CERN_LIBRARIES  /lib/libgcc_s.so.1)
+   set(CMAKE_Fortran_FLAGS           "  -ftrap=%none -f77 -e -m32  -g  ")
 endif()
 
 
 message(STATUS "Fortran compiler        : ${Fortran_COMPILER_NAME}")
 message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
-message(STATUS "CERN libraries          : ${CERN_LIBRARIES}")
+message(STATUS "JEXTERN libraries       : ${JEXTERN_LIBRARIES}")
+message(STATUS "JEXTERN_GRAPH libraries : ${JEXTERN_GRAPH_LIBRARIES}")
 
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
@@ -59,27 +88,27 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
 # Define the executable name
 #SET(FOOEXE foo)
-SET(MCJADEEXE bin/mcjade)
-SET(SUPERVEXE bin/superv)
-SET(JADEZEXE bin/jadez)
+SET(MCJADEEXE    bin/mcjade)
+SET(SUPERVEXE    bin/superv)
+SET(JADEZEXE     bin/jadez)
 SET(JADEZROOTEXE bin/jadezroot)
-SET(ZE4VEXE bin/ze4v)
+SET(ZE4VEXE      bin/ze4v)
 
 # Define the library name
 SET(BOSLIB boslib)
 SET(GRAFIX          grafix)
-SET(INTERFACE         interface)
-SET(JADEGS         jadegs)
+SET(INTERFACE       interface)
+SET(JADEGS          jadegs)
 SET(JADEMUS         jademus)
 #SET(JADESR         jadesr)
-SET(JMC              jmc)
-SET(PATRECSR         patrecsr)
-SET(SOURCE       source)
-SET(TAGG         tagg)
-SET(TOFLIB         toflib)
-SET(VERTEX         vertex)
-SET(WERTEX         wertex)
-SET(ZLIB         zlib)
+SET(JMC             jmc)
+SET(PATRECSR        patrecsr)
+SET(SOURCE          source)
+SET(TAGG            tagg)
+SET(TOFLIB          toflib)
+SET(VERTEX          vertex)
+SET(WERTEX          wertex)
+SET(ZLIB            zlib)
 
 
 
@@ -664,7 +693,7 @@ ADD_EXECUTABLE(${JADEZEXE} ${JADEZ_src})
 
 #-lpatrecsr -ltoflib -ltagg -lboslib -ljadegs -linterface -ljademus -lsource -lwertex -lpatrecsr
 TARGET_LINK_LIBRARIES(${JADEZEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
- ${CERN_LIBRARIES} X11 -Wl,--end-group)
+ ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} -Wl,--end-group)
 
 INSTALL(TARGETS ${JADEZEXE} RUNTIME DESTINATION bin)
 
@@ -675,7 +704,7 @@ INSTALL(TARGETS ${JADEZEXE} RUNTIME DESTINATION bin)
 SET(JADEZROOT_src ${SRCJADEZ}/gphmain2.F  ${SRCJADEZ}/xuser.F  ${SRCJADEZ}/gphmain.cxx)
 ADD_EXECUTABLE(${JADEZROOTEXE} ${JADEZROOT_src})
 TARGET_LINK_LIBRARIES(${JADEZROOTEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
- ${CERN_LIBRARIES} X11 -Wl,--end-group)
+ ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} -Wl,--end-group)
 target_include_directories(${JADEZROOTEXE} PUBLIC /usr/include/root)
 INSTALL(TARGETS ${JADEZROOTEXE} RUNTIME DESTINATION bin)
 
@@ -688,7 +717,7 @@ SET(MCJADE_src ${SRCMCJADE}/mcjade.f ${SRCMCJADE}/mcmain.f  ${SRCMCJADE}/mcrand.
 
 ADD_EXECUTABLE(${MCJADEEXE} ${MCJADE_src})
 TARGET_LINK_LIBRARIES(${MCJADEEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
-${CERN_LIBRARIES} X11 -Wl,--end-group)
+${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} -Wl,--end-group)
 INSTALL(TARGETS ${MCJADEEXE} RUNTIME DESTINATION bin)
 
 
@@ -703,7 +732,7 @@ ADD_EXECUTABLE(${SUPERVEXE} ${SUPERV_src})
 
 
 TARGET_LINK_LIBRARIES(${SUPERVEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
- ${CERN_LIBRARIES}  X11 -Wl,--end-group)
+ ${JEXTERN_LIBRARIES}  ${JEXTERN_GRAPH_LIBRARIES} -Wl,--end-group)
 
 
 
@@ -719,7 +748,7 @@ ADD_EXECUTABLE(${ZE4VEXE} ${ZE4V_src})
 
 
 TARGET_LINK_LIBRARIES(${ZE4VEXE} -Wl,--start-group ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
- ${CERN_LIBRARIES} -Wl,--end-group)
+ ${JEXTERN_LIBRARIES} -Wl,--end-group)
 
 
 

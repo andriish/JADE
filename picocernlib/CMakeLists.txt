@@ -14,8 +14,7 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g   -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN  ")
-
+set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -O0 -g   -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN  ")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g  -std=c++11 -I/usr/include/root   ")
 
 
@@ -36,24 +35,51 @@ if (Fortran_COMPILER_NAME MATCHES "xlf.*")
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "sun.*")
-#NOT WELL TESTED
 #Local variables are static by default. Alternate is STATIC statement. 
    set(CMAKE_Fortran_FLAGS           "  -ftrap=%none -f77 -e -m32  -g  ")	
 endif()
 
-#message(STATUS "Fortran compiler : ${Fortran_COMPILER_NAME}")
-#elseif()
 
-#endif()
 message(STATUS "Fortran compiler        : ${Fortran_COMPILER_NAME}")
 message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
 message(STATUS "CERN libraries          : ${CERN_LIBRARIES}")
 
 
+set (ROOT_FIND_COMPONENTS Core RIO Tree Graf)
+  find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
+  if (ROOT_CONFIG)
+     message(STATUS "ROOTConfig.cmake found and will be used: ${ROOT_CONFIG}")
+     include(${ROOT_CONFIG})
+     message(STATUS "ROOT use file: ${ROOT_USE_FILE}")
+     include(${ROOT_USE_FILE})
+     if(ROOT_LIBRARIES AND ROOT_INCLUDE_DIRS)
+       set(ROOT_FOUND TRUE)
+     endif()
+  else()
+     message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
+     find_package(ROOT QUIET REQUIRED COMPONENTS Core Cint RIO Tree  Graf)
+  endif()
+
+  message(STATUS "ROOT includes: ${ROOT_INCLUDE_DIRS}")
+  message(STATUS "ROOT libraries: ${ROOT_LIBRARIES}")
+  message(STATUS "ROOT_FOUND: ${ROOT_FOUND}")
+
+  if(ROOT_FOUND)
+    include_directories(${ROOT_INCLUDE_DIRS})
+#    add_definitions(-DHEPMC_ROOTIO)
+  else()
+    message(STATUS "PICOCERNLIB warning: ROOT needed for ROOTIO but not found")
+    message(STATUS "PICOCERNLIB: Skipping HepMC ROOT IO libraries")
+#    set(HEPMC_ENABLE_ROOTIO OFF)
+  endif()
+
+
+
+
 SET(PICOCERNLIB picocernlib)
 # Define some directories
 SET(TOP ${CMAKE_SOURCE_DIR}/)
-SET(SRC ${CMAKE_SOURCE_DIR}/src2016)
+SET(SRC ${CMAKE_SOURCE_DIR}/src)
 SET(LIB ${CMAKE_SOURCE_DIR}/lib)
 SET(BIN ${CMAKE_SOURCE_DIR}/bin)
 

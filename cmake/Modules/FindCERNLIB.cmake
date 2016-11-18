@@ -4,6 +4,7 @@
  #              This software is distributed under the terms of the             # 
  #         GNU Lesser General Public Licence version 3 (LGPL) version 3,        #  
  #                  copied verbatim in the file "LICENSE"                       #
+ #     Modified by Andrii Verbytskyi, MPI fuer Physik, 2016
  ################################################################################
 # - Try to find CERNLIB
 # Once done this will define
@@ -22,15 +23,16 @@ endif (CERNLIB_INCLUDE_DIR AND CERNLIB_LIBRARY_DIR)
 
 MESSAGE(STATUS "Looking for CERNLIB...")
 
-FIND_PATH(CERNLIB_INCLUDE_DIR NAMES CERNLIB PATHS
-  ${SIMPATH}/cern/include
-  $ENV{CERN_ROOT}/include
-  NO_DEFAULT_PATH
+FIND_PATH(CERNLIB_INCLUDE_DIR NAMES CERNLIB PATHS  
+  $ENV{CERN_ROOT}/include  
+  /usr/include/cernlib/2006
+  NO_DEFAULT_PATH 
 )
 
-FIND_PATH(CERNLIB_LIBRARY_DIR NAMES libgeant.a libmathlib.a PATHS
-  ${SIMPATH}/cern/lib
+FIND_PATH(CERNLIB_LIBRARY_DIR NAMES  libpacklib.a   libkernlib.a libmathlib.a     libpacklib.so   libkernlib.so libmathlib.so PATHS  
   $ENV{CERN_ROOT}/lib
+  /usr/lib/cernlib/2006/lib
+  /usr/lib64/cernlib/2006/lib
   NO_DEFAULT_PATH
 )
 
@@ -38,14 +40,41 @@ if (CERNLIB_LIBRARY_DIR)
    set(CERNLIB_FOUND TRUE)
 endif (CERNLIB_LIBRARY_DIR)
 
+set(cernlibs kernlib packlib mathlib graflib grafX11)  
 if (CERNLIB_FOUND)
   if (NOT CERNLIB_FIND_QUIETLY)
     MESSAGE(STATUS "Looking for CERNLIB... - found ${CERNLIB_LIBRARY_DIR}")
-    SET(LD_LIBRARY_PATH ${LD_LIBRARY_PATH} ${CERNLIB_LIBRARY_DIR})
-  endif (NOT CERNLIB_FIND_QUIETLY)
+endif (NOT CERNLIB_FIND_QUIETLY)
+  
+
+set(CERN_DYNAMIC_LIBRARIES)
+set(CERN_STATIC_LIBRARIES)
+foreach(_cpt ${cernlibs})
+
+  find_library(CERN_${_cpt}_DYNAMIC_LIBRARY lib${_cpt}.a ${_cpt} HINTS ${CERNLIB_LIBRARY_DIR})
+  if(CERN_${_cpt}_LIBRARY)
+    mark_as_advanced(CERN_${_cpt}_DYNAMIC_LIBRARY)
+    list(APPEND CERN_STATIC_LIBRARIES ${CERN_${_cpt}_DYNAMIC_LIBRARY})
+  endif()
+
+  find_library(CERN_${_cpt}_STATIC_LIBRARY lib${_cpt}.a ${_cpt} HINTS ${CERNLIB_LIBRARY_DIR})
+  if(CERN_${_cpt}_LIBRARY)
+    mark_as_advanced(CERN_${_cpt}_STATIC_LIBRARY)
+    list(APPEND CERN_STATIC_LIBRARIES ${CERN_${_cpt}_STATIC_LIBRARY})
+  endif()
+ 
+endforeach()
+
+list(REMOVE_DUPLICATES CERN_DYNAMIC_LIBRARIES)
+list(REMOVE_DUPLICATES CERN_STATIC_LIBRARIES)
+  
 else (CERNLIB_FOUND)
   if (CERNLIB_FIND_REQUIRED)
-    message(FATAL_ERROR "Looking for CERNLIB... - Not found")
+  message(FATAL_ERROR "Looking for CERNLIB... - Not found")
   endif (CERNLIB_FIND_REQUIRED)
 endif (CERNLIB_FOUND)
+
+
+SET(LD_LIBRARY_PATH ${LD_LIBRARY_PATH} ${CERNLIB_LIBRARY_DIR})
+
 

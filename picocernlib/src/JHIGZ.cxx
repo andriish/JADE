@@ -16,12 +16,35 @@
 #include <map>
 #include <string>
 #include <sstream>
+#include <TApplication.h>
+#include <TRootEmbeddedCanvas.h>
+
 
 #define JADEZROOT
+#define DEBUG 1
+#ifdef  DEBUG
+#define DDDD if(1)
+#else
+#define DDDD if(0)
+#endif
+#define BIGK 1.0
+#ifndef __PRETTY_FUNCTION__
+#define __PRETTY_FUNCTION__    __FUNCTION__
+#endif
+
+
 
 #ifndef JADEZROOT
 TApplication* jApplication;
+#else
+#include "Frame.h"
+Frame* jFrame;
+void showFrame()
+{
+    jFrame=new Frame(gClient->GetRoot(),200,200);
+}
 #endif
+
 TCanvas*   jCanvas;
 std::map<int,int>   jColors;
 TPad*   jPad;
@@ -31,38 +54,14 @@ int jTextAngle;
 int jTextColor;
 int jTextFont;
 int jLineColor;
-int jLineStyle;
-int jFillAreaColor;
-
-int jPolyMarkerColor;
-int jPolyLineColor;
+int   jLineStyle;
+int   jFillAreaColor;
+int   jPolyMarkerColor;
+int   jPolyLineColor;
 float jPolyMarkerSize;
 float jPolyLineWidth;
-
-
-
-
-#include <TApplication.h>
-#include <TRootEmbeddedCanvas.h>
-#include "Frame.h"
-Frame* jFrame;
-void showFrame()
-{
-    jFrame=new Frame(gClient->GetRoot(),200,200);
-}
-
-
 std::map<int,std::vector<double> >  gWN;
-
 int jNT;
-#define DEBUG 1
-#ifdef DEBUG
-#define DDDD if(1)
-#else
-#define DDDD if(0)
-#endif
-
-#define BIGK 1.0
 
 extern "C" {
     void iswn_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)

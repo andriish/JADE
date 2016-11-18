@@ -7,128 +7,76 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
 PROJECT(JTUPLE Fortran)
 
 # Set the FOO version
-SET(VERSION 1.2.3)
+SET(VERSION 2.0)
 
 # Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 
-# Uncomment if it is required that Fortran 90 is supported
-#IF(NOT CMAKE_Fortran_COMPILER_SUPPORTS_F90)
-#    MESSAGE(FATAL_ERROR "Fortran compiler does not support F90")
-#ENDIF(NOT CMAKE_Fortran_COMPILER_SUPPORTS_F90)
-
-# Set some options the user may choose
-# Uncomment the below if you want the user to choose a parallelization library
-#OPTION(USE_MPI "Use the MPI library for parallelization" OFF)
-#OPTION(USE_OPENMP "Use OpenMP for parallelization" OFF)
-
-# This INCLUDE statement executes code that sets the compile flags for DEBUG,
-# RELEASE, and TESTING.  You should  review this file and make sure the flags 
-# are to your liking.
-
-#INCLUDE(${CMAKE_MODULE_PATH}/SetCompileFlag.cmake)
-#set(CERNLIB_FIND_QUIETLY FALSE)
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CERNLIB_FIND_REQUIRED ON)
+########################################################################
+#set(JEXTERN_LIBRARIES  ${CERN_STATIC_LIBRARIES})
+#set(JEXTERN_LIBRARIES  ${CERN_DYNAMIC_LIBRARIES})
 
-
- ################################################################################
- #    Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH    #
- #                                                                              #
- #              This software is distributed under the terms of the             # 
- #         GNU Lesser General Public Licence version 3 (LGPL) version 3,        #  
- #                  copied verbatim in the file "LICENSE"                       #
- ################################################################################
-# - Try to find CERNLIB
-# Once done this will define
-#
-#  CERNLIB_FOUND - system has CERNLIB
-#### (not needed)  CERNLIB_INCLUDE_DIR - the CERNLIB include directory
-#  CERNLIB_LIBRARIES - The libraries needed to use CERNLIB
-#### (not needed)  CERNLIB_DEFINITIONS - Compiler switches required for using CERNLIB
-#
-
-if (CERNLIB_INCLUDE_DIR AND CERNLIB_LIBRARY_DIR)
-  SET (CERNLIB_INCLUDE_DIR CERNLIB_INCLUDE_DIR-NOTFOUND)
-  SET (CERNLIB_LIB_DIR CERNLIB_LIB_DIR-NOTFOUND)
-  SET (CERNLIB_PLISTS_LIB_DIR CERNLIB_PLISTS_LIB_DIR-NOTFOUND)
-endif (CERNLIB_INCLUDE_DIR AND CERNLIB_LIBRARY_DIR)
-
-MESSAGE(STATUS "Looking for CERNLIB...")
-
-FIND_PATH(CERNLIB_INCLUDE_DIR NAMES CERNLIB PATHS
-  ${SIMPATH}/cern/include
-  $ENV{CERN_ROOT}/include
-#CentOS
-  /usr/include/cernlib/2006
-  NO_DEFAULT_PATH
-)
-
-FIND_PATH(CERNLIB_LIBRARY_DIR NAMES libgeant.a libmathlib.a PATHS
-  ${SIMPATH}/cern/lib
-  $ENV{CERN_ROOT}/lib
-#CentOS
-  /usr/lib/cernlib/2006/lib
-  NO_DEFAULT_PATH
-)
-
-if (CERNLIB_LIBRARY_DIR)
-   set(CERNLIB_FOUND TRUE)
-endif (CERNLIB_LIBRARY_DIR)
-set(cernlibs kernlib packlib mathlib graflib grafX11)  
-if (CERNLIB_FOUND)
-  if (NOT CERNLIB_FIND_QUIETLY)
-    MESSAGE(STATUS "Looking for CERNLIB... - found ${CERNLIB_LIBRARY_DIR}")
-  endif (NOT CERNLIB_FIND_QUIETLY)
-  
-  SET(LD_LIBRARY_PATH ${LD_LIBRARY_PATH} ${CERNLIB_LIBRARY_DIR})
-set(CERN_LIBRARIES)
-foreach(_cpt ${cernlibs})
-#one can link with static
-#  find_library(CERN_${_cpt}_LIBRARY lib${_cpt}.a ${_cpt} HINTS ${CERNLIB_LIBRARY_DIR})
-#or dynamic cernlib
-  find_library(CERN_${_cpt}_LIBRARY lib${_cpt}.so ${_cpt} HINTS ${CERNLIB_LIBRARY_DIR})
-  if(CERN_${_cpt}_LIBRARY)
-    mark_as_advanced(CERN_${_cpt}_LIBRARY)
-    list(APPEND CERN_LIBRARIES ${CERN_${_cpt}_LIBRARY})
+set (ROOT_FIND_COMPONENTS Core RIO Tree Graf)
+  find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
+  if (ROOT_CONFIG)
+     message(STATUS "ROOTConfig.cmake found and will be used: ${ROOT_CONFIG}")
+     include(${ROOT_CONFIG})
+     message(STATUS "ROOT use file: ${ROOT_USE_FILE}")
+     include(${ROOT_USE_FILE})
+     if(ROOT_LIBRARIES AND ROOT_INCLUDE_DIRS)
+       set(ROOT_FOUND TRUE)
+     endif()
+  else()
+     message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
+     find_package(ROOT QUIET REQUIRED COMPONENTS Core Cint RIO Tree  Graf)
   endif()
-endforeach()
-list(REMOVE_DUPLICATES CERN_LIBRARIES)
-  
-else (CERNLIB_FOUND)
-  if (CERNLIB_FIND_REQUIRED)
-    message(FATAL_ERROR "Looking for CERNLIB... - Not found")
-  endif (CERNLIB_FIND_REQUIRED)
-endif (CERNLIB_FOUND)
-####################################################################################################
 
+  message(STATUS "ROOT includes: ${ROOT_INCLUDE_DIRS}")
+  message(STATUS "ROOT libraries: ${ROOT_LIBRARIES}")
+  message(STATUS "ROOT_FOUND: ${ROOT_FOUND}")
 
-set(CERN_LIBRARIES ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a -lc  -L${CMAKE_SOURCE_DIR}/../ROOTLIBS -L/usr/lib64/root
--lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lstdc++)
+  if(ROOT_FOUND)
+    include_directories(${ROOT_INCLUDE_DIRS})
+#    add_definitions(-DHEPMC_ROOTIO)
+  else()
+    message(STATUS "PICOCERNLIB warning: ROOT needed for ROOTIO but not found")
+    message(STATUS "PICOCERNLIB: Skipping HepMC ROOT IO libraries")
+#    set(HEPMC_ENABLE_ROOTIO OFF)
+  endif()
+set(JEXTERN_LIBRARIES  ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a ${ROOT_LIBRARIES})
 
+#set(JEXTERN_GRAPH_LIBRARIES X11)
+########################################################################
 
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
-#if ("${CMAKE_Fortran_FLAGS}" STREQUAL "" )
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
-   set(CMAKE_Fortran_FLAGS            " -std=legacy  -g -ffixed-line-length-none -finit-local-zero -fbacktrace -fcheck=all  -fautomatic -O0   -fno-align-commons ")
+   set(CMAKE_Fortran_FLAGS            " -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
+#NOT USED
    set(CMAKE_Fortran_FLAGS            "-fno-automatic -fno-backslash -extend-source 132")	
 endif()
-if (Fortran_COMPILER_NAME MATCHES "xlf.*")
-   set(CMAKE_Fortran_FLAGS           " -qfixed=256 -q32  -melf32ppc -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
-   find_library(GFORTRAN_LIBRARY NAMES libgfortran.so.3  gfortran HINTS /usr/lib )
-   list(APPEND CERN_LIBRARIES  ${GFORTRAN_LIBRARY})
-endif()
-#message(STATUS "Fortran compiler : ${Fortran_COMPILER_NAME}")
-#elseif()
 
-#endif()
+if (Fortran_COMPILER_NAME MATCHES "xlf.*")
+#PPC64 only
+   set(CMAKE_Fortran_FLAGS           " -qfixed=256 -q32  -melf32ppc -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
+endif()
+
+if (Fortran_COMPILER_NAME MATCHES "sun.*")
+#NOT WELL TESTED
+#Local variables are static by default. Alternate is STATIC statement. 
+   set(CMAKE_Fortran_FLAGS           "  -ftrap=%none -f77 -e -m32  -g  ")
+endif()
+
+
 message(STATUS "Fortran compiler        : ${Fortran_COMPILER_NAME}")
 message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
-message(STATUS "CERN libraries          : ${CERN_LIBRARIES}")
+message(STATUS "JEXTERN libraries       : ${JEXTERN_LIBRARIES}")
+#message(STATUS "JEXTERN_GRAPH libraries : ${JEXTERN_GRAPH_LIBRARIES}")
+
 
 
 #if (Fortran_COMPILER_NAME MATCHES "xlf.*")
@@ -202,16 +150,16 @@ ADD_LIBRARY(${ZREAD} ${ZREAD_src})
 
 SET(TAKLUMIEXE_src ${SRC}/taklumi.f)
 ADD_EXECUTABLE(${TAKLUMIEXE} ${TAKLUMIEXE_src})
-TARGET_LINK_LIBRARIES(${TAKLUMIEXE} -Wl,--start-group ${CERN_LIBRARIES} -Wl,--end-group)
+TARGET_LINK_LIBRARIES(${TAKLUMIEXE} -Wl,--start-group ${JEXTERN_LIBRARIES} -Wl,--end-group)
 
 
 SET(JZREADEXE_src ${SRC}/jzread.F)
 ADD_EXECUTABLE(${JZREADEXE} ${JZREADEXE_src})
-TARGET_LINK_LIBRARIES(${JZREADEXE} -Wl,--start-group ${CERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JTLIB} ${JADE_LIBRARIES} lapack -Wl,--end-group)
+TARGET_LINK_LIBRARIES(${JZREADEXE} -Wl,--start-group ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JTLIB} ${JADE_LIBRARIES} lapack -Wl,--end-group)
 
 SET(JTJOBEXE_src ${SRC}/jtjob.F  ${SRC}/showb.f)
 ADD_EXECUTABLE(${JTJOBEXE} ${JTJOBEXE_src})
-TARGET_LINK_LIBRARIES(${JTJOBEXE} -Wl,--start-group ${CERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JADE_LIBRARIES} lapack -Wl,--end-group)
+TARGET_LINK_LIBRARIES(${JTJOBEXE} -Wl,--start-group ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JADE_LIBRARIES} lapack -Wl,--end-group)
 
 
 
