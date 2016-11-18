@@ -77,7 +77,7 @@ CAV
       character*8 MYL
       REAL  ta
       integer le
-C      write(*,*)'we call hemsym', XPOS,YPOS,HBUF(1:KCNT)
+C
       AMYSTR='                '
       
       le=0
@@ -90,7 +90,7 @@ C      write(*,*)'we call hemsym', XPOS,YPOS,HBUF(1:KCNT)
       end if
  100  continue
  500  continue
-CAV      write(*,*)'-->',AMYSTR(1:le),'->', le
+CAV
       ta=tan(THETA)
       call  igset('TANG',THETA)
       call ITXN(XPOS,YPOS,AMYSTR(1:le),le)
@@ -114,7 +114,6 @@ C
       K=40
    12 IFLAG=0
         call UHTOC(HLETS(K),1,MY,1)
-        write(*,*)'we->',HLETS(K),'K=',K, MY
       IP=HPTRS(K)
 C
 C     **** GET COORDINATES ****

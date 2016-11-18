@@ -35,7 +35,6 @@ C
 C     DMINAW = 7.2
 C     IF( BCMD .GT. 4.0 ) DMINAW = BCMD
 C
-       write(*,*)'DTHCV1( FRAC1 , LARGE , SMALL )',FRAC1 , LARGE , SMALL
        DO  1  IMS = 1,5
          FMASS  = ARMAS(IMS)
 C        FMASS2 = FMASS**2
@@ -98,7 +97,6 @@ C
 C
         IF( IMS .EQ. 2 ) GO TO 6
         IF( IMS .EQ. 3 ) GO TO 5
-          write(*,*)'DEX at',XLABEL, YLABEL
           CALL MOVEA( XLABEL, YLABEL )
           CALL EOUTST( 1, PLABEL(IMS) )
           GO TO 1
