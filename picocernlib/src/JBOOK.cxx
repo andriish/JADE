@@ -145,7 +145,7 @@ extern "C" {
         while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
         std::string fo(form);
         while (fo.back()==' '||fo.back()=='\n') fo.pop_back();
-//printf("in->|%s|<-\n",fo.c_str());
+printf("in->|%s|<-\n",fo.c_str());
 
         std::map<std::string,size_t> sizes;
         sizes["b"]=sizeof(unsigned int);
