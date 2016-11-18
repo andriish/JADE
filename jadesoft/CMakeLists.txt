@@ -17,8 +17,6 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 find_package(CERNLIB)
 
 ########################################################################
-#set(JEXTERN_LIBRARIES  ${CERN_STATIC_LIBRARIES})
-#set(JEXTERN_LIBRARIES  ${CERN_DYNAMIC_LIBRARIES})
 
 set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
   find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
@@ -48,16 +46,16 @@ set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint 
 
 
 
-#set(JEXTERN_LIBRARIES  ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a ${ROOT_LIBRARIES} -lstdc++)
-#set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
-#set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
+set(JEXTERN_LIBRARIES  ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a ${ROOT_LIBRARIES} -lstdc++)
+set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
 
-
-set(JEXTERN_LIBRARIES   ${CERN_STATIC_LIBRARIES} )
+#############USE IT WITH CERNLIB->########################################
+#set(JEXTERN_LIBRARIES   ${CERN_STATIC_LIBRARIES} )
 #set(JEXTERN_LIBRARIES   ${CERN_DYNAMIC_LIBRARIES} ) 
-set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISCERNLIB")
-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISCERNLIB")
-
+#set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISCERNLIB")
+#set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISCERNLIB")
+#############<-USE IT WITH CERNLIB########################################
 
 
 set(JEXTERN_GRAPH_LIBRARIES X11)

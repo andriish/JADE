@@ -5,9 +5,21 @@
       write(*,*)U, FILEN(1:L)
       if (O.eQ. 0) then
       OPEN (U, FILE=FILEN(1:L), STATUS='REPLACE',form='unformatted')
-      else
+      end if
+      if (O.eQ. 1) then
       OPEN (U, FILE=FILEN(1:L), STATUS='REPLACE',form='formatted')
       end if
+
+      if (O.eQ. 2) then
+      OPEN (U, FILE=FILEN(1:L), CONVERT='LITTLE_ENDIAN', 
+     +STATUS='REPLACE',form='unformatted')
+      end if
+
+      if (O.eQ. 3) then
+      OPEN (U, FILE=FILEN(1:L), CONVERT='BIG_ENDIAN', 
+     +STATUS='REPLACE',form='unformatted')
+      end if
+
       RETURN
       END
 
@@ -107,7 +119,7 @@ C  (see JADE Computer Note 69)
          ENDIF
          ENDIF
 
-      write(*,*) LUN,' np=', NP, ' Nev= ', NEV, BEAM
+C      write(*,*) LUN,' np=', NP, ' Nev= ', NEV, BEAM
       
       
       
@@ -167,7 +179,7 @@ Code:
          ENDIF
 
 
-      write(*,*) LUN,' np=', NP, ' Nev= ', NEV, BEAM
+C      write(*,*) LUN,' np=', NP, ' Nev= ', NEV, BEAM
 C
       do I1=1,500
 C      CP(I1)=' kalet '

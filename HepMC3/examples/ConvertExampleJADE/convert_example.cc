@@ -287,7 +287,7 @@ int main(int argc, char** argv)
                     output_file=new WriterJADE(convert_list[i].second,options.at("Mode").fint);
                     else
                     {
-                    printf("This format requires one option  Mode=0 (binary) or Mode=1 (ASCII)!\n");
+                    printf("This format requires one option  Mode=0 (binary, native), Mode=1 (ASCII), Mode=2 (binary, LITTLE_ENDIAN), Mode=3 (binary, BIG_ENDIAN),!\n");
                     exit (1);
                     }
                     break;

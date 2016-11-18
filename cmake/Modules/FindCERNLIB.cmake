@@ -31,8 +31,8 @@ FIND_PATH(CERNLIB_INCLUDE_DIR NAMES CERNLIB PATHS
 
 FIND_PATH(CERNLIB_LIBRARY_DIR NAMES  libpacklib.a   libkernlib.a libmathlib.a     libpacklib.so   libkernlib.so libmathlib.so PATHS  
   $ENV{CERN_ROOT}/lib
-  /usr/lib/cernlib/2006/lib
   /usr/lib64/cernlib/2006/lib
+  /usr/lib/cernlib/2006/lib
   NO_DEFAULT_PATH
 )
 
@@ -51,14 +51,14 @@ set(CERN_DYNAMIC_LIBRARIES)
 set(CERN_STATIC_LIBRARIES)
 foreach(_cpt ${cernlibs})
 
-  find_library(CERN_${_cpt}_DYNAMIC_LIBRARY lib${_cpt}.a ${_cpt} HINTS ${CERNLIB_LIBRARY_DIR})
-  if(CERN_${_cpt}_LIBRARY)
+  find_library(CERN_${_cpt}_DYNAMIC_LIBRARY lib${_cpt}.so ${_cpt} HINTS ${CERNLIB_LIBRARY_DIR})
+  if(CERN_${_cpt}_DYNAMIC_LIBRARY)
     mark_as_advanced(CERN_${_cpt}_DYNAMIC_LIBRARY)
-    list(APPEND CERN_STATIC_LIBRARIES ${CERN_${_cpt}_DYNAMIC_LIBRARY})
+    list(APPEND CERN_DYNAMIC_LIBRARIES ${CERN_${_cpt}_DYNAMIC_LIBRARY})
   endif()
 
   find_library(CERN_${_cpt}_STATIC_LIBRARY lib${_cpt}.a ${_cpt} HINTS ${CERNLIB_LIBRARY_DIR})
-  if(CERN_${_cpt}_LIBRARY)
+  if(CERN_${_cpt}_STATIC_LIBRARY)
     mark_as_advanced(CERN_${_cpt}_STATIC_LIBRARY)
     list(APPEND CERN_STATIC_LIBRARIES ${CERN_${_cpt}_STATIC_LIBRARY})
   endif()

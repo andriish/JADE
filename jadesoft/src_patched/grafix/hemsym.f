@@ -93,12 +93,12 @@ C
 CAV
       ta=tan(THETA)
       call  igset('TANG',THETA)
-#if defined(JEXTERNISCERNLIB)      
-      call ITX(XPOS,YPOS,AMYSTR)
-#endif
-#if defined(JEXTERNISICO)      
+C#if defined(JEXTERNISCERNLIB)      
+C      call ITX(XPOS,YPOS,AMYSTR)
+C#endif
+C#if defined(JEXTERNISPICO)      
       call ITXN(XPOS,YPOS,AMYSTR(1:le),le)
-#endif
+C#endif
       
       return
 CAV      

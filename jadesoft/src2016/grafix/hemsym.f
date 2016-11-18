@@ -96,8 +96,8 @@ CAV
 #if defined(JEXTERNISCERNLIB)      
       call ITX(XPOS,YPOS,AMYSTR)
 #endif
-#if defined(JEXTERNISICO)      
-      call ITXN(XPOS,YPOS,AMYSTR(1:le),le)
+#if defined(JEXTERNISPICO)      
+C      call ITXN(XPOS,YPOS,AMYSTR(1:le),le)
 #endif
       
       return

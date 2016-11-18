@@ -746,7 +746,13 @@ C - Goto home position if needed
 C - Print out character using 'screen window' coordinates
       CALL ISELNT(NTS)
       CHARm(1)=CHARA
+
+C#if defined(JEXTERNISCERNLIB)      
+C      CALL ITX(XPOS0+XCHAR/2.,YPOS0+YCHAR/2.,CHARA)
+C#endif
+C#if defined(JEXTERNISPICO)      
       CALL ITXN(XPOS0+XCHAR/2.,YPOS0+YCHAR/2.,CHARM,1)
+C#endif
 
 C - Update beam position
       XPOS0=XPOS0+XCHAR
@@ -1140,7 +1146,15 @@ C      to ensure equidistant character output !!!
          H=.45*HEIGHT*(1+SN)
          IF( NSTR.GT.0 ) THEN
 C            CALL ITX(XS+W,YS+H,CSTR(I)) ! normal text
-            CALL ITXN(XS+W,YS+H,CSTR(I),1) ! normal text
+C            CALL ITXN(XS+W,YS+H,CSTR(I),1) ! normal text
+
+C#if defined(JEXTERNISCERNLIB)      
+C      CALL ITX(XS+W,YS+H,CSTR(I)) ! normal text
+C#endif
+C#if defined(JEXTERNISPICO)      
+       CALL ITXN(XS+W,YS+H,CSTR(I),1) ! normal text
+C#endif
+      
          ELSE
             CALL ISTXFP(0,2)
             CALL ITX(XS+W,YS+H

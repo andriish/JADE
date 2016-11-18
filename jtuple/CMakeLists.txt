@@ -13,76 +13,54 @@ SET(VERSION 2.0)
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
-########################################################################
-#set(JEXTERN_LIBRARIES  ${CERN_STATIC_LIBRARIES})
-#set(JEXTERN_LIBRARIES  ${CERN_DYNAMIC_LIBRARIES})
 
-set (ROOT_FIND_COMPONENTS Core RIO Tree Graf)
-  find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
-  if (ROOT_CONFIG)
-     message(STATUS "ROOTConfig.cmake found and will be used: ${ROOT_CONFIG}")
-     include(${ROOT_CONFIG})
-     message(STATUS "ROOT use file: ${ROOT_USE_FILE}")
-     include(${ROOT_USE_FILE})
-     if(ROOT_LIBRARIES AND ROOT_INCLUDE_DIRS)
-       set(ROOT_FOUND TRUE)
-     endif()
-  else()
-     message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
-     find_package(ROOT QUIET REQUIRED COMPONENTS Core Cint RIO Tree  Graf)
-  endif()
+set(JEXTERN_LIBRARIES  ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a ${ROOT_LIBRARIES} -lstdc++)
+set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
 
-  message(STATUS "ROOT includes: ${ROOT_INCLUDE_DIRS}")
-  message(STATUS "ROOT libraries: ${ROOT_LIBRARIES}")
-  message(STATUS "ROOT_FOUND: ${ROOT_FOUND}")
+#############USE IT WITH CERNLIB->########################################
+#set(JEXTERN_LIBRARIES   ${CERN_STATIC_LIBRARIES} )
+#set(JEXTERN_LIBRARIES   ${CERN_DYNAMIC_LIBRARIES} ) 
+#set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISCERNLIB")
+#set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISCERNLIB")
+#############<-USE IT WITH CERNLIB########################################
 
-  if(ROOT_FOUND)
-    include_directories(${ROOT_INCLUDE_DIRS})
-#    add_definitions(-DHEPMC_ROOTIO)
-  else()
-    message(STATUS "PICOCERNLIB warning: ROOT needed for ROOTIO but not found")
-    message(STATUS "PICOCERNLIB: Skipping HepMC ROOT IO libraries")
-#    set(HEPMC_ENABLE_ROOTIO OFF)
-  endif()
-set(JEXTERN_LIBRARIES  ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a ${ROOT_LIBRARIES})
 
-#set(JEXTERN_GRAPH_LIBRARIES X11)
+set(JEXTERN_GRAPH_LIBRARIES X11)
 ########################################################################
 
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
-   set(CMAKE_Fortran_FLAGS            " -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
 #NOT USED
-   set(CMAKE_Fortran_FLAGS            "-fno-automatic -fno-backslash -extend-source 132")	
+   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -fno-automatic -fno-backslash -extend-source 132")	
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
 #PPC64 only
-   set(CMAKE_Fortran_FLAGS           " -qfixed=256 -q32  -melf32ppc -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
+   set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}  -qfixed=256  -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
+#-q32  -melf32ppc
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "sun.*")
 #NOT WELL TESTED
 #Local variables are static by default. Alternate is STATIC statement. 
-   set(CMAKE_Fortran_FLAGS           "  -ftrap=%none -f77 -e -m32  -g  ")
+   set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}   -ftrap=%none -f77 -e  -g  ")
+#-m32 
 endif()
 
 
 message(STATUS "Fortran compiler        : ${Fortran_COMPILER_NAME}")
 message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
+message(STATUS "C++ compiler            : ${CXX_COMPILER_NAME}")
+message(STATUS "C++ compiler flags      : ${CMAKE_CXX_FLAGS}")
 message(STATUS "JEXTERN libraries       : ${JEXTERN_LIBRARIES}")
-#message(STATUS "JEXTERN_GRAPH libraries : ${JEXTERN_GRAPH_LIBRARIES}")
+message(STATUS "JEXTERN_GRAPH libraries : ${JEXTERN_GRAPH_LIBRARIES}")
 
-
-
-#if (Fortran_COMPILER_NAME MATCHES "xlf.*")
-#   file(GLOB myfortag ${SRCTAGG}/*.for)
-#      set_property(SOURCE ${myfortag} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
-#       endif()
 
 
 ############################################################
@@ -92,7 +70,6 @@ message(STATUS "JEXTERN libraries       : ${JEXTERN_LIBRARIES}")
 
 
 # Define the executable name
-#SET(FOOEXE foo)
 SET(JTJOBEXE jtjob)
 SET(JZREADEXE jzread)
 SET(TAKLUMIEXE taklumi)
@@ -106,6 +83,7 @@ SET(ZREAD         zread)
 FIND_PATH(JADELIB_LIBRARY_DIR NAMES libinterface.a libjadegs.a libboslib.a libzlib.a PATHS
   /usr/lib/jadesoft
   ../jadesoft/lib
+  ../jadesoft/
   NO_DEFAULT_PATH
 ) 
 set(jadelibs interface jadegs boslib zlib)  
