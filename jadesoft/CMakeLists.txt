@@ -1,5 +1,4 @@
-# CMake project file for FOO from 
-
+#https://github.com/SethMMorton/cmake_fortran_template
 ##################################################
 # Define the project and the depencies that it has
 ##################################################
@@ -7,10 +6,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
 PROJECT(JADESOFT Fortran CXX)
 
-SET(VERSION 0.0.1)
+SET(VERSION 2.99)
 
 # Add our local modlues to the module path
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CERNLIB_FIND_REQUIRED ON)
@@ -156,9 +155,9 @@ SET(INTERFACE         interface)
 SET(JADEGS         jadegs)
 SET(JADEMUS         jademus)
 #SET(JADESR         jadesr)
-SET(JMC         jmc)
+SET(JMC              jmc)
 SET(PATRECSR         patrecsr)
-SET(SOURCE         source)
+SET(SOURCE       source)
 SET(TAGG         tagg)
 SET(TOFLIB         toflib)
 SET(VERTEX         vertex)
@@ -204,90 +203,24 @@ if (Fortran_COMPILER_NAME MATCHES "xlf.*")
    set_property(SOURCE ${myfortag} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
 endif()
 
-# The source for the BAR library and have it placed in the lib folder
-#ADD_SUBDIRECTORY(${SRCBOSLIB} )
-#ADD_SUBDIRECTORY(${SRCGRAFIX}      )
-#ADD_SUBDIRECTORY(${SRCINTERFACE}         )
-#ADD_SUBDIRECTORY(${SRCJADEGS}          )
-#ADD_SUBDIRECTORY(${SRCJADEMUS}         )
-#ADD_SUBDIRECTORY(${SRCJADESR}         )
-#ADD_SUBDIRECTORY(${SRCJMC}          )
-#ADD_SUBDIRECTORY(${SRCPATRECSR}          )
-#ADD_SUBDIRECTORY(${SRCSOURCE}          )
-#ADD_SUBDIRECTORY(${SRCTAGG}         )
-#ADD_SUBDIRECTORY(${SRCTOFLIB}         )
-#ADD_SUBDIRECTORY(${SRCVERTEX}         )
-#ADD_SUBDIRECTORY(${SRCWERTEX}         )
-#ADD_SUBDIRECTORY(${SRCZLIB}         )
-# The source for the FOO binary and have it placed in the bin folder
 
 SET(BOSLIB_src
-${SRCBOSLIB}/asrd.f
-${SRCBOSLIB}/bchl.F
-${SRCBOSLIB}/bchm.F
-${SRCBOSLIB}/bcre.F
-${SRCBOSLIB}/bdar.F
-${SRCBOSLIB}/bdlg.F
-${SRCBOSLIB}/bdlm.F
-${SRCBOSLIB}/bdls.F
-${SRCBOSLIB}/bdmp.F
-${SRCBOSLIB}/bfmt.for
-${SRCBOSLIB}/bfrd.for
-${SRCBOSLIB}/bgac.for
-${SRCBOSLIB}/bgar.F
-${SRCBOSLIB}/binlda.F
-${SRCBOSLIB}/binp.F
-${SRCBOSLIB}/bint.F
-${SRCBOSLIB}/bloada.F
-${SRCBOSLIB}/blocda.F
-${SRCBOSLIB}/bloc.F
-${SRCBOSLIB}/bmlt.F
-${SRCBOSLIB}/bnxt.F
-${SRCBOSLIB}/boutp.F
-${SRCBOSLIB}/bpasda.F
-${SRCBOSLIB}/bpos.F
-${SRCBOSLIB}/brds.F
-${SRCBOSLIB}/breadc.for
-${SRCBOSLIB}/bread.for
-${SRCBOSLIB}/brnm.F
-${SRCBOSLIB}/bsaw.F
-${SRCBOSLIB}/bseq.F
-${SRCBOSLIB}/bsls.F
-${SRCBOSLIB}/bsta.F
-${SRCBOSLIB}/bwrite.for
-${SRCBOSLIB}/bwrs.F
-${SRCBOSLIB}/cchl.F
-${SRCBOSLIB}/ccor.for
-${SRCBOSLIB}/ccre.F
-${SRCBOSLIB}/cloc.F
-${SRCBOSLIB}/cnxt.F
-${SRCBOSLIB}/cread.for
-${SRCBOSLIB}/dada.F
-${SRCBOSLIB}/defst.for
-${SRCBOSLIB}/histpr.f
-${SRCBOSLIB}/iaf.for
-${SRCBOSLIB}/ibln.F
-${SRCBOSLIB}/indar.F
-${SRCBOSLIB}/itoda.for
-${SRCBOSLIB}/msgpr.for
-${SRCBOSLIB}/pall.f
-${SRCBOSLIB}/pcond.for
-${SRCBOSLIB}/pcorr.for
-${SRCBOSLIB}/phist.for
-${SRCBOSLIB}/poda.F
-${SRCBOSLIB}/pstor.for
-${SRCBOSLIB}/ptabl.for
-${SRCBOSLIB}/ptext1.f
-${SRCBOSLIB}/pvert.for
-${SRCBOSLIB}/rdda.F
-${SRCBOSLIB}/rdvar.for
-${SRCBOSLIB}/readhl.for
-${SRCBOSLIB}/sort4.for
-${SRCBOSLIB}/ucorr.for
-${SRCBOSLIB}/uhist.for
-${SRCBOSLIB}/uwp.for
-${SRCBOSLIB}/vall.for
-${SRCBOSLIB}/vecsub.f
+${SRCBOSLIB}/asrd.f ${SRCBOSLIB}/bchl.F ${SRCBOSLIB}/bchm.F ${SRCBOSLIB}/bcre.F ${SRCBOSLIB}/bdar.F ${SRCBOSLIB}/bdlg.F
+${SRCBOSLIB}/bdlm.F ${SRCBOSLIB}/bdls.F ${SRCBOSLIB}/bdmp.F ${SRCBOSLIB}/bfmt.for ${SRCBOSLIB}/bfrd.for
+${SRCBOSLIB}/bgac.for ${SRCBOSLIB}/bgar.F ${SRCBOSLIB}/binlda.F ${SRCBOSLIB}/binp.F ${SRCBOSLIB}/bint.F
+${SRCBOSLIB}/bloada.F ${SRCBOSLIB}/blocda.F ${SRCBOSLIB}/bloc.F ${SRCBOSLIB}/bmlt.F
+${SRCBOSLIB}/bnxt.F ${SRCBOSLIB}/boutp.F ${SRCBOSLIB}/bpasda.F ${SRCBOSLIB}/bpos.F
+${SRCBOSLIB}/brds.F ${SRCBOSLIB}/breadc.for ${SRCBOSLIB}/bread.for ${SRCBOSLIB}/brnm.F
+${SRCBOSLIB}/bsaw.F ${SRCBOSLIB}/bseq.F ${SRCBOSLIB}/bsls.F ${SRCBOSLIB}/bsta.F
+${SRCBOSLIB}/bwrite.for ${SRCBOSLIB}/bwrs.F ${SRCBOSLIB}/cchl.F ${SRCBOSLIB}/ccor.for
+${SRCBOSLIB}/ccre.F ${SRCBOSLIB}/cloc.F ${SRCBOSLIB}/cnxt.F ${SRCBOSLIB}/cread.for
+${SRCBOSLIB}/dada.F ${SRCBOSLIB}/defst.for ${SRCBOSLIB}/histpr.f ${SRCBOSLIB}/iaf.for
+${SRCBOSLIB}/ibln.F ${SRCBOSLIB}/indar.F ${SRCBOSLIB}/itoda.for ${SRCBOSLIB}/msgpr.for
+${SRCBOSLIB}/pall.f ${SRCBOSLIB}/pcond.for ${SRCBOSLIB}/pcorr.for ${SRCBOSLIB}/phist.for
+${SRCBOSLIB}/poda.F ${SRCBOSLIB}/pstor.for ${SRCBOSLIB}/ptabl.for ${SRCBOSLIB}/ptext1.f
+${SRCBOSLIB}/pvert.for ${SRCBOSLIB}/rdda.F ${SRCBOSLIB}/rdvar.for ${SRCBOSLIB}/readhl.for
+${SRCBOSLIB}/sort4.for ${SRCBOSLIB}/ucorr.for ${SRCBOSLIB}/uhist.for ${SRCBOSLIB}/uwp.for
+${SRCBOSLIB}/vall.for  ${SRCBOSLIB}/vecsub.f
 )
 
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
@@ -299,66 +232,21 @@ if (Fortran_COMPILER_NAME MATCHES "xlf.*")
 
 ADD_LIBRARY(${BOSLIBLIB} boslib ${BOSLIB_src})
 SET(GRAFIX_src
-${SRCGRAFIX}/axshow.F
-${SRCGRAFIX}/bankls.F
-${SRCGRAFIX}/bankpr.F
-${SRCGRAFIX}/barsec.f
-${SRCGRAFIX}/blnumb.F
-${SRCGRAFIX}/blshow.F
-${SRCGRAFIX}/calloc.F
-${SRCGRAFIX}/capmrk.F
-${SRCGRAFIX}/cdst.F
-${SRCGRAFIX}/cirdis.F
-${SRCGRAFIX}/clrcon.f
-${SRCGRAFIX}/coment.f
-${SRCGRAFIX}/comwrd.F
-${SRCGRAFIX}/convrt.f
-${SRCGRAFIX}/credit.F
-${SRCGRAFIX}/cricro.f
-${SRCGRAFIX}/croax.F
-${SRCGRAFIX}/ctdist.F
-${SRCGRAFIX}/decide.f
-${SRCGRAFIX}/dedxds.F
-${SRCGRAFIX}/dedxv1.F
-${SRCGRAFIX}/dedxvw.F
-${SRCGRAFIX}/defcmd.F
-${SRCGRAFIX}/defmac.f
-${SRCGRAFIX}/defwrd.f
-${SRCGRAFIX}/delmac.f
-${SRCGRAFIX}/diaghn.f
-${SRCGRAFIX}/diagin.f
-${SRCGRAFIX}/disaxi.f
-${SRCGRAFIX}/disply.F
-${SRCGRAFIX}/dispvc.F
-${SRCGRAFIX}/dispzc.F
-${SRCGRAFIX}/dnum.f
-${SRCGRAFIX}/dracap.f
-${SRCGRAFIX}/dramov.f
-${SRCGRAFIX}/drawbp.F
-${SRCGRAFIX}/drawer.F
-${SRCGRAFIX}/drawfd.F
-${SRCGRAFIX}/drawid.F
-${SRCGRAFIX}/drawlg.F
-${SRCGRAFIX}/drawmu.f
-${SRCGRAFIX}/drawpi.f
-${SRCGRAFIX}/drawvc.F
-${SRCGRAFIX}/drawzc.F
-${SRCGRAFIX}/drftim.f
-${SRCGRAFIX}/drhatc.F
-${SRCGRAFIX}/drvcrd.F
-${SRCGRAFIX}/drwhit.F
-${SRCGRAFIX}/dsfadc.F
-${SRCGRAFIX}/dsvac.F
-${SRCGRAFIX}/dthcv1.f
-${SRCGRAFIX}/ecapcy.F
-${SRCGRAFIX}/ecap.F
-${SRCGRAFIX}/ecaps.F
-${SRCGRAFIX}/edimac.f
-${SRCGRAFIX}/edvp.F
-${SRCGRAFIX}/efmass.F
-${SRCGRAFIX}/ellips.f
-${SRCGRAFIX}/endmes.F
-${SRCGRAFIX}/evdisp.F
+${SRCGRAFIX}/axshow.F ${SRCGRAFIX}/bankls.F ${SRCGRAFIX}/bankpr.F ${SRCGRAFIX}/barsec.f
+${SRCGRAFIX}/blnumb.F ${SRCGRAFIX}/blshow.F ${SRCGRAFIX}/calloc.F ${SRCGRAFIX}/capmrk.F
+${SRCGRAFIX}/cdst.F ${SRCGRAFIX}/cirdis.F ${SRCGRAFIX}/clrcon.f ${SRCGRAFIX}/coment.f
+${SRCGRAFIX}/comwrd.F ${SRCGRAFIX}/convrt.f ${SRCGRAFIX}/credit.F ${SRCGRAFIX}/cricro.f
+${SRCGRAFIX}/croax.F ${SRCGRAFIX}/ctdist.F ${SRCGRAFIX}/decide.f ${SRCGRAFIX}/dedxds.F
+${SRCGRAFIX}/dedxv1.F ${SRCGRAFIX}/dedxvw.F ${SRCGRAFIX}/defcmd.F ${SRCGRAFIX}/defmac.f
+${SRCGRAFIX}/defwrd.f ${SRCGRAFIX}/delmac.f ${SRCGRAFIX}/diaghn.f ${SRCGRAFIX}/diagin.f
+${SRCGRAFIX}/disaxi.f ${SRCGRAFIX}/disply.F ${SRCGRAFIX}/dispvc.F ${SRCGRAFIX}/dispzc.F
+${SRCGRAFIX}/dnum.f ${SRCGRAFIX}/dracap.f ${SRCGRAFIX}/dramov.f ${SRCGRAFIX}/drawbp.F
+${SRCGRAFIX}/drawer.F ${SRCGRAFIX}/drawfd.F ${SRCGRAFIX}/drawid.F ${SRCGRAFIX}/drawlg.F
+${SRCGRAFIX}/drawmu.f ${SRCGRAFIX}/drawpi.f ${SRCGRAFIX}/drawvc.F ${SRCGRAFIX}/drawzc.F
+${SRCGRAFIX}/drftim.f ${SRCGRAFIX}/drhatc.F ${SRCGRAFIX}/drvcrd.F ${SRCGRAFIX}/drwhit.F
+${SRCGRAFIX}/dsfadc.F ${SRCGRAFIX}/dsvac.F ${SRCGRAFIX}/dthcv1.f ${SRCGRAFIX}/ecapcy.F
+${SRCGRAFIX}/ecap.F ${SRCGRAFIX}/ecaps.F ${SRCGRAFIX}/edimac.f ${SRCGRAFIX}/edvp.F
+${SRCGRAFIX}/efmass.F ${SRCGRAFIX}/ellips.f ${SRCGRAFIX}/endmes.F ${SRCGRAFIX}/evdisp.F
 ${SRCGRAFIX}/evtax.F
 ${SRCGRAFIX}/expmac.f
 ${SRCGRAFIX}/fadcax.F
@@ -494,14 +382,8 @@ ${SRCGRAFIX}/grblock.F
 )
 ADD_LIBRARY(${GRAFIXLIB} grafix ${GRAFIX_src})
 SET(INTERFACE_src
-${SRCINTERFACE}/hfix.f
-${SRCINTERFACE}/biby.f
-${SRCINTERFACE}/dlib.f
-${SRCINTERFACE}/igwlcm.F
-${SRCINTERFACE}/ips.f
-${SRCINTERFACE}/plot10.F
-${SRCINTERFACE}/ranmar.f
-${SRCINTERFACE}/setcol.F
+${SRCINTERFACE}/hfix.f ${SRCINTERFACE}/biby.f ${SRCINTERFACE}/dlib.f ${SRCINTERFACE}/igwlcm.F
+${SRCINTERFACE}/ips.f ${SRCINTERFACE}/plot10.F ${SRCINTERFACE}/ranmar.f ${SRCINTERFACE}/setcol.F
 )
 ADD_LIBRARY(${INTERFACELIB} interface ${INTERFACE_src})
 SET(JADEGS_src
@@ -627,10 +509,11 @@ ${SRCJADEGS}/zsrft1.F
 ${SRCJADEGS}/zsrftv.F
 ${SRCJADEGS}/zsxy.F
 ${SRCJADEGS}/zvertf.F
+#NOTE, The old version from PMF contains a bug:  zrecal and zbug symbols are taken from zebra
 ${SRCJADEGS}/zrecal.F
 ${SRCJADEGS}/zbug.f
 )
-#NOTE, PMF contains a bug? here zrecal.F and zbug.g is taken from zebra
+
 
 ADD_LIBRARY(${JADEGSLIB} jadegs ${JADEGS_src})
 SET(JADEMUS_src
@@ -769,133 +652,43 @@ ${SRCJMC}/wrtmcb.f
 )
 ADD_LIBRARY(${JMCLIB} jmc ${JMC_src})
 SET(PATRECSR_src
-${SRCPATRECSR}/adpatr.F
-${SRCPATRECSR}/backtr.F
-${SRCPATRECSR}/bakfit.F
-${SRCPATRECSR}/bakpak.F
-${SRCPATRECSR}/bside.F
-${SRCPATRECSR}/bstore.F
-${SRCPATRECSR}/crtrel.F
-${SRCPATRECSR}/deadcl.f
-${SRCPATRECSR}/errorm.F
-${SRCPATRECSR}/flinel.F
-${SRCPATRECSR}/ftrkel.F
-${SRCPATRECSR}/fxyz.F
-${SRCPATRECSR}/inpatc.F
-${SRCPATRECSR}/inpatr.F
-${SRCPATRECSR}/kntrel.F
-${SRCPATRECSR}/patrc1.F
-${SRCPATRECSR}/patrec.F
-${SRCPATRECSR}/patrol.F
-${SRCPATRECSR}/pcwork.F
-${SRCPATRECSR}/prhtar.F
-${SRCPATRECSR}/rincon.F
-${SRCPATRECSR}/rstbtr.F
-${SRCPATRECSR}/srtrel.F
-${SRCPATRECSR}/trlord.F
-${SRCPATRECSR}/xyfit.F
+${SRCPATRECSR}/adpatr.F ${SRCPATRECSR}/backtr.F ${SRCPATRECSR}/bakfit.F ${SRCPATRECSR}/bakpak.F ${SRCPATRECSR}/bside.F
+${SRCPATRECSR}/bstore.F ${SRCPATRECSR}/crtrel.F ${SRCPATRECSR}/deadcl.f ${SRCPATRECSR}/errorm.F
+${SRCPATRECSR}/flinel.F ${SRCPATRECSR}/ftrkel.F ${SRCPATRECSR}/fxyz.F ${SRCPATRECSR}/inpatc.F
+${SRCPATRECSR}/inpatr.F ${SRCPATRECSR}/kntrel.F ${SRCPATRECSR}/patrc1.F ${SRCPATRECSR}/patrec.F
+${SRCPATRECSR}/patrol.F ${SRCPATRECSR}/pcwork.F ${SRCPATRECSR}/prhtar.F ${SRCPATRECSR}/rincon.F
+${SRCPATRECSR}/rstbtr.F ${SRCPATRECSR}/srtrel.F ${SRCPATRECSR}/trlord.F ${SRCPATRECSR}/xyfit.F
 ${SRCPATRECSR}/zrfit.F
 )
 ADD_LIBRARY(${PATRECSRLIB} patrecsr ${PATRECSR_src})
 SET(SOURCE_src
-${SRCSOURCE}/angbar.f
-${SRCSOURCE}/bbcorr.F
-${SRCSOURCE}/bbleak.F
-${SRCSOURCE}/brlgn6.f
-${SRCSOURCE}/brlgn.F
-${SRCSOURCE}/calcor.F
-${SRCSOURCE}/elgobs.f
-${SRCSOURCE}/encorr.F
-${SRCSOURCE}/englos.f
-${SRCSOURCE}/enlosg.f
-${SRCSOURCE}/ilctrc.f
-${SRCSOURCE}/intolg.F
-${SRCSOURCE}/lganal9.F
-${SRCSOURCE}/lgavde.f
-${SRCSOURCE}/lgavdp.f
-${SRCSOURCE}/lgbadc.F
-${SRCSOURCE}/lgbfil.F
-${SRCSOURCE}/lgbhit.f
-${SRCSOURCE}/lgbtdc.F
-${SRCSOURCE}/lgcalb.F
-${SRCSOURCE}/lgcctl.F
-${SRCSOURCE}/lgcdir9.F
-${SRCSOURCE}/lgchc2.F
-${SRCSOURCE}/lgclpb9.F
-${SRCSOURCE}/lgclpc.F
-${SRCSOURCE}/lgclus.F
-${SRCSOURCE}/lgcrn2.f
-${SRCSOURCE}/lgcrnr.f
-${SRCSOURCE}/lgdcpy.F
-${SRCSOURCE}/lgdead.f
-${SRCSOURCE}/lgecor9.F
-${SRCSOURCE}/lgeerr.f
-${SRCSOURCE}/lgefil.F
-${SRCSOURCE}/lgehit.f
-${SRCSOURCE}/lgeign.F
-${SRCSOURCE}/lgerse.F
-${SRCSOURCE}/lgesmr.f
-${SRCSOURCE}/lginit.f
-${SRCSOURCE}/lgmesg.F
-${SRCSOURCE}/lgnbls.f
-${SRCSOURCE}/lgnmec.f
-${SRCSOURCE}/lgrein.F
-${SRCSOURCE}/lgsrth.F
-${SRCSOURCE}/lgsubc.f
-${SRCSOURCE}/lgthcr.f
-${SRCSOURCE}/lkcorr.F
-${SRCSOURCE}/posend.f
-${SRCSOURCE}/shmax.f
-${SRCSOURCE}/thcofa.F
-${SRCSOURCE}/thcorr.F
-${SRCSOURCE}/tpcnst.F
+${SRCSOURCE}/angbar.f ${SRCSOURCE}/bbcorr.F ${SRCSOURCE}/bbleak.F ${SRCSOURCE}/brlgn6.f
+${SRCSOURCE}/brlgn.F ${SRCSOURCE}/calcor.F ${SRCSOURCE}/elgobs.f ${SRCSOURCE}/encorr.F
+${SRCSOURCE}/englos.f ${SRCSOURCE}/enlosg.f ${SRCSOURCE}/ilctrc.f ${SRCSOURCE}/intolg.F
+${SRCSOURCE}/lganal9.F ${SRCSOURCE}/lgavde.f ${SRCSOURCE}/lgavdp.f ${SRCSOURCE}/lgbadc.F
+${SRCSOURCE}/lgbfil.F ${SRCSOURCE}/lgbhit.f ${SRCSOURCE}/lgbtdc.F ${SRCSOURCE}/lgcalb.F
+${SRCSOURCE}/lgcctl.F ${SRCSOURCE}/lgcdir9.F ${SRCSOURCE}/lgchc2.F ${SRCSOURCE}/lgclpb9.F
+${SRCSOURCE}/lgclpc.F ${SRCSOURCE}/lgclus.F ${SRCSOURCE}/lgcrn2.f ${SRCSOURCE}/lgcrnr.f
+${SRCSOURCE}/lgdcpy.F ${SRCSOURCE}/lgdead.f ${SRCSOURCE}/lgecor9.F ${SRCSOURCE}/lgeerr.f
+${SRCSOURCE}/lgefil.F ${SRCSOURCE}/lgehit.f ${SRCSOURCE}/lgeign.F ${SRCSOURCE}/lgerse.F
+${SRCSOURCE}/lgesmr.f ${SRCSOURCE}/lginit.f ${SRCSOURCE}/lgmesg.F ${SRCSOURCE}/lgnbls.f
+${SRCSOURCE}/lgnmec.f ${SRCSOURCE}/lgrein.F ${SRCSOURCE}/lgsrth.F ${SRCSOURCE}/lgsubc.f
+${SRCSOURCE}/lgthcr.f ${SRCSOURCE}/lkcorr.F ${SRCSOURCE}/posend.f ${SRCSOURCE}/shmax.f
+${SRCSOURCE}/thcofa.F ${SRCSOURCE}/thcorr.F ${SRCSOURCE}/tpcnst.F
 )
 ADD_LIBRARY(${SOURCELIB} source ${SOURCE_src})
 SET(TAGG_src
-${SRCTAGG}/amctag.f
-${SRCTAGG}/anatag.F
-${SRCTAGG}/conver.f
-${SRCTAGG}/ggcctl.f
-${SRCTAGG}/ggclpc.f
-${SRCTAGG}/ggclus.f
-${SRCTAGG}/ggfac2.f
-${SRCTAGG}/ggresq.f
-${SRCTAGG}/ggsort.f
-${SRCTAGG}/ggsrth.f
-${SRCTAGG}/gscrub.f
-${SRCTAGG}/lumons.f
-${SRCTAGG}/rcoord.f
-${SRCTAGG}/repack.f
-${SRCTAGG}/sort.f
-${SRCTAGG}/tagadc.F
-${SRCTAGG}/tagan.F
-${SRCTAGG}/tagchk.F
-${SRCTAGG}/tagcls.F
-${SRCTAGG}/tagcol.F
-${SRCTAGG}/tagdir.f
-${SRCTAGG}/tagfit.F
-${SRCTAGG}/tagfty.f
-${SRCTAGG}/taggtp.F
-${SRCTAGG}/tagh2s.F
-${SRCTAGG}/tagint.F
-${SRCTAGG}/tagkal.F
-${SRCTAGG}/tagmrk.F
-${SRCTAGG}/tagneb.F
-${SRCTAGG}/tagpd1.F
-${SRCTAGG}/tagpd2.F
-${SRCTAGG}/tagped.F
-${SRCTAGG}/tagphi.f
-${SRCTAGG}/tagpos.F
-${SRCTAGG}/tagps1.F
-${SRCTAGG}/tagps2.f
-${SRCTAGG}/tagraw.F
-${SRCTAGG}/tagrty.f
-${SRCTAGG}/tags2h.F
-${SRCTAGG}/tagsr1.F
-${SRCTAGG}/tagsr2.F
-${SRCTAGG}/tagsto.for
-${SRCTAGG}/tagsum.F
-${SRCTAGG}/tracks.f
+${SRCTAGG}/amctag.f ${SRCTAGG}/anatag.F ${SRCTAGG}/conver.f ${SRCTAGG}/ggcctl.f
+${SRCTAGG}/ggclpc.f ${SRCTAGG}/ggclus.f ${SRCTAGG}/ggfac2.f ${SRCTAGG}/ggresq.f
+${SRCTAGG}/ggsort.f ${SRCTAGG}/ggsrth.f ${SRCTAGG}/gscrub.f ${SRCTAGG}/lumons.f
+${SRCTAGG}/rcoord.f ${SRCTAGG}/repack.f ${SRCTAGG}/sort.f ${SRCTAGG}/tagadc.F
+${SRCTAGG}/tagan.F ${SRCTAGG}/tagchk.F ${SRCTAGG}/tagcls.F ${SRCTAGG}/tagcol.F
+${SRCTAGG}/tagdir.f ${SRCTAGG}/tagfit.F ${SRCTAGG}/tagfty.f ${SRCTAGG}/taggtp.F
+${SRCTAGG}/tagh2s.F ${SRCTAGG}/tagint.F ${SRCTAGG}/tagkal.F ${SRCTAGG}/tagmrk.F
+${SRCTAGG}/tagneb.F ${SRCTAGG}/tagpd1.F ${SRCTAGG}/tagpd2.F ${SRCTAGG}/tagped.F
+${SRCTAGG}/tagphi.f ${SRCTAGG}/tagpos.F ${SRCTAGG}/tagps1.F ${SRCTAGG}/tagps2.f
+${SRCTAGG}/tagraw.F ${SRCTAGG}/tagrty.f ${SRCTAGG}/tags2h.F ${SRCTAGG}/tagsr1.F
+${SRCTAGG}/tagsr2.F ${SRCTAGG}/tagsto.for ${SRCTAGG}/tagsum.F ${SRCTAGG}/tracks.f
 ${SRCTAGG}/umcpak.f
 )
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
@@ -905,95 +698,36 @@ if (Fortran_COMPILER_NAME MATCHES "xlf.*")
       
 ADD_LIBRARY(${TAGGLIB} tagg ${TAGG_src})
 SET(TOFLIB_src
-${SRCTOFLIB}/agrpr.f
-${SRCTOFLIB}/atfugr.f
-${SRCTOFLIB}/atofrw.f
-${SRCTOFLIB}/atofun.F
-${SRCTOFLIB}/cmass.f
-${SRCTOFLIB}/corcst.f
-${SRCTOFLIB}/mocard.F
-${SRCTOFLIB}/rd0880.F
-${SRCTOFLIB}/tfarnw.F
-${SRCTOFLIB}/tfctd1.F
-${SRCTOFLIB}/tfstor.f
-${SRCTOFLIB}/tofar2.F
-${SRCTOFLIB}/tofard.F
-${SRCTOFLIB}/tofbra.f
-${SRCTOFLIB}/tofcl2.f
-${SRCTOFLIB}/tofclc.F
-${SRCTOFLIB}/tofcor.f
-${SRCTOFLIB}/tofin2.F
-${SRCTOFLIB}/tofint.F
-${SRCTOFLIB}/tofma2.f
-${SRCTOFLIB}/tofmas.F
-${SRCTOFLIB}/tofsm2.f
-${SRCTOFLIB}/tofsm3.F
-${SRCTOFLIB}/tofsmp.F
+${SRCTOFLIB}/agrpr.f ${SRCTOFLIB}/atfugr.f ${SRCTOFLIB}/atofrw.f ${SRCTOFLIB}/atofun.F
+${SRCTOFLIB}/cmass.f ${SRCTOFLIB}/corcst.f ${SRCTOFLIB}/mocard.F ${SRCTOFLIB}/rd0880.F
+${SRCTOFLIB}/tfarnw.F ${SRCTOFLIB}/tfctd1.F ${SRCTOFLIB}/tfstor.f ${SRCTOFLIB}/tofar2.F
+${SRCTOFLIB}/tofard.F ${SRCTOFLIB}/tofbra.f ${SRCTOFLIB}/tofcl2.f ${SRCTOFLIB}/tofclc.F
+${SRCTOFLIB}/tofcor.f ${SRCTOFLIB}/tofin2.F ${SRCTOFLIB}/tofint.F ${SRCTOFLIB}/tofma2.f
+${SRCTOFLIB}/tofmas.F ${SRCTOFLIB}/tofsm2.f ${SRCTOFLIB}/tofsm3.F ${SRCTOFLIB}/tofsmp.F
 )
 ADD_LIBRARY(${TOFLIBLIB} toflib ${TOFLIB_src})
 SET(VERTEX_src
-${SRCVERTEX}/vertex.f
-${SRCVERTEX}/vtxaft.f
-${SRCVERTEX}/vtxbnk.F
-${SRCVERTEX}/vtxee.f
-${SRCVERTEX}/vtxini.f
-${SRCVERTEX}/vtxpnt.f
-${SRCVERTEX}/vtxpre.F
-${SRCVERTEX}/vtxsrc.f
+${SRCVERTEX}/vertex.f ${SRCVERTEX}/vtxaft.f ${SRCVERTEX}/vtxbnk.F ${SRCVERTEX}/vtxee.f
+${SRCVERTEX}/vtxini.f ${SRCVERTEX}/vtxpnt.f ${SRCVERTEX}/vtxpre.F ${SRCVERTEX}/vtxsrc.f
 )
 ADD_LIBRARY(${VERTEXLIB} vertex ${VERTEX_src})
 SET(WERTEX_src
-${SRCWERTEX}/parkor.F
-${SRCWERTEX}/wertex.f
-${SRCWERTEX}/wtxaft.f
-${SRCWERTEX}/wtxbnk.F
-${SRCWERTEX}/wtxcrv.f
-${SRCWERTEX}/wtxee.f
-${SRCWERTEX}/wtxeer.F
-${SRCWERTEX}/wtxerr.f
-${SRCWERTEX}/wtxini.f
-${SRCWERTEX}/wtxpnt.f
-${SRCWERTEX}/wtxpre.F
-${SRCWERTEX}/wtxsrc.f
-${SRCWERTEX}/xfwid.F
-${SRCWERTEX}/xfwvxc.F
+${SRCWERTEX}/parkor.F ${SRCWERTEX}/wertex.f ${SRCWERTEX}/wtxaft.f ${SRCWERTEX}/wtxbnk.F
+${SRCWERTEX}/wtxcrv.f ${SRCWERTEX}/wtxee.f ${SRCWERTEX}/wtxeer.F ${SRCWERTEX}/wtxerr.f
+${SRCWERTEX}/wtxini.f ${SRCWERTEX}/wtxpnt.f ${SRCWERTEX}/wtxpre.F ${SRCWERTEX}/wtxsrc.f
+${SRCWERTEX}/xfwid.F ${SRCWERTEX}/xfwvxc.F
 )
 ADD_LIBRARY(${WERTEXLIB} wertex ${WERTEX_src})
 SET(ZLIB_src
-${SRCZLIB}/chien52.F
-${SRCZLIB}/chien5.F
-${SRCZLIB}/crdoca.f
-${SRCZLIB}/dxmcgn.f
-${SRCZLIB}/ealgcl.F
-${SRCZLIB}/eamcde.f
-${SRCZLIB}/eaunin.f
-${SRCZLIB}/eazero.f
-${SRCZLIB}/ekand.f
-${SRCZLIB}/expect.F
-${SRCZLIB}/fehler.f
-${SRCZLIB}/irnevt.f
-${SRCZLIB}/jobfin.f
-${SRCZLIB}/prallb.f
-${SRCZLIB}/prlist.f
-${SRCZLIB}/prsinb.f
-${SRCZLIB}/prtoci.f
-${SRCZLIB}/shado9.F
-${SRCZLIB}/shwcpr.f
-${SRCZLIB}/trkbl9.F
-${SRCZLIB}/trkbse.F
-${SRCZLIB}/ze4vdp.f
-${SRCZLIB}/ze4vea.f
-${SRCZLIB}/ze4vet2.f
-${SRCZLIB}/ze4vet.f
-${SRCZLIB}/ze4vet.f
-${SRCZLIB}/ze4vmc.f
-${SRCZLIB}/ze4vpk.for
-${SRCZLIB}/ze4vtp.f
-${SRCZLIB}/ze4vun.f
-${SRCZLIB}/ze4vvx.F
-${SRCZLIB}/zmcredu.f
-${SRCZLIB}/zsphrcy.f
-${SRCZLIB}/zspthak.f
+${SRCZLIB}/chien52.F ${SRCZLIB}/chien5.F ${SRCZLIB}/crdoca.f ${SRCZLIB}/dxmcgn.f
+${SRCZLIB}/ealgcl.F ${SRCZLIB}/eamcde.f ${SRCZLIB}/eaunin.f ${SRCZLIB}/eazero.f
+${SRCZLIB}/ekand.f ${SRCZLIB}/expect.F ${SRCZLIB}/fehler.f ${SRCZLIB}/irnevt.f
+${SRCZLIB}/jobfin.f ${SRCZLIB}/prallb.f ${SRCZLIB}/prlist.f ${SRCZLIB}/prsinb.f
+${SRCZLIB}/prtoci.f ${SRCZLIB}/shado9.F ${SRCZLIB}/shwcpr.f ${SRCZLIB}/trkbl9.F
+${SRCZLIB}/trkbse.F ${SRCZLIB}/ze4vdp.f ${SRCZLIB}/ze4vea.f ${SRCZLIB}/ze4vet2.f
+${SRCZLIB}/ze4vet.f ${SRCZLIB}/ze4vet.f ${SRCZLIB}/ze4vmc.f ${SRCZLIB}/ze4vpk.for
+${SRCZLIB}/ze4vtp.f ${SRCZLIB}/ze4vun.f ${SRCZLIB}/ze4vvx.F ${SRCZLIB}/zmcredu.f
+${SRCZLIB}/zsphrcy.f ${SRCZLIB}/zspthak.f
 )
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
    file(GLOB myforzlib ${SRCZLIB}/*.for)
@@ -1003,23 +737,6 @@ if (Fortran_COMPILER_NAME MATCHES "xlf.*")
 ADD_LIBRARY(${ZLIBLIB} zlib ${ZLIB_src})
 
 
-
-
-
-
-
-
-
-#ADD_SUBDIRECTORY(${SRCMCJADE} )
-#ADD_SUBDIRECTORY(${SRCSUPERV} )
-#ADD_SUBDIRECTORY(${SRCJADEZ} )
-#ADD_SUBDIRECTORY(${SRCZE4V} )
-
-
-########################################
-# Set up how to compile the source files
-########################################
-
 # Add the source files
 SET(JADEZ_src ${SRCJADEZ}/gphmain.F  ${SRCJADEZ}/xuser.F
 )
@@ -1027,45 +744,15 @@ SET(JADEZ_src ${SRCJADEZ}/gphmain.F  ${SRCJADEZ}/xuser.F
 # Define the executable in terms of the source files
 ADD_EXECUTABLE(${JADEZEXE} ${JADEZ_src})
 
-#####################################################
-# Add the needed libraries and special compiler flags
-#####################################################
 
-# This links foo to the bar library
 #-lpatrecsr -ltoflib -ltagg -lboslib -ljadegs -linterface -ljademus -lsource -lwertex -lpatrecsr
 TARGET_LINK_LIBRARIES(${JADEZEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
  ${CERN_LIBRARIES} X11 -Wl,--end-group)
 
-# Uncomment if you need to link to BLAS and LAPACK
-#TARGET_LINK_LIBRARIES(${JADEZEXE} ${BLAS_LIBRARIES}
-#                                ${LAPACK_LIBRARIES}
-#                                ${CMAKE_THREAD_LIBS_INIT})
-#####################################
-# Tell how to install this executable
-#####################################
-
-IF(WIN32)
-    SET(CMAKE_INSTALL_PREFIX "C:\\Program Files")
-ELSE()
-    SET(CMAKE_INSTALL_PREFIX /usr/local)
-ENDIF(WIN32)
 INSTALL(TARGETS ${JADEZEXE} RUNTIME DESTINATION bin)
 
 
-
-
-
-
 ########################################################################################################################3
-
-
-
-
-
-
-########################################
-# Set up how to compile the source files
-########################################
 
 # Add the source files
 SET(JADEZROOT_src ${SRCJADEZ}/gphmain2.F  ${SRCJADEZ}/xuser.F  ${SRCJADEZ}/gphmain.cxx
@@ -1074,11 +761,7 @@ SET(JADEZROOT_src ${SRCJADEZ}/gphmain2.F  ${SRCJADEZ}/xuser.F  ${SRCJADEZ}/gphma
 # Define the executable in terms of the source files
 ADD_EXECUTABLE(${JADEZROOTEXE} ${JADEZROOT_src})
 
-#####################################################
-# Add the needed libraries and special compiler flags
-#####################################################
 
-# This links foo to the bar library
 #-lpatrecsr -ltoflib -ltagg -lboslib -ljadegs -linterface -ljademus -lsource -lwertex -lpatrecsr
 TARGET_LINK_LIBRARIES(${JADEZROOTEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
  ${CERN_LIBRARIES} X11 -Wl,--end-group)
@@ -1086,40 +769,12 @@ TARGET_LINK_LIBRARIES(${JADEZROOTEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${T
 target_include_directories(${JADEZROOTEXE} PUBLIC /usr/include/root)
 
 
-# Uncomment if you need to link to BLAS and LAPACK
-#TARGET_LINK_LIBRARIES(${JADEZROOTEXE} ${BLAS_LIBRARIES}
-#                                ${LAPACK_LIBRARIES}
-#                                ${CMAKE_THREAD_LIBS_INIT})
-#####################################
-# Tell how to install this executable
-#####################################
 
-IF(WIN32)
-    SET(CMAKE_INSTALL_PREFIX "C:\\Program Files")
-ELSE()
-    SET(CMAKE_INSTALL_PREFIX /usr/local)
-ENDIF(WIN32)
 INSTALL(TARGETS ${JADEZROOTEXE} RUNTIME DESTINATION bin)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ########################################################################################################################3
-########################################
-# Set up how to compile the source files
-########################################
+
 
 # Add the source files
 SET(MCJADE_src ${SRCMCJADE}/mcjade.f ${SRCMCJADE}/mcmain.f  ${SRCMCJADE}/mcrand.f  ${SRCMCJADE}/mcuser.f ${SRCSUPERV}/showb.f)
@@ -1128,33 +783,15 @@ SET(MCJADE_src ${SRCMCJADE}/mcjade.f ${SRCMCJADE}/mcmain.f  ${SRCMCJADE}/mcrand.
 # Define the executable in terms of the source files
 ADD_EXECUTABLE(${MCJADEEXE} ${MCJADE_src})
 
-#####################################################
-# Add the needed libraries and special compiler flags
-#####################################################
 
-# This links foo to the bar library
 #jmc -lboslib -ljadegs -linterface -ljademus -lsource -lwertex -lpatrecsr 
 TARGET_LINK_LIBRARIES(${MCJADEEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
 ${CERN_LIBRARIES} X11 -Wl,--end-group)
-#${CERNLIB_LIBRARY_DIR}/
-# Uncomment if you need to link to BLAS and LAPACK
-#TARGET_LINK_LIBRARIES(${MCJADEEXE} ${BLAS_LIBRARIES}
-#                                ${LAPACK_LIBRARIES}
-#                                ${CMAKE_THREAD_LIBS_INIT})
 
-#####################################
-# Tell how to install this executable
-#####################################
 
-IF(WIN32)
-    SET(CMAKE_INSTALL_PREFIX "C:\\Program Files")
-ELSE()
-    SET(CMAKE_INSTALL_PREFIX /usr/local)
-ENDIF(WIN32)
+
 INSTALL(TARGETS ${MCJADEEXE} RUNTIME DESTINATION bin)
-########################################
-# Set up how to compile the source files
-########################################
+
 
 # Add the source files
 SET(SUPERV_src ${SRCSUPERV}/ana.F    ${SRCSUPERV}/jdmain.f  ${SRCSUPERV}/showb.f  ${SRCSUPERV}/user.f ${SRCMCJADE}/mcrand.f)
@@ -1162,32 +799,15 @@ SET(SUPERV_src ${SRCSUPERV}/ana.F    ${SRCSUPERV}/jdmain.f  ${SRCSUPERV}/showb.f
 # Define the executable in terms of the source files
 ADD_EXECUTABLE(${SUPERVEXE} ${SUPERV_src})
 
-#####################################################
-# Add the needed libraries and special compiler flags
-#####################################################
 
-# This links foo to the bar library
 TARGET_LINK_LIBRARIES(${SUPERVEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
  ${CERN_LIBRARIES}  X11 -Wl,--end-group)
 
-# Uncomment if you need to link to BLAS and LAPACK
-#TARGET_LINK_LIBRARIES(${SUPERVEXE} ${BLAS_LIBRARIES}
-#                                ${LAPACK_LIBRARIES}
-#                                ${CMAKE_THREAD_LIBS_INIT})
 
-#####################################
-# Tell how to install this executable
-#####################################
 
-IF(WIN32)
-    SET(CMAKE_INSTALL_PREFIX "C:\\Program Files")
-ELSE()
-    SET(CMAKE_INSTALL_PREFIX /usr/local)
-ENDIF(WIN32)
+
 INSTALL(TARGETS ${SUPERVEXE} RUNTIME DESTINATION bin)
-########################################
-# Set up how to compile the source files
-########################################
+
 
 # Add the source files
 SET(ZE4V_src ${SRCZE4V}/ze4vjb.f ${SRCMCJADE}/mcrand.f ${SRCSUPERV}/showb.f )
@@ -1195,32 +815,21 @@ SET(ZE4V_src ${SRCZE4V}/ze4vjb.f ${SRCMCJADE}/mcrand.f ${SRCSUPERV}/showb.f )
 # Define the executable in terms of the source files
 ADD_EXECUTABLE(${ZE4VEXE} ${ZE4V_src})
 
-#####################################################
-# Add the needed libraries and special compiler flags
-#####################################################
 
-# This links foo to the bar library
 TARGET_LINK_LIBRARIES(${ZE4VEXE} -Wl,--start-group ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
  ${CERN_LIBRARIES} -Wl,--end-group)
 
-# Uncomment if you need to link to BLAS and LAPACK
-#TARGET_LINK_LIBRARIES(${ZE4VEXE} ${BLAS_LIBRARIES}
-#                                ${LAPACK_LIBRARIES}
-#                                ${CMAKE_THREAD_LIBS_INIT})
 
-#####################################
-# Tell how to install this executable
-#####################################
+
+
+INSTALL(TARGETS ${ZE4VEXE} RUNTIME DESTINATION bin)
+
 
 IF(WIN32)
     SET(CMAKE_INSTALL_PREFIX "C:\\Program Files")
 ELSE()
     SET(CMAKE_INSTALL_PREFIX /usr/local)
 ENDIF(WIN32)
-INSTALL(TARGETS ${ZE4VEXE} RUNTIME DESTINATION bin)
-
-
-
 
 # Add a distclean target to the Makefile
 ADD_CUSTOM_TARGET(distclean 

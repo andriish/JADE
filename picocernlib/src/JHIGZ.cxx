@@ -29,6 +29,7 @@ int jTextAlignment;
 float jTextSize;
 int jTextAngle;
 int jTextColor;
+int jTextFont;
 int jLineColor;
 int jLineStyle;
 int jFillAreaColor;
@@ -47,7 +48,6 @@ float jPolyLineWidth;
 Frame* jFrame;
 void showFrame()
 {
-    // Popup the GUI...
     jFrame=new Frame(gClient->GetRoot(),200,200);
 }
 
@@ -291,6 +291,7 @@ extern "C" {
 
         jFillAreaColor=kWhite;
         jTextAlignment=12;
+        jTextFont=82;
         jTextAngle=0;
         jNT=0;
         std::vector<double> az;
@@ -554,7 +555,7 @@ extern "C" {
         t = new TText(x,y,vn.c_str());
         t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
         t->SetTextColor(jTextColor);
-        t->SetTextFont(82);
+        t->SetTextFont(jTextFont);
         t->SetTextSize(jTextSize);
         t->SetTextAngle(jTextAngle);
         t->Draw();
@@ -573,7 +574,7 @@ extern "C" {
         t = new TText(x,y,vn.c_str());
         t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
         t->SetTextColor(jTextColor);
-        t->SetTextFont(82);
+        t->SetTextFont(jTextFont);
         t->SetTextSize(jTextSize);
         t->SetTextAngle(jTextAngle);
         t->Draw();
@@ -586,7 +587,7 @@ extern "C" {
         t = new TLatex();
         t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
         t->SetTextColor(jTextColor);
-        t->SetTextFont(82);
+        t->SetTextFont(jTextFont);
         t->SetTextSize(0.015);
         t->SetTextAngle(jTextAngle);
         t->DrawLatex(x,y,"#pi");
@@ -599,7 +600,7 @@ extern "C" {
         t = new TLatex();
         t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
         t->SetTextColor(jTextColor);
-        t->SetTextFont(82);
+        t->SetTextFont(jTextFont);
         t->SetTextSize(jTextSize);
         t->SetTextAngle(jTextAngle);
         t->DrawLatex(x,y,"#mu");
@@ -616,7 +617,7 @@ extern "C" {
         t = new TText(x,y,vn.c_str());
         t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
         t->SetTextColor(jTextColor);
-        t->SetTextFont(82);
+        t->SetTextFont(jTextFont);
         t->SetTextSize(0.015);
         t->SetTextAngle(jTextAngle);
         t->Draw();

@@ -1,5 +1,4 @@
-# CMake project file for FOO
-
+#https://github.com/SethMMorton/cmake_fortran_template
 ##################################################
 # Define the project and the depencies that it has
 ##################################################
@@ -11,7 +10,7 @@ PROJECT(JTUPLE Fortran)
 SET(VERSION 1.2.3)
 
 # Add our local modlues to the module path
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 
 # Uncomment if it is required that Fortran 90 is supported
 #IF(NOT CMAKE_Fortran_COMPILER_SUPPORTS_F90)
@@ -156,36 +155,6 @@ SET(JTLIB jtlib)
 SET(NTUPLE          ntuple)
 SET(ZREAD         zread)
 
-
-#libjtlib.a : libjtlib.a( $(LIBJADEOBJS) )
-#libntuple.a : libntuple.a( $(LIBNTUPLEOBJS) )
-#libzread.a : libzread.a( $(LIBZREADOBJS) )
-
-
-#jtjob : jtjob.o libjtlib.a libntuple.a
-	#$(LD) $(LDFLAGS) -o $@ $^ $(JADE)/main/superv/showb.o \
-	#-L$(JADE)/lib $(patsubst %,-l%,$(JADELIBS)) \
-	#-L$(CERNLIB) $(patsubst %,-l%,$(CERNLIBS)) >> MAIN.map
-
-## Link ze4v -> ntuple:
-#jzread : jzread.o libzread.a libntuple.a
-	#$(LD) $(LDFLAGS) -o $@ $^ \
-	#-L$(CERNLIB) $(patsubst %,-l%,$(CERNLIBS))
-
-## Link lumi analysis program:
-#taklumi : taklumi.o
-	#$(LD) $(LDFLAGS) -o $@ $< \
-	#-L$(CERNLIB) $(patsubst %,-l%,$(CERNLIBS))
-
- #LIBZREADOBJS = jadev.o jadepr.o endian.o jzsetr.o jzinit.o jzevnt.o jzfnsh.o
-  #LIBJADEOBJS = jtevnt.o jtfnsh.o jtinit.o jtsetr.o
-#LIBNTUPLEOBJS = jtbknt.o jtevsl.o casso.o cinfo.o cnass.o cnone.o cyjet.o \
-                #qqcone.o qqjets.o caxes.o ckern.o \
-                #cncnt.o cwrit.o qqangl.o \
-                #qqevsh.o cdble.o cksord.o cnjet.o cyget.o \
-                #qqckbk.o qqform.o px116.o
-
- #EXEOBJS = jtjob.o jzread.o
 FIND_PATH(JADELIB_LIBRARY_DIR NAMES libinterface.a libjadegs.a libboslib.a libzlib.a PATHS
   /usr/lib/jadesoft
   ../jadesoft/lib

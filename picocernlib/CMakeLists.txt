@@ -1,5 +1,4 @@
-# CMake project file for FOO from 
-#-L../../../rootlibs/usr/lib/root   -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lstdc++
+#https://github.com/SethMMorton/cmake_fortran_template
 ##################################################
 # Define the project and the depencies that it has
 ##################################################
@@ -10,7 +9,7 @@ PROJECT(PICOCERNLIB Fortran C CXX)
 SET(VERSION 2016)
 
 # Add our local modlues to the module path
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
@@ -18,8 +17,6 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g   -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN  ")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g  -std=c++11 -I/usr/include/root   ")
-
-
 
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
@@ -61,7 +58,6 @@ SET(LIB ${CMAKE_SOURCE_DIR}/lib)
 SET(BIN ${CMAKE_SOURCE_DIR}/bin)
 
 include_directories( ${TOP}/include  ${TOP}/ffread )
-#   ${TOP}/graflib/higz )
 
 
 
@@ -141,68 +137,17 @@ ${TOP}/src/chtoi.F
 ${TOP}/src/itoch.F
 ${TOP}/src/upkch.F
 ${TOP}/src/indexc.F
+#The C++ code with ROOT
 ${TOP}/src/JBOOK.cxx
 ${TOP}/src/JINTERFACE.F
-#${TOP}/graflib/higz/ikernel/iclrwk.F
-#${TOP}/graflib/higz/ikernel/iclwk.F
-#${TOP}/graflib/higz/ig/igbox.F
-#${TOP}/graflib/higz/ig/igend.F
-#${TOP}/graflib/higz/ig/iginit.F
-#${TOP}/graflib/higz/ig/igloc.F
-#${TOP}/graflib/higz/ig/igmess.F
-#${TOP}/graflib/higz/ig/igmeta.F
-#${TOP}/graflib/higz/ig/igpave.F
-#${TOP}/graflib/higz/ig/igrng.F
-#${TOP}/graflib/higz/ig/igtext.F
-#${TOP}/graflib/higz/ig/igset.F
-#${TOP}/graflib/higz/ig/igerr.F
-#${TOP}/graflib/higz/ig/igsse.F
-#${TOP}/graflib/higz/ig/igterm.F
-#${TOP}/graflib/higz/ikernel/ipl.F
-#${TOP}/graflib/higz/ikernel/ipm.F
-#${TOP}/graflib/higz/ikernel/ischh.F
-#${TOP}/graflib/higz/ikernel/iscr.F
-#${TOP}/graflib/higz/ikernel/iselnt.F
-#${TOP}/graflib/higz/ikernel/isfaci.F
-#${TOP}/graflib/higz/ikernel/isfais.F
-#${TOP}/graflib/higz/ikernel/isln.F
-#${TOP}/graflib/higz/ikernel/islwsc.F
-#${TOP}/graflib/higz/ikernel/ismk.F
-#${TOP}/graflib/higz/ikernel/ismksc.F
-#${TOP}/graflib/higz/ikernel/isplci.F
-#${TOP}/graflib/higz/ikernel/ispmci.F
-#${TOP}/graflib/higz/ikernel/istxal.F
-#${TOP}/graflib/higz/ikernel/istxci.F
-#${TOP}/graflib/higz/ikernel/istxfp.F
-#${TOP}/graflib/higz/ikernel/isvp.F
-#${TOP}/graflib/higz/ikernel/iswn.F
-#${TOP}/graflib/higz/ikernel/itx.F
-#${TOP}/graflib/higz/ikernel/iuwk.F
-#${TOP}/graflib/higz/iz/izatt.F
-#${TOP}/graflib/higz/iz/izcda.F
-#${TOP}/graflib/higz/iz/izcfa.F
-#${TOP}/graflib/higz/iz/izgadr.F
-#${TOP}/graflib/higz/iz/izincf.F
-#${TOP}/graflib/higz/iz/izpush.F
-#${TOP}/graflib/higz/iz/izscan.F
-#${TOP}/graflib/higz/iz/izstcc.F
-#${TOP}/graflib//higz/higzcc/x11int.c
-#${TOP}/src/floarg.F
-#${TOP}/graflib/higz/ikernel/ixsetfc.F
-#${TOP}/graflib/higz/ikernel/ixsetlc.F
-#${TOP}/graflib/higz/ikernel/ixsetln.F
-#${TOP}/graflib/higz/ikernel/ixsetmc.F
-#${TOP}/graflib/higz/ikernel/ixsettc.F
-#${TOP}/graflib/higz/ikernel/ixsync.F
 ${TOP}/src/JHIGZ.cxx
-    ${TOP}/src/Frame.cxx
-    ${TOP}/src/Frame_Dict.cxx
+#APP mode
+${TOP}/src/Frame.cxx
+${TOP}/src/Frame_Dict.cxx
 )
 
 
 ADD_LIBRARY(${PICOCERNLIB}  ${PICOCERNLIB_src})
-
-
 
 # Add a distclean target to the Makefile
 ADD_CUSTOM_TARGET(distclean 
