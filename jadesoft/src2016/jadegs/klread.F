@@ -273,8 +273,6 @@ C---
          DO 30 I=1,NCALI
             LUNIT=LUNITA(ITP)
 C     PRINT 2002, LUNIT
-C          write(*,*) 'FIXME'
-C            READ(LUNIT,ERR=304) NDUUM,ITM1
             READ(LUNIT,ERR=304,END=305) NDUUM,ITM1
             REWIND LUNIT
 C                                       CHECK IF ONLY ONE FILE

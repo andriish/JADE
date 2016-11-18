@@ -83,9 +83,7 @@ C
       IHEAD = IBLN('HEAD')
       IMTCO = IBLN('MTCO')
       IMUCO = IBLN('MUCO')
-      
-      WRITE(*,*)'EVREAD ENTER   ', IHEAD, IMTCO, IMUCO
-      
+            
 C                                            CADMIN FLAG
       FLG100 = .FALSE.
       IF( IFLG .EQ. 100 ) FLG100 = .TRUE.
@@ -110,11 +108,8 @@ C
 C
 C                            IS IT LEGAL HERE ?
 C
-C          write(*,*) 'DEBUG 76' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
         IF( FLG100  .OR. LBREAD(3) )    GO TO 2
-C          write(*,*) 'DEBUG 77' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
         IF( .NOT. ( LBREAD(1) .AND. .NOT. LBREAD(2) ) ) GO TO 3
-C          write(*,*) 'DEBUG 78' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
 C
 C                            BANK 'MTCO' WAS LAST SO THIS OUGHT TO BE
 C                            A RECORD WITH 'MUCO' NOT 'HEAD'
@@ -242,10 +237,8 @@ C
 C
 C                            COPY THE CALIBRATION CONSTANTS INTO COMMON
 C
-          write(*,*) 'DEBUG 70888' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
         CALL RDMTCO( 'DE' )
 C
-                    write(*,*) 'DEBUG 79999' , LBREAD(1),LBREAD(2),LBREAD(3), IDATA(IHEAD)
         GO TO 1000
 C
 C                            DO WE HAVE AN 'MUCO' BANK RECORD? THIS IS

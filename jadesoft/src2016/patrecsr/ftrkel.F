@@ -665,9 +665,6 @@ C      00054000
       ENDIF
       ENDIF
         if (IHIT0.LE.0 .or. IHIT0.GT.16) then
-        write(*,*) 'Bad bounds in ftrkel,1'
-        write(*,*)IHIT0
-        write(*,*)HLYAR
         IHIT0=1
         endif
         ILAY0 = HLYAR(IHIT0)
@@ -675,9 +672,6 @@ C      00054000
         DS0   = FPAR(WR0)
         SLOP0 = WR0*PAR1*2. + PAR2
         if (IHIT9.LE.0 .or. IHIT9.GT.16) then
-        write(*,*) 'Bad bounds in ftrkel,2'
-        write(*,*)IHIT9
-        write(*,*)HLYAR
         IHIT9=IHIT0
         endif 
         ILAY9 = HLYAR(IHIT9)

@@ -113,7 +113,6 @@ C
       DO  33  I = 1,3
         LABT = 103+I
         X0   = (I-1) * (0.5*X5 - 0.4*DLZPHI)
-        write(*,*)' maybe labeling',LABT,X0,Y0,SH3
         CALL RUTEXT(LABT,X0,Y0,SH3)
  33   CONTINUE
 C

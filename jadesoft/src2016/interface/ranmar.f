@@ -107,9 +107,6 @@ C
         NTOT2 = NTOT2 + 1
         NTOT  = NTOT - MODCNS
       ENDIF
-      
-     
-      
       RETURN
       ENTRY RMARIN(IJKLIN,NTOTIN,NTO2IN)
 C

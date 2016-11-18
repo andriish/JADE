@@ -40,7 +40,6 @@ C
 C                            IF OPTION 48 IS ON, DRAW NO AXES
 C
 
-       write(*,*)' CROAX(INDEX) ',  INDEX, DSPDTM(18) 
       IF( DSPDTM(18) ) RETURN
 C
       IF( INDEX .LT. 0  .OR.  INDEX .EQ. 13  .OR.  INDEX .EQ. 15) RETURN
