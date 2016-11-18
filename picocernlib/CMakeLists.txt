@@ -11,11 +11,11 @@ SET(VERSION 2016)
 # Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 
-set(CMAKE_VERBOSE_MAKEFILE OFF)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -O0 -g   -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN  ")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g  -std=c++11 -I/usr/include/root   ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g  -std=c++11 -I/usr/include/root -I./include  ")
 
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
