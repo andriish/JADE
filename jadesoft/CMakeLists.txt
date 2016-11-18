@@ -11,14 +11,16 @@ SET(VERSION 2.99)
 # Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 
-set(CMAKE_VERBOSE_MAKEFILE OFF)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
+
+find_package(CERNLIB)
 
 ########################################################################
 #set(JEXTERN_LIBRARIES  ${CERN_STATIC_LIBRARIES})
 #set(JEXTERN_LIBRARIES  ${CERN_DYNAMIC_LIBRARIES})
 
-set (ROOT_FIND_COMPONENTS Core RIO Tree Graf)
+set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
   find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
   if (ROOT_CONFIG)
      message(STATUS "ROOTConfig.cmake found and will be used: ${ROOT_CONFIG}")
@@ -30,22 +32,33 @@ set (ROOT_FIND_COMPONENTS Core RIO Tree Graf)
      endif()
   else()
      message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
-     find_package(ROOT QUIET REQUIRED COMPONENTS Core Cint RIO Tree  Graf)
+     find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
   endif()
 
-  message(STATUS "ROOT includes: ${ROOT_INCLUDE_DIRS}")
+  message(STATUS "ROOT includes : ${ROOT_INCLUDE_DIRS}")
   message(STATUS "ROOT libraries: ${ROOT_LIBRARIES}")
-  message(STATUS "ROOT_FOUND: ${ROOT_FOUND}")
+  message(STATUS "ROOT_FOUND    : ${ROOT_FOUND}")
 
   if(ROOT_FOUND)
     include_directories(${ROOT_INCLUDE_DIRS})
 #    add_definitions(-DHEPMC_ROOTIO)
   else()
-    message(STATUS "PICOCERNLIB warning: ROOT needed for ROOTIO but not found")
-    message(STATUS "PICOCERNLIB: Skipping HepMC ROOT IO libraries")
-#    set(HEPMC_ENABLE_ROOTIO OFF)
+    message(STATUS "JADESOFT warning: ROOT not found")
   endif()
-set(JEXTERN_LIBRARIES  ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a ${ROOT_LIBRARIES})
+
+
+
+#set(JEXTERN_LIBRARIES  ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a ${ROOT_LIBRARIES} -lstdc++)
+#set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
+#set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
+
+
+set(JEXTERN_LIBRARIES   ${CERN_STATIC_LIBRARIES} )
+#set(JEXTERN_LIBRARIES   ${CERN_DYNAMIC_LIBRARIES} ) 
+set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISCERNLIB")
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISCERNLIB")
+
+
 
 set(JEXTERN_GRAPH_LIBRARIES X11)
 ########################################################################
@@ -53,28 +66,32 @@ set(JEXTERN_GRAPH_LIBRARIES X11)
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
-   set(CMAKE_Fortran_FLAGS            " -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
 #NOT USED
-   set(CMAKE_Fortran_FLAGS            "-fno-automatic -fno-backslash -extend-source 132")	
+   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -fno-automatic -fno-backslash -extend-source 132")	
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
 #PPC64 only
-   set(CMAKE_Fortran_FLAGS           " -qfixed=256 -q32  -melf32ppc -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
+   set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}  -qfixed=256  -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
+#-q32  -melf32ppc
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "sun.*")
 #NOT WELL TESTED
 #Local variables are static by default. Alternate is STATIC statement. 
-   set(CMAKE_Fortran_FLAGS           "  -ftrap=%none -f77 -e -m32  -g  ")
+   set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}   -ftrap=%none -f77 -e  -g  ")
+#-m32 
 endif()
 
 
 message(STATUS "Fortran compiler        : ${Fortran_COMPILER_NAME}")
 message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
+message(STATUS "C++ compiler            : ${CXX_COMPILER_NAME}")
+message(STATUS "C++ compiler flags      : ${CMAKE_CXX_FLAGS}")
 message(STATUS "JEXTERN libraries       : ${JEXTERN_LIBRARIES}")
 message(STATUS "JEXTERN_GRAPH libraries : ${JEXTERN_GRAPH_LIBRARIES}")
 
@@ -329,7 +346,7 @@ ${SRCGRAFIX}/grblock.F
 ADD_LIBRARY(${GRAFIXLIB} grafix ${GRAFIX_src})
 SET(INTERFACE_src
 ${SRCINTERFACE}/hfix.f ${SRCINTERFACE}/biby.f ${SRCINTERFACE}/dlib.f ${SRCINTERFACE}/igwlcm.F
-${SRCINTERFACE}/ips.f ${SRCINTERFACE}/plot10.F ${SRCINTERFACE}/ranmar.f ${SRCINTERFACE}/setcol.F
+${SRCINTERFACE}/ips.f ${SRCINTERFACE}/plot10.F   ${SRCINTERFACE}/plot2016.F ${SRCINTERFACE}/ranmar.f ${SRCINTERFACE}/setcol.F
 )
 ADD_LIBRARY(${INTERFACELIB} interface ${INTERFACE_src})
 SET(JADEGS_src
