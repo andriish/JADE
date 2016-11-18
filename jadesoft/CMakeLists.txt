@@ -15,88 +15,8 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CERNLIB_FIND_REQUIRED ON)
 
 
- ################################################################################
- #    Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH    #
- #                                                                              #
- #              This software is distributed under the terms of the             # 
- #         GNU Lesser General Public Licence version 3 (LGPL) version 3,        #  
- #                  copied verbatim in the file "LICENSE"                       #
- ################################################################################
-# - Try to find CERNLIB
-# Once done this will define
-#
-#  CERNLIB_FOUND - system has CERNLIB
-#### (not needed)  CERNLIB_INCLUDE_DIR - the CERNLIB include directory
-#  CERNLIB_LIBRARIES - The libraries needed to use CERNLIB
-#### (not needed)  CERNLIB_DEFINITIONS - Compiler switches required for using CERNLIB
-#
-
-if (CERNLIB_INCLUDE_DIR AND CERNLIB_LIBRARY_DIR)
-  SET (CERNLIB_INCLUDE_DIR CERNLIB_INCLUDE_DIR-NOTFOUND)
-  SET (CERNLIB_LIB_DIR CERNLIB_LIB_DIR-NOTFOUND)
-  SET (CERNLIB_PLISTS_LIB_DIR CERNLIB_PLISTS_LIB_DIR-NOTFOUND)
-endif (CERNLIB_INCLUDE_DIR AND CERNLIB_LIBRARY_DIR)
-
-MESSAGE(STATUS "Looking for CERNLIB...")
-
-FIND_PATH(CERNLIB_INCLUDE_DIR NAMES CERNLIB PATHS
-  ${SIMPATH}/cern/include
-  $ENV{CERN_ROOT}/include
-#CentOS
-  /usr/include/cernlib/2006
-  NO_DEFAULT_PATH
-)
-
-FIND_PATH(CERNLIB_LIBRARY_DIR NAMES libgeant.a libmathlib.a PATHS
-  ${SIMPATH}/cern/lib
-  $ENV{CERN_ROOT}/lib
-#CentOS
-  /usr/lib/cernlib/2006/lib
-  NO_DEFAULT_PATH
-)
-
-if (CERNLIB_LIBRARY_DIR)
-   set(CERNLIB_FOUND TRUE)
-endif (CERNLIB_LIBRARY_DIR)
-set(cernlibs kernlib packlib mathlib graflib grafX11)  
-if (CERNLIB_FOUND)
-  if (NOT CERNLIB_FIND_QUIETLY)
-    MESSAGE(STATUS "Looking for CERNLIB... - found ${CERNLIB_LIBRARY_DIR}")
-  endif (NOT CERNLIB_FIND_QUIETLY)
-  
-  SET(LD_LIBRARY_PATH ${LD_LIBRARY_PATH} ${CERNLIB_LIBRARY_DIR})
-set(CERN_LIBRARIES)
-foreach(_cpt ${cernlibs})
-#one can link with static
-#  find_library(CERN_${_cpt}_LIBRARY lib${_cpt}.a ${_cpt} HINTS ${CERNLIB_LIBRARY_DIR})
-#or dynamic cernlib
-  find_library(CERN_${_cpt}_LIBRARY lib${_cpt}.so ${_cpt} HINTS ${CERNLIB_LIBRARY_DIR})
-  if(CERN_${_cpt}_LIBRARY)
-    mark_as_advanced(CERN_${_cpt}_LIBRARY)
-    list(APPEND CERN_LIBRARIES ${CERN_${_cpt}_LIBRARY})
-  endif()
-endforeach()
-list(REMOVE_DUPLICATES CERN_LIBRARIES)
-  
-else (CERNLIB_FOUND)
-  if (CERNLIB_FIND_REQUIRED)
-    message(FATAL_ERROR "Looking for CERNLIB... - Not found")
-  endif (CERNLIB_FIND_REQUIRED)
-endif (CERNLIB_FOUND)
-####################################################################################################
-
-
-#set(CERN_LIBRARIES ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a -lc  -L${CMAKE_SOURCE_DIR}/../ROOTLIBS -L/usr/lib64/root
-#-lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lstdc++)
-
 set(CERN_LIBRARIES ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a -lc  -L${CMAKE_SOURCE_DIR}/../ROOTLIBS -L/usr/lib64/root
  -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic -L/usr/lib64/root -lGui -lstdc++)
-
-
-
-#INCLUDE(${CMAKE_MODULE_PATH}/SetUpLAPACK.cmake)
-
-
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 
@@ -124,10 +44,7 @@ if (Fortran_COMPILER_NAME MATCHES "sun.*")
    list(APPEND CERN_LIBRARIES  /lib/libgcc_s.so.1)
 endif()
 
-#message(STATUS "Fortran compiler : ${Fortran_COMPILER_NAME}")
-#elseif()
 
-#endif()
 message(STATUS "Fortran compiler        : ${Fortran_COMPILER_NAME}")
 message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
 message(STATUS "CERN libraries          : ${CERN_LIBRARIES}")
@@ -754,22 +671,12 @@ INSTALL(TARGETS ${JADEZEXE} RUNTIME DESTINATION bin)
 
 ########################################################################################################################3
 
-# Add the source files
-SET(JADEZROOT_src ${SRCJADEZ}/gphmain2.F  ${SRCJADEZ}/xuser.F  ${SRCJADEZ}/gphmain.cxx
-)
 
-# Define the executable in terms of the source files
+SET(JADEZROOT_src ${SRCJADEZ}/gphmain2.F  ${SRCJADEZ}/xuser.F  ${SRCJADEZ}/gphmain.cxx)
 ADD_EXECUTABLE(${JADEZROOTEXE} ${JADEZROOT_src})
-
-
-#-lpatrecsr -ltoflib -ltagg -lboslib -ljadegs -linterface -ljademus -lsource -lwertex -lpatrecsr
 TARGET_LINK_LIBRARIES(${JADEZROOTEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
  ${CERN_LIBRARIES} X11 -Wl,--end-group)
-
 target_include_directories(${JADEZROOTEXE} PUBLIC /usr/include/root)
-
-
-
 INSTALL(TARGETS ${JADEZROOTEXE} RUNTIME DESTINATION bin)
 
 
@@ -778,19 +685,14 @@ INSTALL(TARGETS ${JADEZROOTEXE} RUNTIME DESTINATION bin)
 
 # Add the source files
 SET(MCJADE_src ${SRCMCJADE}/mcjade.f ${SRCMCJADE}/mcmain.f  ${SRCMCJADE}/mcrand.f  ${SRCMCJADE}/mcuser.f ${SRCSUPERV}/showb.f)
-#SET(MCJADE_src ${SRCMCJADE}/mcjade.f ${SRCMCJADE}/mcmain_nohbook.f  ${SRCMCJADE}/mcrand.f  ${SRCMCJADE}/mcuser_nohbook.f ${SRCSUPERV}/showb.f)
 
-# Define the executable in terms of the source files
 ADD_EXECUTABLE(${MCJADEEXE} ${MCJADE_src})
-
-
-#jmc -lboslib -ljadegs -linterface -ljademus -lsource -lwertex -lpatrecsr 
 TARGET_LINK_LIBRARIES(${MCJADEEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
 ${CERN_LIBRARIES} X11 -Wl,--end-group)
-
-
-
 INSTALL(TARGETS ${MCJADEEXE} RUNTIME DESTINATION bin)
+
+
+
 
 
 # Add the source files
