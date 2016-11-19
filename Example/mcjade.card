@@ -1,0 +1,49 @@
+LIST
+
+C Initialise random number generator
+MCSTART ON
+
+C Configuration of the JADE detector
+YEAR    86
+MONTH   05
+DAY     17
+
+C Tracking options
+C --- Smear gamma and electron energies
+SMEAR    ON
+C --- Gamma conversion in outer tank and coil
+CONVERT  ON
+C --- Absorption losses
+ABSORB   ON
+C --- 3 dim shower profile fit to eggs code
+SHOW3D   ON
+C --- Vertex chamber tracking:
+C     Normally, this option is set automatically in MCJADE
+C     VERTEX = ON : Vertex chamber tracking is performed
+C            = OFF: Old beam pipe geometry and beam pipe counters
+C                   is considered (before Mai 84)
+VERTEX   ON
+
+C First and last event to be tracked
+C     LAST=0: process until end of 4-vector 'CPROD' file
+FIRST   1
+LAST    100000
+C 4-Vector print out
+MCNPRI  100
+
+C Name of the 4-vector input file
+MCVECT
+'mcjadeinput.cprod'
+C Name of the bos banks output file
+MCBOS 'mcjade.bos'
+
+C Print out of BOS banks in readable ASCII format
+C (memory consuming, only for tests!!!)
+BANKS   ON
+MCBANK 'mcjade.bnk'
+
+C Control histograms
+HISTO   ON
+MCHIST 'mcjade.hist'
+C
+STOP

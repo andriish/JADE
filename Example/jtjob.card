@@ -1,0 +1,10 @@
+LIST
+*SVBOSF 'superv.bos'
+JTUPLE 1=44 3='jtjob.hbook'
+CALIB './aupdat1.b'
+ZE4VMODE on
+PEDRO on
+MAXREC 100000
+STOP
+
+

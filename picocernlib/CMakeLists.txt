@@ -14,14 +14,14 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 
-set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -O0 -g  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN  ")
+set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -O0 -g  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN -DCERNLIB_QX_SC ")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g  -std=c++11 -I/usr/include/root -I./include  ")
 
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
-   set(CMAKE_Fortran_FLAGS            "    -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN  -DCERNLIB_QX_SC         -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+   set(CMAKE_Fortran_FLAGS            "   -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN  -DCERNLIB_QX_SC         -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
