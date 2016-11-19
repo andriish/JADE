@@ -1,0 +1,17 @@
+(run){
+  NJET:=2;
+  MODEL SM;
+  ALPHAS(MZ) 0.12;
+  ORDER_ALPHAS 2;
+  BEAM_1  11; BEAM_ENERGY_1 16.0;
+  BEAM_2 -11; BEAM_ENERGY_2 16.0;
+}(run)
+(isr){
+  PDF_LIBRARY None;
+}(isr)
+(processes){
+  Process 11 -11 -> 93 93 93{NJET};
+  CKKW pow(10,-2.25);
+  Order (*,2);
+  End process;
+}(processes)
