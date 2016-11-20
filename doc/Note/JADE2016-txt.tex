@@ -220,6 +220,18 @@ JADE software does not need special environment to run.
 However, a virtual machine with all software installed can be downloaded 
 from wwwjade.mpp.mpg.de as well as the installation ISOS.
 
+The basic dependencies of the software are 
+\begin{itemize}
+\item cmake for building, should be installed
+\item C/C++ compiller with basic c++11 support, should be installed
+\item fortran compiler with fortran90 or fortran95 support, should be installed
+\item ROOT5 or ROOT6 for graphics, histogramming
+\item HepMC3 for Monte Carlo, provided in the tarball 
+\item lapack for Monte Carlo , should be installed
+\end{itemize}
+Despite the VM has MC generators installed, the  Monte Carlo HepMC files can be generated elsewhere as well.
+
+
 \subsubsection{MC generation}
 
 The setup of MC generators is ommited.
@@ -237,17 +249,16 @@ The options are given in the help of convert\_example\_JADE.exe.
 
 The resulted files can be used for the superv simulation and reconstruction utility.
 \subsubsection{Analysis}
-An utility that converts the final reconstructed data to PAW format is added.
-These data can be converted to ROOT format with h2root utility and analyzed on arbitrary systems with ROOT.
+The final  data  is stored in ROOT or HBOOK fromat  and can be analyzed on arbitrary systems with ROOT or PAW.
 
 
 
 \section{JADE data}
 The JADE data is stored in MPCDF.
-It can be accessed via 
+It can be accessed via various protocols.
 
 \section{JADE documentation}
-Technical noteas are available in hard copies in MPP (and DESY library?).
+Technical noteas are available in hard copies and scanned version in MPP (and DESY library?).
 Papers are available on InSpire from CERN library or KEK.
 The data preservation documentation is available on wwwjade.mpp.mpg.de.
 
@@ -257,10 +268,7 @@ The case of JADE data preservation was studied.
 \section{TODO}
 \begin{itemize}
 \item fix this document, 5h
-\item Copy the data to RZG, 5h
 \item Do testst on different platforms with MC, 10h
-\item do something with docs? Scan them?, xxx
-\item Fix MC conversion utility, add be le options there., 1h
 \item Fix the webpage, 5h
 \item Provide VMS., 10h
 \end{itemize}
