@@ -8,7 +8,7 @@ if(NOT CMAKE_GENERATOR STREQUAL Xcode)
 endif()
 
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 #---Setting HepMC Build type-----------------------------------------------
 if(CMAKE_BUILD_TYPE)

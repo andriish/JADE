@@ -9,7 +9,6 @@ add_subdirectory(LHEFExample)
 
 add_subdirectory(ConvertExample)
 
-add_subdirectory(ConvertExampleJADE)
 
 set(PYTHIA8_ROOT_DIR "" CACHE PATH "Location of Pythia8 installation.")
 find_package(Pythia8 QUIET)
