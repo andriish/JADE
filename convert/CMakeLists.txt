@@ -1,6 +1,86 @@
+#https://github.com/SethMMorton/cmake_fortran_template
+##################################################
+# Define the project and the depencies that it has
+##################################################
+
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
+PROJECT(JADECONVERT Fortran CXX)
+
+SET(VERSION 0.99)
+
+# Add our local modlues to the module path
+SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
+
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 
-include_directories(${PROJECT_SOURCE_DIR}/rootIO/include ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}  ${ROOT_INCLUDE_DIRS})
+find_package(HEPMC3)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}  ${ROOT_INCLUDE_DIRS})
+
+
+########################################################################
+
+set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+  find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
+  if (ROOT_CONFIG)
+     message(STATUS "ROOTConfig.cmake found and will be used: ${ROOT_CONFIG}")
+     include(${ROOT_CONFIG})
+     message(STATUS "ROOT use file: ${ROOT_USE_FILE}")
+     include(${ROOT_USE_FILE})
+     if(ROOT_LIBRARIES AND ROOT_INCLUDE_DIRS)
+       set(ROOT_FOUND TRUE)
+     endif()
+  else()
+     message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
+     find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+  endif()
+
+  message(STATUS "ROOT includes : ${ROOT_INCLUDE_DIRS}")
+  message(STATUS "ROOT libraries: ${ROOT_LIBRARIES}")
+  message(STATUS "ROOT_FOUND    : ${ROOT_FOUND}")
+
+  if(ROOT_FOUND)
+    include_directories(${ROOT_INCLUDE_DIRS})
+#    add_definitions(-DHEPMC_ROOTIO)
+  else()
+    message(STATUS "JADESOFT warning: ROOT not found")
+  endif()
+
+
+get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
+if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
+   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+endif()
+
+if (Fortran_COMPILER_NAME MATCHES "ifort.*")
+#NOT USED
+   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -fno-automatic -fno-backslash -extend-source 132")	
+endif()
+
+if (Fortran_COMPILER_NAME MATCHES "xlf.*")
+#PPC64 only
+   set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}  -qfixed=256  -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
+#-q32  -melf32ppc
+endif()
+
+if (Fortran_COMPILER_NAME MATCHES "sun.*")
+#NOT WELL TESTED
+#Local variables are static by default. Alternate is STATIC statement. 
+   set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}   -ftrap=%none -f77 -e  -g  ")
+#-m32 
+endif()
+
+
+message(STATUS "Fortran compiler        : ${Fortran_COMPILER_NAME}")
+message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
+message(STATUS "C++ compiler            : ${CXX_COMPILER_NAME}")
+message(STATUS "C++ compiler flags      : ${CMAKE_CXX_FLAGS}")
+message(STATUS "HEPMC3 libraries        : ${JEXTERN_LIBRARIES}")
+message(STATUS "LAPACK libraries        : ${JEXTERN_LIBRARIES}")
+
+
+
 
 #----------------------------------------------------------------------------
 # Generate dictionaries
@@ -14,18 +94,8 @@ add_executable(convert_example_JADE.exe
         )
 
       
-target_link_libraries(convert_example_JADE.exe ${ROOT_LIBRARIES} HepMC HepMCrootIO /usr/lib/liblapack.so.3)
-set_target_properties(convert_example_JADE.exe PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/outputs/${CMAKE_INSTALL_BINDIR})
+target_link_libraries(convert_example_JADE.exe ${ROOT_LIBRARIES} HepMC HepMCrootIO lapack)
 add_dependencies( convert_example_JADE.exe dictionary )
 
-
-# create environment scripts
-
-set(bindir "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}")
-set(libdir "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}:${ROOT_LIBRARY_DIR}")
- 
-
 # installs 
-install(TARGETS convert_example_JADE.exe DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(DIRECTORY ${PROJECT_BINARY_DIR}/examples/ConvertExample_JADE/ DESTINATION ${CMAKE_INSTALL_BINDIR} FILES_MATCHING PATTERN "*.pcm" PATTERN "CMakeFiles" EXCLUDE )
-install(DIRECTORY ${PROJECT_BINARY_DIR}/outputs/${CMAKE_INSTALL_BINDIR}/ DESTINATION ${CMAKE_INSTALL_BINDIR}        FILES_MATCHING PATTERN "*.sh")
+install(TARGETS convert_example_JADE.exe RUNTIME DESTINATION bin)
