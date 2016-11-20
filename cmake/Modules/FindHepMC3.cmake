@@ -1,0 +1,31 @@
+# - Locate HepMC library
+# in a directory defined via  HEPMC3_ROOT_DIR or HEPMC3_DIR environment variable
+# Defines:
+#
+#  HEPMC3_FOUND
+#  HEPMC3_INCLUDE_DIR
+#  HEPMC3_INCLUDE_DIRS (not cached)
+#  HEPMC3_LIBRARIES
+#  HEPMC3_FIO_LIBRARIES
+
+find_path(HEPMC3_INCLUDE_DIR HepMC/GenEvent.h
+          HINTS $ENV{HEPMC3_ROOT_DIR}/include ${HEPMC3_ROOT_DIR}/include
+          $ENV{HEPMC3_DIR}/include ${HEPMC3_DIR}/include)
+
+find_library(HEPMC3_LIBRARIES NAMES HepMC
+             HINTS $ENV{HEPMC3_ROOT_DIR}/lib ${HEPMC3_ROOT_DIR}/lib
+             HINTS $ENV{HEPMC3_DIR}/lib ${HEPMC3_DIR}/lib)
+
+get_filename_component(HEPMC3_LIBRARY_DIR ${HEPMC3_LIBRARIES} PATH)
+set(HEPMC3_FIO_LIBRARIES "-L${HEPMC3_LIBRARY_DIR} -lHepMC")
+
+set(HEPMC3_INCLUDE_DIRS ${HEPMC3_INCLUDE_DIR})
+
+# handle the QUIETLY and REQUIRED arguments and set HEPMC3_FOUND to TRUE if
+# all listed variables are TRUE
+
+INCLUDE(FindPackageHandleStandardArgs)
+
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(HepMC2 FOUND_VAR HEPMC3_FOUND REQUIRED_VARS HEPMC3_INCLUDE_DIR HEPMC3_LIBRARIES)
+
+mark_as_advanced(HEPMC3_FOUND HEPMC3_INCLUDE_DIRS HEPMC3_LIBRARIES)

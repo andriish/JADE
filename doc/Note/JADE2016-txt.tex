@@ -164,7 +164,20 @@ zlib-devel-1.2.7-15.el7.ppc
 
 A similar list is needed for the i686 architecture.
 
+\subsubsection{CERNLIB replacement}
+After a basic functionality of the software was archieved with these versions of CERNLIB,
+a small set of basic  sunctions used from CERNLIB 
+was identified. The corresponding sources were extracted from kernlib and packlib to form picocernlib package.
 
+The histogramming routines that require a lot of HBOOK code were replaced with the ROOT code that emulates
+the functionality, see JBOOK.cxx  
+
+The graphics routines that require a lot of HIGZ code were replaced with the ROOT code that emulates
+the functionality, see JHIGZ.cxx To embedd the graphics dysplay into a ROOT application,
+the main program grphmain is called as a routine inside TApplication loop.
+
+With these replacements it is possible to avoid complications with ZEBRA and drop dependence on CERNLIB, which is
+rarely available on modern systems.
 
 \subsubsection{Endianness}
 The I/O endianess  can be controled in gfortran runtime with the 
@@ -184,6 +197,8 @@ In many places the types were changed from LOGICAL to CHARCTER
 and from INTEGER to CHARECTER.
 
 As the line lenghth is not limited, some symbols were removed in the end of lines.
+
+Some specials symbols in the line continuation positions  were replaced with plus sign, etc.
 
 HOLLERITH constants are represented in IBM Fortran via
 \begin{verbatim}
@@ -208,6 +223,25 @@ One compiller specific routine was added: hfix (gfortran is missing it.)
 \subsubsection{Sources treatment}
 The modified  sources were put into a separate directory src2016 and main2016.
 Some used scripts are in the directory scripts2016.
+ While porting two bugs were found in the software.
+ The reconstruction software packages were linked to use CERNLIB routines zbug and z  instead of the actually needed rotines for the reconstruction
+ from the JADE software. As a result the calibration of part of detector was disabled for the data samles.
+ However, this bug had no influence on the results produced previously~\cite{Schieck:2012mp}, as these were using the 
+ data reconstructed wuth original software. The bug does not affect Monte Carlo.
+
+\subsection{JADE software content}
+The reviewed JADE software from 2003 is described elsewhere.
+In the presented package the MC generator codes are dropped (not ported) and 
+three more components are added:
+\begin{itemize}
+\item directory convert: the convert utility to produce .cprod files from moders forma tMC records. The current (prerelease) version of HepMC3 is added as well.
+\item directory picocernlib to replace the CERNLIB routines
+\item directory jtuple package that performs the analysis and was used in the past~\cite{Schieck:2012mp}. 
+\end{itemize} 
+All of the packages above use the cmake as a build system.
+
+The directory examples contains the setups for MC production (external generators are needed) and simulation, data reconstruction,
+event display usage.
 
 
 \subsection{Using JADE software}
@@ -225,16 +259,18 @@ The basic dependencies of the software are
 \item cmake for building, should be installed
 \item C/C++ compiller with basic c++11 support, should be installed
 \item fortran compiler with fortran90 or fortran95 support, should be installed
-\item ROOT5 or ROOT6 for graphics, histogramming
+\item ROOT5/6~\cite{Antcheva:2009zz} for graphics, histogramming
 \item HepMC3 for Monte Carlo, provided in the tarball 
-\item lapack for Monte Carlo , should be installed
+\item lapack~\cite{lapack} for Monte Carlo , should be installed
 \end{itemize}
-Despite the VM has MC generators installed, the  Monte Carlo HepMC files can be generated elsewhere as well.
+All of these dependencies on the virtual machine are provided in RPM packages.
+
+Despite the VM has MC generators installed (see Tab~ for the list), the  Monte Carlo HepMC files can be generated elsewhere as well.
 
 
 \subsubsection{MC generation}
 
-The setup of MC generators is ommited.
+The setup of MC generators is ommited. The code of the old MC generators is not ported.
 The only requirement for the MC enerator is to produce the 
 output in HepMC2/HepMC3/HEPEVT format.
 After that the utility convert\_example\_JADE.exe can be used.
@@ -248,9 +284,22 @@ In the later the sherpa34gev.hepmc2 is the input file in hepmc2 format and the b
 The options are given in the help of convert\_example\_JADE.exe.
 
 The resulted files can be used for the superv simulation and reconstruction utility.
-\subsubsection{Analysis}
+\subsubsection{Analysis software}
 The final  data  is stored in ROOT or HBOOK fromat  and can be analyzed on arbitrary systems with ROOT or PAW.
 
+\subsubsection{Event display}
+Event display functionality is not restored completely (yet).
+Despite it is possible to link the  code of event display with the CERNLIB,
+it does not produce satisfactory result.
+Therefore an attempt to use ROOT for the graphics was done.
+The main obstacle is the conceptual difference in geometry tratment between 
+the ROOT and HIGZ and relying on tn the undocumented behaviour.
+
+
+
+\subsubsection{File catalog}
+As the amount of data is small, there is no big need in a complicated file catalogue.
+The list of files can be see onlie. 
 
 
 \section{JADE data}
@@ -261,11 +310,15 @@ It can be accessed via various protocols.
 Technical noteas are available in hard copies and scanned version in MPP (and DESY library?).
 Papers are available on InSpire from CERN library or KEK.
 The data preservation documentation is available on wwwjade.mpp.mpg.de.
+\section{Validation}
+The data and MC samples produced in 2003 were reconstructed with JADE2016 software and compared with the 
+original reconstructions. Minor differences were found.
+
 
 \section{Conclusions}
 The case of JADE data preservation was studied.
 
-\section{TODO}
+\section*{TODO}
 \begin{itemize}
 \item fix this document, 5h
 \item Do testst on different platforms with MC, 10h
