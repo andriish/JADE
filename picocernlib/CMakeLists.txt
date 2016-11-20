@@ -10,7 +10,7 @@ SET(VERSION 2016)
 
 # Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
-
+include("GNUInstallDirs")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 
@@ -173,9 +173,19 @@ ${TOP}/src/Frame_Dict.cxx
 )
 
 
-ADD_LIBRARY(${PICOCERNLIB}  ${PICOCERNLIB_src})
+ADD_LIBRARY(${PICOCERNLIB} STATIC  ${PICOCERNLIB_src})
 
 # Add a distclean target to the Makefile
 ADD_CUSTOM_TARGET(distclean 
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/distclean.cmake
 )
+
+
+install(
+TARGETS ${PICOCERNLIB} 
+ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} 
+LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} 
+COMPONENT library 
+)
+
+

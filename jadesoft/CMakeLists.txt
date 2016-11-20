@@ -10,7 +10,7 @@ SET(VERSION 2.99)
 
 # Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
-
+include("GNUInstallDirs")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 
@@ -771,11 +771,6 @@ TARGET_LINK_LIBRARIES(${ZE4VEXE} -Wl,--start-group ${ZLIB} ${JMC} ${BOSLIB} ${JA
 INSTALL(TARGETS ${ZE4VEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 
-IF(WIN32)
-    SET(CMAKE_INSTALL_PREFIX "C:\\Program Files")
-ELSE()
-    SET(CMAKE_INSTALL_PREFIX /usr/local)
-ENDIF(WIN32)
 
 # Add a distclean target to the Makefile
 ADD_CUSTOM_TARGET(distclean 
