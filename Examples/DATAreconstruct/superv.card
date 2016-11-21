@@ -9,7 +9,7 @@ FIRST  1
 LAST   100000
 
 C Name of the input BOS file
-MCBOS './mcjade.bos'
+MCBOS './datajade.bos'
 
 C Reconstruction options
 ZSRFTV OFF
@@ -44,7 +44,7 @@ VTXB OFF
 VTXF OFF
 
 C Name of the BOS banks output file
-SVBOS './super.bos'
+SVBOS './superv.bos'
 
 C Print out of BOS banks in readable ASCII format
 C (memory consuming, only for tests!!!)
