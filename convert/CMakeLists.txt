@@ -82,7 +82,7 @@ message(STATUS "Fortran compiler        : ${Fortran_COMPILER_NAME}")
 message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
 message(STATUS "C++ compiler            : ${CXX_COMPILER_NAME}")
 message(STATUS "C++ compiler flags      : ${CMAKE_CXX_FLAGS}")
-message(STATUS "HEPMC3 libraries        : ${HEPMC3_LIBRARIES} ${HEPMC3_ROOTIO_LIBRARIES}")
+message(STATUS "HEPMC3 libraries        : ${HEPMC3_STATIC_LIBRARIES} ${HEPMC3_ROOTIO_LIBRARIES}")
 message(STATUS "LAPACK libraries        : ${LAPACK_LIBRARIES_DIR}")
 
 
@@ -100,7 +100,7 @@ add_executable(convert_example_JADE.exe
         )
 
       
-target_link_libraries(convert_example_JADE.exe ${HEPMC3_LIBRARIES}   ${LAPACK_LIBRARIES_DIR}  lapack)
+target_link_libraries(convert_example_JADE.exe ${HEPMC3_STATIC_LIBRARIES}   ${LAPACK_LIBRARIES_DIR}  lapack)
 add_dependencies( convert_example_JADE.exe dictionary )
 
 # installs 

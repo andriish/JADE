@@ -21,6 +21,6 @@ export GFORTRAN_CONVERT_UNIT='native;big_endian:2,22'
 cat  jtjob.card   | jtjob >jtjob.log
 ########################################################################
 #mkdir -p output
-#mv *.stat *.bos *.ze4v *.root *.histo *.cprod *.log output
+#mv *.stat *.bos *.ze4v *.root *.histo *.cprod *.log *.bnk output
 
 

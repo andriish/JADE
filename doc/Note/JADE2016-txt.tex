@@ -1,24 +1,24 @@
 \section{Introduction to JADE experiment}
-The description of JADE experiment can be found elsewhwre.\cite{Bartel:1986ua}
+The description of JADE experiment can be found elsewhere.\cite{Bartel:1986ua}
 Physics cases for the available JADE data can be discussed elsewhere\cite{Bartel:1986ua}.
-The case of JADE data preservation can be found interesting as a mode of data preservation that can be used for other experimnts.
+The case of JADE data preservation can be found interesting as a mode of data preservation that can be used for other experiments.
 The main part of the preservation is the  software, data and documentation.
 \section{JADE software}
-JADE software description can be found in the JADE computing notes and elsewhwre.
+JADE software description can be found in the JADE computing notes and elsewhere.
 Briefly it consists of approximately 50.000 lines of IBM Fortran77 and similar codes 
 that were compiled on AIX4.3 systems with IBM Fortran compiler and corresponding runtime.
-The dependancies include CERNLIB.
+The dependencies include CERNLIB.
 
 
 \subsection{Porting JADE software}
 This section describes the process of porting JADE software to modern systems.
 Please skip it if you are not interested.
-As of 2016 these systems are not available on the market\footnote{aapart from few on e-Bay},
+As of 2016 these systems are not available on the market\footnote{apart from few on e-Bay},
 therefor e the idea is to port the software on modern wide 
 The main problems with the porting software to the modern systems are
 \begin{itemize}
 \item  compiler-specific Fortran features
-\item  big-little endianess for the calculs
+\item  big-little endianess for the calculi
 \item  big-little endianess for the I/O
 \item  build system 
 \item  porting CERNLIB
@@ -54,7 +54,7 @@ Maybe that would worth to copy the needed cernlib routines to have them separate
 Will minicernlib work?The hardest part is graphics.
 
 The MC generation can be done on any platform and put into HepMC3 format.
-Practicaly it is visible for G and H.
+Practically it is visible for G and H.
 The conversion to any be and le JADE MC formats can be done on any platform between F and J,
 as HepMC3 works only with gcc4 and compatible compilers. 
 
@@ -74,7 +74,7 @@ mock
 
 
 
-For ppc the mock environment is not available, so the build was done manualy.
+For ppc the mock environment is not available, so the build was done manually.
 All needed 32 bit packages were installed from CentOS7 AltArch repository.
 The two missing packages, cernlib and xbae were recompiled from CentOS6 source rpms.
 \begin{Verbatim}[fontsize=\tiny]
@@ -166,14 +166,14 @@ A similar list is needed for the i686 architecture.
 
 \subsubsection{CERNLIB replacement}
 After a basic functionality of the software was archieved with these versions of CERNLIB,
-a small set of basic  sunctions used from CERNLIB 
+a small set of basic  functions used from CERNLIB 
 was identified. The corresponding sources were extracted from kernlib and packlib to form picocernlib package.
 
 The histogramming routines that require a lot of HBOOK code were replaced with the ROOT code that emulates
 the functionality, see JBOOK.cxx  
 
 The graphics routines that require a lot of HIGZ code were replaced with the ROOT code that emulates
-the functionality, see JHIGZ.cxx To embedd the graphics dysplay into a ROOT application,
+the functionality, see JHIGZ.cxx To embedded the graphics display into a ROOT application,
 the main program grphmain is called as a routine inside TApplication loop.
 
 With these replacements it is possible to avoid complications with ZEBRA and drop dependence on CERNLIB, which is
@@ -187,7 +187,7 @@ export GFORTRAN_CONVERT_UNIT='big_endian;native:2'
 \end{verbatim}
 
 \subsubsection{cmake}
-The cmake file is selfdocumented.
+The cmake file is self documented.
 Since version 2 cmake  has a first class Fortran support with descent dependency tracking.
 This replaces self developed scripts in kors shell.
 
@@ -196,7 +196,7 @@ Few changes were needed after the porting in   was done.
 In many places the types were changed from LOGICAL to CHARCTER
 and from INTEGER to CHARECTER.
 
-As the line lenghth is not limited, some symbols were removed in the end of lines.
+As the line length is not limited, some symbols were removed in the end of lines.
 
 Some specials symbols in the line continuation positions  were replaced with plus sign, etc.
 
@@ -208,7 +208,7 @@ were replaced with
 \begin{verbatim}
 4HABCD
 \end{verbatim}
-for GNU fortran. This format is also accepted by the IBM compillers.
+for GNU fortran. This format is also accepted by the IBM compilers.
 Similar issue was with the hexademical constants, which are in the form 
 \begin{verbatim}
 Z1000
@@ -218,16 +218,16 @@ in IBM fortran. These were replaced with
 Z'1000'
 \end{verbatim}
 The form is accepted by GNU Fortran and IBM compiuller.
-One compiller specific routine was added: hfix (gfortran is missing it.)
+One compiler specific routine was added: hfix (gfortran is missing it.)
 
 \subsubsection{Sources treatment}
 The modified  sources were put into a separate directory src2016 and main2016.
 Some used scripts are in the directory scripts2016.
  While porting two bugs were found in the software.
- The reconstruction software packages were linked to use CERNLIB routines zbug and z  instead of the actually needed rotines for the reconstruction
- from the JADE software. As a result the calibration of part of detector was disabled for the data samles.
+ The reconstruction software packages were linked to use CERNLIB routines zbug and z  instead of the actually needed routines for the reconstruction
+ from the JADE software. As a result the calibration of part of detector was disabled for the data samples.
  However, this bug had no influence on the results produced previously~\cite{Schieck:2012mp}, as these were using the 
- data reconstructed wuth original software. The bug does not affect Monte Carlo.
+ data reconstructed with original software. The bug does not affect Monte Carlo.
 
 \subsection{JADE software content}
 The reviewed JADE software from 2003 is described elsewhere.
@@ -270,7 +270,7 @@ Despite the VM has MC generators installed (see Tab~ for the list), the  Monte C
 
 \subsubsection{MC generation}
 
-The setup of MC generators is ommited. The code of the old MC generators is not ported.
+The setup of MC generators is omitted. The code of the old MC generators is not ported.
 The only requirement for the MC enerator is to produce the 
 output in HepMC2/HepMC3/HEPEVT format.
 After that the utility convert\_example\_JADE.exe can be used.
@@ -306,8 +306,10 @@ The list of files can be see onlie.
 The JADE data is stored in MPCDF.
 It can be accessed via various protocols.
 
+The real data is stored in fpack format, which can be converted to the bos format with utility.
+
 \section{JADE documentation}
-Technical noteas are available in hard copies and scanned version in MPP (and DESY library?).
+Technical notes are available in hard copies and scanned version in MPP (and DESY library?).
 Papers are available on InSpire from CERN library or KEK.
 The data preservation documentation is available on wwwjade.mpp.mpg.de.
 \section{Validation}

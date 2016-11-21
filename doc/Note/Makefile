@@ -120,7 +120,7 @@ spell: $(latexfile).rws
 		echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" ;\
 		echo $$a;\
 		echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" ;\
-#		aspell   --add-tex-command="label p" --add-tex-command="usetikzlibrary p" --add-tex-command="sect p" --add-tex-command="fig p" --add-tex-command="tab p"  --add-extra-dicts=./$(latexfile).rws  -t --dont-tex-check-comments -d en_GB -c $$a ;\
+		aspell   --add-tex-command="label p" --add-tex-command="usetikzlibrary p" --add-tex-command="sect p" --add-tex-command="fig p" --add-tex-command="tab p"  --add-extra-dicts=./$(latexfile).rws  -t --dont-tex-check-comments -d en_GB -c $$a ;\
 		done
 
 clean :

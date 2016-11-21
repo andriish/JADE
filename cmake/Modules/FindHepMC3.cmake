@@ -17,7 +17,7 @@ find_path(HEPMC3_INCLUDE_DIR HepMC/GenEvent.h
           /usr/include/HepMC
           )
 
-find_library(HEPMC3_LIBRARIES NAMES libHepMC.a libHepMC.so libHepMCrootIO.so
+find_library(HEPMC3_DYNAMIC_LIBRARIES NAMES  libHepMC.so libHepMCrootIO.so
              HINTS 
              $ENV{HEPMC3_ROOT_DIR}/lib 
              $ENV{HEPMC3_ROOT_DIR}/lib64 
@@ -32,9 +32,26 @@ find_library(HEPMC3_LIBRARIES NAMES libHepMC.a libHepMC.so libHepMCrootIO.so
              /usr/lib64
              )
 
-get_filename_component(HEPMC3_LIBRARY_DIR ${HEPMC3_LIBRARIES} PATH)
-set(HEPMC3_LIBRARIES "-L${HEPMC3_LIBRARY_DIR} -lHepMC")
-set(HEPMC3_ROOTIO_LIBRARIES "-L${HEPMC3_LIBRARY_DIR} -lHepMCrootIO")
+find_library(HEPMC3_STATIC_LIBRARIES NAMES libHepMC.a 
+             HINTS 
+             $ENV{HEPMC3_ROOT_DIR}/lib 
+             $ENV{HEPMC3_ROOT_DIR}/lib64 
+             ${HEPMC3_ROOT_DIR}/lib
+             ${HEPMC3_ROOT_DIR}/lib64
+             HINTS 
+             $ENV{HEPMC3_DIR}/lib 
+             $ENV{HEPMC3_DIR}/lib64 
+             ${HEPMC3_DIR}/lib
+             ${HEPMC3_DIR}/lib64
+             /usr/lib
+             /usr/lib64
+             )
+
+
+get_filename_component(HEPMC3_STATIC_LIBRARY_DIR ${HEPMC3_STATIC_LIBRARIES} PATH)
+get_filename_component(HEPMC3_DYMANIC_LIBRARY_DIR ${HEPMC3_DYNAMIC_LIBRARIES} PATH)
+set(HEPMC3_LIBRARIES "${HEPMC3_STATIC_LIBRARY_DIR}/libHepMC.a")
+set(HEPMC3_ROOTIO_LIBRARIES "-L${HEPMC3_DYNAMIC_LIBRARY_DIR} -lHepMC -lHepMCrootIO")
 
 set(HEPMC3_INCLUDE_DIRS ${HEPMC3_INCLUDE_DIR})
 
@@ -43,6 +60,6 @@ set(HEPMC3_INCLUDE_DIRS ${HEPMC3_INCLUDE_DIR})
 
 INCLUDE(FindPackageHandleStandardArgs)
 
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(HepMC3 FOUND_VAR HEPMC3_FOUND REQUIRED_VARS HEPMC3_INCLUDE_DIR HEPMC3_LIBRARIES)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(HepMC3 FOUND_VAR HEPMC3_FOUND REQUIRED_VARS HEPMC3_INCLUDE_DIR HEPMC3_STATIC_LIBRARIES HEPMC3_DYNAMIC_LIBRARIES)
 
-mark_as_advanced(HEPMC3_FOUND HEPMC3_INCLUDE_DIRS HEPMC3_LIBRARIES)
+mark_as_advanced(HEPMC3_FOUND HEPMC3_INCLUDE_DIRS HEPMC3_STATIC_LIBRARIES HEPMC3_DYNAMIC_LIBRARIES)

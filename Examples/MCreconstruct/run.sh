@@ -1,7 +1,7 @@
 #!/bin/bash
 export GFORTRAN_CONVERT_UNIT='native'
 convert_example_JADE.exe hepmc2_jade  $1   temp.jade Mode=0 > convert.log
-if [ -n temp.jade ]; then
+if [ ! -f temp.jade ]; then
 echo "Conversion on ->"$1"<-has failed. See convert.log"
 exit
 fi
@@ -23,6 +23,6 @@ export GFORTRAN_CONVERT_UNIT='native;big_endian:2,22'
 cat  jtjob.card   | jtjob >jtjob.log
 ########################################################################
 mkdir -p output
-mv *.stat *.bos *.ze4v *.root *.histo *.cprod *.log output
+mv *.stat *.bos *.ze4v *.root *.histo *.cprod *.log *.bnk output 
 
 

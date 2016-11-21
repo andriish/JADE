@@ -44,7 +44,7 @@ VTXB OFF
 VTXF OFF
 
 C Name of the BOS banks output file
-SVBOS './super.bos'
+SVBOS './superv.bos'
 
 C Print out of BOS banks in readable ASCII format
 C (memory consuming, only for tests!!!)
