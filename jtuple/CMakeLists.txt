@@ -5,7 +5,7 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
 PROJECT(JTUPLE Fortran)
-
+include("GNUInstallDirs")
 # Set the FOO version
 SET(VERSION 2.0)
 
@@ -45,7 +45,7 @@ set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint 
   endif()
 
 
-set(JEXTERN_LIBRARIES  ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a ${ROOT_LIBRARIES} -lstdc++)
+set(JEXTERN_LIBRARIES  ${PICOCERNLIB} ${ROOT_LIBRARIES} -lstdc++)
 set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
 
@@ -112,6 +112,8 @@ SET(NTUPLE          ntuple)
 SET(ZREAD         zread)
 
 FIND_PATH(JADELIB_LIBRARY_DIR NAMES libinterface.a libjadegs.a libboslib.a libzlib.a PATHS
+  ${JADELIB_ROOT_DIR}/lib
+  ${JADELIB_ROOT_DIR}/lib64
   /usr/lib/jadesoft
   ../jadesoft/lib
   ../jadesoft/
@@ -170,6 +172,14 @@ SET(JTJOBEXE_src ${SRC}/jtjob.F  ${SRC}/showb.f)
 ADD_EXECUTABLE(${JTJOBEXE} ${JTJOBEXE_src})
 TARGET_LINK_LIBRARIES(${JTJOBEXE} -Wl,--start-group ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JADE_LIBRARIES} lapack -Wl,--end-group)
 
+
+
+INSTALL(TARGETS ${JTJOBEXE} ${JZREADEXE} ${TAKLUMIEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+INSTALL( TARGETS ${BOSLIB} 
+${ZREAD}
+${NTUPLE}
+ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT library )
 
 
 

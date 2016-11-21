@@ -46,7 +46,7 @@ set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint 
 
 
 
-set(JEXTERN_LIBRARIES  ${CMAKE_SOURCE_DIR}/../picocernlib/libpicocernlib.a ${ROOT_LIBRARIES} -lstdc++)
+set(JEXTERN_LIBRARIES  ${PICOCERNLIB} ${ROOT_LIBRARIES} -lstdc++)
 set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
 
@@ -94,7 +94,7 @@ message(STATUS "JEXTERN libraries       : ${JEXTERN_LIBRARIES}")
 message(STATUS "JEXTERN_GRAPH libraries : ${JEXTERN_GRAPH_LIBRARIES}")
 
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
 
 ############################################################
@@ -191,7 +191,7 @@ if (Fortran_COMPILER_NAME MATCHES "xlf.*")
    
 
 
-ADD_LIBRARY(${BOSLIBLIB} boslib ${BOSLIB_src})
+ADD_LIBRARY(${BOSLIB} STATIC ${BOSLIB_src})
 SET(GRAFIX_src
 ${SRCGRAFIX}/axshow.F ${SRCGRAFIX}/bankls.F ${SRCGRAFIX}/bankpr.F ${SRCGRAFIX}/barsec.f
 ${SRCGRAFIX}/blnumb.F ${SRCGRAFIX}/blshow.F ${SRCGRAFIX}/calloc.F ${SRCGRAFIX}/capmrk.F
@@ -341,12 +341,12 @@ ${SRCGRAFIX}/ztrgvw.F
 ${SRCGRAFIX}/grblock.F
 
 )
-ADD_LIBRARY(${GRAFIXLIB} grafix ${GRAFIX_src})
+ADD_LIBRARY(${GRAFIX} STATIC ${GRAFIX_src})
 SET(INTERFACE_src
 ${SRCINTERFACE}/hfix.f ${SRCINTERFACE}/biby.f ${SRCINTERFACE}/dlib.f ${SRCINTERFACE}/igwlcm.F
 ${SRCINTERFACE}/ips.f ${SRCINTERFACE}/plot10.F   ${SRCINTERFACE}/plot2016.F ${SRCINTERFACE}/ranmar.f ${SRCINTERFACE}/setcol.F
 )
-ADD_LIBRARY(${INTERFACELIB} interface ${INTERFACE_src})
+ADD_LIBRARY(${INTERFACE} STATIC ${INTERFACE_src})
 SET(JADEGS_src
 ${SRCJADEGS}/akop.F
 ${SRCJADEGS}/alphan.F
@@ -476,7 +476,7 @@ ${SRCJADEGS}/zbug.f
 )
 
 
-ADD_LIBRARY(${JADEGSLIB} jadegs ${JADEGS_src})
+ADD_LIBRARY(${JADEGS} STATIC ${JADEGS_src})
 SET(JADEMUS_src
 ${SRCJADEMUS}/mu2pul.f
 ${SRCJADEMUS}/muanab.F
@@ -519,7 +519,7 @@ ${SRCJADEMUS}/muwire.F
 ${SRCJADEMUS}/tanthm.F
 ${SRCJADEMUS}/xymud.F
 )
-ADD_LIBRARY(${JADEMUSLIB} jademus ${JADEMUS_src})
+ADD_LIBRARY(${JADEMUS} STATIC ${JADEMUS_src})
 #SET(JADESR_src
 #)
 #ADD_LIBRARY(${JADESRLIB} jadesr ${JADESR_src})
@@ -611,7 +611,7 @@ ${SRCJMC}/trlgsh.F
 ${SRCJMC}/wegas.f
 ${SRCJMC}/wrtmcb.f
 )
-ADD_LIBRARY(${JMCLIB} jmc ${JMC_src})
+ADD_LIBRARY(${JMC} STATIC ${JMC_src})
 SET(PATRECSR_src
 ${SRCPATRECSR}/adpatr.F ${SRCPATRECSR}/backtr.F ${SRCPATRECSR}/bakfit.F ${SRCPATRECSR}/bakpak.F ${SRCPATRECSR}/bside.F
 ${SRCPATRECSR}/bstore.F ${SRCPATRECSR}/crtrel.F ${SRCPATRECSR}/deadcl.f ${SRCPATRECSR}/errorm.F
@@ -621,7 +621,7 @@ ${SRCPATRECSR}/patrol.F ${SRCPATRECSR}/pcwork.F ${SRCPATRECSR}/prhtar.F ${SRCPAT
 ${SRCPATRECSR}/rstbtr.F ${SRCPATRECSR}/srtrel.F ${SRCPATRECSR}/trlord.F ${SRCPATRECSR}/xyfit.F
 ${SRCPATRECSR}/zrfit.F
 )
-ADD_LIBRARY(${PATRECSRLIB} patrecsr ${PATRECSR_src})
+ADD_LIBRARY(${PATRECSR} STATIC ${PATRECSR_src})
 SET(SOURCE_src
 ${SRCSOURCE}/angbar.f ${SRCSOURCE}/bbcorr.F ${SRCSOURCE}/bbleak.F ${SRCSOURCE}/brlgn6.f
 ${SRCSOURCE}/brlgn.F ${SRCSOURCE}/calcor.F ${SRCSOURCE}/elgobs.f ${SRCSOURCE}/encorr.F
@@ -637,7 +637,7 @@ ${SRCSOURCE}/lgnmec.f ${SRCSOURCE}/lgrein.F ${SRCSOURCE}/lgsrth.F ${SRCSOURCE}/l
 ${SRCSOURCE}/lgthcr.f ${SRCSOURCE}/lkcorr.F ${SRCSOURCE}/posend.f ${SRCSOURCE}/shmax.f
 ${SRCSOURCE}/thcofa.F ${SRCSOURCE}/thcorr.F ${SRCSOURCE}/tpcnst.F
 )
-ADD_LIBRARY(${SOURCELIB} source ${SOURCE_src})
+ADD_LIBRARY(${SOURCE} STATIC ${SOURCE_src})
 SET(TAGG_src
 ${SRCTAGG}/amctag.f ${SRCTAGG}/anatag.F ${SRCTAGG}/conver.f ${SRCTAGG}/ggcctl.f
 ${SRCTAGG}/ggclpc.f ${SRCTAGG}/ggclus.f ${SRCTAGG}/ggfac2.f ${SRCTAGG}/ggresq.f
@@ -657,7 +657,7 @@ if (Fortran_COMPILER_NAME MATCHES "xlf.*")
       set_property(SOURCE ${myfortag} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
        endif()
       
-ADD_LIBRARY(${TAGGLIB} tagg ${TAGG_src})
+ADD_LIBRARY(${TAGG} STATIC ${TAGG_src})
 SET(TOFLIB_src
 ${SRCTOFLIB}/agrpr.f ${SRCTOFLIB}/atfugr.f ${SRCTOFLIB}/atofrw.f ${SRCTOFLIB}/atofun.F
 ${SRCTOFLIB}/cmass.f ${SRCTOFLIB}/corcst.f ${SRCTOFLIB}/mocard.F ${SRCTOFLIB}/rd0880.F
@@ -666,19 +666,19 @@ ${SRCTOFLIB}/tofard.F ${SRCTOFLIB}/tofbra.f ${SRCTOFLIB}/tofcl2.f ${SRCTOFLIB}/t
 ${SRCTOFLIB}/tofcor.f ${SRCTOFLIB}/tofin2.F ${SRCTOFLIB}/tofint.F ${SRCTOFLIB}/tofma2.f
 ${SRCTOFLIB}/tofmas.F ${SRCTOFLIB}/tofsm2.f ${SRCTOFLIB}/tofsm3.F ${SRCTOFLIB}/tofsmp.F
 )
-ADD_LIBRARY(${TOFLIBLIB} toflib ${TOFLIB_src})
+ADD_LIBRARY(${TOFLIB} STATIC ${TOFLIB_src})
 SET(VERTEX_src
 ${SRCVERTEX}/vertex.f ${SRCVERTEX}/vtxaft.f ${SRCVERTEX}/vtxbnk.F ${SRCVERTEX}/vtxee.f
 ${SRCVERTEX}/vtxini.f ${SRCVERTEX}/vtxpnt.f ${SRCVERTEX}/vtxpre.F ${SRCVERTEX}/vtxsrc.f
 )
-ADD_LIBRARY(${VERTEXLIB} vertex ${VERTEX_src})
+ADD_LIBRARY(${VERTEX} STATIC ${VERTEX_src})
 SET(WERTEX_src
 ${SRCWERTEX}/parkor.F ${SRCWERTEX}/wertex.f ${SRCWERTEX}/wtxaft.f ${SRCWERTEX}/wtxbnk.F
 ${SRCWERTEX}/wtxcrv.f ${SRCWERTEX}/wtxee.f ${SRCWERTEX}/wtxeer.F ${SRCWERTEX}/wtxerr.f
 ${SRCWERTEX}/wtxini.f ${SRCWERTEX}/wtxpnt.f ${SRCWERTEX}/wtxpre.F ${SRCWERTEX}/wtxsrc.f
 ${SRCWERTEX}/xfwid.F ${SRCWERTEX}/xfwvxc.F
 )
-ADD_LIBRARY(${WERTEXLIB} wertex ${WERTEX_src})
+ADD_LIBRARY(${WERTEX} STATIC ${WERTEX_src})
 SET(ZLIB_src
 ${SRCZLIB}/chien52.F ${SRCZLIB}/chien5.F ${SRCZLIB}/crdoca.f ${SRCZLIB}/dxmcgn.f
 ${SRCZLIB}/ealgcl.F ${SRCZLIB}/eamcde.f ${SRCZLIB}/eaunin.f ${SRCZLIB}/eazero.f
@@ -695,7 +695,7 @@ if (Fortran_COMPILER_NAME MATCHES "xlf.*")
       set_property(SOURCE ${myforzlib} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
        endif()
       
-ADD_LIBRARY(${ZLIBLIB} zlib ${ZLIB_src})
+ADD_LIBRARY(${ZLIB} STATIC ${ZLIB_src})
 
 
 # Add the source files
@@ -770,7 +770,25 @@ TARGET_LINK_LIBRARIES(${ZE4VEXE} -Wl,--start-group ${ZLIB} ${JMC} ${BOSLIB} ${JA
 
 INSTALL(TARGETS ${ZE4VEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
+INSTALL( TARGETS ${BOSLIB} 
+${GRAFIX} 
+${INTERFACE} 
+${JADEGS} 
+${JADEMUS} 
+#${JADESR}
+${JMC} 
+${PATRECSR} 
+${SOURCE} 
+${TAGG} 
+${TOFLIB} 
+${VERTEX} 
+${WERTEX} 
+${ZLIB} 
+ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT library )
 
+
+
+#ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT library )
 
 # Add a distclean target to the Makefile
 ADD_CUSTOM_TARGET(distclean 

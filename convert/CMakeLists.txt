@@ -4,20 +4,23 @@
 ##################################################
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
-PROJECT(JADECONVERT Fortran CXX)
+PROJECT(JADECONVERT Fortran C CXX)
 
 SET(VERSION 0.99)
 
 # Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
-
+include("GNUInstallDirs")
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+set(LAPACK_LIBRARIES lapack)
+find_package(HepMC3)
+find_package(LAPACK)
+find_package(ROOT)
 
-find_package(HEPMC3)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}  ${ROOT_INCLUDE_DIRS})
-
+set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -O0 -g  ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g  -std=c++11 ")
 
 ########################################################################
 
@@ -71,13 +74,16 @@ if (Fortran_COMPILER_NAME MATCHES "sun.*")
 #-m32 
 endif()
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}  ${ROOT_INCLUDE_DIRS}  ${HEPMC3_INCLUDE_DIRS})
+
+
 
 message(STATUS "Fortran compiler        : ${Fortran_COMPILER_NAME}")
 message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
 message(STATUS "C++ compiler            : ${CXX_COMPILER_NAME}")
 message(STATUS "C++ compiler flags      : ${CMAKE_CXX_FLAGS}")
-message(STATUS "HEPMC3 libraries        : ${JEXTERN_LIBRARIES}")
-message(STATUS "LAPACK libraries        : ${JEXTERN_LIBRARIES}")
+message(STATUS "HEPMC3 libraries        : ${HEPMC3_LIBRARIES} ${HEPMC3_ROOTIO_LIBRARIES}")
+message(STATUS "LAPACK libraries        : ${LAPACK_LIBRARIES_DIR}")
 
 
 
@@ -94,7 +100,7 @@ add_executable(convert_example_JADE.exe
         )
 
       
-target_link_libraries(convert_example_JADE.exe ${ROOT_LIBRARIES} HepMC HepMCrootIO lapack)
+target_link_libraries(convert_example_JADE.exe ${HEPMC3_LIBRARIES}   ${LAPACK_LIBRARIES_DIR}  lapack)
 add_dependencies( convert_example_JADE.exe dictionary )
 
 # installs 
