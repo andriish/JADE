@@ -1,0 +1,10 @@
+         1       20        10         6      999999    0     0  1
+fpackdatafile
+datajade.bos
+
+
+    IBYTSW    MAXEVN    MAXEVP    IPRFLG    MAXREC       IPZ    IWRITE
+Data Set Name, format A52                           |
+/remote/jade02/JAD030/file001    does not work on AIX
+JAD065_file001    copy of /remote/jade02/JAD065/file001   (Reduc1)
+JAD025_file001    (TP588 data)

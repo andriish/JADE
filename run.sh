@@ -44,3 +44,11 @@ make -f Makefile clean
 make -f Makefile -j 8
 make install
 cd ..
+########################################################################
+cd fptobos
+rm -rf outputs CMakeFiles  CMakeCache.txt
+cmake CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran  -DCMAKE_INSTALL_PREFIX=$TOP  -DPICOCERNLIB=$TOP/lib64/libpicocernlib.a -DJADELIB_ROOT_DIR=$TOP
+make -f Makefile clean
+make -f Makefile -j 8
+make install
+cd ..

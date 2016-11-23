@@ -4,10 +4,19 @@ if [ ! -f $1 ]; then
 echo "File ->"$1"<- does not exist."
 exit
 fi
-cp  $1 ./datajade.bos
+
+
+cp  $1 ./fpackdatafile
 ########################################################################
-export GFORTRAN_CONVERT_UNIT='big_endian'
+export GFORTRAN_CONVERT_UNIT='native'
+rm -rf datajade.bos
+cat fptobos.card   | fptobos
+#exit
+########################################################################
+#exit
+export GFORTRAN_CONVERT_UNIT='big_endian;native:2'
 cat superv.card   | superv 
+exit
 #> superv.log
 ########################################################################
 export GFORTRAN_CONVERT_UNIT='native;big_endian:2,22'
