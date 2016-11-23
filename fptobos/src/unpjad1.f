@@ -162,7 +162,7 @@ C**************************************
 *        LENBUF = 7000 
         LENBUF = 6930
       ELSEIF(ILENG.EQ.0) THEN
-        READ  (UNIT=1,u
+        READ  (UNIT=1,
      $         ERR=888,
 *     $         END=999,
      $         REC=IRECB,

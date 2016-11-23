@@ -10,7 +10,9 @@ cp  $1 ./fpackdatafile
 ########################################################################
 export GFORTRAN_CONVERT_UNIT='native'
 rm -rf datajade.bos
-cat fptobos.card   | fptobos
+cat fptobos.card   | fptobos > fptobos.log
+#cat fptobos.card   | unpjad > fptobos.log
+
 #exit
 ########################################################################
 #exit

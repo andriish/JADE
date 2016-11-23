@@ -102,6 +102,7 @@ message(STATUS "JEXTERN_GRAPH libraries : ${JEXTERN_GRAPH_LIBRARIES}")
 
 # Define the executable name
 SET(FPTOBOSEXE fptobos)
+SET(UNPJADEXE unpjad)
 
 
 # Define the library name
@@ -153,15 +154,33 @@ ${SRC}/prigvtx.f
  ${SRC}/cnvibm3e.f 
  ${SRC}/chebcd.f )
  
+ 
+ SET(UNPJAD_src
+${SRC}/unpjad1.f 
+${SRC}/unpaff.f 
+${SRC}/bytswp.f 
+${SRC}/chasci.f 
+${SRC}/pripatr.f 
+${SRC}/prihead.f 
+${SRC}/prizvtx.f 
+${SRC}/prize4v.f 
+${SRC}/twoin1.f  
+${SRC}/cnvibm3e.f 
+)
+ 
+ 
 #${SRC}/mvcl.f 
 ADD_EXECUTABLE(${FPTOBOSEXE} ${FPTOBOS_src})
+ADD_EXECUTABLE(${UNPJADEXE} ${UNPJAD_src})
 
 
 TARGET_LINK_LIBRARIES(${FPTOBOSEXE} -Wl,--start-group ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} lapack -Wl,--end-group)
+TARGET_LINK_LIBRARIES(${UNPJADEXE} -Wl,--start-group ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} lapack -Wl,--end-group)
 
 
 
 INSTALL(TARGETS ${FPTOBOSEXE}  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+INSTALL(TARGETS ${UNPJADEXE}  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 
 
