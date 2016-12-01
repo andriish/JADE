@@ -101,7 +101,8 @@ ${TOP}/src/ucopy2.F
 ${TOP}/src/cltou.F
 ${TOP}/src/sbyt.F
 ${TOP}/src/ublank.F
-${TOP}/src/datimh.F
+#${TOP}/src/datimh.F
+${TOP}/src/datimh.c
 ${TOP}/src/lenocc.F
 ${TOP}/src/msbit0.F
 ${TOP}/src/uhtoc.F
@@ -121,7 +122,8 @@ ${TOP}/src/uctoh.F
 ${TOP}/src/msbit1.F
 ${TOP}/src/mbytet.F
 ${TOP}/src/jbit.F
-${TOP}/src/datime.F
+#${TOP}/src/datime.F
+${TOP}/src/datime.c
 ${TOP}/src/timel.F
 ${TOP}/src/vblank.F
 ${TOP}/src/cydiy.F
