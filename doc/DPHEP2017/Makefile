@@ -1,5 +1,5 @@
 file=DPHEP2017_Andrii_Verbytskyi
-all: figures
+all: 
 		latex $(file).tex
 		latex $(file).tex
 		latex $(file).tex
@@ -16,7 +16,7 @@ spell:
 		echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" ;\
 		aspell   -t --dont-tex-check-comments -d en_GB -c $$a ;\
 		done
-figures:
+figurese:
 	convert -scale 20% pngjpggif/DESY-Logo-cyan-RGB_ger.jpg  eps/DESY-Logo-cyan-RGB_ger.eps
 	convert  pngjpggif/iso-image.png  eps/iso-image.eps
 	convert  pngjpggif/Screenshot_2.png eps/Screenshot_2.eps
