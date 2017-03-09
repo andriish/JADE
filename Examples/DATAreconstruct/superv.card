@@ -9,7 +9,7 @@ FIRST  1
 LAST   100000
 
 C Name of the input BOS file
-MCBOS './datajade.bos'
+MCBOS '/tmp/dajade.bos'
 
 C Reconstruction options
 ZSRFTV OFF

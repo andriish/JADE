@@ -4,7 +4,7 @@ datajade.bos
 
 
     IBYTSW    MAXEVN    MAXEVP    IPRFLG    MAXREC       IPZ    IWRITE
-Data Set Name, format A52                           |
+Data Set Name, format B32                           |
 /remote/jade02/JAD030/file001    does not work on AIX
 JAD065_file001    copy of /remote/jade02/JAD065/file001   (Reduc1)
 JAD025_file001    (TP588 data)

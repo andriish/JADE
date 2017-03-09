@@ -192,7 +192,7 @@ JADE/PETRA reminder:
 \begin{itemize}
 \item $e^{+}e^{-}$ experiment at PETRA collider, 1978-1986;
 \item $12-46GeV$  centre-of-mass-energy;
-\item  $\approx 200 pb^{-1}$;
+\item  $\approx 200 pb^{-1}$, 45k good hadronic events;
 \item  one of key experimets for QCD establishement: discovery of gluon, $\alpha_{s}$ measurements.
 \end{itemize}
 {\bf The oldest successfull Data Preservation effort!}
@@ -480,7 +480,7 @@ At the next step gfortran was used to compile the executables.
 {\bf At this point  the stup is complitely open source.}
 Next, the CentOS7 x8664 with multiach support wasused instead of the  ppc version.
 The byteorder issues are solved with gfortran runtime which accepts big endian byteorder I/O if to set a proper environment variable.
-export GFORTRAN\_CONVERT_UNIT='big\_endian;native:2' 
+export GFORTRAN\_CONVERT\_UNIT='big\_endian;native:2' 
 The CERNLIB was compiled for this planform as well.
 
 {\bf At this point  the setup can be used on many standard machines, only 32 bit libraries and  CERNLIB is required.}
@@ -571,9 +571,20 @@ Note: some routines are from 1978, i.e. almost 40 years old.
 Few moden experiments can be sure that more than tiny fraction of their code will behave like that.
 \item Design of software is important, even complicated things like event display can survive for 30 years if to use good simple approaches, i.e. graphic primitives in this case.
 \item good build system makes porting much easier
-\item 
+\item Standartisation of I/O data formats is important.
 \end{itemize}
 }
+
+\frame{\frametitle{Data}
+
+\begin{itemize}
+\item Compressing the data might look like a good solution, but it is bad. Saving 1Tb of disk space today mean lose of days to read the data back tommorow.
+\item Keeping reference data is important.
+\item Standartisation of I/O data formats is important.
+\item Obvious: EBCDIC is bad.
+\end{itemize}
+}
+
 
 
 \frame{\frametitle{What other experiments can learn from JADE DP: Some anecdotes}
