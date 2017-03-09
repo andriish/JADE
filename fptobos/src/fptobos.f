@@ -162,6 +162,7 @@ C**************************************
 * 6791    FORMAT(' NO CNV AtoI  store as ASCII ')
          ICOPNM = IEVENT(IPOS+1)
          CBNAME=CHASCI(ICOPNM) 
+         write(*,*)ICOPNM,'->',CBNAME
 *         CALL CNVATOI(ICOPNM)
 *         CBNAME = CHEBCD(ICOPNM)
 *
