@@ -172,72 +172,115 @@ Andrii Verbytskyi on behalf of JADE Resurrection Group\\
 }
 
 
+\usebackgroundtemplate{%
+  \tikz\node [anchor=north east, inner sep=0pt,opacity=0.98]  at (current page.center)
+     {\includegraphics[height=1.0\paperheight,width=\paperwidth]{PETRA}};
+}
 
+
+\frame{\frametitle{PETRA}
+{\color{white}\Large\bf 
+\begin{itemize} 
+\item \color{white} Electron-positron collider, started in 1979 in DESY; 
+\item \color{white}2.3km ring, beam energies up to 23GeV;
+\item \color{white}Experiments: TASSO, MARK-J, CELLO, {\color{red}JADE}.
+\end{itemize} 
+} 
+}
+\usebackgroundtemplate{}
+
+\frame{\frametitle{JADE}
+\begin{centering}
+\includegraphics[width=0.8\linewidth]{eps/JADEDet.eps}	
+\end{centering}
+\begin{columns}[c]
+\column{0.49\linewidth}
+\begin{itemize} 
+\item multipurpose detector 
+\item large solid angle coverage
+\item digital readout
+\end{itemize} 
+\column{0.49\linewidth}
+\begin{itemize} 
+\item advanced tracking system
+\item calorimeter
+\item muon chambers
+\end{itemize} 
+\end{columns}
+{\bf \color{red} 35 years later: still unique energy range coverage!}
+}
+
+
+%eps/JADEDet.eps
 
 \usebackgroundtemplate{%
   \tikz\node [anchor=north east, inner sep=0pt,opacity=0.18]  at (current page.center)
-     {\includegraphics[height=1.0\paperheight,width=\paperwidth]{eps/desy-1}};
+     {\includegraphics[height=1.0\paperheight,width=\paperwidth]{PETRA}};
 }
 
 
-\frame{\frametitle{JADE data preservation motivation}
+\frame{\frametitle{JADE  and data preservation}
+\begin{columns}[c]
+\column{0.54\linewidth}
+JADE@PETRA reminder:
+\begin{itemize}
+\item One of key experimets for QCD: discovery of gluon, $\alpha_{s}$ measurements.
+%{\bf 
+\item {\bf  The oldest and  most successful  Data Preservation effort!}
+\end{itemize}
+Motivation for data preservation:
 \begin{itemize}
 \item Future data (re-)analysis with new models and new approaches.
 \item Modelling for the future experiments.
-\item Outreach and education.
-\item {\bf Exceptional example of preservation of 30y.o. data.}
+%\item Outreach and education.
+%\item {\bf Exceptional example of preservation of 30y.o. data.}
 \end{itemize}
-\vspace{1cm}
-JADE/PETRA reminder:
-\begin{itemize}
-\item $e^{+}e^{-}$ experiment at PETRA collider, 1978-1986;
-\item $12-46GeV$  centre-of-mass-energy;
-\item  $\approx 200 pb^{-1}$, 45k good hadronic events;
-\item  one of key experimets for QCD establishement: discovery of gluon, $\alpha_{s}$ measurements.
-\end{itemize}
-{\bf The oldest successfull Data Preservation effort!}
+\column{0.45\linewidth}
+\includegraphics[width=1.0\linewidth]{eps/JADE-ID-records.eps}
+\end{columns}
 }
+
 \usebackgroundtemplate{}
 
 \frame{\frametitle{JADE data preservation history}
 \begin{itemize}
-\item 1986: end of data taking.
-\item 1995: {private initiatives to
+\item 1986: End of data taking.
+\item 1995: Private initiative to rescue data (J.~Olsson)
+%\begin{itemize}
+%\item  rescue data from tapes and copy them to Exabyte cartridges (J.~Olsson)
+%\item  reanalyse data with update LEP-like aproach and  theory
+%\item  port  JADE software and enable MC generation
+%\end{itemize}
+%Credits to J.~Olsson, S.~Bethke and P.~Movilla Fernandez.
+%}
+\item { 1995-2003: Preservation in MPP
 \begin{itemize}
-\item  rescue data from original archive tapes and copy them onto more modern media (IBM cartridges Exabyte)
-\item  reanalyse data using modern (LEP-like) methods and observables plus improved theoretical calculations
-\item  revitalise JADE software on modern computer platforms to enable generation of new MC data files
-\end{itemize}
-Credits to J.~Olsson, S.~Bethke and P.~Movilla Fernandez.
-}
-\item { 2003: 
-\begin{itemize}
-\item Data avialiability;
-\item Full port of software to PowerPC LittleEndian (IBM RS6000 with  AIX 4.3) and IBM+GNU toolchain;
+\item Physical transfer of data to MPP;
+\item Software port to AIX4.3@IBM RS6000;
 \item Interface to Pythia6 and Herwig MC;
 \item PAW output;
 \item Preservation of paper documentation.
 \end{itemize}
-Credits to J.~Olsson, S.~Bethke and P.~Movilla Fernandez.
+%Credits to J.~Olsson, S.~Bethke and P.~Movilla Fernandez.
 }
-\item {1996-2013: 
+\item {1996-2013: Physics
 \begin{itemize}
-\item 10 papers, O(40) conference contributions.
-\item 4 JADE internal notes.
+\item 11 papers, O(40) conference talks, thesis, JADE notes.
+%\item 4 JADE internal notes.
 \end{itemize}
-Credits to S.~Bethke , O.~Biebel , M.~Blumenstengel , S.~Kluth, J.~Olsson , P.~Movilla Fernandez , C.~Pahl , J.~Schieck. 
+%Credits to S.~Bethke , O.~Biebel , M.~Blumenstengel , S.~Kluth, J.~Olsson , P.~Movilla Fernandez , C.~Pahl , J.~Schieck. 
 }
-\item {2016: 
+\item {2016-2017: Update of preservation:
 \begin{itemize}
-\item Online data;
-\item Full port of software to $x86\_64$ (Intel-compatible with CentOS7) and GNU toolchain;
-\item Full port of software to $x86\_64$ (Intel-compatible with  Mac)    GNU toolchain;
+\item Data is available online;
+\item Software port to Linux(Mac)@$x86\_64$;
+%\item Full port of software to $x86\_64$ (Intel-compatible with  Mac)    GNU toolchain;
 \item Virtualization;
-\item Interface to HepMC format: enable most modern MC generator;
+\item Interface to HepMC3 (enables most modern MC generator);
 \item ROOT output;
 \item Preparation of digital documentation on computing notes.
 \end{itemize}
-Done by A.V. 
+%Done by A.V. 
 }
 \end{itemize}
 }
@@ -248,10 +291,18 @@ Done by A.V.
 
 
 
-\frame{\frametitle{MPP model for DPHEP}
-{\bf Data preservation is about  new and interested results with old data.}\\
-{\bf In the case of JADE the Data Preservation model and the experince has an extreame importance as well.}
-We describe  ingredients and tools:
+\frame{\frametitle{MPP DP  model for JADE}
+\begin{columns}[c]
+	\column{0.6\linewidth}
+{\centering \bf \color{red}\Large Yes, 11 papers!}\\
+{\bf Data preservation is about  new and interested results with old data.}
+%A lot of amazing results was obtainded with preserved data in 1995-2013.\\
+{\bf In adiition  the Data Preservation  experince with JADE has an extreame importance on itself.}\\
+In out model we describe  ingredients and tools:\\
+\column{0.4\linewidth}
+\includegraphics[width=1.0\linewidth,height=0.85\linewidth]{jade_d3_alphas_no14}\\
+EPJ C73 (2013) 3, 2332
+\end{columns}
 \begin{columns}[c]
 \column{0.4\linewidth}
 \begin{itemize}
@@ -268,48 +319,36 @@ We describe  ingredients and tools:
 \begin{itemize}
 \item But in the end we are interested in {\bf physics }.
 \end{itemize}
-Brief idea: enable physics and make it doable with modern methods in modern environments with minimal effort.\\
+
+Main idea: enable physics and make it doable with modern methods in modern environments with minimal effort.\\
 }
 
 
 
-\frame{\frametitle{MPP model for documentation preservation and policies}
-MPP data preservation relies on the documentation preserved by DESY/DESY library/InSpire.\\
-The main idea is to provide the missing or DPHEP@MPP-specific documentation:
+\frame{\frametitle{MPP DP model for documentation  and policies}
+%MPP data preservation relies on the documentation preserved as papers by DESY/DESY library/InSpire.\\
 \begin{itemize}
-\item Access to data in MPCDF (H1 and JADE).
-\item Monte Carlo generation procedures, event display usage, database of data samples, virtual machine usage (JADE). 
+\item JADE publications are available in InSpire, journals, arXiv or scanned by KEK.
+\item The non-digital documentation is preserved in DESY and MPP.
+\item Logbooks included!
+\item Some available online as well, see details at https://wwwjade.mpp.mpg.de/
 \end{itemize}
-
-The policies on the data/documentation access  are same as in DESY: defined by collaboration spokespersons.
-
+\begin{figure}\centering
+\includegraphics[width=0.3\linewidth]{eps/JADE_Logbook.eps}
+\end{figure}
 }
 
-
-\frame{\frametitle{MPP model for software preservation}
-Explicit effort put to make software it work in the next 10-15 years.
-\begin{itemize}
-\item Rely on industry, not HEP-only standards.
-\item Enable integration and compatibility with new physics software, e.g. data bases and Monte Carlo generators.
-\end{itemize}
-no recompilation of software, but frozen environment that can be installed on virtual or real machine is provided:
-ISO image of full operating system relying on Intel $x86$  architecture.
-Though not implemented, same approach is applicable to H1.
-
-}
-
-
-
-
-
-
-\frame{\frametitle{JADE data bits in MPP}
+\frame{\frametitle{MPP DP model for JADE data bits }
 \begin{itemize}
 \item JADE data are stored in MPCDF on locally accessible tapes and in disk pool.
 \item Access via multiple protocols with grid tools worldwide to disk pools.
-\item Grid-enabled storage for new samples (Monte Carlo) and analysis is available.
-\item Straightforward procedure to update or add new samples.
+%\item Grid-enabled storage for new samples (Monte Carlo) and analysis is available.
+\item Straightforward procedure to add new (MC) samples.
+\item In the end nowadays all the data from JADE can fit to a modern USB stick.
 \end{itemize}
+\begin{figure}\centering
+\includegraphics[width=0.25\linewidth]{eps/USB.eps}
+\end{figure}
 }
 
 
@@ -317,19 +356,24 @@ Though not implemented, same approach is applicable to H1.
 
 
 \frame{\frametitle{JADE data in MPP: Bits statistics}
-Data is simple ROOT and PAW ntuples, ASCII files and FPACK compressed data.
-\hspace{6cm}\begin{table}\centering\bf\begin{tabular}{|c|c|c|}\hline
-
+%\hspace{6cm}
+\begin{columns}[c]
+\column{0.85\linewidth}
+Data are  PAW ntuples, ASCII files and FPACK compressed data.
+\begin{table}\centering\bf\begin{tabular}{|c|c|c|}\hline
 {\color{maroon}           } & {\color{maroon}   MPCDF     }          \\\hline\hline
-{\color{maroon}Files:      }&{\color{maroon}   XM  } \\
-{\color{maroon}Volume:     }&{\color{maroon}   $600 GB$} \\
+{\color{maroon}Files:      }&{\color{maroon}   5.4k  } \\
+{\color{maroon}Volume:     }&{\color{maroon}   $600 GB$ ($645\times10^{9}$ bytes)} \\
 {\color{maroon}Work area:  }&{\color{maroon}    yes       } \\
 {\color{maroon}Access:     }&{\color{maroon}   Worldwide  } \\
 {\color{maroon}Protocols: } &{\color{maroon}   Multiple, see list   } \\
 {\color{maroon}Auth:      } &{\color{maroon}   Grid certificate } \\\hline
-
 \end{tabular}
 \end{table}
+\column{0.15\linewidth}
+\rotatebox{90}{\includegraphics[height=0.40\linewidth,width=2.8\linewidth]{eps/MPCDF}}
+\end{columns}
+
 
 Available at:
 \begin{itemize}
@@ -343,19 +387,23 @@ Available at:
 
 
 
-\frame{\frametitle{Documentation and documentation preservation in MPP}
-Digital documentation:
+
+
+\frame{\frametitle{MPP model for software preservation}
+Explicit effort put to make software it work in the next 10-15 years.
+Because of  previous efforts and high quality of code,  porting  was possible.
+
+Key ideas:
 \begin{itemize}
-\item JADE publications are available in InSpire, journals, arXiv or scanned by KEK.
-\item JADE copmuting notes are scanned in MPP.
+\item Rely on industry, not HEP-only standards.
+\item Enable integration and compatibility with new physics software, e.g. data bases and Monte Carlo generators.
+\item ISO image of full operating system relying on Intel $x86$  architecture to assure easy usage.
+\item {\bf i.e.\ make software analysis-ready}
 \end{itemize}
-Non-digital documentation:
-\begin{itemize}
-\item JADE (copmuting) notes are available in DESY.
-\item JADE (copmuting) notes are available in MPP.
-\end{itemize}
-Available at: https://wwwjade.mpp.mpg.de
+
+
 }
+
 
 
 
@@ -363,28 +411,174 @@ Available at: https://wwwjade.mpp.mpg.de
 
 \frame{\frametitle{JADE software in MPP}
 \begin{itemize}
-\item Main software for the analysis is vanilla ROOT.
+\item Main software for the analysis of early preserved and reconstructed data is vanilla PAW or ROOT(via h2root).
 \item Additional software includes:
 \begin{itemize}
-\item ZEVIS, the event display based on ROOT;
-\item CNINFO, the event data base, based on ROOT and SQLite3;
-\item ZMCSP Monte-Carlo standalone generation packages -- see next slides.
+\item event display;
+\item Monte-Carlo standalone generation packages;
 \end{itemize}
-\item +any ROOT extension that will work for you\dots
+\end{itemize}
+(Original)Software is available at https://wwwjade.mpp.mpg.de
+}
+
+
+
+
+%\frame{\frametitle{JADE software porting quest}
+%Source codes were written in  Fortran IV (1974), Fortran 77, Sheltran, Mortran,
+  %Assembler.
+%Later these were ported to IBM xlf fortran.  
+
+%The original OS/hardware  was UNKNOWN for  on IBM/370 (offline) and Nord 10S/50  (online).
+%Later  it became AIX 4.3 on RS6000.
+
+
+%}
+
+\frame{\frametitle{JADE software porting quest in detail}
+\begin{columns}[c]
+\column{0.4\linewidth}
+\begin{itemize}
+\item Original sources in Fortran IV (1974), Fortran 77, Sheltran, Mortran,
+   Assembler ported in 2003 to AIX4.3@RS6000, the old routines replaced with CERNLIB libraries
+    and compiled with IBM fortran.\\ {\bf \Large \color{red} Huge work!}
+\end{itemize}
+\column{0.6\linewidth}
+\begin{figure}\centering
+\includegraphics[width=1.0\linewidth]{jadedisplayold.eps}
+\end{figure}
+\end{columns}
+\begin{itemize}
+\item In 2017 everything is problemetic: AIX@ppc is Big Endian architecture, no CERNLIB in modern systems,
+IBM fortran is not for free, 32 bit systems are dying out etc.
+\end{itemize}
+}
+
+
+
+\frame{\frametitle{JADE software porting quest: step one}
+One can start from:
+\begin{itemize}
+\item 	PowerPC64 multiarch CentOS7 little endian on QUEMU2.7;
+\item   CERNLIB compilation for PowerPC {\bf \color{red} Yes, for many flavours!};
+\item   Trial version of IBM xlf15 for Linux;
+\item   Manual or semiautomatic fixes of differences between fortran dialects (e.g. HOLLERITHs, INTEGER vs. CHARECTER).
 \end{itemize}
 
-%\begin{figure}
-%\hspace*{1.0cm}
-\begin{columns}[c]
-\column{0.49\linewidth}
-\adjincludegraphics[height=5.0cm, trim={ {0.5\Width}  {0.00\Width}    {0.0\Height}   {0.0\Height}}, clip=true]{eps/analysis.eps}
-\column{0.49\linewidth}
-\includegraphics[width=5.0cm]{eps/rootlogo.eps}\\
-\includegraphics[width=2.0cm]{eps/sqlite370_banner.eps}
- {\cal{ + your favourite software e.g. FastJet }}
-\end{columns}
+FYI: Some codes date back to 1974.
+}
+
+\frame{\frametitle{JADE software porting quest: step two}
+Once the software passes simplest tests:
+\begin{itemize}
+\item 	Switch to gfortran;
+\item   Start to use cmake (best thing for fortran!);
+\item   Switch to Little Endian Linux and control I/O Endianess with GFORTRAN\_CONVERT\_UNIT ;
+\item   Replace as many as possible CERNLIB routines with ROOT or dummy routines;
+\item   The remaining routines just copy from CERNLIB (i.e. create "picocernlib");
+\item   {\bf \color{red}Compile codes in native 64-bit mode.}
+
+\end{itemize}
+
 
 }
+
+
+\frame{\frametitle{JADE software porting quest: step two}
+Once the code is compiled on a standard computer, one has to fix bugs in functionality or implement missing features.\\ 
+Here the problems begin.
+\begin{itemize}
+\item 	Part of the code was lost long time ago: muon reconstruction is not available.
+\item   Event display was ported to HIGGZ/CERNLIB in 2003. To the version of cernlib that is hard to find.
+Most graphics primitives reimplemented in ROOT, but display is stiil not fully operational.
+\item   The data is compressed with FPACK utility, but the way it was done is not known, same as the way to unpack it.
+A collaboration with J.Ollsson might be helpfull.
+\end{itemize}
+
+
+}
+
+
+\frame{\frametitle{JADE software porting quest: step three}
+On the positive site:
+\begin{itemize}
+\item The key to productive usage of JADE data in the past was an option to generate MC with much newer generators.
+The option was implemented with integration of Pythia/Herwig/Ariadne codes into JADE software.
+\item Now it is simpler: Monte Carlo generators have standard output formats and only a converter from a standard format to JADE-specific input has to be developed.
+\item Done with HepMC3, very nice library.
+\end{itemize}
+
+
+}
+
+
+
+
+%\frame{\frametitle{JADE software porting quest: step one}
+%After downloading the tarbal with software from 2003:
+
+
+%One has to find big endian machine, something RS6000 (ppc) compatible.
+
+%Solution is QEMU2.7 virtual machine with ppc/ppc64 support. 
+%Another option, old  RS6000 machine used as router turns out to be slow and has not enough disk space.
+%RS6000 are availbale on e-bay, but are quite expensive.
+
+
+%One has to find modern big endian OS, something AIX43 compatible.
+%Solution is CentOS7.2 with multiarch support ppc64+ppc(64be+32be) from CentOS AltArch repository. 
+
+%One has to find xlf compatible compiler.
+%Solution is a trial version of xlf 15.1 from IBM.
+%Thanks, IBM!
+
+%Now we can try to compile something!
+%}
+
+%\frame{\frametitle{JADE software porting quest: step one}
+
+%One has to have a build system for the software. Old makefiles are impractical.
+%Solution is the new cmake. cmake is PERFECT for fortran. 
+
+
+%The fortran dialect incompatibilities are fixed by hand or with sed scripts. 
+%These are mostly HOLLERITHs, INTEGER to CHARECTER conversion and so on.
+%Takes some time, but is a straightforward procedure.
+%{\bf At this point everything compiles. }
+
+%One has to link programs with some CERNLIB routines.
+%Subquest: compile 32 bit CERNLIB for CentOS7 on ppc.
+%With some tricks 32 bit CERNLIB rpm package was obtained. 
+%See explanations in the backup.
+
+%{\bf At this point executables are linked and tested.}
+%At the next step gfortran was used to compile the executables.
+%{\bf At this point  the stup is complitely open source.}
+%Next, the CentOS7 x8664 with multiach support wasused instead of the  ppc version.
+%The byteorder issues are solved with gfortran runtime which accepts big endian byteorder I/O if to set a proper environment variable.
+%export GFORTRAN\_CONVERT\_UNIT='big\_endian;native:2' 
+%The CERNLIB was compiled for this planform as well.
+
+%{\bf At this point  the setup can be used on many standard machines, only 32 bit libraries and  CERNLIB is required.}
+
+%}
+
+
+%\frame{\frametitle{JADE software porting quest: step one}
+
+%CERNLIB is not supported, so it is a good idea to throw it away.
+%The main dependence on cernlib are  just few generic routines and HIGZ package for graphics.
+
+%The generic routines were copied from cernlib and the graphic primitives were replaced with ROOT 
+%drawing routines. The small set of routines was collected to form  "picocernlib".% can be compiled even in 64 bit mode.
+
+%{\bf At this point  the setup can be used on many standard machines, only ROOT is required.}
+
+
+
+
+%}
+
 
 
 
@@ -394,23 +588,15 @@ A certain environment is needed  for the analysis.
 \item Virtual machines(VM) are a very attractive {\bf long-term} solution;
 \item The way other experiments (LEP/LHC) are going;
 \item The solution has very generic requirements, will survive for a long time.
-\end{itemize}
-Available at: https://wwwjade.mpp.mpg.de
-}
-
-
-
-
-\frame{\frametitle{JADE software environment/VM}
-It is based on DVD ISO image with CentOS7 and all software. It has options for:
-\begin{itemize}
-\item Automatic install on virtual or real hardware from ISO image;
-\item Customisation, root privileges, etc.;
 \item Unlimited number of installations $\rightarrow$ potentially usable on clouds;
 \item Usage not restricted to any laboratory or virtualization software. Can run anywhere.
-\item {\bf Tested by $\approx 1$ user.}
+\item Usage of ISO installation image assures vendor independence.
 \end{itemize}
+VM is available at: https://wwwjade.mpp.mpg.de
 }
+
+
+
 
 \usebackgroundtemplate{}
 
@@ -419,126 +605,84 @@ It is based on DVD ISO image with CentOS7 and all software. It has options for:
 VM includes:
 \begin{itemize}
 \item JADE software: ROOT, MC simulation, event display, file catalogue, setup scripts etc.
-\item Modern MC generators, FastJet, cernlib, PAW,  Rivet and other popular and ``not really'' packages.
+\item Modern MC generators, FastJet, cernlib, PAW and other popular and ``not really'' packages.
 \item Anything you will want to install\dots
-\item Available at: https://wwwJADE.mpp.mpg.de/dphep.html together with  documentation and video tutorials. 
+%\item Available at: https://wwwJADE.mpp.mpg.de/dphep.html together with  documentation and video tutorials. 
 \item Agree access and download it.
+\item VirtualBox images are provided as well.
 \end{itemize}
 }
 
 
-\frame{\frametitle{JADE software porting quest}
-Source codes were written in  Fortran IV (1974), Fortran 77, Sheltran, Mortran,
-  Assembler.
-Later these were ported to IBM xlf fortran.  
 
-The original OS/hardware  was UNKNOWN for  on IBM/370 (offline) and Nord 10S/50  (online).
-Later  it became AIX 4.3 on RS6000.
-
-
-}
-
-\frame{\frametitle{JADE software porting quest: step one}
-After downloading the tarbal with software from 2003:
-
-
-One has to find big endian machine, something RS6000 (ppc) compatible.
-
-Solution is QEMU2.7 virtual machine with ppc/ppc64 support. 
-Another option, old  RS6000 machine used as router turns out to be slow and has not enough disk space.
-RS6000 are availbale on e-bay, but are quite expensive.
-
-
-One has to find modern big endian OS, something AIX43 compatible.
-Solution is CentOS7.2 with multiarch support ppc64+ppc(64be+32be) from CentOS AltArch repository. 
-
-One has to find xlf compatible compiler.
-Solution is a trial version of xlf 15.1 from IBM.
-Thanks, IBM!
-
-Now we can try to compile something!
-}
-
-\frame{\frametitle{JADE software porting quest: step one}
-
-One has to have a build system for the software. Old makefiles are impractical.
-Solution is the new cmake. cmake is PERFECT for fortran. 
-
-
-The fortran dialect incompatibilities are fixed by hand or with sed scripts. 
-These are mostly HOLLERITHs, INTEGER to CHARECTER conversion and so on.
-Takes some time, but is a straightforward procedure.
-{\bf At this point everything compiles. }
-
-One has to link programs with some CERNLIB routines.
-Subquest: compile 32 bit CERNLIB for CentOS7 on ppc.
-With some tricks 32 bit CERNLIB rpm package was obtained. 
-See explanations in the backup.
-
-{\bf At this point executables are linked and tested.}
-At the next step gfortran was used to compile the executables.
-{\bf At this point  the stup is complitely open source.}
-Next, the CentOS7 x8664 with multiach support wasused instead of the  ppc version.
-The byteorder issues are solved with gfortran runtime which accepts big endian byteorder I/O if to set a proper environment variable.
-export GFORTRAN\_CONVERT\_UNIT='big\_endian;native:2' 
-The CERNLIB was compiled for this planform as well.
-
-{\bf At this point  the setup can be used on many standard machines, only 32 bit libraries and  CERNLIB is required.}
-
-}
-
-
-\frame{\frametitle{JADE software porting quest: step one}
-
-CERNLIB is not supported, so it is a good idea to throw it away.
-The main dependence on cernlib are  just few generic routines and HIGZ package for graphics.
-
-The generic routines were copied from cernlib and the graphic primitives were replaced with ROOT 
-drawing routines. The small set of routines was collected to form  "picocernlib".% can be compiled even in 64 bit mode.
-
-{\bf At this point  the setup can be used on many standard machines, only ROOT is required.}
-
-
-
-
-}
-
-
-\frame{\frametitle{Data preservation for JADE: Software environment/VM}
+\frame{\frametitle{JADE software environment/VM}
 \begin{figure}\centering
-\includegraphics[width=1.0\textwidth]{eps/Screenshot_2.eps}
+\includegraphics[width=0.85\textwidth]{eps/Screenshot_2.eps}
 \end{figure}
+Generic start of VM.
+}
+
+
+\frame{\frametitle{JADE software environment/VM test }
+\begin{figure}\centering
+\includegraphics[width=0.85\textwidth]{eps/Screenshot_2.eps}
+\end{figure}
+JADE software compilation in VM: takes about 4 minutes.
+}
+
+
+\frame{\frametitle{JADE software environment/VM test }
+\begin{figure}\centering
+\includegraphics[width=0.85\textwidth]{eps/Screenshot_2.eps}
+\end{figure}
+MC for JADE can be generated in VM ol elsewhere. In this case SHERPA is running in VM.
+}
+
+
+\frame{\frametitle{JADE software environment/VM test }
+\begin{figure}\centering
+\includegraphics[width=0.85\textwidth]{eps/Screenshot_2.eps}
+\end{figure}
+In the end of reconstruction a ROOT file with simple tree is delivered.  Reconstruction takes fractions of second even in VM. 
+Thrust distribution from the generated evens is shown.
+}
+
+\frame{\frametitle{JADE software environment/VM test }
+\begin{figure}\centering
+\includegraphics[width=0.85\textwidth]{eps/Screenshot_2.eps}
+\end{figure}
+Test of the reconstructed MC files with event display.
+{\bf Not all functionality is restored. To be fixed.}.
 }
 
 
 
 
+%\frame{\frametitle{The MC recipe ingredients}
+%\begin{itemize}
+%\item Instruction to generate events with old JADE generators are prepared.
+%\item An interface to modern HEP event records based on HepMC3 libray is developed.
+  %JADE MC  can be produced from with modern MC generator, e.g.\ NLO capable SHERPA+BlackHat.
+%\item ZMCSP (JADE Monte Carlo Standalone Package) is a tarball with  all the software needed for the reconstruction
+%of MC simulated events. It has no external dependencies, runs on modern Grid clusters, virtual machine, a laptop.
+%On the Grid it can produce 50-100M events\footnote{JADE has 360M of data events} per week. 
+%Supplemented with example of scripts and documentation.
+%%\item The first two samples were generated this summer. See Iurii's talk.
+%%It was found that the key to success is to {\bf read and follow the instructions}.
+%%\item There is a lot of computing resources around, where it is possible to generate even large samples.
+%%20-50-100M events is NOT a problem. 
+%%\item In practice the generation with new MC generators is not much complicated, however only tiny samples were produced with
+%%SHERA 2.2 and blackhat 0.9.9.
+%\end{itemize}
+%}
 
-\frame{\frametitle{The MC recipe ingredients}
-\begin{itemize}
-\item Instruction to generate events with old JADE generators are prepared.
-\item An interface to modern HEP event records based on HepMC3 libray is developed.
-  JADE MC  can be produced from with modern MC generator, e.g.\ NLO capable SHERPA+BlackHat.
-\item ZMCSP (JADE Monte Carlo Standalone Package) is a tarball with  all the software needed for the reconstruction
-of MC simulated events. It has no external dependencies, runs on modern Grid clusters, virtual machine, a laptop.
-On the Grid it can produce 50-100M events\footnote{JADE has 360M of data events} per week. 
-Supplemented with example of scripts and documentation.
-%\item The first two samples were generated this summer. See Iurii's talk.
-%It was found that the key to success is to {\bf read and follow the instructions}.
-%\item There is a lot of computing resources around, where it is possible to generate even large samples.
-%20-50-100M events is NOT a problem. 
-%\item In practice the generation with new MC generators is not much complicated, however only tiny samples were produced with
-%SHERA 2.2 and blackhat 0.9.9.
-\end{itemize}
-}
-
-\frame{\frametitle{The MC generation: SHERPA+BlackHat multijet setup}
-%\begin{figure}\centering
-%\includegraphics[width=0.4\linewidth]{kt.eps}
-%\includegraphics[width=0.4\linewidth]{nt.eps}
-%\end{figure}
-Thrust distribution with SHERPA+BlackHat Monte Carlo simulated and reconstructed  sample.
-}
+%\frame{\frametitle{The MC generation: SHERPA+BlackHat multijet setup}
+%%\begin{figure}\centering
+%%\includegraphics[width=0.4\linewidth]{kt.eps}
+%%\includegraphics[width=0.4\linewidth]{nt.eps}
+%%\end{figure}
+%Thrust distribution with SHERPA+BlackHat Monte Carlo simulated and reconstructed  sample.
+%}
 
 
 
@@ -546,31 +690,37 @@ Thrust distribution with SHERPA+BlackHat Monte Carlo simulated and reconstructed
 
 \frame{\frametitle{MPP Data Preservation summary}
 \begin{itemize}
-\item Data is accessible in  MPCDF.
-\item An option for MC production with new and old MC generators exists for JADE and tested. 
+\item Huge work was done since 1995!
+\item Many high quality, important physics results delivered.
+\item Data is accessible in  MPCDF and software is {\bf\color{red}analysis-ready}.
+%\item An option for MC production with new and old MC generators exists for JADE and tested. 
+%\item Existing data ntuples can be used with generated MC samples, i.e. {\bf system is analysis-ready}.
 \end{itemize}
+Potential improvements are obvious: enable data reading, fixes to event display, improving documentation.
 }
 \section{Data Preservation applications}
-
 \frame{\frametitle{JADE Data Preservation applications}
 \begin{itemize}
 \item Hodronisation effects.
-\item QCD with $b$-quarks and modern theory predictions.
+\item QCD with $b$-quarks and modern theory predictions, e.g. tests of future fully differential NNLO predictions for $e^{+}e^{-}\rightarrow hadrons$ with heavy quarks.
 \item \dots
 \end{itemize}
 }
+
+
+\frame{\frametitle{}}
 
 \section{What other experiments can learn from JADE DP}
 
 
 \frame{\frametitle{Software}
 \begin{itemize}
-\item Usage of generic technologies for hardware and OS, i.e. IBM mainframes, AIX is important.
+\item Generic technologies for hardware and OS is an advantage.
 \item High code quality, clarity and stability is a key to succees.
-Note: some routines are from 1978, i.e. almost 40 years old. 
+Note: some routines are from 1974, i.e. 43 y.o. 
 Few moden experiments can be sure that more than tiny fraction of their code will behave like that.
-\item Design of software is important, even complicated things like event display can survive for 30 years if to use good simple approaches, i.e. graphic primitives in this case.
-\item good build system makes porting much easier
+\item Design of software is important.%, even complicated things like event display can survive for 30 years if to use good simple approaches, i.e. graphic primitives in this case.
+\item Good build system makes porting much easier
 \item Standartisation of I/O data formats is important.
 \end{itemize}
 }
@@ -579,9 +729,9 @@ Few moden experiments can be sure that more than tiny fraction of their code wil
 
 \begin{itemize}
 \item Compressing the data might look like a good solution, but it is bad. Saving 1Tb of disk space today mean lose of days to read the data back tommorow.
-\item Keeping reference data is important.
+{\color{red} Do not compress your data!}
+\item Keeping reference data/MC/results is important.
 \item Standartisation of I/O data formats is important.
-\item Obvious: EBCDIC is bad.
 \end{itemize}
 }
 
@@ -589,27 +739,29 @@ Few moden experiments can be sure that more than tiny fraction of their code wil
 
 \frame{\frametitle{What other experiments can learn from JADE DP: Some anecdotes}
 \begin{itemize}
-\item one important „calibration“ file, containing the recorded 
-  luminosities of each run and fill, was stored on a private account
-  and therefore lost when DESY archive was cleaned up
+\item one "calibration" file, with  luminosities for each run and fill, was stored on a private account  and therefore lost when DESY archive was cleaned up;
 \item   Jan Olsson, when cleaning up his office in ~1997, found an old ASCII-printout of the JADE luminosity file.
   Unfortunately, it was printed on green recycling paper - not suitable for scanning and OCR-ing.
   A secretary at Aachen re-typed it within 4 weeks.
   A checksum routine found (and recovered) only 4 typos.
-\item an old version of the original BOSlib 1979 version was found, on
-  our request, at the Tokyo computer centre.
-\item  Peter Bock, when cleaning out an old lab at the Physics Institute
-  at Heidelberg University, found a few 9-track tapes containing
-  original JADE MC files which were very valuable for validating
-  results of our first re-analyses in ~1997
+\item an old version of the original BOSlib 1979 version was found, on  request at the Tokyo computer centre.
+\item  Peter Bock, when cleaning out an old lab at the Physics Institute at Heidelberg University, found a few 9-track tapes containing 
+original JADE MC files which were very valuable for validating
+  results of first re-analyses in ~1997
 \end{itemize}
 }
 
 \frame{\frametitle{What other experiments can learn from JADE DP: Some anecdotes}
 \begin{itemize}
-\item first port attempt in 2016 was done with AIX 4.3 machine used as router in MPP.
-\item Byte ordering problem is solved in the modern gfortran
+\item First port attempt in 2016 was done with AIX 4.3 machine used as router in MPP, but turns out VirtualBox is more useful.
+\item Many problems in software porting were solved in the industry: byte ordering problem  in the modern gfortran, availability of 
+Linux on PowerPCs, good fortran build system (cmake) is available now, xlf compiler is available on Linux now.
+\item Googling the arxiver used fro the data, FPACK is a hard task.
 \end{itemize}
+
+
+%best computer in 19985 is 2GFLOPS, CRAY2   1 core now 45GFLOPS
+
 }
 
 

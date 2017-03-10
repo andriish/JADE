@@ -1,3 +1,6 @@
+%define debug_package %{nil}
+%define _binaries_in_noarch_packages_terminate_build   0
+%define    _use_internal_dependency_generator 0
 Name: JADE
 Version: 2017.1
 Release:        1%{?dist}
@@ -9,11 +12,10 @@ URL:		    http://wwwjade.mppmu.mpg.de/%{name}-%{version}.tar.gz
 Source:         %{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Prefix: /usr
-BuildArch:      %{_arch}
+BuildArch:      noarch
 
 Vendor:         JADE collaboration
-BuildRequires:  root gcc gfortran
-Requires: 		root gcc gfortran 
+Requires: 		root gcc gcc-gfortran  cmake
 
 %description
 JADE software
@@ -38,7 +40,7 @@ JADE software
 #make
 %install
 mkdir -p $RPM_BUILD_ROOT/opt/%{name}-%{version}
-cp $RPM_BUILD_ROOT/opt/%{name}-%{version}
+cp -r ./* $RPM_BUILD_ROOT/opt/%{name}-%{version}
 
 %post
 # the post section is where you can run commands after the rpm is installed.
