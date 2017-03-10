@@ -391,13 +391,13 @@ Available at:
 
 \frame{\frametitle{MPP model for software preservation}
 Explicit effort put to make software it work in the next 10-15 years.
-Because of  previous efforts and high quality of code,  porting  was possible.
+Previous efforts and high quality of code made it possible.%  porting  was possible.
 
 Key ideas:
 \begin{itemize}
 \item Rely on industry, not HEP-only standards.
 \item Enable integration and compatibility with new physics software, e.g. data bases and Monte Carlo generators.
-\item ISO image of full operating system relying on Intel $x86$  architecture to assure easy usage.
+%\item ISO image of full operating system relying on Intel $x86$  architecture to assure easy usage.
 \item {\bf i.e.\ make software analysis-ready}
 \end{itemize}
 
@@ -411,11 +411,12 @@ Key ideas:
 
 \frame{\frametitle{JADE software in MPP}
 \begin{itemize}
+\item Full chain for reconstruction of raw data to PAW/ROOT ntuples was resurrected.
 \item Main software for the analysis of early preserved and reconstructed data is vanilla PAW or ROOT(via h2root).
 \item Additional software includes:
 \begin{itemize}
 \item event display;
-\item Monte-Carlo standalone generation packages;
+\item Monte-Carlo generation packages;
 \end{itemize}
 \end{itemize}
 (Original)Software is available at https://wwwjade.mpp.mpg.de
@@ -604,7 +605,7 @@ VM is available at: https://wwwjade.mpp.mpg.de
 \frame{\frametitle{JADE software environment/VM}
 VM includes:
 \begin{itemize}
-\item JADE software: ROOT, MC simulation, event display, file catalogue, setup scripts etc.
+\item JADE software: ROOT, MC simulation, event display, file catalogue, setup scripts etc. See a detailed list in backup slides.
 \item Modern MC generators, FastJet, cernlib, PAW and other popular and ``not really'' packages.
 \item Anything you will want to install\dots
 %\item Available at: https://wwwJADE.mpp.mpg.de/dphep.html together with  documentation and video tutorials. 
@@ -617,7 +618,7 @@ VM includes:
 
 \frame{\frametitle{JADE software environment/VM}
 \begin{figure}\centering
-\includegraphics[width=0.85\textwidth]{eps/Screenshot_2.eps}
+\includegraphics[width=0.75\textwidth]{eps/start.eps}
 \end{figure}
 Generic start of VM.
 }
@@ -625,7 +626,7 @@ Generic start of VM.
 
 \frame{\frametitle{JADE software environment/VM test }
 \begin{figure}\centering
-\includegraphics[width=0.85\textwidth]{eps/Screenshot_2.eps}
+\includegraphics[width=0.75\textwidth]{eps/compilation.eps}
 \end{figure}
 JADE software compilation in VM: takes about 4 minutes.
 }
@@ -633,7 +634,7 @@ JADE software compilation in VM: takes about 4 minutes.
 
 \frame{\frametitle{JADE software environment/VM test }
 \begin{figure}\centering
-\includegraphics[width=0.85\textwidth]{eps/Screenshot_2.eps}
+\includegraphics[width=0.75\textwidth]{eps/sherpa.eps}
 \end{figure}
 MC for JADE can be generated in VM ol elsewhere. In this case SHERPA is running in VM.
 }
@@ -641,15 +642,15 @@ MC for JADE can be generated in VM ol elsewhere. In this case SHERPA is running 
 
 \frame{\frametitle{JADE software environment/VM test }
 \begin{figure}\centering
-\includegraphics[width=0.85\textwidth]{eps/Screenshot_2.eps}
+\includegraphics[width=0.75\textwidth]{eps/thrust.eps}
 \end{figure}
-In the end of reconstruction a ROOT file with simple tree is delivered.  Reconstruction takes fractions of second even in VM. 
+In the end of reconstruction a ROOT file with simple tree is delivered.  %Reconstruction takes fractions of second even in VM. 
 Thrust distribution from the generated evens is shown.
 }
 
 \frame{\frametitle{JADE software environment/VM test }
 \begin{figure}\centering
-\includegraphics[width=0.85\textwidth]{eps/Screenshot_2.eps}
+\includegraphics[width=0.55\textwidth]{eps/jadezroot.eps}
 \end{figure}
 Test of the reconstructed MC files with event display.
 {\bf Not all functionality is restored. To be fixed.}.
@@ -722,6 +723,7 @@ Few moden experiments can be sure that more than tiny fraction of their code wil
 \item Design of software is important.%, even complicated things like event display can survive for 30 years if to use good simple approaches, i.e. graphic primitives in this case.
 \item Good build system makes porting much easier
 \item Standartisation of I/O data formats is important.
+\item Documentation on simple things is important, i.e. meaning of arguments for utilities.
 \end{itemize}
 }
 
@@ -763,7 +765,45 @@ Linux on PowerPCs, good fortran build system (cmake) is available now, xlf compi
 %best computer in 19985 is 2GFLOPS, CRAY2   1 core now 45GFLOPS
 
 }
+\frame{\frametitle{List of custom/extra RPM packages on JADE VM}
+Some subpackages ommited.
 
+\begin{columns}[c]\tiny
+\column{0.5\linewidth}
+blackhat-0.9.9-1.el7.centos.x86\_64.rpm
+blas-devel-3.4.2-5.el7.x86\_64.rpm
+cernlib-2006-36.el7.centos.i686.rpm
+cernlib-devel-2006-36.el7.centos.i686.rpm
+cernlib-packlib-gfortran-2006-36.el7.centos.i686.rpm
+cernlib-static-2006-36.el7.centos.i686.rpm
+cernlib-utils-2006-36.el7.centos.i686.rpm
+epel-release-7-5.noarch.rpm
+fastjet-3.1.2-1.el7.centos.x86\_64.rpm
+form-4.1-1.el7.centos.x86\_64.rpm
+geant321-2006-36.el7.centos.i686.rpm
+gosam-2.0.3-1.el7.centos.x86\_64.rpm
+gosam-contrib-2.0-1.el7.centos.x86\_64.rpm
+Herwig-7.0.2-2.el7.centos.x86\_64.rpm
+lapack-devel-3.4.2-5.el7.x86\_64.rpm
+\column{0.5\linewidth}
+LHAPDF-6.1.6-6.el7.centos.x86\_64.rpm
+osg-ca-certs-1.55-1.el7.centos.noarch.rpm
+osg-release-3.3-5.el7.centos.noarch.rpm
+patchy-gfortran-2006-36.el7.centos.i686.rpm
+paw-gfortran-2006-36.el7.centos.i686.rpm
+PHOTOS-3.61-1.el7.centos.x86\_64.rpm
+pythia8-8.2.15-102.el7.centos.x86\_64.rpm
+qd-2.3.15-100.el7.centos.x86\_64.rpm
+qgraf-3.1.4-1.el7.centos.x86\_64.rpm
+root-5.34.36-1.el7.centos.x86\_64.rpm
+SHERPA-MC-2.2.0-3.el7.centos.x86\_64.rpm
+TAUOLA-1.1.5-1.el7.centos.x86\_64.rpm
+ThePEG-2.0.2-1.el7.centos.x86\_64.rpm
+vincia-1.2.02-1.el7.centos.x86\_64.rpm
+xbae-4.60.4-12.el7.centos.i686.rpm
+\end{columns}
 
+All JADE software is packed as one rpm that is installed as is in /opt
+}
 \end{document}
 

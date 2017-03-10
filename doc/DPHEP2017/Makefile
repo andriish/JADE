@@ -22,3 +22,9 @@ figures:
 	convert pngjpggif/JADE_Logbook.jpg eps/JADE_Logbook.eps
 	convert pngjpggif/USB.jpg eps/USB.eps
 	convert pngjpggif/MPCDF.png eps/MPCDF.eps
+	convert pngjpggif/compilation.png eps/compilation.eps
+	convert pngjpggif/compilation2.png eps/compilation2.eps
+	convert pngjpggif/jadezroot.png eps/jadezroot.eps
+	convert pngjpggif/start.png eps/start.eps
+	convert pngjpggif/thrust.png eps/thrust.eps
+	convert pngjpggif/sherpa.png eps/sherpa.eps
