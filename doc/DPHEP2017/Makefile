@@ -1,4 +1,5 @@
-file=DPHEP2017_Andrii_Verbytskyi
+#file=DPHEP2017_JADE_Andrii_Verbytskyi
+file=DPHEP2017_OPAL_Andrii_Verbytskyi
 all:  figures
 		latex $(file).tex
 		latex $(file).tex

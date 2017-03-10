@@ -84,43 +84,6 @@ belowskip=-1.2em
 \usepackage{amssymb}
 \usepackage{mathtools}
 \usepackage{graphicx}
-%\usepackage[dvipsnames]{xcolor}
-%\input{../JADESEC-def}
-
-
-
-
-
-
-
-
-
-
-%\setbeamertemplate{navigation symbols}{}
-%\setbeamertemplate{footline}[page number]{}
-
-
-%\newenvironment{changemargin}[2]{%
-%\begin{list}{}{%
-%\setlength{\topsep}{0pt}%
-%\setlength{\leftmargin}{#1}%
-%\setlength{\rightmargin}{#2}%
-%\setlength{\listparindent}{\parindent}%
-%\setlength{\itemindent}{\parindent}%
-%\setlength{\parsep}{\parskip}%
-%}%
-%\item[]}{\end{list}}
-
-%\newcommand{\maxFrameImage}[1]{
-%\begin{frame}[plain]
-%\begin{changemargin}{-1cm}{-1cm}
-%\begin{center}
-%\includegraphics[width=1.0\paperwidth,height=1.0\paperheight,keepaspectratio]
-%{#1}
-%\end{center}
-%\end{changemargin}
-%\end{frame}
-%}
 
 
 \def\Tiny{\fontsize{4.0pt}{4.0pt}\selectfont}
@@ -143,26 +106,20 @@ Andrii Verbytskyi
 }
 
 \frame{
-%  \node [anchor=north east, inner sep=0pt,opacity=0.18]  at (current page.center)
- %    {\includegraphics[height=0.097\paperheight,width=0.5\paperwidth]{bg}};
-     
-     %\begin{tikzpicture}%[remember picture, overlay]
-%\end{tikzpicture}          
 \vspace{0.3cm}
 \begin{figure}
-%\includegraphics[height=1.0cm]{eps/jade.eps}
 \includegraphics[height=1.0cm]{eps/MPP_os_logo_cmyk.eps}
-\includegraphics[height=1.0cm]{eps/DESY-Logo-cyan-RGB_ger.eps}
+%\includegraphics[height=1.0cm]{eps/CERN-Logo-cyan-RGB_ger.eps}
 \hspace*{12.0cm}
 \end{figure}
 \begin{center}
 \vspace{1.3cm}
-{\LARGE The JADE long term data preservation projects in Max-Planck Institute f\"{u}r Physik}
+{\LARGE The OPAL long term data preservation projects in Max-Planck Institute f\"{u}r Physik}
 \vspace{0.3cm}
 \end{center}
 \begin{center}
 \vspace{0.3cm}
-Andrii Verbytskyi on behalf of JADE Resurrection Group\\
+Andrii Verbytskyi\\
 \end{center}
 \vspace{1.0cm}
 \begin{center}
@@ -174,24 +131,24 @@ Andrii Verbytskyi on behalf of JADE Resurrection Group\\
 
 \usebackgroundtemplate{%
   \tikz\node [anchor=north east, inner sep=0pt,opacity=0.98]  at (current page.center)
-     {\includegraphics[height=1.0\paperheight,width=\paperwidth]{PETRA}};
+     {\includegraphics[height=1.0\paperheight,width=\paperwidth]{LEP}};
 }
 
 
-\frame{\frametitle{PETRA}
+\frame{\frametitle{LEP}
 {\color{white}\Large\bf 
 \begin{itemize} 
-\item \color{white} Electron-positron collider, started in 1979 in DESY; 
+\item \color{white} Electron-positron collider, started in 1979 in CERN; 
 \item \color{white}2.3km ring, beam energies up to 23GeV;
-\item \color{white}Experiments: TASSO, MARK-J, CELLO, {\color{red}JADE}.
+\item \color{white}Experiments: ALEPH, DELPHI, L3, {\color{red}OPAL}.
 \end{itemize} 
 } 
 }
 \usebackgroundtemplate{}
 
-\frame{\frametitle{JADE}
+\frame{\frametitle{OPAL}
 \begin{centering}
-\includegraphics[width=0.8\linewidth]{eps/JADEDet.eps}	
+\includegraphics[width=0.8\linewidth]{eps/OPALDet.eps}	
 \end{centering}
 \begin{columns}[c]
 \column{0.49\linewidth}
@@ -211,18 +168,18 @@ Andrii Verbytskyi on behalf of JADE Resurrection Group\\
 }
 
 
-%eps/JADEDet.eps
+%eps/OPALDet.eps
 
 \usebackgroundtemplate{%
   \tikz\node [anchor=north east, inner sep=0pt,opacity=0.18]  at (current page.center)
-     {\includegraphics[height=1.0\paperheight,width=\paperwidth]{PETRA}};
+     {\includegraphics[height=1.0\paperheight,width=\paperwidth]{LEP}};
 }
 
 
-\frame{\frametitle{JADE  and data preservation}
+\frame{\frametitle{OPAL  and data preservation}
 \begin{columns}[c]
 \column{0.54\linewidth}
-JADE@PETRA reminder:
+OPAL@LEP reminder:
 \begin{itemize}
 \item One of key experimets for QCD: discovery of gluon, $\alpha_{s}$ measurements.
 %{\bf 
@@ -236,20 +193,20 @@ Motivation for data preservation:
 %\item {\bf Exceptional example of preservation of 30y.o. data.}
 \end{itemize}
 \column{0.45\linewidth}
-\includegraphics[width=1.0\linewidth]{eps/JADE-ID-records.eps}
+\includegraphics[width=1.0\linewidth]{eps/OPAL-ID-records.eps}
 \end{columns}
 }
 
 \usebackgroundtemplate{}
 
-\frame{\frametitle{JADE data preservation history}
+\frame{\frametitle{OPAL data preservation history}
 \begin{itemize}
 \item 1986: End of data taking.
 \item 1995: Private initiative to rescue data (J.~Olsson)
 %\begin{itemize}
 %\item  rescue data from tapes and copy them to Exabyte cartridges (J.~Olsson)
 %\item  reanalyse data with update LEP-like aproach and  theory
-%\item  port  JADE software and enable MC generation
+%\item  port  OPAL software and enable MC generation
 %\end{itemize}
 %Credits to J.~Olsson, S.~Bethke and P.~Movilla Fernandez.
 %}
@@ -265,8 +222,8 @@ Motivation for data preservation:
 }
 \item {1996-2013: Physics
 \begin{itemize}
-\item 11 papers, O(40) conference talks, thesis, JADE notes.
-%\item 4 JADE internal notes.
+\item 11 papers, O(40) conference talks, thesis, OPAL notes.
+%\item 4 OPAL internal notes.
 \end{itemize}
 %Credits to S.~Bethke , O.~Biebel , M.~Blumenstengel , S.~Kluth, J.~Olsson , P.~Movilla Fernandez , C.~Pahl , J.~Schieck. 
 }
@@ -291,16 +248,16 @@ Motivation for data preservation:
 
 
 
-\frame{\frametitle{MPP DP  model for JADE}
+\frame{\frametitle{MPP DP  model for OPAL}
 \begin{columns}[c]
 	\column{0.6\linewidth}
 {\centering \bf \color{red}\Large Yes, 11 papers!}\\
 {\bf Data preservation is about  new and interested results with old data.}
 %A lot of amazing results was obtainded with preserved data in 1995-2013.\\
-{\bf In adiition  the Data Preservation  experince with JADE has an extreame importance on itself.}\\
+{\bf In adiition  the Data Preservation  experince with OPAL has an extreame importance on itself.}\\
 In out model we describe  ingredients and tools:\\
 \column{0.4\linewidth}
-\includegraphics[width=1.0\linewidth,height=0.85\linewidth]{jade_d3_alphas_no14}\\
+\includegraphics[width=1.0\linewidth,height=0.85\linewidth]{OPAL_d3_alphas_no14}\\
 EPJ C73 (2013) 3, 2332
 \end{columns}
 \begin{columns}[c]
@@ -326,25 +283,25 @@ Main idea: enable physics and make it doable with modern methods in modern envir
 
 
 \frame{\frametitle{MPP DP model for documentation  and policies}
-%MPP data preservation relies on the documentation preserved as papers by DESY/DESY library/InSpire.\\
+%MPP data preservation relies on the documentation preserved as papers by CERN/CERN library/InSpire.\\
 \begin{itemize}
-\item JADE publications are available in InSpire, journals, arXiv or scanned by KEK.
-\item The non-digital documentation is preserved in DESY and MPP.
+\item OPAL publications are available in InSpire, journals, arXiv or scanned by KEK.
+\item The non-digital documentation is preserved in CERN and MPP.
 \item Logbooks included!
-\item Some available online as well, see details at https://wwwjade.mpp.mpg.de/
+\item Some available online as well, see details at https://wwwOPAL.mpp.mpg.de/
 \end{itemize}
 \begin{figure}\centering
-\includegraphics[width=0.3\linewidth]{eps/JADE_Logbook.eps}
+\includegraphics[width=0.3\linewidth]{eps/OPAL_Logbook.eps}
 \end{figure}
 }
 
-\frame{\frametitle{MPP DP model for JADE data bits }
+\frame{\frametitle{MPP DP model for OPAL data bits }
 \begin{itemize}
-\item JADE data are stored in MPCDF on locally accessible tapes and in disk pool.
+\item OPAL data are stored in MPCDF on locally accessible tapes and in disk pool.
 \item Access via multiple protocols with grid tools worldwide to disk pools.
 %\item Grid-enabled storage for new samples (Monte Carlo) and analysis is available.
 \item Straightforward procedure to add new (MC) samples.
-\item In the end nowadays all the data from JADE can fit to a modern USB stick.
+\item In the end nowadays all the data from OPAL can fit to a modern USB stick.
 \end{itemize}
 \begin{figure}\centering
 \includegraphics[width=0.25\linewidth]{eps/USB.eps}
@@ -355,7 +312,7 @@ Main idea: enable physics and make it doable with modern methods in modern envir
 %\footnote{Because of data reshiffling now H1 data temporary is only on tape}	
 
 
-\frame{\frametitle{JADE data in MPP: Bits statistics}
+\frame{\frametitle{OPAL data in MPP: Bits statistics}
 %\hspace{6cm}
 \begin{columns}[c]
 \column{0.85\linewidth}
@@ -377,9 +334,9 @@ Data are  PAW ntuples, ASCII files and FPACK compressed data.
 
 Available at:
 \begin{itemize}
-\item gsidcap://grid-srm.rzg.mpg.de:22128/pnfs/rzg.mpg.de/data/zeus/jade
+\item gsidcap://grid-srm.rzg.mpg.de:22128/pnfs/rzg.mpg.de/data/zeus/OPAL
 \item grid-gftp2.rzg.mpg.de 
-\item davs://grid-dav.rzg.mpg.de:2880//zeus/jade
+\item davs://grid-dav.rzg.mpg.de:2880//zeus/OPAL
 \item \dots
 \end{itemize}
 
@@ -409,7 +366,7 @@ Key ideas:
 
 
 
-\frame{\frametitle{JADE software in MPP}
+\frame{\frametitle{OPAL software in MPP}
 \begin{itemize}
 \item Full chain for reconstruction of raw data to PAW/ROOT ntuples was resurrected.
 \item Main software for the analysis of early preserved and reconstructed data is vanilla PAW or ROOT(via h2root).
@@ -419,24 +376,12 @@ Key ideas:
 \item Monte-Carlo generation packages;
 \end{itemize}
 \end{itemize}
-(Original)Software is available at https://wwwjade.mpp.mpg.de
+(Original)Software is available at https://wwwOPAL.mpp.mpg.de
 }
 
 
 
-
-%\frame{\frametitle{JADE software porting quest}
-%Source codes were written in  Fortran IV (1974), Fortran 77, Sheltran, Mortran,
-  %Assembler.
-%Later these were ported to IBM xlf fortran.  
-
-%The original OS/hardware  was UNKNOWN for  on IBM/370 (offline) and Nord 10S/50  (online).
-%Later  it became AIX 4.3 on RS6000.
-
-
-%}
-
-\frame{\frametitle{JADE software porting quest in detail}
+\frame{\frametitle{OPAL software porting quest in detail}
 \begin{columns}[c]
 \column{0.4\linewidth}
 \begin{itemize}
@@ -446,7 +391,7 @@ Key ideas:
 \end{itemize}
 \column{0.6\linewidth}
 \begin{figure}\centering
-\includegraphics[width=1.0\linewidth]{jadedisplayold.eps}
+\includegraphics[width=1.0\linewidth]{OPALdisplayold.eps}
 \end{figure}
 \end{columns}
 \begin{itemize}
@@ -457,7 +402,7 @@ IBM fortran is not for free, 32 bit systems are dying out etc.
 
 
 
-\frame{\frametitle{JADE software porting quest: step one}
+\frame{\frametitle{OPAL software porting quest: step one}
 One can start from:
 \begin{itemize}
 \item 	PowerPC64 multiarch CentOS7 little endian on QUEMU2.7;
@@ -469,7 +414,7 @@ One can start from:
 FYI: Some codes date back to 1974.
 }
 
-\frame{\frametitle{JADE software porting quest: step two}
+\frame{\frametitle{OPAL software porting quest: step two}
 Once the software passes simplest tests:
 \begin{itemize}
 \item 	Switch to gfortran;
@@ -485,7 +430,7 @@ Once the software passes simplest tests:
 }
 
 
-\frame{\frametitle{JADE software porting quest: step two}
+\frame{\frametitle{OPAL software porting quest: step two}
 Once the code is compiled on a standard computer, one has to fix bugs in functionality or implement missing features.\\ 
 Here the problems begin.
 \begin{itemize}
@@ -500,12 +445,12 @@ A collaboration with J.Ollsson might be helpfull.
 }
 
 
-\frame{\frametitle{JADE software porting quest: step three}
+\frame{\frametitle{OPAL software porting quest: step three}
 On the positive site:
 \begin{itemize}
-\item The key to productive usage of JADE data in the past was an option to generate MC with much newer generators.
-The option was implemented with integration of Pythia/Herwig/Ariadne codes into JADE software.
-\item Now it is simpler: Monte Carlo generators have standard output formats and only a converter from a standard format to JADE-specific input has to be developed.
+\item The key to productive usage of OPAL data in the past was an option to generate MC with much newer generators.
+The option was implemented with integration of Pythia/Herwig/Ariadne codes into OPAL software.
+\item Now it is simpler: Monte Carlo generators have standard output formats and only a converter from a standard format to OPAL-specific input has to be developed.
 \item Done with HepMC3, very nice library.
 \end{itemize}
 
@@ -515,75 +460,11 @@ The option was implemented with integration of Pythia/Herwig/Ariadne codes into 
 
 
 
-%\frame{\frametitle{JADE software porting quest: step one}
-%After downloading the tarbal with software from 2003:
-
-
-%One has to find big endian machine, something RS6000 (ppc) compatible.
-
-%Solution is QEMU2.7 virtual machine with ppc/ppc64 support. 
-%Another option, old  RS6000 machine used as router turns out to be slow and has not enough disk space.
-%RS6000 are availbale on e-bay, but are quite expensive.
-
-
-%One has to find modern big endian OS, something AIX43 compatible.
-%Solution is CentOS7.2 with multiarch support ppc64+ppc(64be+32be) from CentOS AltArch repository. 
-
-%One has to find xlf compatible compiler.
-%Solution is a trial version of xlf 15.1 from IBM.
-%Thanks, IBM!
-
-%Now we can try to compile something!
-%}
-
-%\frame{\frametitle{JADE software porting quest: step one}
-
-%One has to have a build system for the software. Old makefiles are impractical.
-%Solution is the new cmake. cmake is PERFECT for fortran. 
-
-
-%The fortran dialect incompatibilities are fixed by hand or with sed scripts. 
-%These are mostly HOLLERITHs, INTEGER to CHARECTER conversion and so on.
-%Takes some time, but is a straightforward procedure.
-%{\bf At this point everything compiles. }
-
-%One has to link programs with some CERNLIB routines.
-%Subquest: compile 32 bit CERNLIB for CentOS7 on ppc.
-%With some tricks 32 bit CERNLIB rpm package was obtained. 
-%See explanations in the backup.
-
-%{\bf At this point executables are linked and tested.}
-%At the next step gfortran was used to compile the executables.
-%{\bf At this point  the stup is complitely open source.}
-%Next, the CentOS7 x8664 with multiach support wasused instead of the  ppc version.
-%The byteorder issues are solved with gfortran runtime which accepts big endian byteorder I/O if to set a proper environment variable.
-%export GFORTRAN\_CONVERT\_UNIT='big\_endian;native:2' 
-%The CERNLIB was compiled for this planform as well.
-
-%{\bf At this point  the setup can be used on many standard machines, only 32 bit libraries and  CERNLIB is required.}
-
-%}
-
-
-%\frame{\frametitle{JADE software porting quest: step one}
-
-%CERNLIB is not supported, so it is a good idea to throw it away.
-%The main dependence on cernlib are  just few generic routines and HIGZ package for graphics.
-
-%The generic routines were copied from cernlib and the graphic primitives were replaced with ROOT 
-%drawing routines. The small set of routines was collected to form  "picocernlib".% can be compiled even in 64 bit mode.
-
-%{\bf At this point  the setup can be used on many standard machines, only ROOT is required.}
 
 
 
 
-%}
-
-
-
-
-\frame{\frametitle{JADE software environment/VM}
+\frame{\frametitle{OPAL software environment/VM}
 A certain environment is needed  for the analysis.
 \begin{itemize}
 \item Virtual machines(VM) are a very attractive {\bf long-term} solution;
@@ -593,7 +474,7 @@ A certain environment is needed  for the analysis.
 \item Usage not restricted to any laboratory or virtualization software. Can run anywhere.
 \item Usage of ISO installation image assures vendor independence.
 \end{itemize}
-VM is available at: https://wwwjade.mpp.mpg.de
+VM is available at: https://wwwOPAL.mpp.mpg.de
 }
 
 
@@ -602,13 +483,13 @@ VM is available at: https://wwwjade.mpp.mpg.de
 \usebackgroundtemplate{}
 
 
-\frame{\frametitle{JADE software environment/VM}
+\frame{\frametitle{OPAL software environment/VM}
 VM includes:
 \begin{itemize}
-\item JADE software: ROOT, MC simulation, event display, file catalogue, setup scripts etc. See a detailed list in backup slides.
+\item OPAL software: ROOT, MC simulation, event display, file catalogue, setup scripts etc. See a detailed list in backup slides.
 \item Modern MC generators, FastJet, cernlib, PAW and other popular and ``not really'' packages.
 \item Anything you will want to install\dots
-%\item Available at: https://wwwJADE.mpp.mpg.de/dphep.html together with  documentation and video tutorials. 
+%\item Available at: https://wwwOPAL.mpp.mpg.de/dphep.html together with  documentation and video tutorials. 
 \item Agree access and download it.
 \item VirtualBox images are provided as well.
 \end{itemize}
@@ -616,7 +497,7 @@ VM includes:
 
 
 
-\frame{\frametitle{JADE software environment/VM}
+\frame{\frametitle{OPAL software environment/VM}
 \begin{figure}\centering
 \includegraphics[width=0.75\textwidth]{eps/start.eps}
 \end{figure}
@@ -624,23 +505,23 @@ Generic start of VM.
 }
 
 
-\frame{\frametitle{JADE software environment/VM test }
+\frame{\frametitle{OPAL software environment/VM test }
 \begin{figure}\centering
 \includegraphics[width=0.75\textwidth]{eps/compilation.eps}
 \end{figure}
-JADE software compilation in VM: takes about 4 minutes.
+OPAL software compilation in VM: takes about 4 minutes.
 }
 
 
-\frame{\frametitle{JADE software environment/VM test }
+\frame{\frametitle{OPAL software environment/VM test }
 \begin{figure}\centering
 \includegraphics[width=0.75\textwidth]{eps/sherpa.eps}
 \end{figure}
-MC for JADE can be generated in VM ol elsewhere. In this case SHERPA is running in VM.
+MC for OPAL can be generated in VM ol elsewhere. In this case SHERPA is running in VM.
 }
 
 
-\frame{\frametitle{JADE software environment/VM test }
+\frame{\frametitle{OPAL software environment/VM test }
 \begin{figure}\centering
 \includegraphics[width=0.75\textwidth]{eps/thrust.eps}
 \end{figure}
@@ -648,9 +529,9 @@ In the end of reconstruction a ROOT file with simple tree is delivered.  %Recons
 Thrust distribution from the generated evens is shown.
 }
 
-\frame{\frametitle{JADE software environment/VM test }
+\frame{\frametitle{OPAL software environment/VM test }
 \begin{figure}\centering
-\includegraphics[width=0.55\textwidth]{eps/jadezroot.eps}
+\includegraphics[width=0.55\textwidth]{eps/OPALzroot.eps}
 \end{figure}
 Test of the reconstructed MC files with event display.
 {\bf Not all functionality is restored. To be fixed.}.
@@ -659,31 +540,6 @@ Test of the reconstructed MC files with event display.
 
 
 
-%\frame{\frametitle{The MC recipe ingredients}
-%\begin{itemize}
-%\item Instruction to generate events with old JADE generators are prepared.
-%\item An interface to modern HEP event records based on HepMC3 libray is developed.
-  %JADE MC  can be produced from with modern MC generator, e.g.\ NLO capable SHERPA+BlackHat.
-%\item ZMCSP (JADE Monte Carlo Standalone Package) is a tarball with  all the software needed for the reconstruction
-%of MC simulated events. It has no external dependencies, runs on modern Grid clusters, virtual machine, a laptop.
-%On the Grid it can produce 50-100M events\footnote{JADE has 360M of data events} per week. 
-%Supplemented with example of scripts and documentation.
-%%\item The first two samples were generated this summer. See Iurii's talk.
-%%It was found that the key to success is to {\bf read and follow the instructions}.
-%%\item There is a lot of computing resources around, where it is possible to generate even large samples.
-%%20-50-100M events is NOT a problem. 
-%%\item In practice the generation with new MC generators is not much complicated, however only tiny samples were produced with
-%%SHERA 2.2 and blackhat 0.9.9.
-%\end{itemize}
-%}
-
-%\frame{\frametitle{The MC generation: SHERPA+BlackHat multijet setup}
-%%\begin{figure}\centering
-%%\includegraphics[width=0.4\linewidth]{kt.eps}
-%%\includegraphics[width=0.4\linewidth]{nt.eps}
-%%\end{figure}
-%Thrust distribution with SHERPA+BlackHat Monte Carlo simulated and reconstructed  sample.
-%}
 
 
 
@@ -694,13 +550,11 @@ Test of the reconstructed MC files with event display.
 \item Huge work was done since 1995!
 \item Many high quality, important physics results delivered.
 \item Data is accessible in  MPCDF and software is {\bf\color{red}analysis-ready}.
-%\item An option for MC production with new and old MC generators exists for JADE and tested. 
-%\item Existing data ntuples can be used with generated MC samples, i.e. {\bf system is analysis-ready}.
 \end{itemize}
 Potential improvements are obvious: enable data reading, fixes to event display, improving documentation.
 }
 \section{Data Preservation applications}
-\frame{\frametitle{JADE Data Preservation applications}
+\frame{\frametitle{OPAL Data Preservation applications}
 \begin{itemize}
 \item Hodronisation effects.
 \item QCD with $b$-quarks and modern theory predictions, e.g. tests of future fully differential NNLO predictions for $e^{+}e^{-}\rightarrow hadrons$ with heavy quarks.
@@ -711,7 +565,7 @@ Potential improvements are obvious: enable data reading, fixes to event display,
 
 \frame{\frametitle{}}
 
-\section{What other experiments can learn from JADE DP}
+\section{What other experiments can learn from OPAL DP}
 
 
 \frame{\frametitle{Software}
@@ -739,33 +593,29 @@ Few moden experiments can be sure that more than tiny fraction of their code wil
 
 
 
-\frame{\frametitle{What other experiments can learn from JADE DP: Some anecdotes}
+\frame{\frametitle{What other experiments can learn from OPAL DP: Some anecdotes}
 \begin{itemize}
-\item one "calibration" file, with  luminosities for each run and fill, was stored on a private account  and therefore lost when DESY archive was cleaned up;
-\item   Jan Olsson, when cleaning up his office in ~1997, found an old ASCII-printout of the JADE luminosity file.
+\item one "calibration" file, with  luminosities for each run and fill, was stored on a private account  and therefore lost when CERN archive was cleaned up;
+\item   Jan Olsson, when cleaning up his office in ~1997, found an old ASCII-printout of the OPAL luminosity file.
   Unfortunately, it was printed on green recycling paper - not suitable for scanning and OCR-ing.
   A secretary at Aachen re-typed it within 4 weeks.
   A checksum routine found (and recovered) only 4 typos.
 \item an old version of the original BOSlib 1979 version was found, on  request at the Tokyo computer centre.
 \item  Peter Bock, when cleaning out an old lab at the Physics Institute at Heidelberg University, found a few 9-track tapes containing 
-original JADE MC files which were very valuable for validating
+original OPAL MC files which were very valuable for validating
   results of first re-analyses in ~1997
 \end{itemize}
 }
 
-\frame{\frametitle{What other experiments can learn from JADE DP: Some anecdotes}
+\frame{\frametitle{What other experiments can learn from OPAL DP: Some anecdotes}
 \begin{itemize}
 \item First port attempt in 2016 was done with AIX 4.3 machine used as router in MPP, but turns out VirtualBox is more useful.
 \item Many problems in software porting were solved in the industry: byte ordering problem  in the modern gfortran, availability of 
 Linux on PowerPCs, good fortran build system (cmake) is available now, xlf compiler is available on Linux now.
 \item Googling the arxiver used fro the data, FPACK is a hard task.
 \end{itemize}
-
-
-%best computer in 19985 is 2GFLOPS, CRAY2   1 core now 45GFLOPS
-
 }
-\frame{\frametitle{List of custom/extra RPM packages on JADE VM}
+\frame{\frametitle{List of custom/extra RPM packages on OPAL VM}
 Some subpackages ommited.
 
 \begin{columns}[c]\tiny
@@ -802,8 +652,7 @@ ThePEG-2.0.2-1.el7.centos.x86\_64.rpm
 vincia-1.2.02-1.el7.centos.x86\_64.rpm
 xbae-4.60.4-12.el7.centos.i686.rpm
 \end{columns}
-
-All JADE software is packed as one rpm that is installed as is in /opt
+All OPAL software is packed as one rpm that is installed as is in /opt
 }
 \end{document}
 
