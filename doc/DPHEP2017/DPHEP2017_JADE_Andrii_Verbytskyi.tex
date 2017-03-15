@@ -14,34 +14,6 @@
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
 
-\lstset{ %
-  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
-%  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
-  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
-  breaklines=true,                 % sets automatic line breaking
-  captionpos=b,                    % sets the caption-position to bottom
-  commentstyle=\color{mygreen},    % comment style
-  deletekeywords={...},            % if you want to delete keywords from the given language
-  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
-  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
-  frame=single,                    % adds a frame around the code
-  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
-  keywordstyle=\color{blue},       % keyword style
-  language=Octave,                 % the language of the code
-  morekeywords={*,...},            % if you want to add more keywords to the set
-  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
-  numbersep=5pt,                   % how far the line-numbers are from the code
-  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
-  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
-  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
-  showstringspaces=false,          % underline spaces within strings only
-  showtabs=false,                  % show tabs within strings adding particular underscores
-  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
-  stringstyle=\color{mymauve},     % string literal style
-  tabsize=2,                       % sets default tabsize to 2 spaces
-  title=\lstname,                   % show the filename of files included with \lstinputlisting; also try caption instead of title
-belowskip=-1.2em
-}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -125,7 +97,7 @@ belowskip=-1.2em
 
 \def\Tiny{\fontsize{4.0pt}{4.0pt}\selectfont}
 
-\title[DPHEP2017]{2nd Data Preservation in High Energy Physics Collaboration Meeting}
+\title[DPHEP2017]{2nd DPHEP Collaboration Meeting}
 \subtitle[DPHEP2017]{DPHEP2017}
 \author[Andrii Verbytskyi]{
 Andrii Verbytskyi
@@ -166,7 +138,7 @@ Andrii Verbytskyi on behalf of JADE Resurrection Group\\
 \end{center}
 \vspace{1.0cm}
 \begin{center}
-\footnotesize  2nd Data Preservation in High Energy Physics Collaboration Meeting \\Geneve,\\ \today
+\footnotesize  2nd DPHEP Collaboration Meeting \\Geneva,\\ \today
 \end{center}
 \vspace{0.4cm}
 }
@@ -224,7 +196,7 @@ Andrii Verbytskyi on behalf of JADE Resurrection Group\\
 \column{0.54\linewidth}
 JADE@PETRA reminder:
 \begin{itemize}
-\item One of key experimets for QCD: discovery of gluon, $\alpha_{s}$ measurements.
+\item One of key experiments for QCD: discovery of gluon, $\alpha_{s}$ measurements.
 %{\bf 
 \item {\bf  The oldest and  most successful  Data Preservation effort!}
 \end{itemize}
@@ -275,7 +247,7 @@ Motivation for data preservation:
 \item Data is available online;
 \item Software port to Linux(Mac)@$x86\_64$;
 %\item Full port of software to $x86\_64$ (Intel-compatible with  Mac)    GNU toolchain;
-\item Virtualization;
+\item Virtualisation;
 \item Interface to HepMC3 (enables most modern MC generator);
 \item ROOT output;
 \item Preparation of digital documentation on computing notes.
@@ -297,7 +269,7 @@ Motivation for data preservation:
 {\centering \bf \color{red}\Large Yes, 11 papers!}\\
 {\bf Data preservation is about  new and interested results with old data.}
 %A lot of amazing results was obtainded with preserved data in 1995-2013.\\
-{\bf In adiition  the Data Preservation  experince with JADE has an extreame importance on itself.}\\
+{\bf In addition  the Data Preservation  experience with JADE has an extreme importance on itself.}\\
 In out model we describe  ingredients and tools:\\
 \column{0.4\linewidth}
 \includegraphics[width=1.0\linewidth,height=0.85\linewidth]{jade_d3_alphas_no14}\\
@@ -440,9 +412,9 @@ Key ideas:
 \begin{columns}[c]
 \column{0.4\linewidth}
 \begin{itemize}
-\item Original sources in Fortran IV (1974), Fortran 77, Sheltran, Mortran,
+\item Original sources in FORTRAN IV (1974), FORTRAN 77, Sheltran, Mortran,
    Assembler ported in 2003 to AIX4.3@RS6000, the old routines replaced with CERNLIB libraries
-    and compiled with IBM fortran.\\ {\bf \Large \color{red} Huge work!}
+    and compiled with IBM FORTRAN.\\ {\bf \Large \color{red} Huge work!}
 \end{itemize}
 \column{0.6\linewidth}
 \begin{figure}\centering
@@ -450,8 +422,8 @@ Key ideas:
 \end{figure}
 \end{columns}
 \begin{itemize}
-\item In 2017 everything is problemetic: AIX@ppc is Big Endian architecture, no CERNLIB in modern systems,
-IBM fortran is not for free, 32 bit systems are dying out etc.
+\item In 2017 everything is problematic: AIX@ppc is Big Endian architecture, no CERNLIB in modern systems,
+IBM FORTRAN is not for free, 32 bit systems are dying out etc.
 \end{itemize}
 }
 
@@ -460,10 +432,10 @@ IBM fortran is not for free, 32 bit systems are dying out etc.
 \frame{\frametitle{JADE software porting quest: step one}
 One can start from:
 \begin{itemize}
-\item 	PowerPC64 multiarch CentOS7 little endian on QUEMU2.7;
+\item 	PowerPC64 multi-arch CentOS7 Big Endian on QEMU2.7;
 \item   CERNLIB compilation for PowerPC {\bf \color{red} Yes, for many flavours!};
 \item   Trial version of IBM xlf15 for Linux;
-\item   Manual or semiautomatic fixes of differences between fortran dialects (e.g. HOLLERITHs, INTEGER vs. CHARECTER).
+\item   Manual or semiautomatic fixes of differences between FORTRAN dialects (e.g. HOLLERITH, INTEGER vs. CHARECTER).
 \end{itemize}
 
 FYI: Some codes date back to 1974.
@@ -473,7 +445,7 @@ FYI: Some codes date back to 1974.
 Once the software passes simplest tests:
 \begin{itemize}
 \item 	Switch to gfortran;
-\item   Start to use cmake (best thing for fortran!);
+\item   Start to use cmake (best thing for FORTRAN!);
 \item   Switch to Little Endian Linux and control I/O Endianess with GFORTRAN\_CONVERT\_UNIT ;
 \item   Replace as many as possible CERNLIB routines with ROOT or dummy routines;
 \item   The remaining routines just copy from CERNLIB (i.e. create "picocernlib");
@@ -490,10 +462,10 @@ Once the code is compiled on a standard computer, one has to fix bugs in functio
 Here the problems begin.
 \begin{itemize}
 \item 	Part of the code was lost long time ago: muon reconstruction is not available.
-\item   Event display was ported to HIGGZ/CERNLIB in 2003. To the version of cernlib that is hard to find.
-Most graphics primitives reimplemented in ROOT, but display is stiil not fully operational.
+\item   Event display was ported to HIGZ/CERNLIB in 2003. To the version of CERNLIB that is hard to find.
+Most graphics primitives re-implemented in ROOT, but display is still not fully operational.
 \item   The data is compressed with FPACK utility, but the way it was done is not known, same as the way to unpack it.
-A collaboration with J.Ollsson might be helpfull.
+A collaboration with J.Olsson might be helpful.
 \end{itemize}
 
 
@@ -590,7 +562,7 @@ A certain environment is needed  for the analysis.
 \item The way other experiments (LEP/LHC) are going;
 \item The solution has very generic requirements, will survive for a long time.
 \item Unlimited number of installations $\rightarrow$ potentially usable on clouds;
-\item Usage not restricted to any laboratory or virtualization software. Can run anywhere.
+\item Usage not restricted to any laboratory or virtualisation software. Can run anywhere.
 \item Usage of ISO installation image assures vendor independence.
 \end{itemize}
 VM is available at: https://wwwjade.mpp.mpg.de
@@ -606,7 +578,7 @@ VM is available at: https://wwwjade.mpp.mpg.de
 VM includes:
 \begin{itemize}
 \item JADE software: ROOT, MC simulation, event display, file catalogue, setup scripts etc. See a detailed list in backup slides.
-\item Modern MC generators, FastJet, cernlib, PAW and other popular and ``not really'' packages.
+\item Modern MC generators, FastJet, CERNLIB, PAW and other popular and ``not really'' packages.
 \item Anything you will want to install\dots
 %\item Available at: https://wwwJADE.mpp.mpg.de/dphep.html together with  documentation and video tutorials. 
 \item Agree access and download it.
@@ -636,7 +608,7 @@ JADE software compilation in VM: takes about 4 minutes.
 \begin{figure}\centering
 \includegraphics[width=0.75\textwidth]{eps/sherpa.eps}
 \end{figure}
-MC for JADE can be generated in VM ol elsewhere. In this case SHERPA is running in VM.
+MC for JADE can be generated in VM or elsewhere. In this case SHERPA is running in VM.
 }
 
 
@@ -659,32 +631,6 @@ Test of the reconstructed MC files with event display.
 
 
 
-%\frame{\frametitle{The MC recipe ingredients}
-%\begin{itemize}
-%\item Instruction to generate events with old JADE generators are prepared.
-%\item An interface to modern HEP event records based on HepMC3 libray is developed.
-  %JADE MC  can be produced from with modern MC generator, e.g.\ NLO capable SHERPA+BlackHat.
-%\item ZMCSP (JADE Monte Carlo Standalone Package) is a tarball with  all the software needed for the reconstruction
-%of MC simulated events. It has no external dependencies, runs on modern Grid clusters, virtual machine, a laptop.
-%On the Grid it can produce 50-100M events\footnote{JADE has 360M of data events} per week. 
-%Supplemented with example of scripts and documentation.
-%%\item The first two samples were generated this summer. See Iurii's talk.
-%%It was found that the key to success is to {\bf read and follow the instructions}.
-%%\item There is a lot of computing resources around, where it is possible to generate even large samples.
-%%20-50-100M events is NOT a problem. 
-%%\item In practice the generation with new MC generators is not much complicated, however only tiny samples were produced with
-%%SHERA 2.2 and blackhat 0.9.9.
-%\end{itemize}
-%}
-
-%\frame{\frametitle{The MC generation: SHERPA+BlackHat multijet setup}
-%%\begin{figure}\centering
-%%\includegraphics[width=0.4\linewidth]{kt.eps}
-%%\includegraphics[width=0.4\linewidth]{nt.eps}
-%%\end{figure}
-%Thrust distribution with SHERPA+BlackHat Monte Carlo simulated and reconstructed  sample.
-%}
-
 
 
 \section{Conclusions}
@@ -702,7 +648,7 @@ Potential improvements are obvious: enable data reading, fixes to event display,
 \section{Data Preservation applications}
 \frame{\frametitle{JADE Data Preservation applications}
 \begin{itemize}
-\item Hodronisation effects.
+\item Hadronisation effects.
 \item QCD with $b$-quarks and modern theory predictions, e.g. tests of future fully differential NNLO predictions for $e^{+}e^{-}\rightarrow hadrons$ with heavy quarks.
 \item \dots
 \end{itemize}
@@ -717,12 +663,12 @@ Potential improvements are obvious: enable data reading, fixes to event display,
 \frame{\frametitle{Software}
 \begin{itemize}
 \item Generic technologies for hardware and OS is an advantage.
-\item High code quality, clarity and stability is a key to succees.
+\item High code quality, clarity and stability is a key to success.
 Note: some routines are from 1974, i.e. 43 y.o. 
-Few moden experiments can be sure that more than tiny fraction of their code will behave like that.
+Few modern experiments can be sure that more than tiny fraction of their code will behave like that.
 \item Design of software is important.%, even complicated things like event display can survive for 30 years if to use good simple approaches, i.e. graphic primitives in this case.
 \item Good build system makes porting much easier
-\item Standartisation of I/O data formats is important.
+\item Standardisation of I/O data formats is important.
 \item Documentation on simple things is important, i.e. meaning of arguments for utilities.
 \end{itemize}
 }
@@ -730,10 +676,10 @@ Few moden experiments can be sure that more than tiny fraction of their code wil
 \frame{\frametitle{Data}
 
 \begin{itemize}
-\item Compressing the data might look like a good solution, but it is bad. Saving 1Tb of disk space today mean lose of days to read the data back tommorow.
+\item Compressing the data might look like a good solution, but it is bad. Saving 1Tb of disk space today mean lose of days to read the data back tomorrow.
 {\color{red} Do not compress your data!}
 \item Keeping reference data/MC/results is important.
-\item Standartisation of I/O data formats is important.
+\item Standardisation of I/O data formats is important.
 \end{itemize}
 }
 
@@ -757,7 +703,7 @@ original JADE MC files which were very valuable for validating
 \begin{itemize}
 \item First port attempt in 2016 was done with AIX 4.3 machine used as router in MPP, but turns out VirtualBox is more useful.
 \item Many problems in software porting were solved in the industry: byte ordering problem  in the modern gfortran, availability of 
-Linux on PowerPCs, good fortran build system (cmake) is available now, xlf compiler is available on Linux now.
+Linux on PowerPCs, good FORTRAN build system (cmake) is available now, xlf compiler is available on Linux now.
 \item Googling the arxiver used fro the data, FPACK is a hard task.
 \end{itemize}
 
@@ -766,7 +712,7 @@ Linux on PowerPCs, good fortran build system (cmake) is available now, xlf compi
 
 }
 \frame{\frametitle{List of custom/extra RPM packages on JADE VM}
-Some subpackages ommited.
+Some subpackages omitted.
 
 \begin{columns}[c]\tiny
 \column{0.5\linewidth}

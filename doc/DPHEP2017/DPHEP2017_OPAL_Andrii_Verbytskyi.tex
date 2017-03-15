@@ -14,35 +14,6 @@
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
 
-\lstset{ %
-  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
-%  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
-  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
-  breaklines=true,                 % sets automatic line breaking
-  captionpos=b,                    % sets the caption-position to bottom
-  commentstyle=\color{mygreen},    % comment style
-  deletekeywords={...},            % if you want to delete keywords from the given language
-  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
-  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
-  frame=single,                    % adds a frame around the code
-  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
-  keywordstyle=\color{blue},       % keyword style
-  language=Octave,                 % the language of the code
-  morekeywords={*,...},            % if you want to add more keywords to the set
-  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
-  numbersep=5pt,                   % how far the line-numbers are from the code
-  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
-  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
-  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
-  showstringspaces=false,          % underline spaces within strings only
-  showtabs=false,                  % show tabs within strings adding particular underscores
-  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
-  stringstyle=\color{mymauve},     % string literal style
-  tabsize=2,                       % sets default tabsize to 2 spaces
-  title=\lstname,                   % show the filename of files included with \lstinputlisting; also try caption instead of title
-belowskip=-1.2em
-}
-
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
@@ -88,7 +59,7 @@ belowskip=-1.2em
 
 \def\Tiny{\fontsize{4.0pt}{4.0pt}\selectfont}
 
-\title[DPHEP2017]{2nd Data Preservation in High Energy Physics Collaboration Meeting}
+\title[DPHEP2017]{2nd DPHEP Collaboration Meeting}
 \subtitle[DPHEP2017]{DPHEP2017}
 \author[Andrii Verbytskyi]{
 Andrii Verbytskyi
@@ -114,7 +85,7 @@ Andrii Verbytskyi
 \end{figure}
 \begin{center}
 \vspace{1.3cm}
-{\LARGE The OPAL long term data preservation projects in Max-Planck Institute f\"{u}r Physik}
+{\LARGE The OPAL long term data preservation project in Max-Planck Institute f\"{u}r Physik and more}
 \vspace{0.3cm}
 \end{center}
 \begin{center}
@@ -123,7 +94,7 @@ Andrii Verbytskyi\\
 \end{center}
 \vspace{1.0cm}
 \begin{center}
-\footnotesize  2nd Data Preservation in High Energy Physics Collaboration Meeting \\Geneve,\\ \today
+\footnotesize  2nd DPHEP Collaboration Meeting \\Geneva,\\ \today
 \end{center}
 \vspace{0.4cm}
 }
@@ -131,15 +102,15 @@ Andrii Verbytskyi\\
 
 \usebackgroundtemplate{%
   \tikz\node [anchor=north east, inner sep=0pt,opacity=0.98]  at (current page.center)
-     {\includegraphics[height=1.0\paperheight,width=\paperwidth]{LEP}};
+     {\includegraphics[height=1.0\paperheight,width=\paperwidth]{LEP2}};
 }
 
 
 \frame{\frametitle{LEP}
 {\color{white}\Large\bf 
 \begin{itemize} 
-\item \color{white} Electron-positron collider, started in 1979 in CERN; 
-\item \color{white}2.3km ring, beam energies up to 23GeV;
+\item \color{white}Electron-positron collider, 27km ring, started in CERN (1989-2000); 
+\item \color{white}Beam energies 45-105GeV;
 \item \color{white}Experiments: ALEPH, DELPHI, L3, {\color{red}OPAL}.
 \end{itemize} 
 } 
@@ -181,18 +152,21 @@ Andrii Verbytskyi\\
 \column{0.54\linewidth}
 OPAL@LEP reminder:
 \begin{itemize}
-\item Precision QCD, electroweak physics.%: discovery of gluon, $\alpha_{s}$ measurements.
-%{\bf 
-%\item {\bf  The oldest and  most successful  Data Preservation effort!}
+\item Precision QCD;
+\item Electroweak physics;
+\item Flavour physics;
+\item Searches (also Higgs)\dots
 \end{itemize}
 Motivation for data preservation:
 \begin{itemize}
 \item Future data (re-)analysis with new models and new approaches.
 \item Modelling for the future experiments.
-%\item Outreach and education.
-%\item {\bf Exceptional example of preservation of 30y.o. data.}
 \end{itemize}
 \column{0.45\linewidth}
+\begin{itemize}
+\item 5M events.
+\item 400k hadronic events at LEP-II (91-210GeV)
+\end{itemize}
 %\includegraphics[width=1.0\linewidth]{eps/OPAL-ID-records.eps}
 \end{columns}
 }
@@ -209,10 +183,8 @@ Motivation for data preservation:
 \frame{\frametitle{MPP DP  model for OPAL}
 \begin{columns}[c]
 	\column{0.6\linewidth}
-%{\centering \bf \color{red}\Large Yes, 11 papers!}\\
 {\bf Data preservation is about  new and interested results with old data.}
-%A lot of amazing results was obtainded with preserved data in 1995-2013.\\
-{\bf In adiition  the Data Preservation  experince with OPAL has an extreame importance on itself.}\\
+{\bf In addition  the Data Preservation  experience with OPAL has an extreme importance on itself.}\\
 In out model we describe  ingredients and tools:\\
 \column{0.4\linewidth}
 \includegraphics[width=1.0\linewidth,height=0.85\linewidth]{A14.ps}\\
@@ -255,10 +227,10 @@ Main idea: enable physics and make it doable with modern methods in modern envir
 
 \frame{\frametitle{MPP DP model for OPAL data bits }
 \begin{itemize}
-\item OPAL data are stored in CERN and in MPCDF on locally accessible tapes and in disk pool.
+\item OPAL data are stored in multiple copies in CERN and in MPCDF on locally accessible tapes and in disk pool.
 \item Access via multiple protocols with grid tools worldwide to disk pools.
 %\item Grid-enabled storage for new samples (Monte Carlo) and analysis is available.
-\item Straightforward procedure to add new (MC) samples.
+\item Straightforward procedure to add new (MC) samples for MPCDF.
 %\item In the end nowadays all the data from OPAL can fit to a modern USB stick.
 \end{itemize}
 %\begin{figure}\centering
@@ -277,12 +249,13 @@ Main idea: enable physics and make it doable with modern methods in modern envir
 Data are  ROOT/PAW ntuples, ASCII files, etc. Particle level NLO Monte Carlo is available for multiple generators.
 \begin{table}\centering\bf\begin{tabular}{|c|c|c|}\hline
 {\color{maroon}           } & {\color{maroon}   MPCDF     }          \\\hline\hline
-{\color{maroon}Files:      }&{\color{maroon}   5.4k  } \\
-{\color{maroon}Volume:     }&{\color{maroon}   $600 GB$ ($645\times10^{9}$ bytes)} \\
+{\color{maroon}Files:      }&{\color{maroon}   112k  } \\
+{\color{maroon}Volume:     }&{\color{maroon}   $92 TB$ ($91.9\times10^{12}$ bytes)} \\
 {\color{maroon}Work area:  }&{\color{maroon}    yes       } \\
 {\color{maroon}Access:     }&{\color{maroon}   Worldwide  } \\
 {\color{maroon}Protocols: } &{\color{maroon}   Multiple, see list   } \\
-{\color{maroon}Auth:      } &{\color{maroon}   Grid certificate with OPAL VO membership } \\\hline
+{\color{maroon}Auth:      } &{\color{maroon}   Grid certificate with  } \\
+{\color{maroon}      } &{\color{maroon}    OPAL VO membership } \\\hline
 \end{tabular}
 \end{table}
 \column{0.15\linewidth}
@@ -305,15 +278,15 @@ Available at:
 
 
 \frame{\frametitle{MPP model for software preservation}
-Explicit effort put to make software it work in the next 10-15 years.
-Previous efforts and high quality of code made it possible.%  porting  was possible.
+%Explicit effort put to make software it work in the next 10-15 years.
+%Previous efforts and high quality of code made it possible.%  porting  was possible.
 
 Key ideas:
 \begin{itemize}
 \item Rely on industry, not HEP-only standards.
 \item Enable integration and compatibility with new physics software, e.g. data bases and Monte Carlo generators.
 %\item ISO image of full operating system relying on Intel $x86$  architecture to assure easy usage.
-\item {\bf i.e.\ make software analysis-ready}
+\item {\bf Make software analysis-ready}
 \end{itemize}
 
 
@@ -324,34 +297,26 @@ Key ideas:
 
 
 
-\frame{\frametitle{OPAL software in MPP}
-\begin{itemize}
-\item Full chain for reconstruction of raw data to PAW/ROOT ntuples was resurrected.
-\item Main software for the analysis of early preserved and reconstructed data is vanilla PAW or ROOT(via h2root).
-\item Additional software includes:
-\begin{itemize}
-\item event display;
-\item Monte-Carlo generation packages;
-\end{itemize}
-\end{itemize}
-}
+%\frame{\frametitle{OPAL software in MPP}
+%\begin{itemize}
+%\item Full chain for reconstruction of raw data to PAW/ROOT ntuples was resurrected.
+%\item Main software for the analysis of early preserved and reconstructed data is vanilla PAW or ROOT(via h2root).
+%\item Additional software includes:
+%\begin{itemize}
+%\item event display;
+%\item Monte-Carlo generation packages;
+%\end{itemize}
+%\end{itemize}
+%}
 
 
 
-\frame{\frametitle{OPAL software porting quest in detail}
-Not much to say\dots But that is good!
-\begin{columns}[c]
-\column{0.5\linewidth}
-\begin{itemize}
-\item High quality code.
-\end{itemize}
-\column{0.5\linewidth}
+\frame{\frametitle{OPAL software }
+Not much to say about MPP specifically\dots But that is good!
 \begin{itemize}
 \item Huge and {\bf \color{red} successful } effort by Matthias Schr\"{o}der to keep the code compatible with modern systems.
-\end{itemize}
-\end{columns}
-\begin{itemize}
-\item Tests to put software in VM were done. Things are working, but no image so far. Biggest problem is event display.
+\item High quality code.
+\item Tests to put software in VM were done. 
 \end{itemize}
 }
 
@@ -360,8 +325,8 @@ Not much to say\dots But that is good!
 \frame{\frametitle{OPAL software extension}
 One can go ZEUS/JADE way:
 \begin{itemize}
-\item 	Add modern MC generators and converstion utility for modern format. Easy: OPAL uses ASCII bases format.
-\item   Add virtualization.
+\item 	Add modern MC generators and conversation utility for modern format. Easy: OPAL uses ASCII based HEPEVT-like format.
+\item   Add virtualisation. Things are working, but no image so far. Biggest problem is event display.
 \end{itemize}
 Not completed, but one can imagine how things should look like.
 }
@@ -371,8 +336,8 @@ Not completed, but one can imagine how things should look like.
 \frame{\frametitle{MPP Data Preservation summary}
 \begin{itemize}
 \item Huge work was done to preserve OPAL data and software.
-\item Data is accessible in  MPCDF and software is {\bf\color{red}analysis-ready}.
-\item Virtualization is on the way.
+\item The data in ntuples is accessible in  MPCDF and is {\bf\color{red}analysis-ready}.
+\item Virtualisation is on the way in MPP (and CERN).
 \item {So far MPP is involved mainly in the analysis
 \begin{itemize}
 \item Jet physics.
@@ -385,8 +350,8 @@ Not completed, but one can imagine how things should look like.
 \section{Data Preservation applications}
 \frame{\frametitle{OPAL Data Preservation applications}
 \begin{itemize}
-\item Hodronisation/non-perturbative effects.
-\item Fundamantal quaestions of QCD.
+\item Hadronisation/non-perturbative effects.
+\item Fundamental questions of QCD.
 \item Exotic hadronic states.
 \item Flavour physics.
 \item \dots
@@ -400,59 +365,101 @@ Not completed, but one can imagine how things should look like.
 \begin{itemize}
 \item Quality of code is important.
 \item Compatibility with modern experiments!
-\item Involvement of experts (M.Schroeder)
-\item Promotion: an anecdotal case of spending two conference evenings advertising preserved LEP data and its avialibility for re-analysis.
+\item Involvement of experts (M.~Schr\"{o}der)
+\item Promotion: an anecdotal case of spending two conference evenings advertising preserved LEP data and its availability for re-analysis.
 \end{itemize}
 }
 
 
 
-\frame{\frametitle{This part should be considered as an opinion}
+%\frame{\frametitle{This part should be considered as an opinion}
 
 
+
+%%}
+
+\frame{\frametitle{ \   }
+\begin{center}{\Huge Some opinions}\end{center}
+}
+
+
+\frame{\frametitle{Some thoughts on DP in general}
+Software:
+\begin{itemize}
+\item Software still requires some efforts. Can we join efforts?
+Something like software repository with a proper package management system would 
+be a nice idea. %Why don't we have the HEP software in proper formats? All these installation scripts and 
+%"export hundred variables" before it works is just annoying. 
+The technologies to do that (i.e. rpm/yum/etc) 
+already 20+ years on the market, but still not in HEP.
+\end{itemize}
 
 }
 
+\frame{\frametitle{Some thoughts on DP in general}
+DP plans:
+\begin{itemize}
+\item Abstraction is good, but there is a huge difference between number of abstract concepts and 
+actual examples of implementation. 
+%In HEP we know that some detectors are better that others from the experience,
+%but it is not the case for DP. For the detectors we have resolution/coverage/reading time/etc. Mostly about physics.
+%Should one expect physics in the plans?
+\end{itemize}
+
+}
 
 
 \frame{\frametitle{Some thoughts on DP in general}
 %OK, OPAL DP is quite advanced. But, in the same time, the collaboration has ended in 2007.
 %10 years is enough to understand the chalanges of analysis of data after 10 years..
-Some technical problems:
+Some technical and sociological problems:
 \begin{itemize}
-\item Missing or obscure  technical documantation. While OPAL primer does exist, it doesn't cover everything.
-Thought one can admitt the documantation from OPAL is quite good.
-\item Quite oftern even the physics of old experimants is forgotten.
-e.g.\ absence of jet $p_{T}$ cut in $e^{+}e^{-}$ confuses people working with hadronic colliders.
-
-
-\item The terminology in 2000 and now is different, old methods are renamed, etc.    This slows down communication.
-e.g.\ Monte Carlo tuning method by DELPHI (Z. Phys., C73 (1996) 11-60) has 293 citations overall, 2 in 2016.
-The tool based on the method
-   Professor (Eur.Phys.J. C65 (2010) 331-357) has 217 citations overall 22 in 2016.
-Ironically datasets from DELPHI are intensively used with the framework.
+\item Missing or obscure  technical documentation. %While OPAL primer does exist, it doesn't cover everything.
+%Thought one can admit the documentation from OPAL is quite good.
+\item Some very specific details of  physics of old experiments can be  forgotten.
+%e.g.\ absence of jet $p_{T}$ cut in $e^{+}e^{-}$ confuses people working with hadronic colliders.
+\item The terminology in 1980, 2000 and now is different, old methods are renamed, etc.    This slows down communication and understanding of documentation.
+%e.g.\ Monte Carlo tuning method by DELPHI (Z. Phys., C73 (1996) 11-60) has 293 citations overall, 2 in 2016.
+%The tool based on the method
+%   Professor (Eur.Phys.J. C65 (2010) 331-357) has 217 citations overall 22 in 2016.
+%Ironically data sets from DELPHI are intensively used with the framework.
 \end{itemize}
 }
 
-\frame{\frametitle{Some thoughts on OPAL and more}
+\frame{\frametitle{Some thoughts on DP in general}
 More sociological problems:
 \begin{itemize}
 \item Manpower in not actually that severe problem per se. But the concentration is.
- With low spatial concentration of knowledge, there are few people that can be asked about specific things, discussions via mail excahnge are not that productive.
-The learning curve becomes too long. Should bigger laboratories like CERN and DESY be more involved? Some events for young physicists?        
-\item Long duration of any potential analysis because of envolvement of members in other progects. The duratin of any analysis more than 12 months 
+ With low spatial concentration of knowledge, there are few people that can be asked about specific things, discussions via mail exchange are not that productive.
+The learning curve becomes too long. Should bigger laboratories like CERN and DESY be more involved? Some events for young physicists? Open data for older experiments?        
+\item Long duration of any potential analysis because of involvement of members in other projects. The duration of any analysis more than 12 months 
 implies that it cannot be advertised as a master or bachelor thesis. This rejects a very important source of manpower or requires more intensive supervision that for the 
-running experiemnts. Could multiple supervisors and multiple master studens  per  project be a solution? Thought the publication of the result should be mandaratory.
+running experiments. Could multiple supervisors and multiple master students  per  project be a solution? Thought the publication of the result should be mandatory.
 
 %\item In the end DP has some sociological problems as well.
 \end{itemize}
 
 }
 
-\frame{\frametitle{Some thoughts on OPAL and more}
+
+
+
+\frame{\frametitle{Some thoughts on DP in general}
+More sociological problems:
 \begin{itemize}
-\item Often the investments of manpower in earliest and not very precise measurements are much bigger than investments in the DP or even in the later results.
-Emphasise of DP importance could fix this imbalance and make later/after OEDT precise analyses easier.
+\item Doesn't matter how good are new technologies, it is still hard to convince experienced people to use them.
+There is a fear the efforts to learn these things will be wasted. 
+Good examples are Grid tools or PROOF.
+\end{itemize}
+}
+
+
+\frame{\frametitle{Some thoughts on DP in general}
+\begin{itemize}
+\item Often the investments of manpower in earliest and not very precise measurements are 
+much bigger than investments in the DP or even in the later results.
+Emphasise of DP importance could fix this imbalance and make later/after-end-of-datataking precise analyses easier.
+Analysis preservation addresses the issue.
 \item A bit of sociological problem.
 
 %\item In the end DP has some sociological problems as well.
