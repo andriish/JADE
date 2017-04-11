@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 2.8.9 FATAL_ERROR)
 project(HepMC)
 set(PROJECT_VERSION 3)
 #---Enable FORTRAN (unfortunatelly is not not possible in all cases)-------------------------------
-if(NOT CMAKE_GENERATOR STREQUAL Xcode)
-  enable_language(Fortran OPTIONAL)
-endif()
+###if(NOT CMAKE_GENERATOR STREQUAL Xcode)
+###  enable_language(Fortran OPTIONAL)
+###endif()
 
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
@@ -53,9 +53,9 @@ set(CMAKE_MODULE_PATH
 
 #---Compilation and Link options---------------------------------------------
 
-if(CMAKE_SYSTEM_NAME MATCHES Darwin)
-  set(CMAKE_SHARED_LIBRARY_CREATE_Fortran_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_Fortran_FLAGS} -flat_namespace -single_module -undefined dynamic_lookup")
-endif()
+###if(CMAKE_SYSTEM_NAME MATCHES Darwin)
+###  set(CMAKE_SHARED_LIBRARY_CREATE_Fortran_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_Fortran_FLAGS} -flat_namespace -single_module -undefined dynamic_lookup")
+###endif()
 
 set(CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS} -fPIC")
 set(CMAKE_CXX_FLAGS_DEBUG          "-g3 -Wall")
@@ -80,15 +80,15 @@ endif()
 
 # setting linker flags
 
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
-  SET(CMAKE_EXE_LINKER_FLAGS "-Wl,-dead_strip_dylibs")
-  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-dead_strip_dylibs") 
-  SET(STATIC_LIBRARY_FLAGS "-Wl,-dead_strip_dylibs")
-ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+###IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
+###  SET(CMAKE_EXE_LINKER_FLAGS "-Wl,-dead_strip_dylibs")
+###  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-dead_strip_dylibs") 
+###  SET(STATIC_LIBRARY_FLAGS "-Wl,-dead_strip_dylibs")
+###ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed")
   SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed")
   SET(STATIC_LIBRARY_FLAGS "-Wl,--as-needed")	
-ENDIF()
+###ENDIF()
 
 #----------------------------------------------------------------------------
 
