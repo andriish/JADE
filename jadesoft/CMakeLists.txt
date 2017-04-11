@@ -15,7 +15,7 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 
 find_package(CERNLIB)
-
+find_package(X11)
 ########################################################################
 
 set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
@@ -46,7 +46,7 @@ set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint 
 
 
 
-set(JEXTERN_LIBRARIES  ${PICOCERNLIB} ${ROOT_LIBRARIES} -lstdc++)
+set(JEXTERN_LIBRARIES  ${PICOCERNLIB} ${ROOT_LIBRARIES} ${X11_LIBRARIES} -lstdc++)
 set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
 
