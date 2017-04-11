@@ -56,7 +56,7 @@ set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
 #set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISCERNLIB")
 #############<-USE IT WITH CERNLIB########################################
 
-find_package(X11)
+find_package(X11 REQUIRED)
 set(JEXTERN_GRAPH_LIBRARIES ${X11_LIBRARIES})
 ########################################################################
 
