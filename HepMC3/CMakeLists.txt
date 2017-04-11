@@ -85,9 +85,9 @@ endif()
 ###  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-dead_strip_dylibs") 
 ###  SET(STATIC_LIBRARY_FLAGS "-Wl,-dead_strip_dylibs")
 ###ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed")
-  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed")
-  SET(STATIC_LIBRARY_FLAGS "-Wl,--as-needed")	
+###  SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed")
+###  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed")
+###  SET(STATIC_LIBRARY_FLAGS "-Wl,--as-needed")	
 ###ENDIF()
 
 #----------------------------------------------------------------------------
