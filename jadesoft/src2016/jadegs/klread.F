@@ -310,9 +310,20 @@ C---
       ITIME(6)=HDATA(IHHEAD+8)
 C     IF(ICALO.EQ.1) PRINT 8756
 C8756 FORMAT(' XV ENLARGED BY .1')
+CAV
+C        ITIME(1)=1
+C        ITIME(2)=1
+C        ITIME(3)=1
+C        ITIME(4)=1
+C        ITIME(5)=1
+C        ITIME(6)=1986
+CAV
       IEVTIM=KTMCON(ITIME,NOW,LASTIM)
 C
 C                          CHECK IF EVENT TIME IN RANGE OF CONSTANTS
+      write(*,*) ITIME(1),ITIME(2),ITIME(3),ITIME(4),ITIME(5),ITIME(6) 
+      write(*,*) LSTIME(1) 
+      write(*,*) IEVTIME 
       IF(IEVTIM.LT.LSTIME(1)) GOTO 9001
 C
 C                          CHECK IF CURRENT CONSTANTS STILL VALID

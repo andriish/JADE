@@ -166,6 +166,17 @@ ${SRC}/prizvtx.f
 ${SRC}/prize4v.f 
 ${SRC}/twoin1.f  
 ${SRC}/cnvibm3e.f 
+#${SRC}/prizehd.f 
+#${SRC}/prilgcl.f 
+#${SRC}/prigvtx.f 
+#${SRC}/primur1.f 
+#${SRC}/primur2.f 
+#${SRC}/pritpev.f 
+#${SRC}/pritptr.f 
+#${SRC}/pritpvx.f 
+#${SRC}/pritagg.f 
+#${SRC}/chebcd.f 
+
 )
  
  
