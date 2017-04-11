@@ -6,7 +6,7 @@ set(PROJECT_VERSION 3)
 ###if(NOT CMAKE_GENERATOR STREQUAL Xcode)
 ###  enable_language(Fortran OPTIONAL)
 ###endif()
-
+SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
