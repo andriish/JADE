@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 2.8.9 FATAL_ERROR)
 #----------------------------------------------------------------------------
-project(HepMC)
+project(HepMC  Fortran CXX)
 set(PROJECT_VERSION 3)
 #---Enable FORTRAN (unfortunatelly is not not possible in all cases)-------------------------------
 ###if(NOT CMAKE_GENERATOR STREQUAL Xcode)
 ###  enable_language(Fortran OPTIONAL)
 ###endif()
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
+
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
