@@ -118,7 +118,7 @@ add_executable(convert_example_JADE.exe
 
       
 target_link_libraries(convert_example_JADE.exe ${HEPMC3_STATIC_LIBRARIES}   ${LAPACK_LIBRARIES_DIR}  lapack)
-add_dependencies( convert_example_JADE.exe dictionary )
+#add_dependencies( convert_example_JADE.exe dictionary )
 
 # installs 
 install(TARGETS convert_example_JADE.exe RUNTIME DESTINATION bin)
