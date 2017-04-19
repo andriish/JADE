@@ -11,14 +11,15 @@ SET(VERSION 2.99)
 # Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 include("GNUInstallDirs")
-set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 
 find_package(CERNLIB)
 find_package(X11  REQUIRED)
 ########################################################################
 
-set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+#set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
   find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
   if (ROOT_CONFIG)
      message(STATUS "ROOTConfig.cmake found and will be used: ${ROOT_CONFIG}")
@@ -30,7 +31,8 @@ set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint 
      endif()
   else()
      message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
-     find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+#     find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+     find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
   endif()
 
   message(STATUS "ROOT includes : ${ROOT_INCLUDE_DIRS}")
@@ -753,19 +755,19 @@ ADD_EXECUTABLE(${ZE4VEXE} ${ZE4V_src})
 
 
 if(CMAKE_SYSTEM_NAME MATCHES Darwin)
-TARGET_LINK_LIBRARIES(${JADEZEXE}   ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+TARGET_LINK_LIBRARIES(${JADEZEXE}  -mmacosx-version-min=10.12 ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
  ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
 
-TARGET_LINK_LIBRARIES(${JADEZROOTEXE}  ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+TARGET_LINK_LIBRARIES(${JADEZROOTEXE} -mmacosx-version-min=10.12 ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
  ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
 
-TARGET_LINK_LIBRARIES(${MCJADEEXE}  ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
+TARGET_LINK_LIBRARIES(${MCJADEEXE} -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
 ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
 
-TARGET_LINK_LIBRARIES(${SUPERVEXE}  ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+TARGET_LINK_LIBRARIES(${SUPERVEXE} -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
  ${JEXTERN_LIBRARIES}  ${JEXTERN_GRAPH_LIBRARIES} )
 
-TARGET_LINK_LIBRARIES(${ZE4VEXE}  ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+TARGET_LINK_LIBRARIES(${ZE4VEXE} -mmacosx-version-min=10.12 ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
  ${JEXTERN_LIBRARIES} )
 elseif()
 TARGET_LINK_LIBRARIES(${JADEZEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}

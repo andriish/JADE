@@ -18,7 +18,8 @@ find_package(CERNLIB)
 
 ########################################################################
 
-set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+#set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
   find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
   if (ROOT_CONFIG)
      message(STATUS "ROOTConfig.cmake found and will be used: ${ROOT_CONFIG}")
@@ -30,7 +31,8 @@ set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint 
      endif()
   else()
      message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
-     find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+#     find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+     find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
   endif()
 
   message(STATUS "ROOT includes : ${ROOT_INCLUDE_DIRS}")
@@ -170,9 +172,9 @@ SET(JTJOBEXE_src ${SRC}/jtjob.F  ${SRC}/showb.f)
 ADD_EXECUTABLE(${JTJOBEXE} ${JTJOBEXE_src})
 
 if(CMAKE_SYSTEM_NAME MATCHES Darwin)
-TARGET_LINK_LIBRARIES(${TAKLUMIEXE}  ${JEXTERN_LIBRARIES} )
-TARGET_LINK_LIBRARIES(${JZREADEXE} ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JTLIB} ${JADE_LIBRARIES} lapack )
-TARGET_LINK_LIBRARIES(${JTJOBEXE}  ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JADE_LIBRARIES} lapack )
+TARGET_LINK_LIBRARIES(${TAKLUMIEXE} -lc++ -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES} )
+TARGET_LINK_LIBRARIES(${JZREADEXE} -lc++ -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JTLIB} ${JADE_LIBRARIES} lapack )
+TARGET_LINK_LIBRARIES(${JTJOBEXE} -lc++ -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JADE_LIBRARIES} lapack )
 elseif()
 TARGET_LINK_LIBRARIES(${TAKLUMIEXE} -Wl,--start-group ${JEXTERN_LIBRARIES} -Wl,--end-group)
 TARGET_LINK_LIBRARIES(${JZREADEXE} -Wl,--start-group ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JTLIB} ${JADE_LIBRARIES} lapack -Wl,--end-group)

@@ -145,7 +145,7 @@ extern "C" {
 //gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]);
                 else
                     {
-                        printf("Error in void isvp_\n",NTS);
+                        printf("Error in void isvp_\n");
 
                     }
                 gPad->Update();
@@ -178,7 +178,7 @@ extern "C" {
                     gPad->Range(BIGK*gWN[NTS][0],BIGK*gWN[NTS][1],BIGK*gWN[NTS][2],BIGK*gWN[NTS][3]);
 //gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]);
                 else
-                    printf("Error in void isvp_\n",NTS);
+                    printf("Error in void isvp_\n");
                 gPad->Update();
             }
 
@@ -193,7 +193,7 @@ extern "C" {
                         gPad->Update();
                     }
                 else
-                    printf("Error in void isvp_\n",NTS);
+                    printf("Error in void isvp_\n");
                 gPad->Update();
             }
         printf("jCanvas->GetListOfPrimitives()->GetSize()=%i\n",jCanvas->GetListOfPrimitives()->GetSize());
@@ -581,7 +581,7 @@ extern "C" {
 
     void drawpi_(float &x, float &y)
     {
-        DDDD   printf("void drawpi_(float &x, float &y)   %f %f , jTextAlignment=%i  jTextAngle=%f\n", x,y, jTextAlignment,jTextAngle );
+        DDDD   printf("void drawpi_(float &x, float &y)   %f %f , jTextAlignment=%i  jTextAngle=%i\n", x,y, jTextAlignment,jTextAngle );
         TLatex *t;
         t = new TLatex();
         t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
@@ -594,7 +594,7 @@ extern "C" {
 
     void drawmu_(float &x, float &y)
     {
-        DDDD   printf("void drawmu_(float &x, float &y)   %f %f , jTextAlignment=%i  jTextAngle=%f\n", x,y,  jTextAlignment,jTextAngle );
+        DDDD   printf("void drawmu_(float &x, float &y)   %f %f , jTextAlignment=%i  jTextAngle=%i\n", x,y,  jTextAlignment,jTextAngle );
         TLatex *t;
         t = new TLatex();
         t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);

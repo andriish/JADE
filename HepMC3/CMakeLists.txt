@@ -113,6 +113,7 @@ message(STATUS "HepMC: Fortran FLAGS ${CMAKE_Fortran_FLAGS}")
 message(STATUS "HepMC: CXX FLAGS ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}  " )
 
 
+
 #This module respects HFS, e.g. defines lib or lib64 when it is needed. 
 include("GNUInstallDirs")
 #### RPATH handling #####
@@ -139,6 +140,12 @@ IF("${isSystemDir}" STREQUAL "-1")
 ENDIF("${isSystemDir}" STREQUAL "-1")
 
 
+message(STATUS "Fortran compiler        : ${Fortran_COMPILER_NAME}")
+message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
+message(STATUS "C++ compiler            : ${CXX_COMPILER_NAME}")
+message(STATUS "C++ compiler flags      : ${CMAKE_CXX_FLAGS}")
+
+
 #---Optional build of rootIO-------------------------------------------------
 
 if(HEPMC_ENABLE_ROOTIO)
@@ -155,7 +162,8 @@ if(HEPMC_ENABLE_ROOTIO)
      endif()
   else()
      message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
-     find_package(ROOT QUIET REQUIRED COMPONENTS Core Cint RIO Tree)
+#     find_package(ROOT QUIET REQUIRED COMPONENTS Core Cint RIO Tree)
+     find_package(ROOT QUIET REQUIRED COMPONENTS Core RIO Tree)
   endif()
 
   message(STATUS "ROOT includes: ${ROOT_INCLUDE_DIRS}")

@@ -242,16 +242,16 @@ void WriterJADE::write_event(const GenEvent &evt)
 
 	if (VP)
 	{
-	fJ->PSTR[j][1]=VP->position().x();
-	fJ->PSTR[j][2]=VP->position().y();
-	fJ->PSTR[j][3]=VP->position().z();
+	fJ->PSTR[j][1-1]=VP->position().x();
+	fJ->PSTR[j][2-1]=VP->position().y();
+	fJ->PSTR[j][3-1]=VP->position().z();
 	
     }
     else
     {
-	fJ->PSTR[j][1]=0;
-	fJ->PSTR[j][2]=0;
-	fJ->PSTR[j][3]=0;
+	fJ->PSTR[j][1-1]=0;
+	fJ->PSTR[j][2-1]=0;
+	fJ->PSTR[j][3-1]=0;
 	}
 	fJ->PT=fJ->PT+sqrt(fJ->PP[i][0]*fJ->PP[i][0]+fJ->PP[i][1]*fJ->PP[i][1]);
 	i++;

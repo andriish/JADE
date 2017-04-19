@@ -1,6 +1,7 @@
 %define debug_package %{nil}
 %define _binaries_in_noarch_packages_terminate_build   0
 %define    _use_internal_dependency_generator 0
+%define __find_requires %{nil}
 Name: JADE
 Version: 2017.1
 Release:        1%{?dist}

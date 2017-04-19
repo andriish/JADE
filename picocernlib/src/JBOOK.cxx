@@ -55,7 +55,7 @@ extern "C" {
     }
     void hstaf_(char*) {}
     void hldir_(char*,char*) {gDirectory->ls();}
-    void hbook1_(int* a, const char* titl, int* b, float* x1, float* x2) {gmapTH1F[*a]=new TH1F(Form("%i",a),titl,*b,*x1,*x2);}
+    void hbook1_(int* a, const char* titl, int* b, float* x1, float* x2) {gmapTH1F[*a]=new TH1F(Form("%i",*a),titl,*b,*x1,*x2);}
     void hf1_(int* a,float* x, float* w) {if (gmapTH1F.find(*a)!=gmapTH1F.end())gmapTH1F[*a]->Fill(*x,*w);}
     int hexist_(int *a) {if (gmapTH1F.find(*a)!=gmapTH1F.end()) return 1; else return 0;}
     void hrput_(int a,char* n, char b)
@@ -220,7 +220,7 @@ printf("in->|%s|<-\n",fo.c_str());
                             }
                     }
                 char buf[20];
-                sprintf(buf,"%i",k*sizes[(*it)[2]]);
+                sprintf(buf,"%lu",k*sizes[(*it)[2]]);
                 (*it)[4]=std::string(buf);
             }
         for (std::vector<std::vector<std::string> >  ::iterator it=vars.begin(); it!=vars.end(); it++)

@@ -1,5 +1,5 @@
-#file=DPHEP2017_JADE_Andrii_Verbytskyi
-file=DPHEP2017_OPAL_Andrii_Verbytskyi
+file=DPHEP2017_JADE_Andrii_Verbytskyi
+#file=DPHEP2017_OPAL_Andrii_Verbytskyi
 all: all1 all2
 all1:  figures
 		latex DPHEP2017_JADE_Andrii_Verbytskyi.tex

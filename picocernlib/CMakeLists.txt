@@ -14,8 +14,8 @@ include("GNUInstallDirs")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 
-set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -O0 -g  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN -DCERNLIB_QX_SC ")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g   -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN -DCERNLIB_QX_SC ")
+set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -O0 -g -Wno-incompatible-library-redeclaration -Wno-implicit-function-declaration -Wno-implicit-int  -Wno-return-type  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN -DCERNLIB_QX_SC ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g  -Wno-return-type  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN -DCERNLIB_QX_SC ")
 
 
 
@@ -75,7 +75,8 @@ set (ROOT_FIND_COMPONENTS Core RIO Tree Graf)
      endif()
   else()
      message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
-     find_package(ROOT QUIET REQUIRED COMPONENTS Core Cint RIO Tree  Graf)
+#     find_package(ROOT QUIET REQUIRED COMPONENTS Core Cint RIO Tree  Graf)
+     find_package(ROOT QUIET REQUIRED COMPONENTS Core RIO Tree  Graf)
   endif()
 
   message(STATUS "ROOT includes: ${ROOT_INCLUDE_DIRS}")
