@@ -4,7 +4,7 @@
 ##################################################
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
-PROJECT(JADESOFT Fortran CXX)
+PROJECT(JADESOFT Fortran CXX C)
 
 SET(VERSION 2.99)
 
