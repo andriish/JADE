@@ -4,7 +4,7 @@
 ##################################################
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
-PROJECT(JTUPLE Fortran CXX)
+PROJECT(JTUPLE Fortran CXX C)
 include("GNUInstallDirs")
 # Set the FOO version
 SET(VERSION 2.0)
