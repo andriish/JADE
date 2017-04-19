@@ -189,7 +189,7 @@ ${TOP}/src/JBOOK.cxx
 ${TOP}/src/JINTERFACE.F
 ${TOP}/src/JHIGZ.cxx
 #APP mode
-#${TOP}/src/Frame.cxx
+${TOP}/src/Frame.cxx
 #${TOP}/src/Frame_Dict.cxx
 )
 

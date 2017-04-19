@@ -12,5 +12,5 @@ public:
     virtual ~Frame();
     void DoDraw();
     virtual void CloseWindow();
-    ClassDef(Frame,0)
+    //ClassDef(Frame,0)
 };
