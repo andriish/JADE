@@ -11,7 +11,7 @@ SET(VERSION 2.99)
 # Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 include("GNUInstallDirs")
-set(CMAKE_VERBOSE_MAKEFILE OFF)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 
 find_package(CERNLIB)
@@ -65,7 +65,11 @@ set(JEXTERN_GRAPH_LIBRARIES ${X11_LIBRARIES})
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
+if(CMAKE_SYSTEM_NAME MATCHES Darwin)
    set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -cpp -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+elseif()
+set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+endif()
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
@@ -717,6 +721,8 @@ INSTALL(TARGETS ${JADEZEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 SET(JADEZROOT_src ${SRCJADEZ}/gphmain2.F  ${SRCJADEZ}/xuser.F  ${SRCJADEZ}/gphmain.cxx)
 ADD_EXECUTABLE(${JADEZROOTEXE} ${JADEZROOT_src})
+
+
 target_include_directories(${JADEZROOTEXE} PUBLIC /usr/include/root)
 INSTALL(TARGETS ${JADEZROOTEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
