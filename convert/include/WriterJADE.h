@@ -4,6 +4,7 @@
 #include "HepMC/GenEvent.h"
 #include "HepMC/GenParticle.h"
 #include "HepMC/Data/GenEventData.h"
+
 struct JADENAMES
 {
 char CP[500][16];	
@@ -36,7 +37,7 @@ struct JADEEVT
    int  ICF[300];
    int  ITF[300];
    float PSTR[300][3];
-};                               //!< Fortran common block HEPEVT
+} ;                               //!< Fortran common block HEPEVT
 
 //      REAL PP,PF,XM,XMF,BEAM,PT,THETA,PHI,PSTRT
 //      INTEGER NEV,NP,NC,NN,JCH,JTP,JP,NF,NCF,NNF,ICF,ITF,IFLAVR
@@ -48,9 +49,9 @@ struct JADEEVT
 //     *        PSTRT(3,300)
 
 
-
 extern "C" 
 {
+
 void jfopen_(const char * filename,int &u, int &O,int &size);
 void jfclose_(int&);
 void jfwrite_(int&, int&);
@@ -61,8 +62,8 @@ namespace HepMC
 class WriterJADE : public  Writer
 {
 public:
-    struct JADEEVT*  fJ;
-    struct JADENAMES*  fN;
+   struct JADEEVT*  fJ;
+   struct JADENAMES*  fN;
     int fUNIT;
     int fMODE;
     WriterJADE(const std::string &filename, int mode);

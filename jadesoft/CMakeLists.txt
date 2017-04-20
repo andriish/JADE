@@ -11,7 +11,7 @@ SET(VERSION 2.99)
 # Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 include("GNUInstallDirs")
-set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 
 find_package(CERNLIB)

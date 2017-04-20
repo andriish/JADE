@@ -11,7 +11,7 @@ SET(VERSION 0.99)
 # Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 include("GNUInstallDirs")
-set(CMAKE_VERBOSE_MAKEFILE OFF)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(LAPACK_LIBRARIES lapack)
 find_package(HepMC3)
@@ -19,8 +19,14 @@ find_package(LAPACK)
 find_package(ROOT)
 
 
+if(CMAKE_SYSTEM_NAME MATCHES Darwin)
+set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -O0 -g ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g  ")
+else()
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -O0 -g  ")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g  ")
+endif()
+
 
 
 include(CheckCXXCompilerFlag)

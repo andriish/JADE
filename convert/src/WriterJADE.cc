@@ -7,8 +7,8 @@
 #include <algorithm>
 extern "C"
 {
- struct JADEEVT* loccprod_();
- struct JADENAMES* locchcprd_();
+ struct JADEEVT cprod_;
+ struct JADENAMES chcprd_;
  int jadeco_(int& a);
 }
 
@@ -134,17 +134,19 @@ WriterJADE::WriterJADE(const std::string &filename, int mode)
 {
 fUNIT=100;
 fMODE=mode;/// BINARY OR TEXT
-fJ=loccprod_();
-fN=locchcprd_();
+
+fJ=(struct JADEEVT* )(&(cprod_.NEV));
+fN=(struct JADENAMES* )(&(chcprd_.CP[0][0]));
 const char* f=filename.c_str();
 int s=filename.length();
 jfopen_(f,fUNIT,fMODE,s);
 }
 void WriterJADE::write_event(const GenEvent &evt)
 {
+
 	fJ->NEV=evt.event_number();
 	fJ->BEAM=std::abs(evt.particles().at(0)->momentum().e());
-	fJ->PT=0;
+	fJ->PT=0.0;
 	fJ->PHI=0;     /* Calculated later */
 	fJ->THETA=0;    /* Calculated later */
 	fJ->IFLAVR=0; 
@@ -164,7 +166,6 @@ void WriterJADE::write_event(const GenEvent &evt)
 	double sumE=0;
 	for (int y=0;y<quarks.size();y++) if (   evt.particles().at(quarks.at(0).second)->pid()==-evt.particles().at(quarks.at(y).second)->pid())
 	sumE=quarks.at(0).first+quarks.at(y).first;
-
 	if (sumE>0.5*fJ->BEAM) 
 	fJ->IFLAVR=std::abs(evt.particles().at(quarks.at(0).second)->pid());
 	else
