@@ -3,20 +3,28 @@
 %define    _use_internal_dependency_generator 0
 %define __find_requires %{nil}
 Name: JADE
-Version: 2017.1
+Version:   2020.1
 Release:        1%{?dist}
 Summary:        JADE software
 
 Group:		    System Environment/Libraries
 License:	    GPLv2+
-URL:		    http://wwwjade.mppmu.mpg.de/%{name}-%{version}.tar.gz
+URL:		    https://github.com/andriish/JADE/archive/Feb2020.zip
 Source:         %{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Prefix: /usr
 BuildArch:      noarch
 
 Vendor:         JADE collaboration
-Requires: 		root gcc gcc-gfortran  cmake
+Requires: 		root gcc gcc-gfortran  HepMC3 HepMC3-devel HepMC3-search HepMC3-search-devel
+
+
+%if %{?fedora}%{!?fedora:0} || %{?rhel}%{!?rhel:0} >= 8
+BuildRequires:	cmake >= 3.4.3
+%else
+BuildRequires:	cmake3 >= 3.4.3
+%endif
+
 
 %description
 JADE software
@@ -29,19 +37,28 @@ Group:          System/Base
 %description -n bazlib
 JADE software
 
-
 %prep
-
 %setup -n %{name}-%{version}
+
+
 
 %build
 
-#configure 
+cd picocernlib
+%if %{?fedora}%{!?fedora:0} || %{?rhel}%{!?rhel:0} >= 8
+%cmake .
+%else
+cmake3 
+%endif
+cd ..
 
-#make
+
 %install
-mkdir -p $RPM_BUILD_ROOT/opt/%{name}-%{version}
-cp -r ./* $RPM_BUILD_ROOT/opt/%{name}-%{version}
+cd picocernlib
+%make_install
+cd ..
+
+
 
 %post
 # the post section is where you can run commands after the rpm is installed.
@@ -51,7 +68,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-/opt/%{name}-%{version}
+/usr/*
 
 %changelog
 * Thu Mar 09 2017  Andrii Verbytskyi
