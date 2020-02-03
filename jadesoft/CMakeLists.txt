@@ -1,17 +1,9 @@
-#https://github.com/SethMMorton/cmake_fortran_template
-##################################################
-# Define the project and the depencies that it has
-##################################################
-
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
 PROJECT(JADESOFT Fortran CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
-#set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
 SET(VERSION 2.99)
-
 # Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 include("GNUInstallDirs")
@@ -112,11 +104,11 @@ message(STATUS "JEXTERN_GRAPH libraries : ${JEXTERN_GRAPH_LIBRARIES}")
 
 # Define the executable name
 #SET(FOOEXE foo)
-SET(MCJADEEXE    bin/mcjade)
-SET(SUPERVEXE    bin/superv)
-SET(JADEZEXE     bin/jadez)
-SET(JADEZROOTEXE bin/jadezroot)
-SET(ZE4VEXE      bin/ze4v)
+SET(MCJADEEXE    mcjade)
+SET(SUPERVEXE    superv)
+SET(JADEZEXE     jadez)
+SET(JADEZROOTEXE jadezroot)
+SET(ZE4VEXE      ze4v)
 
 # Define the library name
 SET(BOSLIB boslib)
@@ -821,6 +813,4 @@ ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_
 #ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT library )
 
 # Add a distclean target to the Makefile
-ADD_CUSTOM_TARGET(distclean 
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/distclean.cmake
-)
+ADD_CUSTOM_TARGET(distclean COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/distclean.cmake)

@@ -1,13 +1,9 @@
-#https://github.com/SethMMorton/cmake_fortran_template
-##################################################
-# Define the project and the depencies that it has
-##################################################
-
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
 PROJECT(PICOCERNLIB Fortran C CXX)
 
-SET(VERSION 2016)
-
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_EXTENSIONS OFF)
+SET(VERSION 2.99)
 # Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 include("GNUInstallDirs")
@@ -18,24 +14,6 @@ set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -O0 -g -Wno-incompatible-library-redeclara
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g  -Wno-return-type  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN -DCERNLIB_QX_SC ")
 
 
-
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++1y" COMPILER_SUPPORTS_CXX1y)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-if(COMPILER_SUPPORTS_CXX1y)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
-else()
-if(COMPILER_SUPPORTS_CXX11)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-elseif(COMPILER_SUPPORTS_CXX0X)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-else()
-message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
-endif()
-endif()
-
-
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
@@ -44,7 +22,7 @@ endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
 #NOT USED
-   set(CMAKE_Fortran_FLAGS            "-fno-automatic -fno-backslash -extend-source 132")	
+   set(CMAKE_Fortran_FLAGS            "-fno-automatic -fno-backslash -extend-source 132")
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
@@ -54,7 +32,7 @@ endif()
 
 if (Fortran_COMPILER_NAME MATCHES "sun.*")
 #Local variables are static by default. Alternate is STATIC statement. 
-   set(CMAKE_Fortran_FLAGS           "  -ftrap=%none -f77 -e -m32  -g  ")	
+   set(CMAKE_Fortran_FLAGS           "  -ftrap=%none -f77 -e -m32  -g  ")
 endif()
 
 
@@ -75,7 +53,6 @@ set (ROOT_FIND_COMPONENTS Core RIO Tree Graf)
      endif()
   else()
      message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
-#     find_package(ROOT QUIET REQUIRED COMPONENTS Core Cint RIO Tree  Graf)
      find_package(ROOT QUIET REQUIRED COMPONENTS Core RIO Tree  Graf)
   endif()
 
@@ -85,11 +62,9 @@ set (ROOT_FIND_COMPONENTS Core RIO Tree Graf)
 
   if(ROOT_FOUND)
     include_directories(${ROOT_INCLUDE_DIRS})
-#    add_definitions(-DHEPMC_ROOTIO)
   else()
     message(STATUS "PICOCERNLIB warning: ROOT needed for ROOTIO but not found")
     message(STATUS "PICOCERNLIB: Skipping HepMC ROOT IO libraries")
-#    set(HEPMC_ENABLE_ROOTIO OFF)
   endif()
 
 
@@ -197,9 +172,7 @@ ${TOP}/src/Frame.cxx
 ADD_LIBRARY(${PICOCERNLIB} STATIC  ${PICOCERNLIB_src})
 
 # Add a distclean target to the Makefile
-ADD_CUSTOM_TARGET(distclean 
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/distclean.cmake
-)
+ADD_CUSTOM_TARGET(distclean COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/distclean.cmake)
 
 
 install(
