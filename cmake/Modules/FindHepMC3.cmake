@@ -17,7 +17,7 @@ find_path(HEPMC3_INCLUDE_DIR HepMC/GenEvent.h
           /usr/include/HepMC
           )
 
-find_library(HEPMC3_DYNAMIC_LIBRARIES NAMES  libHepMC.so libHepMCrootIO.so
+find_library(HEPMC3_DYNAMIC_LIBRARIES NAMES  libHepMC3.so libHepMC3rootIO.so
              HINTS 
              $ENV{HEPMC3_ROOT_DIR}/lib 
              $ENV{HEPMC3_ROOT_DIR}/lib64 
@@ -32,7 +32,7 @@ find_library(HEPMC3_DYNAMIC_LIBRARIES NAMES  libHepMC.so libHepMCrootIO.so
              /usr/lib64
              )
 
-find_library(HEPMC3_STATIC_LIBRARIES NAMES libHepMC.a 
+find_library(HEPMC3_STATIC_LIBRARIES NAMES libHepMC3.a 
              HINTS 
              $ENV{HEPMC3_ROOT_DIR}/lib 
              $ENV{HEPMC3_ROOT_DIR}/lib64 
@@ -50,8 +50,8 @@ find_library(HEPMC3_STATIC_LIBRARIES NAMES libHepMC.a
 
 get_filename_component(HEPMC3_STATIC_LIBRARY_DIR ${HEPMC3_STATIC_LIBRARIES} PATH)
 get_filename_component(HEPMC3_DYMANIC_LIBRARY_DIR ${HEPMC3_DYNAMIC_LIBRARIES} PATH)
-set(HEPMC3_LIBRARIES "${HEPMC3_STATIC_LIBRARY_DIR}/libHepMC.a")
-set(HEPMC3_ROOTIO_LIBRARIES "-L${HEPMC3_DYNAMIC_LIBRARY_DIR} -lHepMC -lHepMCrootIO")
+set(HEPMC3_LIBRARIES "${HEPMC3_STATIC_LIBRARY_DIR}/libHepMC3.so")
+set(HEPMC3_ROOTIO_LIBRARIES "-L${HEPMC3_DYNAMIC_LIBRARY_DIR} -lHepMC3 -lHepMC3rootIO")
 
 set(HEPMC3_INCLUDE_DIRS ${HEPMC3_INCLUDE_DIR})
 

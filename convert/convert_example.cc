@@ -2,22 +2,22 @@
 //#define HEPMCCONVERT_EXTENSION_ROOTTREEOPAL
 //#define HEPMCCONVERT_EXTENSION_HEPEVTZEUS
 #define HEPMCCONVERT_EXTENSION_JADE
-#include "HepMC/GenEvent.h"
-#include "HepMC/Reader.h"
-#include "HepMC/Writer.h"
-#include "HepMC/ReaderAsciiHepMC2.h"
-#include "HepMC/ReaderAscii.h"
-#include "HepMC/WriterAscii.h"
-#include "HepMC/Print.h"
-#include "HepMC/GenEvent.h"
-#include "HepMC/WriterHEPEVT.h"
-#include "HepMC/ReaderHEPEVT.h"
+#include "HepMC3/GenEvent.h"
+#include "HepMC3/Reader.h"
+#include "HepMC3/Writer.h"
+#include "HepMC3/ReaderAsciiHepMC2.h"
+#include "HepMC3/ReaderAscii.h"
+#include "HepMC3/WriterAscii.h"
+#include "HepMC3/Print.h"
+#include "HepMC3/GenEvent.h"
+#include "HepMC3/WriterHEPEVT.h"
+#include "HepMC3/ReaderHEPEVT.h"
 
 #ifdef HEPMC_ROOTIO
-#include "HepMC/ReaderRoot.h"
-#include "HepMC/WriterRoot.h"
-#include "HepMC/ReaderRootTree.h"
-#include "HepMC/WriterRootTree.h"
+#include "HepMC3/ReaderRoot.h"
+#include "HepMC3/WriterRoot.h"
+#include "HepMC3/ReaderRootTree.h"
+#include "HepMC3/WriterRootTree.h"
 #endif
 
 /* Extension example*/
@@ -44,7 +44,7 @@
 #include <string>
 #include <limits>
 
-using namespace HepMC;
+using namespace HepMC3;
 using std::cout;
 using std::endl;
 enum formats {hepmc2, hepmc3, hpe

@@ -1,9 +1,9 @@
-#ifndef  HEPMC_WRITERJADE_H
-#define  HEPMC_WRITERJADE_H
-#include "HepMC/Writer.h"
-#include "HepMC/GenEvent.h"
-#include "HepMC/GenParticle.h"
-#include "HepMC/Data/GenEventData.h"
+#ifndef  HEPMC3_WRITERJADE_H
+#define  HEPMC3_WRITERJADE_H
+#include "HepMC3/Writer.h"
+#include "HepMC3/GenEvent.h"
+#include "HepMC3/GenParticle.h"
+#include "HepMC3/Data/GenEventData.h"
 
 struct JADENAMES
 {
@@ -57,7 +57,7 @@ void jfclose_(int&);
 void jfwrite_(int&, int&);
 }	
 
-namespace HepMC
+namespace HepMC3
 {
 class WriterJADE : public  Writer
 {

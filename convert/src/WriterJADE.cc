@@ -1,6 +1,6 @@
 #include "WriterJADE.h"
-#include "HepMC/GenVertex.h"
-#include "HepMC/GenParticle.h"
+#include "HepMC3/GenVertex.h"
+#include "HepMC3/GenParticle.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -128,7 +128,7 @@ printf("TRY CHARGE FOR  %i: %i\n",i,q);
 return q;
 }
 
-namespace HepMC
+namespace HepMC3
 {
 WriterJADE::WriterJADE(const std::string &filename, int mode)
 {
@@ -224,8 +224,8 @@ void WriterJADE::write_event(const GenEvent &evt)
 	
 	if (q==0) fJ->NCF=fJ->NCF+1; else fJ->NNF=fJ->NNF+1;
 	
-	GenVertexPtr VP=evt.particles().at(i)->production_vertex();
-	GenVertexPtr VE=evt.particles().at(i)->end_vertex();
+	ConstGenVertexPtr VP=evt.particles().at(i)->production_vertex();
+	ConstGenVertexPtr VE=evt.particles().at(i)->end_vertex();
 	
 	int dmax=0;
 	int pmin=evt.particles().size();
