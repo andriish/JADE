@@ -1,5 +1,4 @@
 # JADE
-JADE software
 This is a repository with software of JADE experiment.
 
 The prerequirements to build the software are:
@@ -64,4 +63,5 @@ To build the software:
     
 - Run build script inside the repository
     `` sh run.sh `` for Linux or ``sh macrun.sh`` for MacOSX
+    The software will be installed to ``JADE/installed`` directory
     
