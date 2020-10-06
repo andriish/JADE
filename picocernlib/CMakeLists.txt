@@ -1,9 +1,8 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
 PROJECT(PICOCERNLIB Fortran C CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_EXTENSIONS OFF)
-SET(VERSION 2.99)
+SET(VERSION 2016)
+
 # Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 include("GNUInstallDirs")
@@ -12,6 +11,24 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -O0 -g -Wno-incompatible-library-redeclaration -Wno-implicit-function-declaration -Wno-implicit-int  -Wno-return-type  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN -DCERNLIB_QX_SC ")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g  -Wno-return-type  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN -DCERNLIB_QX_SC ")
+
+
+
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++1y" COMPILER_SUPPORTS_CXX1y)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+if(COMPILER_SUPPORTS_CXX1y)
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
+else()
+if(COMPILER_SUPPORTS_CXX11)
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+elseif(COMPILER_SUPPORTS_CXX0X)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+else()
+message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
+endif()
+endif()
 
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)

@@ -1,9 +1,8 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
 PROJECT(JADESOFT Fortran CXX C)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_EXTENSIONS OFF)
 SET(VERSION 2.99)
+
 # Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 include("GNUInstallDirs")
