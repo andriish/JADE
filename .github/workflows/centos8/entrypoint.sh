@@ -6,8 +6,10 @@ yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarc
 yum -y install  gcc gcc-c++ gcc-gfortran make
 yum -y install  cmake*
 yum -y install  HepMC3*
-yum -y install  lapack-static  lapack-devel lapack libX11-devel libX11 gengetopt
-yum -y install  *root-* --exclude=*doc* --exclude=*debug* --skip-broken
+yum -y install  lapack-static  lapack-devel lapack  gengetopt  blas-devel blas
+yum -y install  libX11-devel libX11  libXmu-devel libXmu libXau-devel libXau libXcursor-devel  libXcursor
+
+yum -y install  *root-*6* --exclude=*doc* --exclude=*debug* --skip-broken
 
 sh run.sh
 
