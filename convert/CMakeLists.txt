@@ -1,8 +1,3 @@
-#https://github.com/SethMMorton/cmake_fortran_template
-##################################################
-# Define the project and the depencies that it has
-##################################################
-
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
 PROJECT(JADECONVERT Fortran C CXX)
 
@@ -47,7 +42,6 @@ endif()
 
 ########################################################################
 
-#set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
 set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
   find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
   if (ROOT_CONFIG)
@@ -78,7 +72,7 @@ set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Posts
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
-   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+  set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
@@ -88,14 +82,14 @@ endif()
 
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
 #PPC64 only
-   set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}  -qfixed=256  -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
+  set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}  -qfixed=256  -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
 #-q32  -melf32ppc
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "sun.*")
 #NOT WELL TESTED
 #Local variables are static by default. Alternate is STATIC statement. 
-   set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}   -ftrap=%none -f77 -e  -g  ")
+  set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}   -ftrap=%none -f77 -e  -g  ")
 #-m32 
 endif()
 
@@ -111,6 +105,21 @@ message(STATUS "HEPMC3 libraries        : ${HEPMC3_STATIC_LIBRARIES} ${HEPMC3_RO
 message(STATUS "LAPACK libraries        : ${LAPACK_LIBRARIES_DIR}")
 
 
+find_program(GENGETOPT gengetopt)
+if( NOT GENGETOPT )
+  message( STATUS  "JADESOFT:  gengetopt not found. Old scripts for options parsing will be used." )
+else()
+  message( STATUS  "JADESOFT:  gengetopt found in ${GENGETOPT}. New scripts for options parsing can be generated." )
+  add_custom_command(
+    OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.c ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.h
+    COMMAND ${GENGETOPT} -N  --input=${CMAKE_CURRENT_SOURCE_DIR}/cmdline.ggo --file-name cmdline --output-dir=${CMAKE_CURRENT_SOURCE_DIR} --include-getopt --show-required
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.ggo
+    COMMENT        "JADESOFT:  Generating getopt parser code..."
+    VERBATIM
+  )
+
+endif()
+add_custom_target( cmdline DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cmdlineoptions.c ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.h)
 
 
 #----------------------------------------------------------------------------
@@ -119,14 +128,14 @@ message(STATUS "LAPACK libraries        : ${LAPACK_LIBRARIES_DIR}")
 
 
 add_executable(convert_example_JADE.exe
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmdlineoptions.c
         ${CMAKE_CURRENT_SOURCE_DIR}/convert_example.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/src/WriterJADE.cc 
         ${CMAKE_CURRENT_SOURCE_DIR}/src/jadeio.f
         )
 
-      
 target_link_libraries(convert_example_JADE.exe ${HEPMC3_STATIC_LIBRARIES}   ${LAPACK_LIBRARIES_DIR}  lapack)
-#add_dependencies( convert_example_JADE.exe dictionary )
+add_dependencies( convert_example_JADE.exe cmdline  )
 
 # installs 
 install(TARGETS convert_example_JADE.exe RUNTIME DESTINATION bin)

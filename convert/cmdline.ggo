@@ -1,0 +1,15 @@
+#The cmdline.c and cmdline.h for this example are generated from file below
+#gengetopt -N  --no-version --input=hepmcconvert.ggo --include-getopt --show-required -u"inputfile outputfile"
+version "3.1"
+package "hepmcconvert"
+purpose "Convert between different file formats of Monte Carlo event record.
+Example:
+         hepmcconvert -i hepmc2 -o treeroot input.hepmc output.root
+"
+option "input-format" i "Input format" string required values="hepmc2", "hepmc3", "hpe" ,"root", "treeroot","lhef","gz","plugin"
+option "output-format" o "Output format" string required values="hepmc2", "hepmc3", "hpe" ,"root", "treeroot" ,"treerootopal","hpezeus", "dump", "dot","jade", "plugin"
+option "extensions" e "Extensions, in a form extension=value, could be passed to readers/writers" multiple optional string
+option "events-limit" - "Limit of events to read from input" optional long default="100000000"
+option "first-event-number" -       "Lowest allowed event number" optional long default="-100000000"
+option "last-event-number" -        "Highest allowed event number" optional long default="100000000"
+option "print-every-events-parsed" - "Frequency of parsing information printouts" optional long default="100"
