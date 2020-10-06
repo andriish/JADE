@@ -115,11 +115,11 @@ message(STATUS "JEXTERN_GRAPH libraries : ${JEXTERN_GRAPH_LIBRARIES}")
 
 # Define the executable name
 #SET(FOOEXE foo)
-SET(MCJADEEXE    bin/mcjade)
-SET(SUPERVEXE    bin/superv)
-SET(JADEZEXE     bin/jadez)
-SET(JADEZROOTEXE bin/jadezroot)
-SET(ZE4VEXE      bin/ze4v)
+SET(MCJADEEXE    mcjade)
+SET(SUPERVEXE    superv)
+SET(JADEZEXE     jadez)
+SET(JADEZROOTEXE jadezroot)
+SET(ZE4VEXE      ze4v)
 
 # Define the library name
 SET(BOSLIB boslib)
