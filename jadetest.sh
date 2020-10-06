@@ -53,9 +53,9 @@ fi
 mkdir -p build/test
 cd build/test
 #rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -S ../../test -B . -DCMAKE_Fortran_COMPILER=gfortran  -DJADEPREFIX=$TOP
+$CMAKE -S../../test -B . -DCMAKE_Fortran_COMPILER=gfortran  -DJADEPREFIX=$TOP
 #make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
-$CTEST -S ../../test -B .
+$CTEST -S../../test -B .
 $CTEST .
 cd ../..
