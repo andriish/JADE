@@ -3,14 +3,14 @@ on:
  push:
  pull_request:
  schedule:
-#Every 5 days at midnight 
-    - cron:  "0 0 1/60 * *"
+#Every 50 days at midnight 
+    - cron:  "0 0 1/600 * *"
 
 jobs:
 
   compilejobCentOS7:
     runs-on: ubuntu-latest
-    name: zevis_on_CentOS7
+    name: JADE_on_CentOS7
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -22,7 +22,7 @@ jobs:
 
   compilejobCentOS8:
     runs-on: ubuntu-latest
-    name: zevis_on_CentOS8
+    name: JADE_on_CentOS8
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -34,13 +34,12 @@ jobs:
       
   compilejobOSX:
     runs-on: macos-latest
-    name: zevis_on_OSX
+    name: JADE_on_OSX
     steps:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Compile
       id: compile
-      #uses: ./.github/workflows/osx
       run: ./.github/workflows/osx/entrypoint.sh
     - name: Get the output status
       run: exit ${{ steps.compileindocker.outputs.out }}

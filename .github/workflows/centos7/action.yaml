@@ -1,13 +1,13 @@
-name: 'Compile zevis'
-description: 'Zevis'
+name: 'Compile JADE'
+description: 'JADE'
 inputs:
   who-to-greet:  # id of input
-    description: 'Who to greet'
+    description: 'Set something'
     required: true
-    default: 'World'
+    default: 'Hi !'
 outputs:
   time: # id of output
-    description: 'The time we greeted you'
+    description: 'Some result'
 runs:
   using: 'docker'
   image: 'Dockerfile'
