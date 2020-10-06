@@ -5,7 +5,7 @@ cat /etc/issue
 yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 yum -y install dnf-plugins-core
 dnf config-manager --set-enabled PowerTools
-yum -y install  gcc gcc-c++ gcc-gfortran make
+yum -y install  gcc gcc-c++ gcc-gfortran make which
 yum -y install  cmake cmake-data cmake-filesystem
 yum -y install  HepMC3*
 yum -y install  lapack-static  lapack-devel lapack  gengetopt  blas-devel blas atlas-devel atlas  openblas-devel openblas openblas-serial64 openblas-threads  --skip-broken

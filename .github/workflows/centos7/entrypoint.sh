@@ -3,7 +3,7 @@ set -x
 uname -a 
 cat /etc/issue
 yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-yum -y install  gcc gcc-c++ gcc-gfortran make
+yum -y install  gcc gcc-c++ gcc-gfortran make which
 yum -y install  cmake3 cmake3-data
 yum -y install  HepMC3*
 yum -y install  lapack-static  lapack-devel lapack  gengetopt  blas-devel blas atlas-devel atlas
