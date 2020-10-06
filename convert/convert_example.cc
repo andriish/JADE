@@ -1,37 +1,49 @@
 // -*- C++ -*-
-//#define HEPMCCONVERT_EXTENSION_ROOTTREEOPAL
-//#define HEPMCCONVERT_EXTENSION_HEPEVTZEUS
-#define HEPMCCONVERT_EXTENSION_JADE
-#include "HepMC/GenEvent.h"
-#include "HepMC/Reader.h"
-#include "HepMC/Writer.h"
-#include "HepMC/ReaderAsciiHepMC2.h"
-#include "HepMC/ReaderAscii.h"
-#include "HepMC/WriterAscii.h"
-#include "HepMC/Print.h"
-#include "HepMC/GenEvent.h"
-#include "HepMC/WriterHEPEVT.h"
-#include "HepMC/ReaderHEPEVT.h"
+//
+// This file is part of HepMC
+// Copyright (C) 2014-2019 The HepMC collaboration (see AUTHORS for details)
+//
+/// @example convert_example.cc
+/// @brief Utility to convert between different types of event records
+///
+#include "HepMC3/Print.h"
+#include "HepMC3/GenEvent.h"
+#include "HepMC3/Reader.h"
+#include "HepMC3/ReaderAsciiHepMC2.h"
+#include "HepMC3/WriterAsciiHepMC2.h"
+#include "HepMC3/ReaderAscii.h"
+#include "HepMC3/WriterAscii.h"
+#include "HepMC3/WriterHEPEVT.h"
+#include "HepMC3/WriterPlugin.h"
+#include "HepMC3/ReaderHEPEVT.h"
+#include "HepMC3/ReaderLHEF.h"
+#include "HepMC3/ReaderPlugin.h"
+#include "HepMC3/ReaderFactory.h"
 
-#ifdef HEPMC_ROOTIO
-#include "HepMC/ReaderRoot.h"
-#include "HepMC/WriterRoot.h"
-#include "HepMC/ReaderRootTree.h"
-#include "HepMC/WriterRootTree.h"
+#ifdef HEPMC3_ROOTIO
+#include "HepMC3/ReaderRoot.h"
+#include "HepMC3/WriterRoot.h"
+#include "HepMC3/ReaderRootTree.h"
+#include "HepMC3/WriterRootTree.h"
 #endif
 
 /* Extension example*/
-
 #ifdef HEPMCCONVERT_EXTENSION_ROOTTREEOPAL
-#ifndef HEPMC_ROOTIO
-#warning "HEPMCCONVERT_EXTENSION_ROOTTREEOPAL requires  compilation with of HepMC with ROOT, i.e. HEPMC_ROOTIO.This extension will be disabled."
+#ifndef HEPMC3_ROOTIO
+#warning "HEPMCCONVERT_EXTENSION_ROOTTREEOPAL requires  compilation with of HepMC with ROOT, i.e. HEPMC3_ROOTIO.This extension will be disabled."
 #undef HEPMCCONVERT_EXTENSION_ROOTTREEOPAL
 #else
 #include "WriterRootTreeOPAL.h"
 #endif
 #endif
-#ifdef HEPMCCONVERT_EXTENSION_HEPEVTZEUS  
+#ifdef HEPMCCONVERT_EXTENSION_HEPEVTZEUS
 #include "WriterHEPEVTZEUS.h"
+#endif
+#ifdef HEPMCCONVERT_EXTENSION_DOT
+#include "WriterDOT.h"
+#endif
+#ifdef HEPMCCONVERT_EXTENSION_GZ
+#include "ReaderGZ.h"
 #endif
 #ifdef HEPMCCONVERT_EXTENSION_JADE  
 #include "WriterJADE.h"
@@ -39,252 +51,186 @@
 
 
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <limits>
-
-using namespace HepMC;
-using std::cout;
-using std::endl;
-enum formats {hepmc2, hepmc3, hpe
-#ifdef HEPMC_ROOTIO
-              ,root,treeroot
-#endif
-              /* Extension example*/
-#ifdef HEPMCCONVERT_EXTENSION_ROOTTREEOPAL
-              ,treerootopal
-#endif
-#ifdef HEPMCCONVERT_EXTENSION_HEPEVTZEUS              
-              ,hpezeus
-#endif
-#ifdef HEPMCCONVERT_EXTENSION_JADE              
-              ,jade
-#endif
-             };
-
-struct parsedoption
-{
-    bool    fbool;
-    int      fint;
-    float  ffloat;
-};
-
-//http://stackoverflow.com/questions/599989/is-there-a-built-in-way-to-split-strings-in-c
-void tokenize(const std::string& str, const std::string& delimiters , std::vector<std::string>& tokens)
-{
-    // Skip delimiters at beginning.
-    std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
-    // Find first "non-delimiter".
-    std::string::size_type pos     = str.find_first_of(delimiters, lastPos);
-
-    while (std::string::npos != pos || std::string::npos != lastPos)
-        {
-            // Found a token, add it to the vector.
-            tokens.push_back(str.substr(lastPos, pos - lastPos));
-            // Skip delimiters.  Note the "not_of"
-            lastPos = str.find_first_not_of(delimiters, pos);
-            // Find next "non-delimiter"
-            pos = str.find_first_of(delimiters, lastPos);
-        }
-}
-
-
-
+#include "cmdline.h"
+using namespace HepMC3;
+enum formats {autodetect, hepmc2, hepmc3, hpe ,root, treeroot ,treerootopal, hpezeus, lhef, dump, dot, gz, plugin, none,jade};
 int main(int argc, char** argv)
 {
-    if (argc!=4&&argc!=5)
-        {
-            printf("\
-     Usage: %s  <mode> <input_file.input_extension>    <output_file.output_extension>  [optional list of options]\n\
-     Supported modes are: hepmc2_root hepmc3_root etc.\n\
-     List of options should be given as option1=value1:option2=value2:option3=value3 ...\nThe full list of modes:\n",argv[0]);
-     printf("%s\n%s\n%s\n","hepmc2","hepmc3", "hpe");
-#ifdef HEPMC_ROOTIO
-              printf("%s\n%s\n","root","treeroot");
-#endif
-              /* Extension example*/
-#ifdef HEPMCCONVERT_EXTENSION_ROOTTREEOPAL
-              printf("%s\n","treerootopal");
-#endif
-#ifdef HEPMCCONVERT_EXTENSION_HEPEVTZEUS              
-              printf("%s\n","hpezeus");
-#endif
-#ifdef HEPMCCONVERT_EXTENSION_JADE              
-              printf("%s\n","jade");
-#endif            
-            exit(1);
-        }
-
-    std::string opts="NONE";
-    if (argc==5) opts=std::string(argv[4]);
-    std::map<std::string, parsedoption> options;
-    std::vector<std::string> parsedoptions;
-    if (opts!="NONE")
-        {
-            tokenize(opts,":",parsedoptions);
-            for ( std::vector<std::string>::iterator it=parsedoptions.begin(); it!=parsedoptions.end(); it++)
-                {
-                    std::vector<std::string> parsedname;
-                    parsedoption o;
-                    tokenize(*it,"=",parsedname);
-                    if (parsedname.size()<2) {printf("Error parsing option/value pair: ->%s<-\n",it->c_str()); exit(2);};
-                    int parsing_isok=0;
-                    parsing_isok+=sscanf(parsedname[1].c_str(),"%i",&o.fint);
-                    parsing_isok+=sscanf(parsedname[1].c_str(),"%f",&o.ffloat);
-                    if (parsing_isok==0) {printf("Error converting value ->%s<- to int of float number.\n",parsedname[1].c_str()); exit(3);};
-                    options.insert(std::pair<std::string, parsedoption>(parsedname[0],o));
-                }
-
-            for (std::map<std::string, parsedoption>::iterator it=options.begin(); it!=options.end(); it++)
-                printf("%s  %i %f\n",it->first.c_str(),it->second.fint,it->second.ffloat);
-        }
-
+    gengetopt_args_info ai;
+    if (cmdline_parser (argc, argv, &ai) != 0) {
+        exit(1);
+    }
+    if (ai.inputs_num!=2)
+    {
+        printf("Exactly two arguments are requred: the name of input and output files\n");
+        exit(1);
+    }
     std::map<std::string,formats> format_map;
+    format_map.insert(std::pair<std::string,formats> ( "auto", autodetect ));
     format_map.insert(std::pair<std::string,formats> ( "hepmc2", hepmc2 ));
     format_map.insert(std::pair<std::string,formats> ( "hepmc3", hepmc3 ));
     format_map.insert(std::pair<std::string,formats> ( "hpe", hpe  ));
-#ifdef HEPMC_ROOTIO
     format_map.insert(std::pair<std::string,formats> ( "root", root ));
     format_map.insert(std::pair<std::string,formats> ( "treeroot", treeroot ));
-#endif
-    /* Extension example*/
-#ifdef HEPMCCONVERT_EXTENSION_ROOTTREEOPAL
     format_map.insert(std::pair<std::string,formats> ( "treerootopal", treerootopal ));
-#endif
-#ifdef HEPMCCONVERT_EXTENSION_HEPEVTZEUS
     format_map.insert(std::pair<std::string,formats> ( "hpezeus", hpezeus ));
-#endif
-#ifdef HEPMCCONVERT_EXTENSION_JADE
+    format_map.insert(std::pair<std::string,formats> ( "lhef", lhef ));
+    format_map.insert(std::pair<std::string,formats> ( "dump", dump ));
+    format_map.insert(std::pair<std::string,formats> ( "dot", dot ));
+    format_map.insert(std::pair<std::string,formats> ( "gz", gz ));
+    format_map.insert(std::pair<std::string,formats> ( "plugin", plugin ));
+    format_map.insert(std::pair<std::string,formats> ( "none", none ));
     format_map.insert(std::pair<std::string,formats> ( "jade", jade ));
-#endif
+    std::map<std::string, std::string> options;
+    for (size_t i=0; i<ai.extensions_given; i++)
+    {
+        std::string optarg=std::string(ai.extensions_arg[i]);
+        size_t pos=optarg.find_first_of('=');
+        if (pos<optarg.length())
+            options[std::string(optarg,0,pos)]=std::string(optarg,pos+1,optarg.length());
+    }
+    long int  events_parsed = 0;
+    long int  events_limit = ai.events_limit_arg;
+    long int  first_event_number = ai.first_event_number_arg;
+    long int  last_event_number = ai.last_event_number_arg;
+    long int  print_each_events_parsed = ai.print_every_events_parsed_arg;
+        std::string InputPluginLibrary;
+        std::string InputPluginName;
 
-    std::map<std::string,std::string> extention_map;
-    extention_map.insert(std::pair<std::string,std::string> ( "hepmc2","hepmc2" ));
-    extention_map.insert(std::pair<std::string,std::string> ( "hepmc3", "hepmc3" ));
-    extention_map.insert(std::pair<std::string,std::string> ( "hpe", "hpe" ));
-#ifdef HEPMC_ROOTIO
-    extention_map.insert(std::pair<std::string,std::string> ( "root", "root" ));
-    extention_map.insert(std::pair<std::string,std::string> ( "treeroot", "root" ));
+        std::string OutputPluginLibrary;
+        std::string OutputPluginName;
+
+    std::shared_ptr<Reader>      input_file;
+    bool input_is_stdin=(std::string(ai.inputs[0])==std::string("-"));
+    if (input_is_stdin) std::ios_base::sync_with_stdio(false);
+    bool ignore_writer=false;
+    switch (format_map.at(std::string(ai.input_format_arg)))
+    {
+    case autodetect:        
+        input_file=(input_is_stdin?deduce_reader(std::cin):deduce_reader(ai.inputs[0]));
+        if (!input_file) 
+        {
+        input_is_stdin?printf("Input format  detection for std input has failed\n"):printf("Input format  detection for file %s has failed\n",ai.inputs[0]);
+        exit(2);
+        }
+        break;
+    case hepmc2:
+        input_file=(input_is_stdin?std::make_shared<ReaderAsciiHepMC2>(std::cin):std::make_shared<ReaderAsciiHepMC2>(ai.inputs[0]));
+        break;
+    case hepmc3:
+        input_file=(input_is_stdin?std::make_shared<ReaderAscii>(std::cin):std::make_shared<ReaderAscii>(ai.inputs[0]));
+        break;
+    case hpe:
+        input_file=(input_is_stdin?std::make_shared<ReaderHEPEVT>(std::cin):std::make_shared<ReaderHEPEVT>(ai.inputs[0]));
+        break;
+    case lhef:
+        input_file=(input_is_stdin?std::make_shared<ReaderLHEF>(std::cin):std::make_shared<ReaderLHEF>(ai.inputs[0]));
+        break;
+    case gz:
+#ifdef HEPMCCONVERT_EXTENSION_GZ
+        input_file=std::make_shared<ReaderGZ>(ai.inputs[0]);
+        break;
+#else
+        printf("Input format %s  is not supported\n",ai.input_format_arg);
+        exit(2);
+#endif
+    case treeroot:
+#ifdef HEPMC3_ROOTIO
+        input_file=std::make_shared<ReaderRootTree>(ai.inputs[0]);
+        break;
+#else
+        printf("Input format %s  is not supported\n",ai.input_format_arg);
+        exit(2);
+#endif
+    case root:
+#ifdef HEPMC3_ROOTIO
+        input_file=std::make_shared<ReaderRoot>(ai.inputs[0]);
+        break;
+#else
+        printf("Input format %s  is not supported\n",ai.input_format_arg);
+        exit(2);
+#endif
+    case plugin:
+        if (options.find("InputPluginLibrary")==options.end())         { printf("InputPluginLibrary option required\n"); exit(2);} else InputPluginLibrary=options.at("InputPluginLibrary");
+        if (options.find("InputPluginName")==options.end())            { printf("InputPluginName option required\n"); exit(2);} else InputPluginName=options.at("InputPluginName");        
+        input_file=std::make_shared<ReaderPlugin>(std::string(ai.inputs[0]),InputPluginLibrary,InputPluginName);
+        if (input_file->failed()) { printf("Plugin initialization failed\n"); exit(2);}
+        break;
+    default:
+        printf("Input format %s  is not known\n",ai.input_format_arg);
+        exit(2);
+        break;
+    }
+    std::shared_ptr<Writer>      output_file;
+    switch (format_map.at(std::string(ai.output_format_arg)))
+    {
+    case hepmc2:
+        output_file=std::make_shared<WriterAsciiHepMC2>(ai.inputs[1]);
+        break;
+    case hepmc3:
+        output_file=std::make_shared<WriterAscii>(ai.inputs[1]);
+        break;
+    case hpe:
+        output_file=std::make_shared<WriterHEPEVT>(ai.inputs[1]);
+        break;
+    case root:
+#ifdef HEPMC3_ROOTIO
+        output_file=std::make_shared<WriterRoot>(ai.inputs[1]);
+        break;
+#else
+        printf("Output format %s  is not supported\n",ai.output_format_arg);
+        exit(2);
+#endif
+    case jade:
+#ifdef HEPMCCONVERT_EXTENSION_JADE
+        output_file=std::make_shared<WriterJADE>(ai.inputs[1]);
+        break;
+#else
+        printf("Output format %s  is not supported\n",ai.output_format_arg);
+        exit(2);
+#endif
+    case treeroot:
+#ifdef HEPMC3_ROOTIO
+        output_file=std::make_shared<WriterRootTree>(ai.inputs[1]);
+        break;
+#else
+        printf("Output format %s  is not supported\n",ai.output_format_arg);
+        exit(2);
 #endif
     /* Extension example*/
+    case treerootopal:
 #ifdef HEPMCCONVERT_EXTENSION_ROOTTREEOPAL
-    extention_map.insert(std::pair<std::string,std::string> ( "treerootopal", "root" ));
+        output_file=std::make_shared<WriterRootTreeOPAL>(ai.inputs[1]);
+        (std::dynamic_pointer_cast<WriterRootTreeOPAL>(output_file))->init_branches();
+        if (options.find("Run")!=options.end()) (std::dynamic_pointer_cast<WriterRootTreeOPAL>(output_file))->set_run_number(std::atoi(options.at("Run").c_str()));
+        break;
+#else
+        printf("Output format %s  is not supported\n",ai.output_format_arg);
+        exit(2);
+        break;
 #endif
+    case hpezeus:
 #ifdef HEPMCCONVERT_EXTENSION_HEPEVTZEUS
-    extention_map.insert(std::pair<std::string,std::string> ( "hpezeus", "zeusmc" ));
+        output_file=std::make_shared<WriterHEPEVTZEUS>(ai.inputs[1]);
+        break;
+#else
+        printf("Output format %s  is not supported\n",ai.output_format_arg);
+        exit(2);
 #endif
-#ifdef HEPMCCONVERT_EXTENSION_JADE
-    extention_map.insert(std::pair<std::string,std::string> ( "jade", "jade" ));
-#endif
-
-
-
-    std::vector<std::pair <std::string,std::string> > convert_list;
-    std::pair<std::string,std::string> convert_formats;
-    std::string mode(argv[1]);
-    unsigned int i,j=0;
-    for (i=0; i<mode.size(); i++)
-        if (mode[i]!='_')
-            {
-                if (j==0) convert_formats.first+=mode[i];
-                if (j==1) convert_formats.second+=mode[i];
-                if (j>1)  {printf("Wrong mode string: %s\nMode string should be <format>_<format>.\n",argv[1]); exit(1);}
-            }
-        else j++;
-
-    if (format_map.find(convert_formats.first )==format_map.end()) { printf("Input format %s is unknown.\n",convert_formats.first.c_str()); exit(2); }
-    if (format_map.find(convert_formats.second)==format_map.end()) { printf("Output format %s is unknown.\n",convert_formats.second.c_str()); exit(2); }
-    convert_list.push_back(std::pair<std::string,std::string>(std::string(argv[2]),std::string(argv[3])));
-    if (
-        (     convert_list.back().first.substr(convert_list.back().first.find_last_of(".") + 1)   != extention_map.at(convert_formats.first))
-        ||
-        (convert_list.back().second.substr(convert_list.back().second.find_last_of(".") + 1) != extention_map.at(convert_formats.second))
-    )
-        { printf("The conversion mode=%s is not suitable for extensions of %s %s files\n",argv[1],argv[2],argv[3]); exit(1);}
-
-#ifdef HEPMCCONVERT_EXTENSION_ROOTTREEOPAL
-    int Run=0;
-#endif
-    /*So far this is size 1, but it is better to keep as an option for an extension*/
-    for (i=0; i<convert_list.size(); i++)
-        {
-            int events_parsed = 0;
-            int events_limit = std::numeric_limits<int>::max();
-            if (options.find("events_limit")!=options.end())  events_limit=options.at("events_limit").fint;
-            int first_event_number = -1;
-            if (options.find("first_event_number")!=options.end())  first_event_number=options.at("first_event_number").fint;
-            int last_event_number  = std::numeric_limits<int>::max();
-            if (options.find("last_event_number")!=options.end())  last_event_number=options.at("last_event_number").fint;
-            int print_each_events_parsed=100;
-            if (options.find("print_each_events_parsed")!=options.end())  last_event_number=options.at("print_each_events_parsed").fint;
-            Reader*      input_file=0;
-
-            switch (format_map.at(convert_formats.first))
-                {
-                case hepmc2:
-                    input_file=new ReaderAsciiHepMC2(convert_list[i].first);
-                    break;
-                case hepmc3:
-                    input_file=new ReaderAscii(convert_list[i].first);
-                    break;
-                case hpe:
-                    input_file=new ReaderHEPEVT(convert_list[i].first);
-                    break;
-#ifdef HEPMC_ROOTIO
-                case treeroot:
-                    input_file=new ReaderRootTree(convert_list[i].first);
-                    break;
-                case root:
-                    input_file=new ReaderRoot(convert_list[i].first);
-                    break;
-#endif
-                default:
-                    printf("Input format %s is unknown.\n",convert_formats.first.c_str());
-                    exit(2);
-                    break;
-                }
-            Writer*      output_file=0;
-            switch (format_map.at(convert_formats.second))
-                {
-                case hepmc2:
-                    printf("WARNING: hepmc3 format will be used instead of hepmc2.\n");
-                    output_file=new WriterAscii(convert_list[i].second.c_str());
-                    break;
-                case hepmc3:
-                    output_file=new WriterAscii(convert_list[i].second.c_str());
-                    break;
-                case hpe:
-                    output_file=new WriterHEPEVT(convert_list[i].second);
-                    break;
-#ifdef HEPMC_ROOTIO
-                case root:
-                    output_file=new WriterRoot(convert_list[i].second);
-                    break;
-                case treeroot:
-                    output_file=new WriterRootTree(convert_list[i].second);
-                    break;
-#endif                    
-                    /* Extension example*/
-#ifdef HEPMCCONVERT_EXTENSION_ROOTTREEOPAL
-                case treerootopal:
-                    output_file=new WriterRootTreeOPAL(convert_list[i].second);
-                    ((WriterRootTreeOPAL*)(output_file))->init_branches();
-
-                    if (options.find("Run")!=options.end()) Run=options.at("Run").fint;
-                    ((WriterRootTreeOPAL*)(output_file))->set_run_number(Run);
-                    break;
-#endif
-#ifdef HEPMCCONVERT_EXTENSION_HEPEVTZEUS
-                case hpezeus:
-                    output_file=new WriterHEPEVTZEUS(convert_list[i].second);
-                    break;
+    case dot:
+#ifdef HEPMCCONVERT_EXTENSION_DOT 
+       output_file=std::make_shared<WriterDOT>(ai.inputs[1]);
+       if (options.find("Style")!=options.end()) (std::dynamic_pointer_cast<WriterDOT>(output_file))->set_style(std::atoi(options.at("Style").c_str()));
+       break;
+#else
+        printf("Output format %s  is not supported\n",ai.output_format_arg);
+        exit(2);
+        break;
 #endif
 #ifdef HEPMCCONVERT_EXTENSION_JADE
                 case jade:
-                    
                     if (options.find("Mode")!=options.end()) 
-                    output_file=new WriterJADE(convert_list[i].second,options.at("Mode").fint);
+                    output_file=std::make_shared<WriterJADE>(convert_list[i].second,options.at("Mode").fint);
                     else
                     {
                     printf("This format requires one option  Mode=0 (binary, native), Mode=1 (ASCII), Mode=2 (binary, LITTLE_ENDIAN), Mode=3 (binary, BIG_ENDIAN),!\n");
@@ -292,28 +238,58 @@ int main(int argc, char** argv)
                     }
                     break;
 #endif
-                default:
-                    printf("Output format %s is unknown.\n",convert_formats.second.c_str());
-                    exit(2);
-                    break;
-                }
-            while( !input_file->failed() )
-                {
-                    GenEvent evt(Units::GEV,Units::MM);
-                    input_file->read_event(evt);
-                    if( input_file->failed() )  {printf("End of file reached. Exit.\n"); break;}
-                    if (evt.event_number()<first_event_number) continue;
-                    if (evt.event_number()>last_event_number) continue;
-                    output_file->write_event(evt);
-                    evt.clear();
-                    ++events_parsed;
-                    if( events_parsed%print_each_events_parsed == 0 ) cout<<"Events parsed: "<<events_parsed<<endl;
-                    if( events_parsed >= events_limit ) {printf("Event limit reached:->events_parsed(%i) >= events_limit(%i)<-. Exit.\n",events_parsed , events_limit); break;}
-                }
-
-            if (input_file) input_file->close();
-            if (output_file)
-                output_file->close();
+    case plugin:
+        if (options.find("OutputPluginLibrary")==options.end())         { printf("OutputPluginLibrary option required, e.g. OutputPluginLibrary=libAnalysis.so\n"); exit(2);} else OutputPluginLibrary=options.at("OutputPluginLibrary");
+        if (options.find("OutputPluginName")==options.end())            { printf("OutputPluginName option required, e.g. OutputPluginName=newAnalysisExamplefile\n"); exit(2);} else OutputPluginName=options.at("OutputPluginName");        
+        output_file=std::make_shared<WriterPlugin>(std::string(ai.inputs[1]),OutputPluginLibrary,OutputPluginName);
+        if (output_file->failed()) { printf("Plugin initialization failed\n"); exit(2);}
+        break;
+    case dump:
+        output_file=NULL;
+        break;
+    case none:
+        output_file=NULL;
+        ignore_writer=true;
+        break;
+    default:
+        printf("Output format %s  is not known\n",ai.output_format_arg);
+        exit(2);
+        break;
+    }
+    while( !input_file->failed() )
+    {
+        GenEvent evt(Units::GEV,Units::MM);
+        input_file->read_event(evt);
+        if( input_file->failed() )  {
+            printf("End of file reached. Exit.\n");
+            break;
         }
-    return 0;
+        if (evt.event_number()<first_event_number) continue;
+        if (evt.event_number()>last_event_number) continue;
+        evt.set_run_info(input_file->run_info());
+        //Note the difference between ROOT and Ascii readers. The former read GenRunInfo before first event and the later at the same time as first event.
+        if (!ignore_writer)
+        { 
+        if (output_file)
+        { 
+        output_file->write_event(evt); 
+        }
+        else 
+        { 
+         Print::content(evt);
+        }
+        }
+        evt.clear();
+        ++events_parsed;
+        if( events_parsed%print_each_events_parsed == 0 ) printf("Events parsed: %li\n",events_parsed);
+        if( events_parsed >= events_limit ) {
+            printf("Event limit reached:->events_parsed(%li) >= events_limit(%li)<-. Exit.\n",events_parsed , events_limit);
+            break;
+        }
+    }
+
+    if (input_file)   input_file->close();
+    if (output_file)  output_file->close();
+    cmdline_parser_free(&ai);
+    return EXIT_SUCCESS;
 }

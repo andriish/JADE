@@ -1,8 +1,3 @@
-#https://github.com/SethMMorton/cmake_fortran_template
-##################################################
-# Define the project and the depencies that it has
-##################################################
-
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
 PROJECT(JADESOFT Fortran CXX C)
 
@@ -16,9 +11,9 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 find_package(CERNLIB)
 find_package(X11  REQUIRED)
+find_package(HepMC3)
 ########################################################################
 
-#set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
 set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
   find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
   if (ROOT_CONFIG)
@@ -31,7 +26,6 @@ set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Posts
      endif()
   else()
      message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
-#     find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
      find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
   endif()
 
@@ -41,7 +35,6 @@ set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Posts
 
   if(ROOT_FOUND)
     include_directories(${ROOT_INCLUDE_DIRS})
-#    add_definitions(-DHEPMC_ROOTIO)
   else()
     message(STATUS "JADESOFT warning: ROOT not found")
   endif()
@@ -63,23 +56,24 @@ set(JEXTERN_GRAPH_LIBRARIES ${X11_LIBRARIES})
 ########################################################################
 
 
+#Setup Fortran compiller
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
-if(CMAKE_SYSTEM_NAME MATCHES Darwin)
-   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -cpp -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
-elseif()
-set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
-endif()
+  if(CMAKE_SYSTEM_NAME MATCHES Darwin)
+    set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -cpp -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+  elseif()
+    set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+  endif()
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
 #NOT USED
-   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -fno-automatic -fno-backslash -extend-source 132")	
+  set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -fno-automatic -fno-backslash -extend-source 132")	
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
 #PPC64 only
-   set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}  -qfixed=256  -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
+  set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}  -qfixed=256  -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
 #-q32  -melf32ppc
 endif()
 
@@ -89,6 +83,21 @@ if (Fortran_COMPILER_NAME MATCHES "sun.*")
    set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}   -ftrap=%none -f77 -e  -g  ")
 #-m32 
 endif()
+#Setup C++ compiller
+include(CheckCXXCompilerFlag)
+#This is a workaround for ROOT+Cmake problem.
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_STDEQCXX11_FLAG)
+if(COMPILER_SUPPORTS_STDEQCXX11_FLAG)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+else()
+  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  set(CMAKE_CXX_EXTENSIONS OFF)
+#This is a workaround for wrong flag.
+  if (${CMAKE_CXX_COMPILER_ID} MATCHES "PGI")
+    set(CMAKE_CXX_EXTENSIONS ON)
+  endif()
+endif()
 
 
 message(STATUS "Fortran compiler        : ${Fortran_COMPILER_NAME}")
@@ -97,9 +106,6 @@ message(STATUS "C++ compiler            : ${CXX_COMPILER_NAME}")
 message(STATUS "C++ compiler flags      : ${CMAKE_CXX_FLAGS}")
 message(STATUS "JEXTERN libraries       : ${JEXTERN_LIBRARIES}")
 message(STATUS "JEXTERN_GRAPH libraries : ${JEXTERN_GRAPH_LIBRARIES}")
-
-
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
 
 ############################################################
@@ -165,34 +171,34 @@ SET(CMAKE_Fortran_MODULE_DIRECTORY ${LIB})
 
 
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
-   file(GLOB myfortag ${SRCTAGG}/*.for)
-   set_property(SOURCE ${myfortag} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
+  file(GLOB myfortag ${SRCTAGG}/*.for)
+  set_property(SOURCE ${myfortag} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
 endif()
 
 
 SET(BOSLIB_src
-${SRCBOSLIB}/asrd.f ${SRCBOSLIB}/bchl.F ${SRCBOSLIB}/bchm.F ${SRCBOSLIB}/bcre.F ${SRCBOSLIB}/bdar.F ${SRCBOSLIB}/bdlg.F
-${SRCBOSLIB}/bdlm.F ${SRCBOSLIB}/bdls.F ${SRCBOSLIB}/bdmp.F ${SRCBOSLIB}/bfmt.for ${SRCBOSLIB}/bfrd.for
-${SRCBOSLIB}/bgac.for ${SRCBOSLIB}/bgar.F ${SRCBOSLIB}/binlda.F ${SRCBOSLIB}/binp.F ${SRCBOSLIB}/bint.F
-${SRCBOSLIB}/bloada.F ${SRCBOSLIB}/blocda.F ${SRCBOSLIB}/bloc.F ${SRCBOSLIB}/bmlt.F
-${SRCBOSLIB}/bnxt.F ${SRCBOSLIB}/boutp.F ${SRCBOSLIB}/bpasda.F ${SRCBOSLIB}/bpos.F
-${SRCBOSLIB}/brds.F ${SRCBOSLIB}/breadc.for ${SRCBOSLIB}/bread.for ${SRCBOSLIB}/brnm.F
-${SRCBOSLIB}/bsaw.F ${SRCBOSLIB}/bseq.F ${SRCBOSLIB}/bsls.F ${SRCBOSLIB}/bsta.F
-${SRCBOSLIB}/bwrite.for ${SRCBOSLIB}/bwrs.F ${SRCBOSLIB}/cchl.F ${SRCBOSLIB}/ccor.for
-${SRCBOSLIB}/ccre.F ${SRCBOSLIB}/cloc.F ${SRCBOSLIB}/cnxt.F ${SRCBOSLIB}/cread.for
-${SRCBOSLIB}/dada.F ${SRCBOSLIB}/defst.for ${SRCBOSLIB}/histpr.f ${SRCBOSLIB}/iaf.for
-${SRCBOSLIB}/ibln.F ${SRCBOSLIB}/indar.F ${SRCBOSLIB}/itoda.for ${SRCBOSLIB}/msgpr.for
-${SRCBOSLIB}/pall.f ${SRCBOSLIB}/pcond.for ${SRCBOSLIB}/pcorr.for ${SRCBOSLIB}/phist.for
-${SRCBOSLIB}/poda.F ${SRCBOSLIB}/pstor.for ${SRCBOSLIB}/ptabl.for ${SRCBOSLIB}/ptext1.f
-${SRCBOSLIB}/pvert.for ${SRCBOSLIB}/rdda.F ${SRCBOSLIB}/rdvar.for ${SRCBOSLIB}/readhl.for
-${SRCBOSLIB}/sort4.for ${SRCBOSLIB}/ucorr.for ${SRCBOSLIB}/uhist.for ${SRCBOSLIB}/uwp.for
-${SRCBOSLIB}/vall.for  ${SRCBOSLIB}/vecsub.f
+         ${SRCBOSLIB}/asrd.f ${SRCBOSLIB}/bchl.F ${SRCBOSLIB}/bchm.F ${SRCBOSLIB}/bcre.F ${SRCBOSLIB}/bdar.F ${SRCBOSLIB}/bdlg.F
+         ${SRCBOSLIB}/bdlm.F ${SRCBOSLIB}/bdls.F ${SRCBOSLIB}/bdmp.F ${SRCBOSLIB}/bfmt.for ${SRCBOSLIB}/bfrd.for
+         ${SRCBOSLIB}/bgac.for ${SRCBOSLIB}/bgar.F ${SRCBOSLIB}/binlda.F ${SRCBOSLIB}/binp.F ${SRCBOSLIB}/bint.F
+         ${SRCBOSLIB}/bloada.F ${SRCBOSLIB}/blocda.F ${SRCBOSLIB}/bloc.F ${SRCBOSLIB}/bmlt.F
+         ${SRCBOSLIB}/bnxt.F ${SRCBOSLIB}/boutp.F ${SRCBOSLIB}/bpasda.F ${SRCBOSLIB}/bpos.F
+         ${SRCBOSLIB}/brds.F ${SRCBOSLIB}/breadc.for ${SRCBOSLIB}/bread.for ${SRCBOSLIB}/brnm.F
+         ${SRCBOSLIB}/bsaw.F ${SRCBOSLIB}/bseq.F ${SRCBOSLIB}/bsls.F ${SRCBOSLIB}/bsta.F
+         ${SRCBOSLIB}/bwrite.for ${SRCBOSLIB}/bwrs.F ${SRCBOSLIB}/cchl.F ${SRCBOSLIB}/ccor.for
+         ${SRCBOSLIB}/ccre.F ${SRCBOSLIB}/cloc.F ${SRCBOSLIB}/cnxt.F ${SRCBOSLIB}/cread.for
+         ${SRCBOSLIB}/dada.F ${SRCBOSLIB}/defst.for ${SRCBOSLIB}/histpr.f ${SRCBOSLIB}/iaf.for
+         ${SRCBOSLIB}/ibln.F ${SRCBOSLIB}/indar.F ${SRCBOSLIB}/itoda.for ${SRCBOSLIB}/msgpr.for
+         ${SRCBOSLIB}/pall.f ${SRCBOSLIB}/pcond.for ${SRCBOSLIB}/pcorr.for ${SRCBOSLIB}/phist.for
+         ${SRCBOSLIB}/poda.F ${SRCBOSLIB}/pstor.for ${SRCBOSLIB}/ptabl.for ${SRCBOSLIB}/ptext1.f
+         ${SRCBOSLIB}/pvert.for ${SRCBOSLIB}/rdda.F ${SRCBOSLIB}/rdvar.for ${SRCBOSLIB}/readhl.for
+         ${SRCBOSLIB}/sort4.for ${SRCBOSLIB}/ucorr.for ${SRCBOSLIB}/uhist.for ${SRCBOSLIB}/uwp.for
+         ${SRCBOSLIB}/vall.for  ${SRCBOSLIB}/vecsub.f
 )
 
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
-   file(GLOB MyFiles ${SRCBOSLIB}/*.for)
-   set_property(SOURCE ${MyFiles} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
- endif()
+  file(GLOB MyFiles ${SRCBOSLIB}/*.for)
+  set_property(SOURCE ${MyFiles} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
+endif()
    
 
 
@@ -348,8 +354,8 @@ ${SRCGRAFIX}/grblock.F
 )
 ADD_LIBRARY(${GRAFIX} STATIC ${GRAFIX_src})
 SET(INTERFACE_src
-${SRCINTERFACE}/hfix.f ${SRCINTERFACE}/biby.f ${SRCINTERFACE}/dlib.f ${SRCINTERFACE}/igwlcm.F
-${SRCINTERFACE}/ips.f ${SRCINTERFACE}/plot10.F   ${SRCINTERFACE}/plot2016.F ${SRCINTERFACE}/ranmar.f ${SRCINTERFACE}/setcol.F
+         ${SRCINTERFACE}/hfix.f ${SRCINTERFACE}/biby.f ${SRCINTERFACE}/dlib.f ${SRCINTERFACE}/igwlcm.F
+         ${SRCINTERFACE}/ips.f ${SRCINTERFACE}/plot10.F   ${SRCINTERFACE}/plot2016.F ${SRCINTERFACE}/ranmar.f ${SRCINTERFACE}/setcol.F
 )
 ADD_LIBRARY(${INTERFACE} STATIC ${INTERFACE_src})
 SET(JADEGS_src
@@ -618,94 +624,93 @@ ${SRCJMC}/wrtmcb.f
 )
 ADD_LIBRARY(${JMC} STATIC ${JMC_src})
 SET(PATRECSR_src
-${SRCPATRECSR}/adpatr.F ${SRCPATRECSR}/backtr.F ${SRCPATRECSR}/bakfit.F ${SRCPATRECSR}/bakpak.F ${SRCPATRECSR}/bside.F
-${SRCPATRECSR}/bstore.F ${SRCPATRECSR}/crtrel.F ${SRCPATRECSR}/deadcl.f ${SRCPATRECSR}/errorm.F
-${SRCPATRECSR}/flinel.F ${SRCPATRECSR}/ftrkel.F ${SRCPATRECSR}/fxyz.F ${SRCPATRECSR}/inpatc.F
-${SRCPATRECSR}/inpatr.F ${SRCPATRECSR}/kntrel.F ${SRCPATRECSR}/patrc1.F ${SRCPATRECSR}/patrec.F
-${SRCPATRECSR}/patrol.F ${SRCPATRECSR}/pcwork.F ${SRCPATRECSR}/prhtar.F ${SRCPATRECSR}/rincon.F
-${SRCPATRECSR}/rstbtr.F ${SRCPATRECSR}/srtrel.F ${SRCPATRECSR}/trlord.F ${SRCPATRECSR}/xyfit.F
-${SRCPATRECSR}/zrfit.F
+         ${SRCPATRECSR}/adpatr.F ${SRCPATRECSR}/backtr.F ${SRCPATRECSR}/bakfit.F ${SRCPATRECSR}/bakpak.F ${SRCPATRECSR}/bside.F
+         ${SRCPATRECSR}/bstore.F ${SRCPATRECSR}/crtrel.F ${SRCPATRECSR}/deadcl.f ${SRCPATRECSR}/errorm.F
+         ${SRCPATRECSR}/flinel.F ${SRCPATRECSR}/ftrkel.F ${SRCPATRECSR}/fxyz.F ${SRCPATRECSR}/inpatc.F
+         ${SRCPATRECSR}/inpatr.F ${SRCPATRECSR}/kntrel.F ${SRCPATRECSR}/patrc1.F ${SRCPATRECSR}/patrec.F
+         ${SRCPATRECSR}/patrol.F ${SRCPATRECSR}/pcwork.F ${SRCPATRECSR}/prhtar.F ${SRCPATRECSR}/rincon.F
+         ${SRCPATRECSR}/rstbtr.F ${SRCPATRECSR}/srtrel.F ${SRCPATRECSR}/trlord.F ${SRCPATRECSR}/xyfit.F
+         ${SRCPATRECSR}/zrfit.F
 )
 ADD_LIBRARY(${PATRECSR} STATIC ${PATRECSR_src})
 SET(SOURCE_src
-${SRCSOURCE}/angbar.f ${SRCSOURCE}/bbcorr.F ${SRCSOURCE}/bbleak.F ${SRCSOURCE}/brlgn6.f
-${SRCSOURCE}/brlgn.F ${SRCSOURCE}/calcor.F ${SRCSOURCE}/elgobs.f ${SRCSOURCE}/encorr.F
-${SRCSOURCE}/englos.f ${SRCSOURCE}/enlosg.f ${SRCSOURCE}/ilctrc.f ${SRCSOURCE}/intolg.F
-${SRCSOURCE}/lganal9.F ${SRCSOURCE}/lgavde.f ${SRCSOURCE}/lgavdp.f ${SRCSOURCE}/lgbadc.F
-${SRCSOURCE}/lgbfil.F ${SRCSOURCE}/lgbhit.f ${SRCSOURCE}/lgbtdc.F ${SRCSOURCE}/lgcalb.F
-${SRCSOURCE}/lgcctl.F ${SRCSOURCE}/lgcdir9.F ${SRCSOURCE}/lgchc2.F ${SRCSOURCE}/lgclpb9.F
-${SRCSOURCE}/lgclpc.F ${SRCSOURCE}/lgclus.F ${SRCSOURCE}/lgcrn2.f ${SRCSOURCE}/lgcrnr.f
-${SRCSOURCE}/lgdcpy.F ${SRCSOURCE}/lgdead.f ${SRCSOURCE}/lgecor9.F ${SRCSOURCE}/lgeerr.f
-${SRCSOURCE}/lgefil.F ${SRCSOURCE}/lgehit.f ${SRCSOURCE}/lgeign.F ${SRCSOURCE}/lgerse.F
-${SRCSOURCE}/lgesmr.f ${SRCSOURCE}/lginit.f ${SRCSOURCE}/lgmesg.F ${SRCSOURCE}/lgnbls.f
-${SRCSOURCE}/lgnmec.f ${SRCSOURCE}/lgrein.F ${SRCSOURCE}/lgsrth.F ${SRCSOURCE}/lgsubc.f
-${SRCSOURCE}/lgthcr.f ${SRCSOURCE}/lkcorr.F ${SRCSOURCE}/posend.f ${SRCSOURCE}/shmax.f
-${SRCSOURCE}/thcofa.F ${SRCSOURCE}/thcorr.F ${SRCSOURCE}/tpcnst.F
+         ${SRCSOURCE}/angbar.f ${SRCSOURCE}/bbcorr.F ${SRCSOURCE}/bbleak.F ${SRCSOURCE}/brlgn6.f
+         ${SRCSOURCE}/brlgn.F ${SRCSOURCE}/calcor.F ${SRCSOURCE}/elgobs.f ${SRCSOURCE}/encorr.F
+         ${SRCSOURCE}/englos.f ${SRCSOURCE}/enlosg.f ${SRCSOURCE}/ilctrc.f ${SRCSOURCE}/intolg.F
+         ${SRCSOURCE}/lganal9.F ${SRCSOURCE}/lgavde.f ${SRCSOURCE}/lgavdp.f ${SRCSOURCE}/lgbadc.F
+         ${SRCSOURCE}/lgbfil.F ${SRCSOURCE}/lgbhit.f ${SRCSOURCE}/lgbtdc.F ${SRCSOURCE}/lgcalb.F
+         ${SRCSOURCE}/lgcctl.F ${SRCSOURCE}/lgcdir9.F ${SRCSOURCE}/lgchc2.F ${SRCSOURCE}/lgclpb9.F
+         ${SRCSOURCE}/lgclpc.F ${SRCSOURCE}/lgclus.F ${SRCSOURCE}/lgcrn2.f ${SRCSOURCE}/lgcrnr.f
+         ${SRCSOURCE}/lgdcpy.F ${SRCSOURCE}/lgdead.f ${SRCSOURCE}/lgecor9.F ${SRCSOURCE}/lgeerr.f
+         ${SRCSOURCE}/lgefil.F ${SRCSOURCE}/lgehit.f ${SRCSOURCE}/lgeign.F ${SRCSOURCE}/lgerse.F
+         ${SRCSOURCE}/lgesmr.f ${SRCSOURCE}/lginit.f ${SRCSOURCE}/lgmesg.F ${SRCSOURCE}/lgnbls.f
+         ${SRCSOURCE}/lgnmec.f ${SRCSOURCE}/lgrein.F ${SRCSOURCE}/lgsrth.F ${SRCSOURCE}/lgsubc.f
+         ${SRCSOURCE}/lgthcr.f ${SRCSOURCE}/lkcorr.F ${SRCSOURCE}/posend.f ${SRCSOURCE}/shmax.f
+         ${SRCSOURCE}/thcofa.F ${SRCSOURCE}/thcorr.F ${SRCSOURCE}/tpcnst.F
 )
 ADD_LIBRARY(${SOURCE} STATIC ${SOURCE_src})
 SET(TAGG_src
-${SRCTAGG}/amctag.f ${SRCTAGG}/anatag.F ${SRCTAGG}/conver.f ${SRCTAGG}/ggcctl.f
-${SRCTAGG}/ggclpc.f ${SRCTAGG}/ggclus.f ${SRCTAGG}/ggfac2.f ${SRCTAGG}/ggresq.f
-${SRCTAGG}/ggsort.f ${SRCTAGG}/ggsrth.f ${SRCTAGG}/gscrub.f ${SRCTAGG}/lumons.f
-${SRCTAGG}/rcoord.f ${SRCTAGG}/repack.f ${SRCTAGG}/sort.f ${SRCTAGG}/tagadc.F
-${SRCTAGG}/tagan.F ${SRCTAGG}/tagchk.F ${SRCTAGG}/tagcls.F ${SRCTAGG}/tagcol.F
-${SRCTAGG}/tagdir.f ${SRCTAGG}/tagfit.F ${SRCTAGG}/tagfty.f ${SRCTAGG}/taggtp.F
-${SRCTAGG}/tagh2s.F ${SRCTAGG}/tagint.F ${SRCTAGG}/tagkal.F ${SRCTAGG}/tagmrk.F
-${SRCTAGG}/tagneb.F ${SRCTAGG}/tagpd1.F ${SRCTAGG}/tagpd2.F ${SRCTAGG}/tagped.F
-${SRCTAGG}/tagphi.f ${SRCTAGG}/tagpos.F ${SRCTAGG}/tagps1.F ${SRCTAGG}/tagps2.f
-${SRCTAGG}/tagraw.F ${SRCTAGG}/tagrty.f ${SRCTAGG}/tags2h.F ${SRCTAGG}/tagsr1.F
-${SRCTAGG}/tagsr2.F ${SRCTAGG}/tagsto.for ${SRCTAGG}/tagsum.F ${SRCTAGG}/tracks.f
-${SRCTAGG}/umcpak.f
+         ${SRCTAGG}/amctag.f ${SRCTAGG}/anatag.F ${SRCTAGG}/conver.f ${SRCTAGG}/ggcctl.f
+         ${SRCTAGG}/ggclpc.f ${SRCTAGG}/ggclus.f ${SRCTAGG}/ggfac2.f ${SRCTAGG}/ggresq.f
+         ${SRCTAGG}/ggsort.f ${SRCTAGG}/ggsrth.f ${SRCTAGG}/gscrub.f ${SRCTAGG}/lumons.f
+         ${SRCTAGG}/rcoord.f ${SRCTAGG}/repack.f ${SRCTAGG}/sort.f ${SRCTAGG}/tagadc.F
+         ${SRCTAGG}/tagan.F ${SRCTAGG}/tagchk.F ${SRCTAGG}/tagcls.F ${SRCTAGG}/tagcol.F
+         ${SRCTAGG}/tagdir.f ${SRCTAGG}/tagfit.F ${SRCTAGG}/tagfty.f ${SRCTAGG}/taggtp.F
+         ${SRCTAGG}/tagh2s.F ${SRCTAGG}/tagint.F ${SRCTAGG}/tagkal.F ${SRCTAGG}/tagmrk.F
+         ${SRCTAGG}/tagneb.F ${SRCTAGG}/tagpd1.F ${SRCTAGG}/tagpd2.F ${SRCTAGG}/tagped.F
+         ${SRCTAGG}/tagphi.f ${SRCTAGG}/tagpos.F ${SRCTAGG}/tagps1.F ${SRCTAGG}/tagps2.f
+         ${SRCTAGG}/tagraw.F ${SRCTAGG}/tagrty.f ${SRCTAGG}/tags2h.F ${SRCTAGG}/tagsr1.F
+         ${SRCTAGG}/tagsr2.F ${SRCTAGG}/tagsto.for ${SRCTAGG}/tagsum.F ${SRCTAGG}/tracks.f
+         ${SRCTAGG}/umcpak.f
 )
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
-   file(GLOB myfortag ${SRCTAGG}/*.for)
-      set_property(SOURCE ${myfortag} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
-       endif()
+  file(GLOB myfortag ${SRCTAGG}/*.for)
+  set_property(SOURCE ${myfortag} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
+endif()
       
 ADD_LIBRARY(${TAGG} STATIC ${TAGG_src})
 SET(TOFLIB_src
-${SRCTOFLIB}/agrpr.f ${SRCTOFLIB}/atfugr.f ${SRCTOFLIB}/atofrw.f ${SRCTOFLIB}/atofun.F
-${SRCTOFLIB}/cmass.f ${SRCTOFLIB}/corcst.f ${SRCTOFLIB}/mocard.F ${SRCTOFLIB}/rd0880.F
-${SRCTOFLIB}/tfarnw.F ${SRCTOFLIB}/tfctd1.F ${SRCTOFLIB}/tfstor.f ${SRCTOFLIB}/tofar2.F
-${SRCTOFLIB}/tofard.F ${SRCTOFLIB}/tofbra.f ${SRCTOFLIB}/tofcl2.f ${SRCTOFLIB}/tofclc.F
-${SRCTOFLIB}/tofcor.f ${SRCTOFLIB}/tofin2.F ${SRCTOFLIB}/tofint.F ${SRCTOFLIB}/tofma2.f
-${SRCTOFLIB}/tofmas.F ${SRCTOFLIB}/tofsm2.f ${SRCTOFLIB}/tofsm3.F ${SRCTOFLIB}/tofsmp.F
+         ${SRCTOFLIB}/agrpr.f ${SRCTOFLIB}/atfugr.f ${SRCTOFLIB}/atofrw.f ${SRCTOFLIB}/atofun.F
+         ${SRCTOFLIB}/cmass.f ${SRCTOFLIB}/corcst.f ${SRCTOFLIB}/mocard.F ${SRCTOFLIB}/rd0880.F
+         ${SRCTOFLIB}/tfarnw.F ${SRCTOFLIB}/tfctd1.F ${SRCTOFLIB}/tfstor.f ${SRCTOFLIB}/tofar2.F
+         ${SRCTOFLIB}/tofard.F ${SRCTOFLIB}/tofbra.f ${SRCTOFLIB}/tofcl2.f ${SRCTOFLIB}/tofclc.F
+         ${SRCTOFLIB}/tofcor.f ${SRCTOFLIB}/tofin2.F ${SRCTOFLIB}/tofint.F ${SRCTOFLIB}/tofma2.f
+         ${SRCTOFLIB}/tofmas.F ${SRCTOFLIB}/tofsm2.f ${SRCTOFLIB}/tofsm3.F ${SRCTOFLIB}/tofsmp.F
 )
 ADD_LIBRARY(${TOFLIB} STATIC ${TOFLIB_src})
 SET(VERTEX_src
-${SRCVERTEX}/vertex.f ${SRCVERTEX}/vtxaft.f ${SRCVERTEX}/vtxbnk.F ${SRCVERTEX}/vtxee.f
-${SRCVERTEX}/vtxini.f ${SRCVERTEX}/vtxpnt.f ${SRCVERTEX}/vtxpre.F ${SRCVERTEX}/vtxsrc.f
+         ${SRCVERTEX}/vertex.f ${SRCVERTEX}/vtxaft.f ${SRCVERTEX}/vtxbnk.F ${SRCVERTEX}/vtxee.f
+         ${SRCVERTEX}/vtxini.f ${SRCVERTEX}/vtxpnt.f ${SRCVERTEX}/vtxpre.F ${SRCVERTEX}/vtxsrc.f
 )
 ADD_LIBRARY(${VERTEX} STATIC ${VERTEX_src})
 SET(WERTEX_src
-${SRCWERTEX}/parkor.F ${SRCWERTEX}/wertex.f ${SRCWERTEX}/wtxaft.f ${SRCWERTEX}/wtxbnk.F
-${SRCWERTEX}/wtxcrv.f ${SRCWERTEX}/wtxee.f ${SRCWERTEX}/wtxeer.F ${SRCWERTEX}/wtxerr.f
-${SRCWERTEX}/wtxini.f ${SRCWERTEX}/wtxpnt.f ${SRCWERTEX}/wtxpre.F ${SRCWERTEX}/wtxsrc.f
-${SRCWERTEX}/xfwid.F ${SRCWERTEX}/xfwvxc.F
+         ${SRCWERTEX}/parkor.F ${SRCWERTEX}/wertex.f ${SRCWERTEX}/wtxaft.f ${SRCWERTEX}/wtxbnk.F
+         ${SRCWERTEX}/wtxcrv.f ${SRCWERTEX}/wtxee.f ${SRCWERTEX}/wtxeer.F ${SRCWERTEX}/wtxerr.f
+         ${SRCWERTEX}/wtxini.f ${SRCWERTEX}/wtxpnt.f ${SRCWERTEX}/wtxpre.F ${SRCWERTEX}/wtxsrc.f
+         ${SRCWERTEX}/xfwid.F ${SRCWERTEX}/xfwvxc.F
 )
 ADD_LIBRARY(${WERTEX} STATIC ${WERTEX_src})
 SET(ZLIB_src
-${SRCZLIB}/chien52.F ${SRCZLIB}/chien5.F ${SRCZLIB}/crdoca.f ${SRCZLIB}/dxmcgn.f
-${SRCZLIB}/ealgcl.F ${SRCZLIB}/eamcde.f ${SRCZLIB}/eaunin.f ${SRCZLIB}/eazero.f
-${SRCZLIB}/ekand.f ${SRCZLIB}/expect.F ${SRCZLIB}/fehler.f ${SRCZLIB}/irnevt.f
-${SRCZLIB}/jobfin.f ${SRCZLIB}/prallb.f ${SRCZLIB}/prlist.f ${SRCZLIB}/prsinb.f
-${SRCZLIB}/prtoci.f ${SRCZLIB}/shado9.F ${SRCZLIB}/shwcpr.f ${SRCZLIB}/trkbl9.F
-${SRCZLIB}/trkbse.F ${SRCZLIB}/ze4vdp.f ${SRCZLIB}/ze4vea.f ${SRCZLIB}/ze4vet2.f
-${SRCZLIB}/ze4vet.f ${SRCZLIB}/ze4vet.f ${SRCZLIB}/ze4vmc.f ${SRCZLIB}/ze4vpk.for
-${SRCZLIB}/ze4vtp.f ${SRCZLIB}/ze4vun.f ${SRCZLIB}/ze4vvx.F ${SRCZLIB}/zmcredu.f
-${SRCZLIB}/zsphrcy.f ${SRCZLIB}/zspthak.f
+         ${SRCZLIB}/chien52.F ${SRCZLIB}/chien5.F ${SRCZLIB}/crdoca.f ${SRCZLIB}/dxmcgn.f
+         ${SRCZLIB}/ealgcl.F ${SRCZLIB}/eamcde.f ${SRCZLIB}/eaunin.f ${SRCZLIB}/eazero.f
+         ${SRCZLIB}/ekand.f ${SRCZLIB}/expect.F ${SRCZLIB}/fehler.f ${SRCZLIB}/irnevt.f
+         ${SRCZLIB}/jobfin.f ${SRCZLIB}/prallb.f ${SRCZLIB}/prlist.f ${SRCZLIB}/prsinb.f
+         ${SRCZLIB}/prtoci.f ${SRCZLIB}/shado9.F ${SRCZLIB}/shwcpr.f ${SRCZLIB}/trkbl9.F
+         ${SRCZLIB}/trkbse.F ${SRCZLIB}/ze4vdp.f ${SRCZLIB}/ze4vea.f ${SRCZLIB}/ze4vet2.f
+         ${SRCZLIB}/ze4vet.f ${SRCZLIB}/ze4vet.f ${SRCZLIB}/ze4vmc.f ${SRCZLIB}/ze4vpk.for
+         ${SRCZLIB}/ze4vtp.f ${SRCZLIB}/ze4vun.f ${SRCZLIB}/ze4vvx.F ${SRCZLIB}/zmcredu.f
+         ${SRCZLIB}/zsphrcy.f ${SRCZLIB}/zspthak.f
 )
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
-   file(GLOB myforzlib ${SRCZLIB}/*.for)
-      set_property(SOURCE ${myforzlib} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
-       endif()
+  file(GLOB myforzlib ${SRCZLIB}/*.for)
+  set_property(SOURCE ${myforzlib} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
+endif()
       
 ADD_LIBRARY(${ZLIB} STATIC ${ZLIB_src})
 
 
 # Add the source files
-SET(JADEZ_src ${SRCJADEZ}/gphmain.F  ${SRCJADEZ}/xuser.F
-)
+SET(JADEZ_src ${SRCJADEZ}/gphmain.F  ${SRCJADEZ}/xuser.F)
 
 # Define the executable in terms of the source files
 ADD_EXECUTABLE(${JADEZEXE} ${JADEZ_src})
@@ -736,22 +741,13 @@ SET(MCJADE_src ${SRCMCJADE}/mcjade.f ${SRCMCJADE}/mcmain.f  ${SRCMCJADE}/mcrand.
 ADD_EXECUTABLE(${MCJADEEXE} ${MCJADE_src})
 INSTALL(TARGETS ${MCJADEEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-
-
-
-
 # Add the source files
 SET(SUPERV_src ${SRCSUPERV}/ana.F    ${SRCSUPERV}/jdmain.f  ${SRCSUPERV}/showb.f  ${SRCSUPERV}/user.f ${SRCMCJADE}/mcrand.f)
 
 # Define the executable in terms of the source files
 ADD_EXECUTABLE(${SUPERVEXE} ${SUPERV_src})
 
-
-
-
-
 INSTALL(TARGETS ${SUPERVEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
 
 # Add the source files
 SET(ZE4V_src ${SRCZE4V}/ze4vjb.f ${SRCMCJADE}/mcrand.f ${SRCSUPERV}/showb.f )
@@ -759,37 +755,36 @@ SET(ZE4V_src ${SRCZE4V}/ze4vjb.f ${SRCMCJADE}/mcrand.f ${SRCSUPERV}/showb.f )
 # Define the executable in terms of the source files
 ADD_EXECUTABLE(${ZE4VEXE} ${ZE4V_src})
 
-
 if(CMAKE_SYSTEM_NAME MATCHES Darwin)
-TARGET_LINK_LIBRARIES(${JADEZEXE} -lc++ -mmacosx-version-min=10.12 ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
- ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
+  TARGET_LINK_LIBRARIES(${JADEZEXE} -lc++ -mmacosx-version-min=10.12 ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+    ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
 
-TARGET_LINK_LIBRARIES(${JADEZROOTEXE} -lc++  -mmacosx-version-min=10.12 ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
- ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
+  TARGET_LINK_LIBRARIES(${JADEZROOTEXE} -lc++  -mmacosx-version-min=10.12 ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+    ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
 
-TARGET_LINK_LIBRARIES(${MCJADEEXE}  -lc++ -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
-${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
+  TARGET_LINK_LIBRARIES(${MCJADEEXE}  -lc++ -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
+    ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
 
-TARGET_LINK_LIBRARIES(${SUPERVEXE}  -lc++ -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
- ${JEXTERN_LIBRARIES}  ${JEXTERN_GRAPH_LIBRARIES} )
+  TARGET_LINK_LIBRARIES(${SUPERVEXE}  -lc++ -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+    ${JEXTERN_LIBRARIES}  ${JEXTERN_GRAPH_LIBRARIES} )
 
-TARGET_LINK_LIBRARIES(${ZE4VEXE}  -lc++ -mmacosx-version-min=10.12 ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
- ${JEXTERN_LIBRARIES} )
+  TARGET_LINK_LIBRARIES(${ZE4VEXE}  -lc++ -mmacosx-version-min=10.12 ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+    ${JEXTERN_LIBRARIES} )
 else()
-TARGET_LINK_LIBRARIES(${JADEZEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
- ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} -Wl,--end-group)
+  TARGET_LINK_LIBRARIES(${JADEZEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+    ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} -Wl,--end-group)
 
-TARGET_LINK_LIBRARIES(${JADEZROOTEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
- ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} -Wl,--end-group)
+  TARGET_LINK_LIBRARIES(${JADEZROOTEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+    ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} -Wl,--end-group)
 
-TARGET_LINK_LIBRARIES(${MCJADEEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
-${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} -Wl,--end-group)
+  TARGET_LINK_LIBRARIES(${MCJADEEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
+    ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} -Wl,--end-group)
 
-TARGET_LINK_LIBRARIES(${SUPERVEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
- ${JEXTERN_LIBRARIES}  ${JEXTERN_GRAPH_LIBRARIES} -Wl,--end-group)
+  TARGET_LINK_LIBRARIES(${SUPERVEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+    ${JEXTERN_LIBRARIES}  ${JEXTERN_GRAPH_LIBRARIES} -Wl,--end-group)
 
-TARGET_LINK_LIBRARIES(${ZE4VEXE} -Wl,--start-group ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
- ${JEXTERN_LIBRARIES} -Wl,--end-group)
+  TARGET_LINK_LIBRARIES(${ZE4VEXE} -Wl,--start-group ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+    ${JEXTERN_LIBRARIES} -Wl,--end-group)
 endif()
 
 
@@ -797,26 +792,20 @@ endif()
 INSTALL(TARGETS ${ZE4VEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 INSTALL( TARGETS ${BOSLIB} 
-${GRAFIX} 
-${INTERFACE} 
-${JADEGS} 
-${JADEMUS} 
-#${JADESR}
-${JMC} 
-${PATRECSR} 
-${SOURCE} 
-${TAGG} 
-${TOFLIB} 
-${VERTEX} 
-${WERTEX} 
-${ZLIB} 
-ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT library )
-
-
-
-#ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT library )
+         ${GRAFIX} 
+         ${INTERFACE} 
+         ${JADEGS} 
+         ${JADEMUS} 
+         #${JADESR}
+         ${JMC} 
+         ${PATRECSR} 
+         ${SOURCE} 
+         ${TAGG} 
+         ${TOFLIB} 
+         ${VERTEX} 
+         ${WERTEX} 
+         ${ZLIB} 
+         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT library )
 
 # Add a distclean target to the Makefile
-ADD_CUSTOM_TARGET(distclean 
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/distclean.cmake
-)
+ADD_CUSTOM_TARGET(distclean  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/distclean.cmake)
