@@ -366,8 +366,8 @@ void WriterJADE::write_event(const GenEvent &evt)
         if (q==0) fJ->NCF=fJ->NCF+1;
         else fJ->NNF=fJ->NNF+1;
 
-        GenVertexPtr VP=evt.particles().at(i)->production_vertex();
-        GenVertexPtr VE=evt.particles().at(i)->end_vertex();
+        auto VP=evt.particles().at(i)->production_vertex();
+        auto VE=evt.particles().at(i)->end_vertex();
 
         int dmax=0;
         int pmin=evt.particles().size();

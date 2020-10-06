@@ -57,7 +57,7 @@ extern "C"
     void jfwrite_(int&, int&);
 }
 
-namespace HepMC
+namespace HepMC3
 {
 class WriterJADE : public  Writer
 {

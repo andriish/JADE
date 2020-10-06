@@ -1,5 +1,5 @@
 #The cmdline.c and cmdline.h for this example are generated from file below
-#gengetopt -N  --no-version --input=hepmcconvert.ggo --include-getopt --show-required -u"inputfile outputfile"
+#gengetopt -N  --no-version --input=cmdline.ggo --include-getopt --show-required -u"inputfile outputfile"
 version "3.1"
 package "hepmcconvert"
 purpose "Convert between different file formats of Monte Carlo event record.

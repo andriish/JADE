@@ -8,9 +8,9 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 include("GNUInstallDirs")
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(LAPACK_LIBRARIES lapack)
+
+find_package(LAPACK REQUIRED)
 find_package(HepMC3)
-find_package(LAPACK)
 find_package(ROOT)
 
 
@@ -101,7 +101,7 @@ message(STATUS "Fortran compiler        : ${Fortran_COMPILER_NAME}")
 message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
 message(STATUS "C++ compiler            : ${CXX_COMPILER_NAME}")
 message(STATUS "C++ compiler flags      : ${CMAKE_CXX_FLAGS}")
-message(STATUS "HEPMC3 libraries        : ${HEPMC3_STATIC_LIBRARIES} ${HEPMC3_ROOTIO_LIBRARIES}")
+message(STATUS "HEPMC3 libraries        : ${HEPMC3_LIBRARIES} ${HEPMC3_ROOTIO_LIBRARIES}")
 message(STATUS "LAPACK libraries        : ${LAPACK_LIBRARIES_DIR}")
 
 
@@ -112,29 +112,24 @@ else()
   message( STATUS  "JADESOFT:  gengetopt found in ${GENGETOPT}. New scripts for options parsing can be generated." )
   add_custom_command(
     OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.c ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.h
-    COMMAND ${GENGETOPT} -N  --input=${CMAKE_CURRENT_SOURCE_DIR}/cmdline.ggo --file-name cmdline --output-dir=${CMAKE_CURRENT_SOURCE_DIR} --include-getopt --show-required
+    COMMAND ${GENGETOPT} -N  --input=${CMAKE_CURRENT_SOURCE_DIR}/cmdline.ggo --file-name cmdline --output-dir=${CMAKE_CURRENT_SOURCE_DIR} 
+                        --include-getopt --show-required -u'inputfile outputfile'
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.ggo
     COMMENT        "JADESOFT:  Generating getopt parser code..."
     VERBATIM
   )
 
 endif()
-add_custom_target( cmdline DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cmdlineoptions.c ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.h)
-
-
-#----------------------------------------------------------------------------
-# Generate dictionaries
-#
-
+add_custom_target( cmdline DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.c ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.h)
 
 add_executable(convert_example_JADE.exe
-        ${CMAKE_CURRENT_SOURCE_DIR}/cmdlineoptions.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.c
         ${CMAKE_CURRENT_SOURCE_DIR}/convert_example.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/src/WriterJADE.cc 
         ${CMAKE_CURRENT_SOURCE_DIR}/src/jadeio.f
         )
 
-target_link_libraries(convert_example_JADE.exe ${HEPMC3_STATIC_LIBRARIES}   ${LAPACK_LIBRARIES_DIR}  lapack)
+target_link_libraries(convert_example_JADE.exe ${HEPMC3_LIBRARIES}   ${LAPACK_LIBRARIES})
 add_dependencies( convert_example_JADE.exe cmdline  )
 
 # installs 
