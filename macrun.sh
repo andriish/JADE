@@ -31,7 +31,7 @@ cd ..
 ########################################################################
 cd convert
 rm -rf outputs CMakeFiles  CMakeCache.txt
-cmake CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran  -DCMAKE_INSTALL_PREFIX=$TOP  -DHEPMC3_ROOT_DIR=$TOP 
+cmake CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran  -DCMAKE_INSTALL_PREFIX=$TOP
 make -f Makefile clean
 make -f Makefile -j 8  ||  { echo 'make failed' ; exit 1; }
 make install

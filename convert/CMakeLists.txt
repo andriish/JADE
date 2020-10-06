@@ -129,6 +129,7 @@ add_executable(convert_example_JADE.exe
         ${CMAKE_CURRENT_SOURCE_DIR}/src/jadeio.f
         )
 
+target_include_directories(convert_example_JADE.exe ${HEPMC3_INCLUDE_DIR})
 target_link_libraries(convert_example_JADE.exe ${HEPMC3_LIBRARIES}   ${LAPACK_LIBRARIES})
 add_dependencies( convert_example_JADE.exe cmdline  )
 

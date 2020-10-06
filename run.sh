@@ -18,9 +18,9 @@ cd ..
 ########################################################################
 cd jadesoft
 rm -rf outputs CMakeFiles  CMakeCache.txt
-$CMAKE CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran  -DCMAKE_INSTALL_PREFIX=$TOP  -DPICOCERNLIB=$TOP/lib64/libpicocernlib.a
+$CMAKE CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran  -DCMAKE_INSTALL_PREFIX=$TOP  -DPICOCERNLIB=$TOP/lib64/libpicocernlib.a --verbose
 make -f Makefile clean
-make -f Makefile   ||  { echo 'make failed' ; exit 1; }
+make -f Makefile   ||  { echo 'make failed' ; cat CMakeCache.txt exit 1; }
 make install
 cd ..
 ########################################################################
