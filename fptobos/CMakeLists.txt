@@ -76,7 +76,11 @@ set(JEXTERN_GRAPH_LIBRARIES ${X11_LIBRARIES})
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
+  if(CMAKE_SYSTEM_NAME MATCHES Darwin)
    set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -fallow-invalid-boz  -fno-range-check -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+  else() 
+   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}                      -fno-range-check -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+  endif()
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
