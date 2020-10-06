@@ -1,9 +1,4 @@
-#https://github.com/SethMMorton/cmake_fortran_template
-##################################################
-# Define the project and the depencies that it has
-##################################################
-
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
 PROJECT(JTUPLE Fortran CXX C)
 include("GNUInstallDirs")
 # Set the FOO version
@@ -65,7 +60,7 @@ set(JEXTERN_GRAPH_LIBRARIES ${X11_LIBRARIES})
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
-   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -fno-range-check -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -fallow-invalid-boz  -fno-range-check -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")

@@ -1,9 +1,4 @@
-#https://github.com/SethMMorton/cmake_fortran_template
-##################################################
-# Define the project and the depencies that it has
-##################################################
-
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
 PROJECT(PICOCERNLIB Fortran C CXX)
 
 SET(VERSION 2016)

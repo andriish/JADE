@@ -1,16 +1,13 @@
 #!/bin/bash
 #######################MAC setup###################################
-#export ROOTSYS=/Applications/root_v6.09.02/
 #. /Applications/root_v6.09.02/bin/thisroot.sh
-export ROOTSYS=/usr/local/
-export PATH=/usr/local/bin:/opt/subversion/bin:$PATH
-export MACOSX_DEPLOYMENT_TARGET=10.12
 #sudo /Applications/CMake.app/Contents/bin/cmake-gui --install=/usr/local/bin
+export PATH=/usr/local/bin:$PATH
+export MACOSX_DEPLOYMENT_TARGET=10.12
 mkdir -p jadesoft/bin
 
 #F_UFMTENDIAN="little;big:10,20" should work with intel
 
-#######################Compile HepMC3###################################
 set -x
 export TOP=$(pwd)/installed
 mkdir -p $TOP
