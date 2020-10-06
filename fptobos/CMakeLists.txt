@@ -1,9 +1,4 @@
-#https://github.com/SethMMorton/cmake_fortran_template
-##################################################
-# Define the project and the depencies that it has
-##################################################
-
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
 PROJECT(JTUPLE Fortran CXX C)
 include("GNUInstallDirs")
 # Set the FOO version
@@ -15,7 +10,7 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 find_package(CERNLIB)
-
+find_package(LAPACK REQUIRED)
 ########################################################################
 
 #set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
@@ -51,6 +46,22 @@ set(JEXTERN_LIBRARIES  ${PICOCERNLIB} ${ROOT_LIBRARIES} -lstdc++)
 set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
 
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++1y" COMPILER_SUPPORTS_CXX1y)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+if(COMPILER_SUPPORTS_CXX1y)
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
+else()
+if(COMPILER_SUPPORTS_CXX11)
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+elseif(COMPILER_SUPPORTS_CXX0X)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+else()
+message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
+endif()
+endif()
+
 #############USE IT WITH CERNLIB->########################################
 #set(JEXTERN_LIBRARIES   ${CERN_STATIC_LIBRARIES} )
 #set(JEXTERN_LIBRARIES   ${CERN_DYNAMIC_LIBRARIES} ) 
@@ -65,7 +76,11 @@ set(JEXTERN_GRAPH_LIBRARIES ${X11_LIBRARIES})
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
-   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -fno-range-check -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+  if(CMAKE_SYSTEM_NAME MATCHES Darwin)
+   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -fallow-invalid-boz  -fno-range-check -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+  else() 
+   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}                      -fno-range-check -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+  endif()
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
@@ -187,11 +202,11 @@ ADD_EXECUTABLE(${FPTOBOSEXE} ${FPTOBOS_src})
 ADD_EXECUTABLE(${UNPJADEXE} ${UNPJAD_src})
 
 if(CMAKE_SYSTEM_NAME MATCHES Darwin)
-TARGET_LINK_LIBRARIES(${FPTOBOSEXE} -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} lapack )
-TARGET_LINK_LIBRARIES(${UNPJADEXE} -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} lapack )
+TARGET_LINK_LIBRARIES(${FPTOBOSEXE} -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} ${LAPACK_LIBRARIES} )
+TARGET_LINK_LIBRARIES(${UNPJADEXE} -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} ${LAPACK_LIBRARIES} )
 else()
-TARGET_LINK_LIBRARIES(${FPTOBOSEXE} -Wl,--start-group ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} lapack -Wl,--end-group)
-TARGET_LINK_LIBRARIES(${UNPJADEXE} -Wl,--start-group ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} lapack -Wl,--end-group)
+TARGET_LINK_LIBRARIES(${FPTOBOSEXE} -Wl,--start-group ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} ${LAPACK_LIBRARIES} -Wl,--end-group)
+TARGET_LINK_LIBRARIES(${UNPJADEXE} -Wl,--start-group ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} ${LAPACK_LIBRARIES} -Wl,--end-group)
 endif()
 
 

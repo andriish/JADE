@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
 PROJECT(PICOCERNLIB Fortran C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -17,8 +17,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g  -Wno-return-type  -DCERNLIB_QMLX
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
+  if(CMAKE_SYSTEM_NAME MATCHES Darwin)
+   set(CMAKE_Fortran_FLAGS            " -fallow-invalid-boz  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN  -DCERNLIB_QX_SC         -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+  else()
    set(CMAKE_Fortran_FLAGS            "   -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN  -DCERNLIB_QX_SC         -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+  endif()
 endif()
+
+
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
 #NOT USED
