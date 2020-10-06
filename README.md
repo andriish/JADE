@@ -51,12 +51,13 @@ To build the software:
      - Ensure the XCode and homebrew are installed
      - Install the dependencies using homebrew
       ```
-      brew install wget coreutils gcc
+      brew install coreutils gcc
       brew tap davidchall/hep
       brew install hepmc3
       brew cask install xquartz
       ```
      - Install ROOT, e.g. from  `https://root.cern/install/all_releases/` and enable it
+     - Install cmake
        
 - Clone the repository using git 
      ``git clone https://github.com/andriish/JADE``
