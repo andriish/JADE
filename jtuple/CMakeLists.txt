@@ -3,8 +3,8 @@
 # Define the project and the depencies that it has
 ##################################################
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
-PROJECT(JTUPLE Fortran)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
+PROJECT(JTUPLE Fortran CXX C)
 include("GNUInstallDirs")
 # Set the FOO version
 SET(VERSION 2.0)
@@ -15,6 +15,7 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 find_package(CERNLIB)
+find_package(LAPACK REQUIRED)
 
 ########################################################################
 
@@ -51,6 +52,23 @@ set(JEXTERN_LIBRARIES  ${PICOCERNLIB} ${ROOT_LIBRARIES} -lstdc++)
 set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
 
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++1y" COMPILER_SUPPORTS_CXX1y)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+if(COMPILER_SUPPORTS_CXX1y)
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
+else()
+if(COMPILER_SUPPORTS_CXX11)
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+elseif(COMPILER_SUPPORTS_CXX0X)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+else()
+message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
+endif()
+endif()
+
+
 #############USE IT WITH CERNLIB->########################################
 #set(JEXTERN_LIBRARIES   ${CERN_STATIC_LIBRARIES} )
 #set(JEXTERN_LIBRARIES   ${CERN_DYNAMIC_LIBRARIES} ) 
@@ -65,7 +83,11 @@ set(JEXTERN_GRAPH_LIBRARIES X11)
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
 if (Fortran_COMPILER_NAME MATCHES "gfortran.*")
-   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+  if(CMAKE_SYSTEM_NAME MATCHES Darwin)
+   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}   -fallow-invalid-boz -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+  else()
+   set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}   -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")  
+  endif()
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
@@ -173,12 +195,12 @@ ADD_EXECUTABLE(${JTJOBEXE} ${JTJOBEXE_src})
 
 if(CMAKE_SYSTEM_NAME MATCHES Darwin)
 TARGET_LINK_LIBRARIES(${TAKLUMIEXE} -lc++ -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES} )
-TARGET_LINK_LIBRARIES(${JZREADEXE} -lc++ -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JTLIB} ${JADE_LIBRARIES} lapack )
-TARGET_LINK_LIBRARIES(${JTJOBEXE} -lc++ -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JADE_LIBRARIES} lapack )
+TARGET_LINK_LIBRARIES(${JZREADEXE} -lc++ -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JTLIB} ${JADE_LIBRARIES} ${LAPACK_LIBRARIES} )
+TARGET_LINK_LIBRARIES(${JTJOBEXE} -lc++ -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JADE_LIBRARIES} ${LAPACK_LIBRARIES} )
 else()
 TARGET_LINK_LIBRARIES(${TAKLUMIEXE} -Wl,--start-group ${JEXTERN_LIBRARIES} -Wl,--end-group)
-TARGET_LINK_LIBRARIES(${JZREADEXE} -Wl,--start-group ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JTLIB} ${JADE_LIBRARIES} lapack -Wl,--end-group)
-TARGET_LINK_LIBRARIES(${JTJOBEXE} -Wl,--start-group ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JADE_LIBRARIES} lapack -Wl,--end-group)
+TARGET_LINK_LIBRARIES(${JZREADEXE} -Wl,--start-group ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JTLIB} ${JADE_LIBRARIES} ${LAPACK_LIBRARIES} -Wl,--end-group)
+TARGET_LINK_LIBRARIES(${JTJOBEXE} -Wl,--start-group ${JEXTERN_LIBRARIES} ${ZREAD} ${NTUPLE} ${JADE_LIBRARIES} ${LAPACK_LIBRARIES} -Wl,--end-group)
 endif()
 
 INSTALL(TARGETS ${JTJOBEXE} ${JZREADEXE} ${TAKLUMIEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
