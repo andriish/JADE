@@ -7,8 +7,8 @@ on:
     - cron:  "0 0 1/600 * *"
 
 jobs:
-
   compilejobCentOS7:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: ubuntu-latest
     name: JADE_on_CentOS7
     steps:
@@ -21,6 +21,7 @@ jobs:
       run: exit ${{ steps.compileindocker.outputs.out }}
 
   compilejobCentOS8:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: ubuntu-latest
     name: JADE_on_CentOS8
     steps:
@@ -33,6 +34,7 @@ jobs:
       run: exit ${{ steps.compileindocker.outputs.out }}
       
   compilejobOSX:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: macos-latest
     name: JADE_on_OSX
     steps:
