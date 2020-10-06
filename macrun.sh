@@ -19,7 +19,7 @@ cd picocernlib
 rm -rf outputs CMakeFiles  CMakeCache.txt
 cmake CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP
 make -f Makefile clean
-make -f Makefile -j 8
+make -f Makefile -j 8   ||  { echo 'make failed' ; exit 1; }
 make install
 cd ..
 
@@ -28,7 +28,7 @@ cd jadesoft
 rm -rf outputs CMakeFiles  CMakeCache.txt
 cmake -Wno-dev CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran  -DCMAKE_INSTALL_PREFIX=$TOP  -DPICOCERNLIB=$TOP/lib/libpicocernlib.a
 make -f Makefile clean
-make -f Makefile -j 8
+make -f Makefile -j 8  ||  { echo 'make failed' ; exit 1; }
 make install
 cd ..
 ########################################################################
@@ -36,7 +36,7 @@ cd convert
 rm -rf outputs CMakeFiles  CMakeCache.txt
 cmake CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran  -DCMAKE_INSTALL_PREFIX=$TOP  -DHEPMC3_ROOT_DIR=$TOP 
 make -f Makefile clean
-make -f Makefile -j 8
+make -f Makefile -j 8  ||  { echo 'make failed' ; exit 1; }
 make install
 cd ..
 
@@ -45,7 +45,7 @@ cd jtuple
 rm -rf outputs CMakeFiles  CMakeCache.txt
 cmake CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran  -DCMAKE_INSTALL_PREFIX=$TOP  -DPICOCERNLIB=$TOP/lib/libpicocernlib.a -DJADELIB_ROOT_DIR=$TOP
 make -f Makefile clean
-make -f Makefile -j 8
+make -f Makefile -j 8  ||  { echo 'make failed' ; exit 1; }
 make install
 cd ..
 ########################################################################
@@ -53,6 +53,6 @@ cd fptobos
 rm -rf outputs CMakeFiles  CMakeCache.txt
 cmake CMakeLists.txt -DCMAKE_Fortran_COMPILER=gfortran  -DCMAKE_INSTALL_PREFIX=$TOP  -DPICOCERNLIB=$TOP/lib/libpicocernlib.a -DJADELIB_ROOT_DIR=$TOP
 make -f Makefile clean
-make -f Makefile -j 8
+make -f Makefile -j 8  ||  { echo 'make failed' ; exit 1; }
 make install
 cd ..
