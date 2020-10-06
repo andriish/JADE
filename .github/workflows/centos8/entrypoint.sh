@@ -3,6 +3,8 @@ set -x
 uname -a 
 cat /etc/issue
 yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+yum -y install dnf-plugins-core
+dnf config-manager --set-enabled PowerTools
 yum -y install  gcc gcc-c++ gcc-gfortran make
 yum -y install  cmake cmake-data cmake-filesystem
 yum -y install  HepMC3*
