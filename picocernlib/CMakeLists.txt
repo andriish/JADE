@@ -45,7 +45,7 @@ endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
 #NOT USED
-   set(CMAKE_Fortran_FLAGS            "-fno-automatic -fno-backslash -extend-source 132")	
+   set(CMAKE_Fortran_FLAGS            "-fno-automatic -fno-backslash -extend-source 132")
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
@@ -55,7 +55,7 @@ endif()
 
 if (Fortran_COMPILER_NAME MATCHES "sun.*")
 #Local variables are static by default. Alternate is STATIC statement. 
-   set(CMAKE_Fortran_FLAGS           "  -ftrap=%none -f77 -e -m32  -g  ")	
+   set(CMAKE_Fortran_FLAGS           "  -ftrap=%none -f77 -e -m32  -g  ")
 endif()
 
 
@@ -76,7 +76,6 @@ set (ROOT_FIND_COMPONENTS Core RIO Tree Graf)
      endif()
   else()
      message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
-#     find_package(ROOT QUIET REQUIRED COMPONENTS Core Cint RIO Tree  Graf)
      find_package(ROOT QUIET REQUIRED COMPONENTS Core RIO Tree  Graf)
   endif()
 
@@ -86,11 +85,9 @@ set (ROOT_FIND_COMPONENTS Core RIO Tree Graf)
 
   if(ROOT_FOUND)
     include_directories(${ROOT_INCLUDE_DIRS})
-#    add_definitions(-DHEPMC_ROOTIO)
   else()
     message(STATUS "PICOCERNLIB warning: ROOT needed for ROOTIO but not found")
     message(STATUS "PICOCERNLIB: Skipping HepMC ROOT IO libraries")
-#    set(HEPMC_ENABLE_ROOTIO OFF)
   endif()
 
 
@@ -198,9 +195,7 @@ ${TOP}/src/Frame.cxx
 ADD_LIBRARY(${PICOCERNLIB} STATIC  ${PICOCERNLIB_src})
 
 # Add a distclean target to the Makefile
-ADD_CUSTOM_TARGET(distclean 
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/distclean.cmake
-)
+ADD_CUSTOM_TARGET(distclean COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/distclean.cmake)
 
 
 install(
