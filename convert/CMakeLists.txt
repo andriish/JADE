@@ -54,7 +54,6 @@ set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Posts
      endif()
   else()
      message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
-#     find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
      find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
   endif()
 
@@ -113,7 +112,7 @@ else()
   add_custom_command(
     OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.c ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.h
     COMMAND ${GENGETOPT} -N  --input=${CMAKE_CURRENT_SOURCE_DIR}/cmdline.ggo --file-name cmdline --output-dir=${CMAKE_CURRENT_SOURCE_DIR} 
-                        --include-getopt --show-required -u'inputfile outputfile'
+                        --include-getopt --show-required -u\'inputfile\ outputfile\'
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.ggo
     COMMENT        "JADESOFT:  Generating getopt parser code..."
     VERBATIM
@@ -128,7 +127,7 @@ add_executable(convert_example_JADE.exe
         ${CMAKE_CURRENT_SOURCE_DIR}/src/WriterJADE.cc 
         ${CMAKE_CURRENT_SOURCE_DIR}/src/jadeio.f
         )
-
+target_compile_definitions( convert_example_JADE.exe PUBLIC HEPMCCONVERT_EXTENSION_JADE  )
 target_include_directories(convert_example_JADE.exe PUBLIC ${HEPMC3_INCLUDE_DIR})
 target_link_libraries(convert_example_JADE.exe ${HEPMC3_LIBRARIES}   ${LAPACK_LIBRARIES})
 add_dependencies( convert_example_JADE.exe cmdline  )

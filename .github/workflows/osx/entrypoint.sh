@@ -8,5 +8,10 @@ wget https://root.cern/download/root_v6.22.02.macosx64-10.15-clang110.tar.gz
 tar -zxvf root_v6.22.02.macosx64-10.15-clang110.tar.gz
 . root/bin/thisroot.sh
 
-sh macrun.sh
+sh jadeinstall.sh
 
+
+
+brew install pythia8
+
+sh jadetest.sh

@@ -42,6 +42,7 @@ set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Posts
 
 
 
+find_library(PICOCERNLIB REQUIRED NAMES libpicocernlib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
 set(JEXTERN_LIBRARIES  ${PICOCERNLIB} ${ROOT_LIBRARIES}  -lstdc++)
 message(STATUS "JEXTERN_LIBRARIES    : ${JEXTERN_LIBRARIES}")
 set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
@@ -70,7 +71,7 @@ endif()
 
 if (Fortran_COMPILER_NAME MATCHES "ifort.*")
 #NOT USED
-  set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -fno-automatic -fno-backslash -extend-source 132")	
+  set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -fno-automatic -fno-backslash -extend-source 132")
 endif()
 
 if (Fortran_COMPILER_NAME MATCHES "xlf.*")
