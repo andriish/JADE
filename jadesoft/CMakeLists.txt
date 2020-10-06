@@ -10,6 +10,7 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 
 find_package(CERNLIB)
+find_package(LAPACK REQUIRED)
 find_package(X11  REQUIRED)
 find_package(HepMC3)
 ########################################################################

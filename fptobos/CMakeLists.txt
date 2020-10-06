@@ -15,7 +15,7 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 find_package(CERNLIB)
-
+find_package(LAPACK REQUIRED)
 ########################################################################
 
 #set (ROOT_FIND_COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
@@ -187,11 +187,11 @@ ADD_EXECUTABLE(${FPTOBOSEXE} ${FPTOBOS_src})
 ADD_EXECUTABLE(${UNPJADEXE} ${UNPJAD_src})
 
 if(CMAKE_SYSTEM_NAME MATCHES Darwin)
-TARGET_LINK_LIBRARIES(${FPTOBOSEXE} -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} lapack )
-TARGET_LINK_LIBRARIES(${UNPJADEXE} -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} lapack )
+TARGET_LINK_LIBRARIES(${FPTOBOSEXE} -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} ${LAPACK_LIBRARIES} )
+TARGET_LINK_LIBRARIES(${UNPJADEXE} -mmacosx-version-min=10.12 ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} ${LAPACK_LIBRARIES} )
 else()
-TARGET_LINK_LIBRARIES(${FPTOBOSEXE} -Wl,--start-group ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} lapack -Wl,--end-group)
-TARGET_LINK_LIBRARIES(${UNPJADEXE} -Wl,--start-group ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} lapack -Wl,--end-group)
+TARGET_LINK_LIBRARIES(${FPTOBOSEXE} -Wl,--start-group ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} ${LAPACK_LIBRARIES} -Wl,--end-group)
+TARGET_LINK_LIBRARIES(${UNPJADEXE} -Wl,--start-group ${JEXTERN_LIBRARIES}  ${JADE_LIBRARIES} ${LAPACK_LIBRARIES} -Wl,--end-group)
 endif()
 
 
