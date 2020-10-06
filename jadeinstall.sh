@@ -1,21 +1,38 @@
 #!/bin/bash
 if [ "$(uname)" == "Darwin" ]; then
- export PATH=/usr/local/bin:$PATH
- export MACOSX_DEPLOYMENT_TARGET=10.12
- if [ -z ${CMAKE+x} ]; then
- CMAKE=cmake
- fi
+  export PATH=/usr/local/bin:$PATH
+  export MACOSX_DEPLOYMENT_TARGET=10.12
+  if [ -z ${CMAKE+x} ]; then
+    CMAKE=cmake
+    CTEST=ctest
+  fi
 else
 #If the name $CMAKE is not set, the cmake name will default to cmake.
 #Unless cmake programm has version 2 and cmake3 program with version 3 exists. 
- if [ -z ${CMAKE+x} ]; then
- CMAKE=cmake
- cmake_version=$( $CMAKE --version | head -n 1 | cut -f 3 -d' ' | cut -f1 -d. )
- cmake3_version=$( cmake3 --version | head -n 1 | cut -f 3 -d' ' | cut -f1 -d. )
- if [ "$cmake_version" = "2" ] && [ "$cmake3_version" = "3" ] ; then
- CMAKE=cmake3
+  if [ -z ${CMAKE+x} ]; then
+    CMAKE=cmake
+    CTEST=ctest
+    which $CMAKE
+    if [ "$?" = "0" ]; then 
+      cmake_version=$( $CMAKE --version | head -n 1 | cut -f 3 -d' ' | cut -f1 -d. )
+    else
+      cmake_version="2"
+    fi
+    which cmake3
+    if [ "$?" = "0" ]; then 
+      cmake3_version=$( cmake3 --version | head -n 1 | cut -f 3 -d' ' | cut -f1 -d. )
+    else
+      cmake3_version="2"
+    fi
+    if [ "$cmake_version" = "2" ] && [ "$cmake3_version" = "3" ] ; then
+      CMAKE=cmake3
+      CTEST=ctest3
+    fi
  fi
- fi
+fi
+which $CMAKE
+if [ "$?" != "0" ]; then 
+  echo 'cannot locate cmake' ; exit 1; 
 fi
 set -x
 

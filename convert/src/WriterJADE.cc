@@ -327,11 +327,12 @@ void WriterJADE::write_event(const GenEvent &evt)
         if (q==0) fJ->NN=fJ->NN+1;
         else fJ->NC=fJ->NC+1;
         int KF=evt.particles().at(i)->pid();
-        sprintf(buf,"%d",KF);
-        sprintf(&(fN->CP[i][0]),"%.16s",                (std::string("PDGID=")+std::string(buf)+std::string("                ")).c_str());
-        if (KF==11) sprintf(&(fN->CP[i][0]),"%.16s",    "E-              ");
-        if (KF==-11) sprintf(&(fN->CP[i][0]),"%.16s",   "E+              ");
-        if (KF==21) sprintf(&(fN->CP[i][0]),"%.16s",   "g               ");
+        snprintf(buf,10,"%d",KF);
+        snprintf(&(fN->CP[i][0]),16,"%.16s",                (std::string("PDGID=")+std::string(buf)+std::string("                ")).c_str());
+        /* This should be expanded */
+        if (KF==11) snprintf(&(fN->CP[i][0]),16,"%.16s",    "E-              ");
+        if (KF==-11) snprintf(&(fN->CP[i][0]),16,"%.16s",   "E+              ");
+        if (KF==21) snprintf(&(fN->CP[i][0]),16,"%.16s",   "g               ");
 
         fJ->JCH[i]=q;
         fJ->JTP[i]=jadeco_(KF);
@@ -348,10 +349,11 @@ void WriterJADE::write_event(const GenEvent &evt)
         }
 
 
-        sprintf(&(fN->CF[j][0]),"%.16s",                (std::string("PDGID=")+std::string(buf)+std::string("                ")).c_str());
-        if (KF==11) sprintf(&(fN->CF[j][0]),"%.16s",    "E-              ");
-        if (KF==-11) sprintf(&(fN->CF[j][0]),"%.16s",   "E+              ");
-        if (KF==21) sprintf(&(fN->CF[j][0]),"%.16s",   "g               ");
+        snprintf(&(fN->CF[j][0]),16,"%.16s",                (std::string("PDGID=")+std::string(buf)+std::string("                ")).c_str());
+        /* This should be expanded */
+        if (KF==11) snprintf(&(fN->CF[j][0]),16,"%.16s",    "E-              ");
+        if (KF==-11) snprintf(&(fN->CF[j][0]),16,"%.16s",   "E+              ");
+        if (KF==21) snprintf(&(fN->CF[j][0]),16,"%.16s",   "g               ");
 
         fJ->ICF[j]=fJ->JCH[i];
         fJ->PF[j][0]=fJ->PP[i][0];
@@ -396,7 +398,7 @@ void WriterJADE::write_event(const GenEvent &evt)
             fJ->PSTR[j][2-1]=0;
             fJ->PSTR[j][3-1]=0;
         }
-        fJ->PT=fJ->PT+sqrt(fJ->PP[i][0]*fJ->PP[i][0]+fJ->PP[i][1]*fJ->PP[i][1]);
+        fJ->PT=fJ->PT+std::sqrt(fJ->PP[i][0]*fJ->PP[i][0]+fJ->PP[i][1]*fJ->PP[i][1]);
         i++;
         j++;
     }
