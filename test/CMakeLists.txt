@@ -33,7 +33,7 @@ else()
   message(STATUS "JADE test: Pythia8 package found. ${PYTHIA8_LIBRARIES} ${PYTHIA8_VERSION}") 
   add_executable(pythia8_JADE.exe  pythia8_JADE.cc)
   target_link_libraries(pythia8_JADE.exe  ${PYTHIA8_LIBRARIES}  ${HEPMC3_LIBRARIES}  )
-  target_include_directories(pythia8_JADE.exe PRIVATE ${PYTHIA8_INCLUDE_DIR}/Pythia8Plugins/ ${HEPMC3_INTERFACES_DIR}/pythia8/include/Pythia8/)
+  target_include_directories(pythia8_JADE.exe PRIVATE ${HEPMC3_INCLUDE_DIR} ${PYTHIA8_INCLUDE_DIR}/Pythia8Plugins/ ${HEPMC3_INTERFACES_DIR}/pythia8/include/Pythia8/)
 
   add_test(NAME pythia8_HepMC3_1 COMMAND pythia8_JADE.exe ${CMAKE_CURRENT_SOURCE_DIR}/testPythia1.input ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output )
   add_test(NAME HepMC3_BOS_1 COMMAND ${JADEPREFIX}/bin/convert_example_JADE.exe -i hepmc3 -o jade ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output ${CMAKE_CURRENT_BINARY_DIR}/testConvert1.output  
