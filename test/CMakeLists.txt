@@ -1,7 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
 PROJECT(TEST Fortran CXX C)
 include("GNUInstallDirs")
-# Set the FOO version
 SET(VERSION 2.0)
 
 # Add our local modlues to the module path
@@ -12,15 +11,15 @@ CHECK_CXX_COMPILER_FLAG("-std=c++1y" COMPILER_SUPPORTS_CXX1y)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
 if(COMPILER_SUPPORTS_CXX1y)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 else()
-if(COMPILER_SUPPORTS_CXX11)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-elseif(COMPILER_SUPPORTS_CXX0X)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-else()
-message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
-endif()
+  if(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  elseif(COMPILER_SUPPORTS_CXX0X)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  else()
+    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
+  endif()
 endif()
 
 
@@ -34,16 +33,19 @@ else()
   add_executable(pythia8_JADE.exe  pythia8_JADE.cc)
   target_link_libraries(pythia8_JADE.exe  ${PYTHIA8_LIBRARIES}  ${HEPMC3_LIBRARIES}  )
   target_include_directories(pythia8_JADE.exe PRIVATE ${HEPMC3_INCLUDE_DIR} ${PYTHIA8_INCLUDE_DIR}/Pythia8Plugins/ ${HEPMC3_INTERFACES_DIR}/pythia8/include/Pythia8/)
-
-  add_test(NAME pythia8_HepMC3_1 COMMAND pythia8_JADE.exe ${CMAKE_CURRENT_SOURCE_DIR}/testPythia1.input ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output )
-  add_test(NAME HepMC3_BOS_1 COMMAND ${JADEPREFIX}/bin/convert_example_JADE.exe -i hepmc3 -o jade ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output ${CMAKE_CURRENT_BINARY_DIR}/testConvert1.output  
-  -e Mode=0
-#           PROPERTIES ENVIRONMENT "GFORTRAN_CONVERT_UNIT='native'" 
-           )
-           
-         set_tests_properties(HepMC3_BOS_1 PROPERTIES DEPENDS pythia8_HepMC3_1)   
-#export GFORTRAN_CONVERT_UNIT='native'
-#convert_example_JADE.exe hepmc2_jade  $1   temp.jade Mode=0 > convert.log
+  if (NOT APPLE) #so far disable testing on MacOS
+    add_test(NAME pythia8_HepMC3_1 COMMAND pythia8_JADE.exe 
+                                           ${CMAKE_CURRENT_SOURCE_DIR}/testPythia1.input 
+                                           ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output )
+  
+    add_test(NAME HepMC3_BOS_1 COMMAND     ${JADEPREFIX}/bin/convert_example_JADE.exe -i hepmc3 -o jade 
+                                           ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output 
+                                           ${CMAKE_CURRENT_BINARY_DIR}/testConvert1.output  
+                                           -e Mode=0 )
+    set_tests_properties(HepMC3_BOS_1 PROPERTIES DEPENDS pythia8_HepMC3_1)   
+  else()
+    message(STATUS "Tests on MacOS will be enabled soon")
+  endif()
 endif()
 
 
@@ -54,14 +56,4 @@ if(MEMORYCHECK_COMMAND)
 elseif()
   message(STATUS "JADE test: valgrind package not found or disabled.  memory check tests disabled.") 
 endif()
-
-
-
-
-#if(MEMORYCHECK_COMMAND)
-#  foreach ( test ${HepMC_tests} )
-#    add_memcheck_test( ${test} )
-#    set_tests_properties(memcheck_${test} PROPERTIES DEPENDS ${test})
-#  endforeach ( test ${HepMC_tests} )
-#endif()
 
