@@ -9,14 +9,11 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++1y" COMPILER_SUPPORTS_CXX1y)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
 if(COMPILER_SUPPORTS_CXX1y)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 else()
   if(COMPILER_SUPPORTS_CXX11)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  elseif(COMPILER_SUPPORTS_CXX0X)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
   else()
     message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
   endif()
@@ -25,7 +22,7 @@ endif()
 
 find_package(HepMC3 REQUIRED)
 find_package(Pythia8 8.220)
-  ENABLE_TESTING()
+ENABLE_TESTING()
 if(NOT PYTHIA8_FOUND)
   message(STATUS "JADE test: Pythia8 package not found, was disabled or too old. The minimal supported Pythia8 version is 8.220. Please check if PYTHIA8_ROOT_DIR is set properly.") 
 else()
@@ -33,19 +30,15 @@ else()
   add_executable(pythia8_JADE.exe  pythia8_JADE.cc)
   target_link_libraries(pythia8_JADE.exe  ${PYTHIA8_LIBRARIES}  ${HEPMC3_LIBRARIES}  )
   target_include_directories(pythia8_JADE.exe PRIVATE ${HEPMC3_INCLUDE_DIR} ${PYTHIA8_INCLUDE_DIR}/Pythia8Plugins/ ${HEPMC3_INTERFACES_DIR}/pythia8/include/Pythia8/)
-  if (NOT APPLE) #so far disable testing on MacOS
-    add_test(NAME pythia8_HepMC3_1 COMMAND pythia8_JADE.exe 
-                                           ${CMAKE_CURRENT_SOURCE_DIR}/testPythia1.input 
-                                           ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output )
-  
-    add_test(NAME HepMC3_BOS_1 COMMAND     ${JADEPREFIX}/bin/convert_example_JADE.exe -i hepmc3 -o jade 
-                                           ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output 
-                                           ${CMAKE_CURRENT_BINARY_DIR}/testConvert1.output  
-                                           -e Mode=0 )
-    set_tests_properties(HepMC3_BOS_1 PROPERTIES DEPENDS pythia8_HepMC3_1)   
-  else()
-    message(STATUS "Tests on MacOS will be enabled soon")
-  endif()
+  add_test(NAME pythia8_HepMC3_1 COMMAND pythia8_JADE.exe 
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/testPythia1.input 
+                                         ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output )
+ 
+  add_test(NAME HepMC3_BOS_1 COMMAND     ${JADEPREFIX}/bin/convert_example_JADE.exe -i hepmc3 -o jade 
+                                         ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output 
+                                         ${CMAKE_CURRENT_BINARY_DIR}/testConvert1.output  
+                                         -e Mode=0 )
+  set_tests_properties(HepMC3_BOS_1 PROPERTIES DEPENDS pythia8_HepMC3_1)   
 endif()
 
 
