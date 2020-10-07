@@ -63,6 +63,11 @@ To build the software:
      ``git clone https://github.com/andriish/JADE``
     
 - Run build script inside the repository
-    `` sh run.sh `` for Linux or ``sh macrun.sh`` for MacOSX
-    The software will be installed to ``JADE/installed`` directory
+    `` sh jadeinstall.sh `` 
+    The software will be installed to ``installed`` directory.
+    To change the location run ``sh jadeinstall.sh --prefix=/full/path/to/desired/location``
     
+Please note that JADE software consists of multiple packages that can be compiled sequenially, 
+without invocation of the ``jadeinstall.sh``.
+
+

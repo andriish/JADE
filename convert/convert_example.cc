@@ -45,7 +45,7 @@
 #ifdef HEPMCCONVERT_EXTENSION_GZ
 #include "ReaderGZ.h"
 #endif
-#ifdef HEPMCCONVERT_EXTENSION_JADE  
+#ifdef HEPMCCONVERT_EXTENSION_JADE
 #include "WriterJADE.h"
 #endif
 
@@ -53,7 +53,7 @@
 
 #include "cmdline.h"
 using namespace HepMC3;
-enum formats {autodetect, hepmc2, hepmc3, hpe ,root, treeroot ,treerootopal, hpezeus, lhef, dump, dot, gz, plugin, none,jade};
+enum formats {autodetect, hepmc2, hepmc3, hpe,root, treeroot,treerootopal, hpezeus, lhef, dump, dot, gz, plugin, none,jade};
 int main(int argc, char** argv)
 {
     gengetopt_args_info ai;
@@ -94,11 +94,11 @@ int main(int argc, char** argv)
     long int  first_event_number = ai.first_event_number_arg;
     long int  last_event_number = ai.last_event_number_arg;
     long int  print_each_events_parsed = ai.print_every_events_parsed_arg;
-        std::string InputPluginLibrary;
-        std::string InputPluginName;
+    std::string InputPluginLibrary;
+    std::string InputPluginName;
 
-        std::string OutputPluginLibrary;
-        std::string OutputPluginName;
+    std::string OutputPluginLibrary;
+    std::string OutputPluginName;
 
     std::shared_ptr<Reader>      input_file;
     bool input_is_stdin=(std::string(ai.inputs[0])==std::string("-"));
@@ -106,12 +106,12 @@ int main(int argc, char** argv)
     bool ignore_writer=false;
     switch (format_map.at(std::string(ai.input_format_arg)))
     {
-    case autodetect:        
+    case autodetect:
         input_file=(input_is_stdin?deduce_reader(std::cin):deduce_reader(ai.inputs[0]));
-        if (!input_file) 
+        if (!input_file)
         {
-        input_is_stdin?printf("Input format  detection for std input has failed\n"):printf("Input format  detection for file %s has failed\n",ai.inputs[0]);
-        exit(2);
+            input_is_stdin?printf("Input format  detection for std input has failed\n"):printf("Input format  detection for file %s has failed\n",ai.inputs[0]);
+            exit(2);
         }
         break;
     case hepmc2:
@@ -151,10 +151,21 @@ int main(int argc, char** argv)
         exit(2);
 #endif
     case plugin:
-        if (options.find("InputPluginLibrary")==options.end())         { printf("InputPluginLibrary option required\n"); exit(2);} else InputPluginLibrary=options.at("InputPluginLibrary");
-        if (options.find("InputPluginName")==options.end())            { printf("InputPluginName option required\n"); exit(2);} else InputPluginName=options.at("InputPluginName");        
+        if (options.find("InputPluginLibrary")==options.end())         {
+            printf("InputPluginLibrary option required\n");
+            exit(2);
+        }
+        else InputPluginLibrary=options.at("InputPluginLibrary");
+        if (options.find("InputPluginName")==options.end())            {
+            printf("InputPluginName option required\n");
+            exit(2);
+        }
+        else InputPluginName=options.at("InputPluginName");
         input_file=std::make_shared<ReaderPlugin>(std::string(ai.inputs[0]),InputPluginLibrary,InputPluginName);
-        if (input_file->failed()) { printf("Plugin initialization failed\n"); exit(2);}
+        if (input_file->failed()) {
+            printf("Plugin initialization failed\n");
+            exit(2);
+        }
         break;
     default:
         printf("Input format %s  is not known\n",ai.input_format_arg);
@@ -176,14 +187,6 @@ int main(int argc, char** argv)
     case root:
 #ifdef HEPMC3_ROOTIO
         output_file=std::make_shared<WriterRoot>(ai.inputs[1]);
-        break;
-#else
-        printf("Output format %s  is not supported\n",ai.output_format_arg);
-        exit(2);
-#endif
-    case jade:
-#ifdef HEPMCCONVERT_EXTENSION_JADE
-        output_file=std::make_shared<WriterJADE>(ai.inputs[1]);
         break;
 #else
         printf("Output format %s  is not supported\n",ai.output_format_arg);
@@ -218,31 +221,43 @@ int main(int argc, char** argv)
         exit(2);
 #endif
     case dot:
-#ifdef HEPMCCONVERT_EXTENSION_DOT 
-       output_file=std::make_shared<WriterDOT>(ai.inputs[1]);
-       if (options.find("Style")!=options.end()) (std::dynamic_pointer_cast<WriterDOT>(output_file))->set_style(std::atoi(options.at("Style").c_str()));
-       break;
+#ifdef HEPMCCONVERT_EXTENSION_DOT
+        output_file=std::make_shared<WriterDOT>(ai.inputs[1]);
+        if (options.find("Style")!=options.end()) (std::dynamic_pointer_cast<WriterDOT>(output_file))->set_style(std::atoi(options.at("Style").c_str()));
+        break;
 #else
         printf("Output format %s  is not supported\n",ai.output_format_arg);
         exit(2);
         break;
 #endif
 #ifdef HEPMCCONVERT_EXTENSION_JADE
-                case jade:
-                    if (options.find("Mode")!=options.end()) 
-                    output_file=std::make_shared<WriterJADE>(convert_list[i].second,options.at("Mode").fint);
-                    else
-                    {
-                    printf("This format requires one option  Mode=0 (binary, native), Mode=1 (ASCII), Mode=2 (binary, LITTLE_ENDIAN), Mode=3 (binary, BIG_ENDIAN),!\n");
-                    exit (1);
-                    }
-                    break;
+    case jade:
+        if (options.find("Mode")!=options.end())
+            output_file=std::make_shared<WriterJADE>(ai.inputs[1],std::atoi(options.at("Mode").c_str()));
+        else
+        {
+            printf("This format requires one option  Mode=0 (binary, native), Mode=1 (ASCII), Mode=2 (binary, LITTLE_ENDIAN), Mode=3 (binary, BIG_ENDIAN),!\n");
+            for (auto o: options) printf("%s=%s\n",o.first.c_str(),o.second.c_str()); 
+            exit (1);
+        }
+        break;
 #endif
     case plugin:
-        if (options.find("OutputPluginLibrary")==options.end())         { printf("OutputPluginLibrary option required, e.g. OutputPluginLibrary=libAnalysis.so\n"); exit(2);} else OutputPluginLibrary=options.at("OutputPluginLibrary");
-        if (options.find("OutputPluginName")==options.end())            { printf("OutputPluginName option required, e.g. OutputPluginName=newAnalysisExamplefile\n"); exit(2);} else OutputPluginName=options.at("OutputPluginName");        
+        if (options.find("OutputPluginLibrary")==options.end())         {
+            printf("OutputPluginLibrary option required, e.g. OutputPluginLibrary=libAnalysis.so\n");
+            exit(2);
+        }
+        else OutputPluginLibrary=options.at("OutputPluginLibrary");
+        if (options.find("OutputPluginName")==options.end())            {
+            printf("OutputPluginName option required, e.g. OutputPluginName=newAnalysisExamplefile\n");
+            exit(2);
+        }
+        else OutputPluginName=options.at("OutputPluginName");
         output_file=std::make_shared<WriterPlugin>(std::string(ai.inputs[1]),OutputPluginLibrary,OutputPluginName);
-        if (output_file->failed()) { printf("Plugin initialization failed\n"); exit(2);}
+        if (output_file->failed()) {
+            printf("Plugin initialization failed\n");
+            exit(2);
+        }
         break;
     case dump:
         output_file=NULL;
@@ -269,21 +284,21 @@ int main(int argc, char** argv)
         evt.set_run_info(input_file->run_info());
         //Note the difference between ROOT and Ascii readers. The former read GenRunInfo before first event and the later at the same time as first event.
         if (!ignore_writer)
-        { 
-        if (output_file)
-        { 
-        output_file->write_event(evt); 
-        }
-        else 
-        { 
-         Print::content(evt);
-        }
+        {
+            if (output_file)
+            {
+                output_file->write_event(evt);
+            }
+            else
+            {
+                Print::content(evt);
+            }
         }
         evt.clear();
         ++events_parsed;
         if( events_parsed%print_each_events_parsed == 0 ) printf("Events parsed: %li\n",events_parsed);
         if( events_parsed >= events_limit ) {
-            printf("Event limit reached:->events_parsed(%li) >= events_limit(%li)<-. Exit.\n",events_parsed , events_limit);
+            printf("Event limit reached:->events_parsed(%li) >= events_limit(%li)<-. Exit.\n",events_parsed, events_limit);
             break;
         }
     }

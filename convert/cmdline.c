@@ -26,7 +26,7 @@
 
 const char *gengetopt_args_info_purpose = "Convert between different file formats of Monte Carlo event record.\nExample:\n         hepmcconvert -i hepmc2 -o treeroot input.hepmc output.root\n";
 
-const char *gengetopt_args_info_usage = "Usage: hepmcconvert [OPTION]... ['inputfile]...";
+const char *gengetopt_args_info_usage = "Usage: hepmcconvert [OPTION]... ['inputfile outputfile']...";
 
 const char *gengetopt_args_info_versiontext = "";
 

@@ -27,47 +27,42 @@ endif()
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++1y" COMPILER_SUPPORTS_CXX1y)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
 if(COMPILER_SUPPORTS_CXX1y)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 else()
-if(COMPILER_SUPPORTS_CXX11)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-elseif(COMPILER_SUPPORTS_CXX0X)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-else()
-message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
-endif()
+  if(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  else()
+    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
+  endif()
 endif()
 
 ########################################################################
 
 set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
-  find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
-  if (ROOT_CONFIG)
-     message(STATUS "ROOTConfig.cmake found and will be used: ${ROOT_CONFIG}")
-     include(${ROOT_CONFIG})
-     message(STATUS "ROOT use file: ${ROOT_USE_FILE}")
-     include(${ROOT_USE_FILE})
-     if(ROOT_LIBRARIES AND ROOT_INCLUDE_DIRS)
-       set(ROOT_FOUND TRUE)
-     endif()
-  else()
-     message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
-#     find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
-     find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
-  endif()
+find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
+if (ROOT_CONFIG)
+   message(STATUS "ROOTConfig.cmake found and will be used: ${ROOT_CONFIG}")
+   include(${ROOT_CONFIG})
+   message(STATUS "ROOT use file: ${ROOT_USE_FILE}")
+   include(${ROOT_USE_FILE})
+   if(ROOT_LIBRARIES AND ROOT_INCLUDE_DIRS)
+     set(ROOT_FOUND TRUE)
+   endif()
+else()
+   message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
+   find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+endif()
 
-  message(STATUS "ROOT includes : ${ROOT_INCLUDE_DIRS}")
-  message(STATUS "ROOT libraries: ${ROOT_LIBRARIES}")
-  message(STATUS "ROOT_FOUND    : ${ROOT_FOUND}")
+message(STATUS "ROOT includes : ${ROOT_INCLUDE_DIRS}")
+message(STATUS "ROOT libraries: ${ROOT_LIBRARIES}")
+message(STATUS "ROOT_FOUND    : ${ROOT_FOUND}")
 
-  if(ROOT_FOUND)
-    include_directories(${ROOT_INCLUDE_DIRS})
-#    add_definitions(-DHEPMC_ROOTIO)
-  else()
-    message(STATUS "JADESOFT warning: ROOT not found")
-  endif()
+if(ROOT_FOUND)
+  include_directories(${ROOT_INCLUDE_DIRS})
+else()
+  message(STATUS "JADESOFT warning: ROOT not found")
+endif()
 
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
@@ -113,7 +108,7 @@ else()
   add_custom_command(
     OUTPUT  ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.c ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.h
     COMMAND ${GENGETOPT} -N  --input=${CMAKE_CURRENT_SOURCE_DIR}/cmdline.ggo --file-name cmdline --output-dir=${CMAKE_CURRENT_SOURCE_DIR} 
-                        --include-getopt --show-required -u'inputfile outputfile'
+                        --include-getopt --show-required -u\'inputfile\ outputfile\'
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.ggo
     COMMENT        "JADESOFT:  Generating getopt parser code..."
     VERBATIM
@@ -128,7 +123,7 @@ add_executable(convert_example_JADE.exe
         ${CMAKE_CURRENT_SOURCE_DIR}/src/WriterJADE.cc 
         ${CMAKE_CURRENT_SOURCE_DIR}/src/jadeio.f
         )
-
+target_compile_definitions( convert_example_JADE.exe PUBLIC HEPMCCONVERT_EXTENSION_JADE  )
 target_include_directories(convert_example_JADE.exe PUBLIC ${HEPMC3_INCLUDE_DIR})
 target_link_libraries(convert_example_JADE.exe ${HEPMC3_LIBRARIES}   ${LAPACK_LIBRARIES})
 add_dependencies( convert_example_JADE.exe cmdline  )
