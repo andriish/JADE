@@ -34,11 +34,11 @@ else()
                                          ${CMAKE_CURRENT_SOURCE_DIR}/testPythia1.input 
                                          ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output )
  
-  add_test(NAME HepMC3_BOS_1 COMMAND     ${JADEPREFIX}/bin/convert_example_JADE.exe -i hepmc3 -o jade 
+  add_test(NAME HepMC3_CPROD_1 COMMAND     ${JADEPREFIX}/bin/convert_example_JADE.exe -i hepmc3 -o jade 
                                          ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output 
-                                         ${CMAKE_CURRENT_BINARY_DIR}/testConvert1.output  
+                                         ${CMAKE_CURRENT_BINARY_DIR}/testConvert1.cprod
                                          -e Mode=0 )
-  set_tests_properties(HepMC3_BOS_1 PROPERTIES DEPENDS pythia8_HepMC3_1)   
+  set_tests_properties(HepMC3_CPROD_1 PROPERTIES DEPENDS pythia8_HepMC3_1)   
 endif()
 
 
