@@ -62,7 +62,7 @@ To build the software:
 - Clone the repository using git 
      ``git clone https://github.com/andriish/JADE``
     
-- Run build script inside the repository
+- Run build script inside the repository:
     `` sh jadeinstall.sh `` 
     The software will be installed to ``installed`` directory.
     To change the location run ``sh jadeinstall.sh --prefix=/full/path/to/desired/location``
@@ -74,20 +74,21 @@ To run some simple tests:
 
  - Install the dependencies
    - For CentOS7 all the dependencies are in the EPEL repository  
-    ```
-    yum -y install pythia8-devel pythia8 pythia8-data
-    ```
+     ```
+     yum -y install pythia8-devel pythia8 pythia8-data
+     ```
    - For CentOS8 all the dependencies are in the EPEL repository
-    ```
-    yum -y install pythia8-devel pythia8 pythia8-data
-    ```
+     ```
+     yum -y install pythia8-devel pythia8 pythia8-data
+     ```
    - For MacOSX the dependencies are in the homebrew-hep repository (davidchall/hep)
      ```
      brew install pythia8
      ```    
- - Run the ``jadetest.sh`` script. 
+    
+ - Run the ``jadetest.sh`` script with ``--prefix=/full/path/to/the /installed/software`` (should be the same as for compilation). 
    The script will  run several sequential tests:
-     - ``pythia8_HepMC3_1`` will produce events in HepMC format using Pythia8 MC generator
-     - ``HepMC3_CPROD_1``  will convert the generated events to CPROD format accepted by JADE software
+     - ``pythia8_HepMC3_1`` will produce events in HepMC format using Pythia8 MC generator.
+     - ``HepMC3_CPROD_1``  will convert the generated events to CPROD format accepted by JADE software.
 
 
