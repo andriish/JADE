@@ -52,9 +52,6 @@ C
 C--- PMF 09/05/00: Flags for reading the calibration constants in klread
       INTEGER LBMC
       COMMON /CMCCAL/ LBMC(17)
-      
-
-      
 C
 C------------------  C O D E  ------------------------------------------
 C

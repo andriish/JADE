@@ -1,11 +1,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
 PROJECT(TEST Fortran CXX C)
+SET(VERSION 2020.11)
 include("GNUInstallDirs")
-SET(VERSION 2.0)
-
-# Add our local modlues to the module path
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
-
+set(CMAKE_VERBOSE_MAKEFILE OFF)
+########################################################################
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++1y" COMPILER_SUPPORTS_CXX1y)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -18,8 +17,7 @@ else()
     message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
   endif()
 endif()
-
-
+########################################################################
 find_package(HepMC3 REQUIRED)
 find_package(Pythia8 8.220)
 ENABLE_TESTING()
@@ -39,9 +37,14 @@ else()
                                          ${CMAKE_CURRENT_BINARY_DIR}/testConvert1.cprod
                                          -e Mode=0 )
   set_tests_properties(HepMC3_CPROD_1 PROPERTIES DEPENDS pythia8_HepMC3_1)   
+  
+  add_test(NAME CPROD_BOS_1 COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/wrapper.sh mcjade1.card  ${JADEPREFIX}/bin/mcjade )
+
+  set_tests_properties(CPROD_BOS_1 PROPERTIES DEPENDS HepMC3_CPROD_1)   
+
 endif()
 
-
+########################################################################
 find_program( MEMORYCHECK_COMMAND valgrind )
 if(MEMORYCHECK_COMMAND)
   message(STATUS "JADE test: valgrind package found in ${MEMORYCHECK_COMMAND}.  memory check tests enabled.") 
@@ -49,4 +52,4 @@ if(MEMORYCHECK_COMMAND)
 elseif()
   message(STATUS "JADE test: valgrind package not found or disabled.  memory check tests disabled.") 
 endif()
-
+########################################################################

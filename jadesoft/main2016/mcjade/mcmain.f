@@ -108,6 +108,7 @@ C JADE configuration
       CALL FFKEY('MONTH',IMONTH,1,'INTE')
       IDAY=15
       CALL FFKEY('DAY',IDAY,1,'INTE')
+      write(*,*)'Line 111'
 C MC tracking mode 
 C     Changes from defaults in block data JADEBD:
 C     - Perform gamma conversion in outer tank and coil
@@ -167,6 +168,7 @@ C    Open CPROD file
       ELSE
        CALL CFOPEN(IOVECT,0,1,'r   ',0,CVECTF,IOS )
       ENDIF
+            write(*,*)'Line 170'
 C
 C...  MC tracking settings
 C --- Check validity of input 4-vectors
@@ -191,11 +193,14 @@ C --- Maximal number of events to be tracked
       IEVMIN=MAX(0,IEVMIN)
       IEVMAX=MAX(IEVMIN,IEVMAX)
       IF( NEVT.NE.0 ) NEVT=IEVMAX-IEVMIN+1
+                  write(*,*)'Line 195',IERR
 C
 C... Initialize random number generator
       WRITE(*,FMT='(/,120(''=''))')
       IF( .NOT. LSTART ) CALL MCRAND('R',CSEEDF,0,0,IERR)
+                  write(*,*)'Line 200',IERR
       IF( IERR.LT.0 ) GOTO 999
+                  write(*,*)'Line 203'
 C
 C... Book control histograms
       IF(LHIST) CALL MCBOOK    

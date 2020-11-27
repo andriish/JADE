@@ -49,10 +49,17 @@ fi
 
 
 ########################################################################
+.  $TOP/bin/thisroot.sh
+if [ -z "${CMAKE_PREFIX_PATH}" ]; then
+  CMAKE_PREFIX_PATH=$TOP/share/HepMC3/cmake/; export CMAKE_PREFIX_PATH       # Linux, ELF HP-UX
+else
+  CMAKE_PREFIX_PATH=$TOP/share/HepMC3/cmake/:$CMAKE_PREFIX_PATH; export CMAKE_PREFIX_PATH
+fi
+########################################################################
 mkdir -p build/picocernlib
 cd build/picocernlib
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../picocernlib -B. -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP
+$CMAKE -H../../picocernlib -B. -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP -DBUILD_ARCH=i686
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
@@ -61,7 +68,7 @@ cd ../..
 mkdir -p build/jadesoft
 cd build/jadesoft
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../jadesoft -B. -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP  -DJADE_USE_CERNLIB:BOOL=OFF
+$CMAKE -H../../jadesoft -B. -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP  -DJADE_USE_CERNLIB:BOOL=OFF -DBUILD_ARCH=i686
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
@@ -70,7 +77,7 @@ cd ../..
 mkdir -p build/convert
 cd build/convert
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../convert -B. -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP 
+$CMAKE -H../../convert -B. -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP  -DBUILD_ARCH=i686
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
@@ -79,7 +86,7 @@ cd ../..
 mkdir -p build/jtuple
 cd build/jtuple
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../jtuple -B. -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP -DJADE_USE_CERNLIB:BOOL=OFF
+$CMAKE -H../../jtuple -B. -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP -DJADE_USE_CERNLIB:BOOL=OFF -DBUILD_ARCH=i686
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
@@ -88,7 +95,7 @@ cd ../..
 mkdir -p build/fptobos
 cd build/fptobos
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../fptobos -B. -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP -DJADE_USE_CERNLIB:BOOL=OFF
+$CMAKE -H../../fptobos -B. -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP -DJADE_USE_CERNLIB:BOOL=OFF -DBUILD_ARCH=i686
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install

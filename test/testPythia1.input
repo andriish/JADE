@@ -1,12 +1,12 @@
 #
-# Process: ee -> Z -> tau+ tau- @ 92GeV
+# Process: ee -> Z -> tau+ tau- @ 34.6GeV
 #
 
 WeakSingleBoson:ffbar2gmZ = on
 
 Beams:idA =  11
 Beams:idB = -11
-Beams:eCM =  92.
+Beams:eCM =  34.6
 
 # Simplify event as much as possible
 HadronLevel:all = off
