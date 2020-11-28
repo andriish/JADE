@@ -39,7 +39,6 @@ C Use modified common /RANMA1/ to initialize with the private version of RANMAR.
       COMMON/RANMA1/IJKL,NTOT,NTOT2,I97,J97,C,U(97),RANINI,RANPRV
       SAVE /RANMA1/
 Code:
-      write(*,*)'WOW',FNAM
       RANINI=.TRUE. ! If .true., then initialization via common /RANMA1/ is enabled
       IERR=0
       I=0

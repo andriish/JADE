@@ -25,12 +25,12 @@ if(NOT PYTHIA8_FOUND)
   message(STATUS "JADE test: Pythia8 package not found, was disabled or too old. The minimal supported Pythia8 version is 8.220. Please check if PYTHIA8_ROOT_DIR is set properly.") 
 else()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/aupdat1      ${CMAKE_CURRENT_BINARY_DIR}/aupdat1 COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/aupdat1.b    ${CMAKE_CURRENT_BINARY_DIR}/aupdat1.b COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/bupdat0      ${CMAKE_CURRENT_BINARY_DIR}/bupdat0 COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/bupdat0.b    ${CMAKE_CURRENT_BINARY_DIR}/bupdat0.b COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/bupdat1      ${CMAKE_CURRENT_BINARY_DIR}/bupdat1 COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/bupdat1.b    ${CMAKE_CURRENT_BINARY_DIR}/bupdat1.b COPYONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/aupdat1      ${CMAKE_CURRENT_BINARY_DIR}/aupdat1 COPYONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/aupdat1.b    ${CMAKE_CURRENT_BINARY_DIR}/aupdat1.b COPYONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/bupdat0      ${CMAKE_CURRENT_BINARY_DIR}/bupdat0 COPYONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/bupdat0.b    ${CMAKE_CURRENT_BINARY_DIR}/bupdat0.b COPYONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/bupdat1      ${CMAKE_CURRENT_BINARY_DIR}/bupdat1 COPYONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/bupdat1.b    ${CMAKE_CURRENT_BINARY_DIR}/bupdat1.b COPYONLY)
 
 
   message(STATUS "JADE test: Pythia8 package found. ${PYTHIA8_LIBRARIES} ${PYTHIA8_VERSION}") 
@@ -80,21 +80,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/bupdat1.b    ${CMAKE_CURRENT_BINA
                                  sh ${CMAKE_CURRENT_SOURCE_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/jtjob1.card  ${JADEPREFIX}/bin/jtjob
                                  )
   set_tests_properties(JTJOB_1 PROPERTIES DEPENDS JZREAD_1) 
-
-########################################################################
-#export GFORTRAN_CONVERT_UNIT='big_endian;native:2'
-#cat superv.card   | superv > superv.log
-########################################################################
-#export GFORTRAN_CONVERT_UNIT='native;big_endian:2,22'
-#cat ze4v.card     | ze4v > ze4v.log
-########################################################################
-#export GFORTRAN_CONVERT_UNIT='native'
-#cat  jzread.card  | jzread >jzread.log
-########################################################################
-#export GFORTRAN_CONVERT_UNIT='native;big_endian:2,22'
-#cat  jtjob.card   | jtjob >jtjob.log
-########################################################################
-
 
 endif()
 
