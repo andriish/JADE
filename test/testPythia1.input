@@ -9,8 +9,8 @@ Beams:idB = -11
 Beams:eCM =  34.6
 
 # Simplify event as much as possible
-HadronLevel:all = off
-HadronLevel:Hadronize = off
+HadronLevel:all = on
+HadronLevel:Hadronize = on
 SpaceShower:QEDshowerByL = off
 SpaceShower:QEDshowerByQ = off
 PartonLevel:ISR = off
@@ -21,6 +21,6 @@ PartonLevel:FSR = off
 23:onIfAny = 15
 
 # Leave tau undecayed (tau decays are very slow in Pythia 8.185)
-15:mayDecay  = off
--15:mayDecay = off
+15:mayDecay  = on
+-15:mayDecay = on
 

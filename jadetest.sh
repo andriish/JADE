@@ -58,5 +58,4 @@ $CMAKE -H../../test -B. -DCMAKE_Fortran_COMPILER=gfortran  -DJADEPREFIX=$TOP
 #make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 $CTEST -H../../test -B.
-$CTEST .
 cd ../..
