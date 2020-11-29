@@ -84,9 +84,9 @@ fi
 ########################################################################
 mkdir -p build/test
 cd build/test
-#rm -rf outputs CMakeFiles CMakeCache.txt
+rm -rf outputs CMakeFiles CMakeCache.txt
 $CMAKE -H../../test -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC  -DJADEPREFIX=$TOP
-#make -f Makefile clean
+make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 $CTEST -H../../test -B.
 cd ../..
