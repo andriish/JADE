@@ -59,7 +59,12 @@ if ("${BUILD_ARCH}" STREQUAL "i686")
 else()
   find_package(BLAS REQUIRED)
   find_package(LAPACK REQUIRED)
-  find_package(X11  REQUIRED)
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+     set(JEXTERN_GRAPH_LIBRARIES -lc++)
+  else()
+    find_package(X11  REQUIRED)
+    set(JEXTERN_GRAPH_LIBRARIES ${X11_LIBRARIES})
+  endif()
 endif()
 message(STATUS "LAPACK libraries        : ${LAPACK_LIBRARIES_DIR}")
 ########################################################################
@@ -106,7 +111,6 @@ set(JEXTERN_LIBRARIES  ${PICOCERNLIB}   -lstdc++)
 message(STATUS "JEXTERN_LIBRARIES    : ${JEXTERN_LIBRARIES}")
 set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
-set(JEXTERN_GRAPH_LIBRARIES ${X11_LIBRARIES})
 message(STATUS "JEXTERN libraries       : ${JEXTERN_LIBRARIES}")
 message(STATUS "JEXTERN_GRAPH libraries : ${JEXTERN_GRAPH_LIBRARIES}")
 ########################################################################
@@ -708,7 +712,7 @@ ADD_EXECUTABLE(${JADEZEXE} ${JADEZ_src})
 #JADEZROOT
 SET(JADEZROOT_src ${SRCJADEZ}/gphmain2.F  ${SRCJADEZ}/xuser.F  ${SRCJADEZ}/gphmain.cxx)
 ADD_EXECUTABLE(${JADEZROOTEXE} ${JADEZROOT_src})
-target_include_directories(${JADEZROOTEXE} PUBLIC /usr/include/root)
+target_include_directories(${JADEZROOTEXE} PUBLIC ${ROOT_INCLUDE_DIRS})
 
 #MCJADE
 SET(MCJADE_src ${SRCMCJADE}/mcjade.f ${SRCMCJADE}/mcmain.f  ${SRCMCJADE}/mcrand.f  ${SRCMCJADE}/mcuser.f ${SRCSUPERV}/showb.f)
@@ -730,7 +734,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
 
   TARGET_LINK_LIBRARIES(${MCJADEEXE}  -lc++ -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
-    ${JEXTERN_LIBRARIES} $ )
+    ${JEXTERN_LIBRARIES}  )
 
   TARGET_LINK_LIBRARIES(${SUPERVEXE}  -lc++ -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES}   )
@@ -744,7 +748,8 @@ else()
   TARGET_LINK_LIBRARIES(${JADEZROOTEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} -Wl,--end-group)
 
-  TARGET_LINK_LIBRARIES(${MCJADEEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
+  TARGET_LINK_LIBRARIES(${MCJADEEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} 
+    ${WERTEX} ${PATRECSR} 
     ${JEXTERN_LIBRARIES}  -Wl,--end-group)
 
   TARGET_LINK_LIBRARIES(${SUPERVEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}

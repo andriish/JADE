@@ -43,5 +43,3 @@ jobs:
     - name: Compile
       id: compile
       run: ./.github/workflows/osx/entrypoint.sh
-    - name: Get the output status
-      run: exit ${{ steps.compileindocker.outputs.out }}

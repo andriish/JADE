@@ -18,6 +18,30 @@ else()
   endif()
 endif()
 ########################################################################
+find_package(ROOT)
+set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
+if (ROOT_CONFIG)
+  message(STATUS "ROOTConfig.cmake found and will be used: ${ROOT_CONFIG}")
+  include(${ROOT_CONFIG})
+  message(STATUS "ROOT use file: ${ROOT_USE_FILE}")
+  include(${ROOT_USE_FILE})
+  if(ROOT_LIBRARIES AND ROOT_INCLUDE_DIRS)
+    set(ROOT_FOUND TRUE)
+  endif()
+else()
+  message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
+  find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+endif()
+message(STATUS "ROOT includes : ${ROOT_INCLUDE_DIRS}")
+message(STATUS "ROOT libraries: ${ROOT_LIBRARIES}")
+message(STATUS "ROOT_FOUND    : ${ROOT_FOUND}")
+if(ROOT_FOUND)
+  include_directories(${ROOT_INCLUDE_DIRS})
+else()
+  message(STATUS "JADESOFT warning: ROOT not found")
+endif()
+########################################################################
 find_package(HepMC3 REQUIRED)
 find_package(Pythia8 8.220)
 ENABLE_TESTING()
@@ -25,6 +49,7 @@ if(NOT PYTHIA8_FOUND)
   message(STATUS "JADE test: Pythia8 package not found, was disabled or too old. The minimal supported Pythia8 version is 8.220. Please check if PYTHIA8_ROOT_DIR is set properly.") 
 else()
 
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/wrapper.sh.in      ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/aupdat1      ${CMAKE_CURRENT_BINARY_DIR}/aupdat1 COPYONLY)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/aupdat1.b    ${CMAKE_CURRENT_BINARY_DIR}/aupdat1.b COPYONLY)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/bupdat0      ${CMAKE_CURRENT_BINARY_DIR}/bupdat0 COPYONLY)
@@ -41,45 +66,32 @@ else()
                                          ${CMAKE_CURRENT_SOURCE_DIR}/testPythia1.input 
                                          ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output )
  
-  add_test(NAME HepMC3_to_CPROD_1 COMMAND   ${CMAKE_COMMAND} -E env LD_LIBRARY_PATH=${PACKAGE_PREFIX_DIR}/../lib:${PACKAGE_PREFIX_DIR}/../lib64:$ENV{LD_LIBRARY_PATH}
-                                         ${JADEPREFIX}/bin/convert_example_JADE.exe -i hepmc3 -o jade 
-                                         ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output 
-                                         ${CMAKE_CURRENT_BINARY_DIR}/testConvert1.cprod
-                                         -e Mode=0 )
-  set_tests_properties(HepMC3_to_CPROD_1 PROPERTIES DEPENDS pythia8_produce_HepMC3_1)   
+  add_test(NAME HepMC3_to_CPROD_1 COMMAND ${JADEPREFIX}/bin/convert_example_JADE.exe -i hepmc3 -o jade 
+                                          ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output 
+                                          ${CMAKE_CURRENT_BINARY_DIR}/testConvert1.cprod
+                                          -e Mode=0 )
+  set_property( TEST HepMC3_to_CPROD_1 PROPERTY DEPENDS pythia8_produce_HepMC3_1)   
+  set_property( TEST HepMC3_to_CPROD_1 PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${ROOT_DIR}/../lib:${ROOT_DIR}/../lib64:$ENV{LD_LIBRARY_PATH}")   
   
-  add_test(NAME MCJADE_1 COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/mcjade1.card  ${JADEPREFIX}/bin/mcjade )
+  add_test(NAME MCJADE_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/mcjade1.card  ${JADEPREFIX}/bin/mcjade )
+  set_property( TEST MCJADE_1 PROPERTY DEPENDS HepMC3_to_CPROD_1)   
+  set_property( TEST MCJADE_1 PROPERTY ENVIRONMENT "GFORTRAN_CONVERT_UNIT=native")
 
-  set_tests_properties(MCJADE_1 PROPERTIES DEPENDS HepMC3_to_CPROD_1)   
+  add_test(NAME SUPERV_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/superv1.card  ${JADEPREFIX}/bin/superv ) 
+  set_property( TEST SUPERV_1 PROPERTY  DEPENDS CPROD_BOS_1) 
+  set_property( TEST SUPERV_1 PROPERTY ENVIRONMENT "GFORTRAN_CONVERT_UNIT=big_endian\;native:2") 
 
+  add_test(NAME ZE4V_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/ze4v1.card  ${JADEPREFIX}/bin/ze4v)
+  set_property( TEST ZE4V_1 PROPERTY  DEPENDS SUPERV_1) 
+  set_property( TEST ZE4V_1 PROPERTY ENVIRONMENT "GFORTRAN_CONVERT_UNIT=big_endian") 
 
-  add_test(NAME SUPERV_1 COMMAND ${CMAKE_COMMAND} -E env LD_LIBRARY_PATH=${PACKAGE_PREFIX_DIR}/../lib:${PACKAGE_PREFIX_DIR}/../lib64:$ENV{LD_LIBRARY_PATH}
-                                 env GFORTRAN_CONVERT_UNIT=big_endian\;native:2
-                                 sh ${CMAKE_CURRENT_SOURCE_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/superv1.card  ${JADEPREFIX}/bin/superv 
-                                 )
+  add_test(NAME JZREAD_1 COMMAND  sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/jzread1.card  ${JADEPREFIX}/bin/jzread )
+  set_property( TEST JZREAD_1 PROPERTY  DEPENDS ZE4V_1) 
+  set_property( TEST JZREAD_1 PROPERTY ENVIRONMENT "GFORTRAN_CONVERT_UNIT=native") 
 
-  set_tests_properties(SUPERV_1 PROPERTIES DEPENDS CPROD_BOS_1) 
-
-
-  add_test(NAME ZE4V_1 COMMAND ${CMAKE_COMMAND} -E env LD_LIBRARY_PATH=${PACKAGE_PREFIX_DIR}/../lib:${PACKAGE_PREFIX_DIR}/../lib64:$ENV{LD_LIBRARY_PATH}
-                                 env GFORTRAN_CONVERT_UNIT=big_endian
-                                 sh ${CMAKE_CURRENT_SOURCE_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/ze4v1.card  ${JADEPREFIX}/bin/ze4v
-                                 )
-  set_tests_properties(ZE4V_1 PROPERTIES DEPENDS SUPERV_1) 
-
-
-  add_test(NAME JZREAD_1 COMMAND ${CMAKE_COMMAND} -E env LD_LIBRARY_PATH=${PACKAGE_PREFIX_DIR}/../lib:${PACKAGE_PREFIX_DIR}/../lib64:$ENV{LD_LIBRARY_PATH}
-                                   env GFORTRAN_CONVERT_UNIT=native
-                                 sh ${CMAKE_CURRENT_SOURCE_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/jzread1.card  ${JADEPREFIX}/bin/jzread
-                                 )
-  set_tests_properties(JZREAD_1 PROPERTIES DEPENDS ZE4V_1) 
-
-
-  add_test(NAME JTJOB_1 COMMAND ${CMAKE_COMMAND} -E env LD_LIBRARY_PATH=${PACKAGE_PREFIX_DIR}/../lib:${PACKAGE_PREFIX_DIR}/../lib64:$ENV{LD_LIBRARY_PATH}
-                                   env GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22
-                                 sh ${CMAKE_CURRENT_SOURCE_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/jtjob1.card  ${JADEPREFIX}/bin/jtjob
-                                 )
-  set_tests_properties(JTJOB_1 PROPERTIES DEPENDS JZREAD_1) 
+  add_test(NAME JTJOB_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/jtjob1.card  ${JADEPREFIX}/bin/jtjob)
+  set_property( TEST JTJOB_1 PROPERTY  DEPENDS JZREAD_1) 
+  set_property( TEST JTJOB_1 PROPERTY ENVIRONMENT "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22") 
 
 endif()
 
