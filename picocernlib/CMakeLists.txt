@@ -5,11 +5,6 @@ include("GNUInstallDirs")
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 ########################################################################
-if ("${BUILD_ARCH}" STREQUAL "i686")
-  set(CMAKE_C_FLAGS       "${CMAKE_C_FLAGS}     -m32")
-  set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -m32")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -m32")
-endif()
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -O0 -g -Wno-incompatible-library-redeclaration -Wno-implicit-function-declaration -Wno-implicit-int  -Wno-return-type  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN -DCERNLIB_QX_SC ")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g  -Wno-return-type  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN -DCERNLIB_QX_SC ")
 ########################################################################

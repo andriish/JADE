@@ -5,12 +5,6 @@ include("GNUInstallDirs")
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 ########################################################################
-if ("${BUILD_ARCH}" STREQUAL "i686")
-  set(CMAKE_C_FLAGS       "${CMAKE_C_FLAGS}     -m32")
-  set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -m32")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -m32")
-endif()
-########################################################################
 #Setup Fortran compiller
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
   if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -52,12 +46,8 @@ endif()
 message(STATUS "C++ compiler            : ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "C++ compiler flags      : ${CMAKE_CXX_FLAGS}")
 ########################################################################
-if ("${BUILD_ARCH}" STREQUAL "i686")
-  set ( LAPACK_LIBRARIES  /usr/lib/libblas.so /usr/lib/liblapack.so )
-else()
   find_package(BLAS REQUIRED)
   find_package(LAPACK REQUIRED)
-endif()
 message(STATUS "LAPACK libraries        : ${LAPACK_LIBRARIES_DIR}")
 ########################################################################
 find_package(HepMC3)

@@ -6,12 +6,6 @@ include("GNUInstallDirs")
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 ########################################################################
-if ("${BUILD_ARCH}" STREQUAL "i686")
-  set(CMAKE_C_FLAGS       "${CMAKE_C_FLAGS}     -m32")
-  set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -m32")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -m32")
-endif()
-########################################################################
 #Setup Fortran compiller
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
   if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -54,12 +48,8 @@ endif()
 message(STATUS "C++ compiler            : ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "C++ compiler flags      : ${CMAKE_CXX_FLAGS}")
 ########################################################################
-if ("${BUILD_ARCH}" STREQUAL "i686")
- set ( LAPACK_LIBRARIES  /usr/lib/libblas.so /usr/lib/liblapack.so )
-else()
  find_package(BLAS REQUIRED)
  find_package(LAPACK REQUIRED)
-endif()
 ########################################################################
 set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
 find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
