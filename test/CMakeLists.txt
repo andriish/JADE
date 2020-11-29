@@ -44,10 +44,10 @@ endif()
 ########################################################################
 macro( jade_fortran_test testname gnuenv  intelenv)
   if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "GNU")
-     set_property( TEST ${testname} PROPERTY ENVIRONMENT ${gnuenv}) 
+     set_property( TEST ${testname} PROPERTY ENVIRONMENT "${gnuenv}") 
   endif()
   if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "Intel")
-     set_property( TEST ${testname} PROPERTY ENVIRONMENT ${intelenv}) 
+     set_property( TEST ${testname} PROPERTY ENVIRONMENT "${intelenv}") 
   endif()
 endmacro( jade_fortran_test )
 
