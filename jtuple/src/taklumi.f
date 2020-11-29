@@ -3,15 +3,15 @@ C   14/09/88 809141902  MEMBER NAME  #TAKLUMI (JADESR)      FORTRAN
 
       implicit none
 
-*//F11JOL   JOB 00010622,OLSSON,CLASS=A,MSGLEVEL=(1,0),TIME=(0,08)
-*//*MAIN RELPRI=HIG
-*//*
-*//*      ************************************************
-*//*      *  MODIFIED VERSON OF BBGGSELS(RDLUMI) F22WAT  *
-*//*      *   USES NEW BARREL LUMI FILE FROM TAKEDA      *
-*//*      ************************************************
-*//*                                              J.OLSSON 15.1.82
-*//*                    LAST CHANGE      03.1.83
+*F11JOL   JOB 00010622,OLSSON,CLASS=A,MSGLEVEL=(1,0),TIME=(0,08)
+**MAIN RELPRI=HIG
+**
+**      ************************************************
+**      *  MODIFIED VERSON OF BBGGSELS(RDLUMI) F22WAT  *
+**      *   USES NEW BARREL LUMI FILE FROM TAKEDA      *
+**      ************************************************
+**                                              J.OLSSON 15.1.82
+**                    LAST CHANGE      03.1.83
 *
 *                                        20.09.00 P. Movilla Fernandez
 *                                                 Some small mods (HBOOK, I/O ...)
@@ -414,37 +414,37 @@ C
 100   IER = 0
 200   RETURN
       END
-*//LKED.SYSLIB DD
-*//            DD
-*//            DD
-*//            DD
-*//            DD
-*//            DD UNIT=FAST,DISP=SHR,DSN=F11LHO.JADEGL
-*//*           DD DISP=SHR,UNIT=FAST,DSN=R01UTL.HBOOK321.L
-*//            DD DISP=SHR,UNIT=FAST,DSN=R01UTL.CERN.KERNLIB4
-*//*  <<  RESULT FILE  >>
-*//GO.FT01F001 DD DISP=SHR,DSN=F22TAK.DISK.BRLLUMI.G001519
-*//            DD DISP=SHR,DSN=F22TAK.DISK.BRLLUMI.G520733
-*//            DD DISP=SHR,DSN=F22TAK.DISK.BRLLUMI.G734956
-*//            DD DISP=SHR,DSN=F22TAK.DISK.BRLLUMI.G0957.G1091
-*//            DD DISP=SHR,DSN=F22TAK.DISK.BRLLUMI.G1092.G1243
-*//            DD DISP=SHR,DSN=F22TAK.DISK.BRLLUMI.G1244.G1642
-*//*O.FT01F001 DD DISP=SHR,DSN=F22TAK.DISK.ENDLUMI.G001519
-*//*           DD DISP=SHR,DSN=F22TAK.DISK.ENDLUMI.G520733
-*//*           DD DISP=SHR,DSN=F22TAK.DISK.ENDLUMI.G734956
-*//*           DD DISP=SHR,DSN=F22TAK.DISK.ENDLUMI.G0957.G1091
-*//*           DD DISP=SHR,DSN=F22TAK.DISK.ENDLUMI.G1092.G1243
-*//*           DD DISP=SHR,DSN=F22TAK.DISK.ENDLUMI.G1244.G1642
-*//*      +--------------------------------+
-*//*   COLLINEAR TWOPRONG TRIGGER START AT RUN 699
-*//*   NEUTRAL TRIGGER:    HIGH THRESHOLD 1982:  RUNS 10493-11287
-*//*                       LOW  THRESHOLD 1982:  RUNS 11288-12518
-*//*     AUTUMN 1982       LOW  THRESHOLD 1982:  RUNS 12557-12950
-*//*                       LOW  THRESHOLD 1983:  RUNS 13000-15689
-*//*                              SPRING  1984:  RUNS 15690-16738
-*//*      +--------------------------------+
-*//GO.SYSIN DD *
-*         1     23739     30397
-*//*  IUNIT     NRUN1     NRUN2
-*
-*
+C*LKED.SYSLIB DD
+C*            DD
+C*            DD
+C*            DD
+C*            DD
+C*            DD UNIT=FAST,DISP=SHR,DSN=F11LHO.JADEGL
+C**           DD DISP=SHR,UNIT=FAST,DSN=R01UTL.HBOOK321.L
+C*            DD DISP=SHR,UNIT=FAST,DSN=R01UTL.CERN.KERNLIB4
+C**  <<  RESULT FILE  >>
+C*GO.FT01F001 DD DISP=SHR,DSN=F22TAK.DISK.BRLLUMI.G001519
+C*            DD DISP=SHR,DSN=F22TAK.DISK.BRLLUMI.G520733
+C*            DD DISP=SHR,DSN=F22TAK.DISK.BRLLUMI.G734956
+C*            DD DISP=SHR,DSN=F22TAK.DISK.BRLLUMI.G0957.G1091
+C*            DD DISP=SHR,DSN=F22TAK.DISK.BRLLUMI.G1092.G1243
+C*            DD DISP=SHR,DSN=F22TAK.DISK.BRLLUMI.G1244.G1642
+C**O.FT01F001 DD DISP=SHR,DSN=F22TAK.DISK.ENDLUMI.G001519
+C**           DD DISP=SHR,DSN=F22TAK.DISK.ENDLUMI.G520733
+C**           DD DISP=SHR,DSN=F22TAK.DISK.ENDLUMI.G734956
+C**           DD DISP=SHR,DSN=F22TAK.DISK.ENDLUMI.G0957.G1091
+C**           DD DISP=SHR,DSN=F22TAK.DISK.ENDLUMI.G1092.G1243
+C**           DD DISP=SHR,DSN=F22TAK.DISK.ENDLUMI.G1244.G1642
+C**      +--------------------------------+
+C**   COLLINEAR TWOPRONG TRIGGER START AT RUN 699
+C**   NEUTRAL TRIGGER:    HIGH THRESHOLD 1982:  RUNS 10493-11287
+C**                       LOW  THRESHOLD 1982:  RUNS 11288-12518
+C**     AUTUMN 1982       LOW  THRESHOLD 1982:  RUNS 12557-12950
+C**                       LOW  THRESHOLD 1983:  RUNS 13000-15689
+C**                              SPRING  1984:  RUNS 15690-16738
+C**      +--------------------------------+
+C*GO.SYSIN DD *
+C*         1     23739     30397
+C**  IUNIT     NRUN1     NRUN2
+C*
+

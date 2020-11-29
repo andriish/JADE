@@ -84,7 +84,6 @@ extern "C" {
          Y coordinate of the upper right hand corner in WC space.
 
         */
-//DDDD
         printf("iswn_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)  %i %f %f %f %f\n", NTS, XTMIN, XTMAX, YTMIN, YTMAX);
 
         std::vector<double> a;
@@ -124,78 +123,77 @@ extern "C" {
 
 
         */
-//DDDD
         printf("void isvp_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)  %i %f %f %f %f\n", NTS, XTMIN, XTMAX, YTMIN, YTMAX);
 
         if (!jCanvas)
-            {
-                // jCanvas= new TCanvas("jCanvas","JADE Display",768,768);
-                jCanvas =jFrame->fEcanvas->GetCanvas();
+        {
+            // jCanvas= new TCanvas("jCanvas","JADE Display",768,768);
+            jCanvas =jFrame->fEcanvas->GetCanvas();
 
-                jPad= new TPad("Jpad","Jpad",0,0,1,1);
-                jPad->SetFillStyle(4000);
-                jPad->SetFillColor(0);
-                jPad->SetFrameFillStyle(4000);
-                jPad->Draw();
+            jPad= new TPad("Jpad","Jpad",0,0,1,1);
+            jPad->SetFillStyle(4000);
+            jPad->SetFillColor(0);
+            jPad->SetFrameFillStyle(4000);
+            jPad->Draw();
 
-                jPad->cd();
-                gPad->Update();
-                if (gWN.find(NTS)!=gWN.end())
-                    gPad->Range(BIGK*gWN[NTS][0],BIGK*gWN[NTS][1],BIGK*gWN[NTS][2],BIGK*gWN[NTS][3]);
+            jPad->cd();
+            gPad->Update();
+            if (gWN.find(NTS)!=gWN.end())
+                gPad->Range(BIGK*gWN[NTS][0],BIGK*gWN[NTS][1],BIGK*gWN[NTS][2],BIGK*gWN[NTS][3]);
 //gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]);
-                else
-                    {
-                        printf("Error in void isvp_\n");
-
-                    }
-                gPad->Update();
-
+            else
+            {
+                printf("Error in void isvp_\n");
 
             }
+            gPad->Update();
+
+
+        }
         jCanvas->cd();
 
         if ( NTS==9)
+        {
+            //  TPad* pad= new TPad(Form("jCanvas%iPad%i",NTS,jCanvas[NTS]->GetListOfPrimitives()->GetSize()+1),"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
+
+            if (jCanvas->GetListOfPrimitives()->FindObject("Jpad"))
             {
-                //  TPad* pad= new TPad(Form("jCanvas%iPad%i",NTS,jCanvas[NTS]->GetListOfPrimitives()->GetSize()+1),"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
+                jCanvas->GetListOfPrimitives()->FindObject("Jpad")->Clear();
+                jCanvas->GetListOfPrimitives()->FindObject("Jpad")->Delete();
+            }
+            TString pname=Form("jCanvasPad%2.2f_%2.2f_%2.2f_%2.2f",XTMIN, YTMIN, XTMAX, YTMAX);
+            TPad* pad=(TPad*)(jCanvas->GetListOfPrimitives()->FindObject(pname));
+            if (!pad) pad= new TPad(pname,"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
 
-                if (jCanvas->GetListOfPrimitives()->FindObject("Jpad"))
-                    {
-                        jCanvas->GetListOfPrimitives()->FindObject("Jpad")->Clear();
-                        jCanvas->GetListOfPrimitives()->FindObject("Jpad")->Delete();
-                    }
-                TString pname=Form("jCanvasPad%2.2f_%2.2f_%2.2f_%2.2f",XTMIN, YTMIN, XTMAX, YTMAX);
-                TPad* pad=(TPad*)(jCanvas->GetListOfPrimitives()->FindObject(pname));
-                if (!pad) pad= new TPad(pname,"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
+            pad->SetFillStyle(4000);
+            pad->SetFillColor(0);
+            pad->SetFrameFillStyle(4000);
+            gPad->Update();
+            pad->Draw();
+            gPad->Update();
+            pad->cd();
+            if (gWN.find(NTS)!=gWN.end())
+                gPad->Range(BIGK*gWN[NTS][0],BIGK*gWN[NTS][1],BIGK*gWN[NTS][2],BIGK*gWN[NTS][3]);
+//gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]);
+            else
+                printf("Error in void isvp_\n");
+            gPad->Update();
+        }
 
-                pad->SetFillStyle(4000);
-                pad->SetFillColor(0);
-                pad->SetFrameFillStyle(4000);
-                gPad->Update();
-                pad->Draw();
-                gPad->Update();
-                pad->cd();
+        if (NTS==8)
+        {
+            if (jCanvas->GetListOfPrimitives()->FindObject("Jpad"))
+            {
+                ((TPad*)(jCanvas->GetListOfPrimitives()->FindObject("Jpad")))->cd();
                 if (gWN.find(NTS)!=gWN.end())
                     gPad->Range(BIGK*gWN[NTS][0],BIGK*gWN[NTS][1],BIGK*gWN[NTS][2],BIGK*gWN[NTS][3]);
 //gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]);
-                else
-                    printf("Error in void isvp_\n");
                 gPad->Update();
             }
-
-        if (NTS==8)
-            {
-                if (jCanvas->GetListOfPrimitives()->FindObject("Jpad"))
-                    {
-                        ((TPad*)(jCanvas->GetListOfPrimitives()->FindObject("Jpad")))->cd();
-                        if (gWN.find(NTS)!=gWN.end())
-                            gPad->Range(BIGK*gWN[NTS][0],BIGK*gWN[NTS][1],BIGK*gWN[NTS][2],BIGK*gWN[NTS][3]);
-//gPad->Range(gWN[NTS][0],gWN[NTS][1],gWN[NTS][2],gWN[NTS][3]);
-                        gPad->Update();
-                    }
-                else
-                    printf("Error in void isvp_\n");
-                gPad->Update();
-            }
+            else
+                printf("Error in void isvp_\n");
+            gPad->Update();
+        }
         printf("jCanvas->GetListOfPrimitives()->GetSize()=%i\n",jCanvas->GetListOfPrimitives()->GetSize());
     }
 
@@ -207,9 +205,9 @@ extern "C" {
             gPad->Range(BIGK*gWN[t][0],BIGK*gWN[t][1],BIGK*gWN[t][2],BIGK*gWN[t][3]);
 //gPad->Range(gWN[t][0],gWN[t][1],gWN[t][2],gWN[t][3]);
         else
-            {
-                printf("Error in void iselnt_(int & t)  %i\n",t);
-            }
+        {
+            printf("Error in void iselnt_(int & t)  %i\n",t);
+        }
     }
 
     void iclrwk_()
@@ -240,7 +238,6 @@ extern "C" {
 
     void ixbox_(float& x1, float & x2,float& y1, float & y2, int mode)
     {
-//DDDD
         printf("void ixbox_(float& x1, float & x2,float& y1, float & y2) %f %f %f %f\n",x1,y1,x2,y2);
         TBox* B= new TBox(x1,y1,x2,y2);
         B->SetFillColor(1);
@@ -337,7 +334,6 @@ extern "C" {
     }
     void igpave_(float& x1, float&  x2,float& y1,float& y2,int*, int*,const char* )
     {
-        //DDDD
         printf("igpave_(float& x1, float&  x2,float& y1,float y2, %f %f %f %f\n",x1,y1,x2,y2);
         printf("%s \n", gPad->GetName());
         gPad->cd();
@@ -347,15 +343,14 @@ extern "C" {
 
     void ipl_(int&n, float* x, float* y)
     {
-        //DDDD
         //printf("ipl_(int&n, float x, float y) %i,%f %f\n", n, x[0], y[0]);
         float l=0;
         if (n==2)
-            {
-                l=pow(x[0]-x[1],2)+pow(y[0]-y[1],2);
-                if (l>10000)
-                    printf("ipl_(int&n, float x, float y) %i,%f %f   %f %f\n", n, x[0], y[0], x[1], y[1]);
-            }
+        {
+            l=pow(x[0]-x[1],2)+pow(y[0]-y[1],2);
+            if (l>10000)
+                printf("ipl_(int&n, float x, float y) %i,%f %f   %f %f\n", n, x[0], y[0], x[1], y[1]);
+        }
         gPad->cd();
         TPolyLine* P=new TPolyLine(n,x,y);
         P->SetLineWidth(jPolyLineWidth);
@@ -791,7 +786,7 @@ extern "C" {
         jPolyLineWidth=a;
     }
 
-    void igsse_(int*a , int* b)
+    void igsse_(int*a, int* b)
     {
         printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
     }
