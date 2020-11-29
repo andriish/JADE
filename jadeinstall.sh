@@ -46,13 +46,42 @@ if test -n "$tmp"; then
 else
  export TOP=$(pwd)/installed
 fi
-
-
+########################################################################
+##This is for Intel on Linux
+#if [ "$(uname)" == "Linux" ]; then
+ #module use /opt/intel/oneapi/debugger/latest/modulefiles
+ #module use /opt/intel/oneapi/tbb/latest/modulefiles
+ #module use /opt/intel/oneapi/dev-utilities/latest/modulefiles
+ #module use /opt/intel/oneapi/compiler/latest/modulefiles
+ #module use /opt/intel/oneapi/mpi/latest/modulefiles
+ #module use /opt/intel/oneapi/clck/latest/modulefiles
+ #module use /opt/intel/oneapi/itac/latest/modulefiles
+ #module use /opt/intel/oneapi/mkl/latest/modulefiles
+ #module use /opt/intel/oneapi/dal/latest/modulefiles
+ #module use /opt/intel/oneapi/advisor/latest/modulefiles
+ #module use /opt/intel/oneapi/inspector/latest/modulefiles
+ #.  /opt/intel/oneapi/setvars.sh
+ #export CC=icc
+ #export CXX=icpc
+ #export FC=ifort
+#fi
+##This is for GNU on Linux
+if [ "$(uname)" == "Linux" ]; then
+ export CC=gcc
+ export CXX=g++
+ export FC=gfortran
+fi
+##This is for GNU/Clang on MacOSX
+if [ "$(uname)" == "Darwin" ]; then
+ export CC=clang
+ export CXX=clang++
+ export FC=gfortran
+fi
 ########################################################################
 mkdir -p build/picocernlib
 cd build/picocernlib
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../picocernlib -B. -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP
+$CMAKE -H../../picocernlib -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
@@ -61,7 +90,7 @@ cd ../..
 mkdir -p build/jadesoft
 cd build/jadesoft
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../jadesoft -B. -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP  -DJADE_USE_CERNLIB:BOOL=OFF
+$CMAKE -H../../jadesoft -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP  -DJADE_USE_CERNLIB:BOOL=OFF
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
@@ -70,7 +99,7 @@ cd ../..
 mkdir -p build/convert
 cd build/convert
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../convert -B. -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP 
+$CMAKE -H../../convert -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP 
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
@@ -79,7 +108,7 @@ cd ../..
 mkdir -p build/jtuple
 cd build/jtuple
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../jtuple -B. -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP -DJADE_USE_CERNLIB:BOOL=OFF
+$CMAKE -H../../jtuple -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP -DJADE_USE_CERNLIB:BOOL=OFF
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
@@ -88,7 +117,7 @@ cd ../..
 mkdir -p build/fptobos
 cd build/fptobos
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../fptobos -B. -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP -DJADE_USE_CERNLIB:BOOL=OFF
+$CMAKE -H../../fptobos -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP -DJADE_USE_CERNLIB:BOOL=OFF
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install

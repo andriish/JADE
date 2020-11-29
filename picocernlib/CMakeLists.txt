@@ -7,18 +7,19 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 ########################################################################
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -O0 -g -Wno-incompatible-library-redeclaration -Wno-implicit-function-declaration -Wno-implicit-int  -Wno-return-type  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN -DCERNLIB_QX_SC ")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g  -Wno-return-type  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN -DCERNLIB_QX_SC ")
+set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN  -DCERNLIB_QX_SC ")
 ########################################################################
 #Setup Fortran compiller
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
   if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN  -DCERNLIB_QX_SC   -fallow-invalid-boz  -cpp -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+    set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -fallow-invalid-boz  -cpp -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
   else()
-    set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -DCERNLIB_QMLXIA64 -DCERNLIB_X11 -DCERNLIB_UNIX -DCERNLIB_LINUX  -DCERNLIB_GFORTRAN  -DCERNLIB_QX_SC   -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+    set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
   endif()
 endif()
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "Intel")
 #NOT USED
-  set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -fno-automatic -fno-backslash -extend-source 132")
+  set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -g -O0  -diag-disable=6371 -diag-disable=7713 -diag-disable=8291 -noalign -noauto -zero     -nbs -extend-source 132")
 endif()
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
 #PPC64 only
@@ -85,7 +86,7 @@ SET(SRC ${CMAKE_SOURCE_DIR}/src)
 SET(LIB ${CMAKE_SOURCE_DIR}/lib)
 SET(BIN ${CMAKE_SOURCE_DIR}/bin)
 
-include_directories( ${TOP}/include  ${TOP}/ffread )
+include_directories( ${TOP}/include  ${TOP}/ffread  ${TOP}/include/kerngen)
 
 SET(CMAKE_Fortran_MODULE_DIRECTORY ${LIB})
 

@@ -51,10 +51,41 @@ if [ "$(uname)" == "Darwin" ]; then
   export PYTHIA8_ROOT_DIR=/usr/local/Cellar/pythia/8.243
 fi
 ########################################################################
+##This is for Intel on Linux
+#if [ "$(uname)" == "Linux" ]; then
+ #module use /opt/intel/oneapi/debugger/latest/modulefiles
+ #module use /opt/intel/oneapi/tbb/latest/modulefiles
+ #module use /opt/intel/oneapi/dev-utilities/latest/modulefiles
+ #module use /opt/intel/oneapi/compiler/latest/modulefiles
+ #module use /opt/intel/oneapi/mpi/latest/modulefiles
+ #module use /opt/intel/oneapi/clck/latest/modulefiles
+ #module use /opt/intel/oneapi/itac/latest/modulefiles
+ #module use /opt/intel/oneapi/mkl/latest/modulefiles
+ #module use /opt/intel/oneapi/dal/latest/modulefiles
+ #module use /opt/intel/oneapi/advisor/latest/modulefiles
+ #module use /opt/intel/oneapi/inspector/latest/modulefiles
+ #.  /opt/intel/oneapi/setvars.sh
+ #export CC=icc
+ #export CXX=icpc
+ #export FC=ifort
+#fi
+##This is for GNU on Linux
+if [ "$(uname)" == "Linux" ]; then
+ export CC=gcc
+ export CXX=g++
+ export FC=gfortran
+fi
+##This is for GNU/Clang on MacOSX
+if [ "$(uname)" == "Darwin" ]; then
+ export CC=clang
+ export CXX=clang++
+ export FC=gfortran
+fi
+########################################################################
 mkdir -p build/test
 cd build/test
 #rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../test -B. -DCMAKE_Fortran_COMPILER=gfortran  -DJADEPREFIX=$TOP
+$CMAKE -H../../test -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC  -DJADEPREFIX=$TOP
 #make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 $CTEST -H../../test -B.

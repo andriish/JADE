@@ -14,7 +14,7 @@ if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
   endif()
 endif()
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "Intel")
-  set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -fno-automatic -fno-backslash -extend-source 132")
+  set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -g -O0  -diag-disable=6371 -diag-disable=7713 -diag-disable=8291 -noalign -noauto -zero     -nbs -extend-source 132")
 endif()
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
 #PPC64 only
