@@ -1,1 +1,0 @@
-/home/pcl2483/pedro/jadesoft/src/tagg/TMP/tagsto.for_amp.f
