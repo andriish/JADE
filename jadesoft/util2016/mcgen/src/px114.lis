@@ -1,0 +1,111 @@
+1Nypatchy executing with files / options
+
+   1  PAM      -
+   2  FORT      /home/pcl2483/pedro/tmp/ytofort17150/px114.f
+   3  read      /home/pcl2483/pedro/tmp/ytofort17150/px114.cra
+   4  print     /home/pcl2483/pedro/tmp/ytofort17150/px114.lis
+   5  CC       -    ...
+
+ Version: PATCHY  5.05 /3  1996/06/29 17.00     .RJP, today: 03/09/22  7.10
+
+     1  + +EXE.
+     2  + +USE,PCLINUX,UNIX.
+     3  + +USE,TYPE.
+     4  + +USE,ROCDES.
+     5  + +USE,PXCMDS,PXKERN,PXEECO,PXAKOP,PXFOXW,PXJSPH.
+     6  + +USE,PXTTHR,PXLTHR,PXYCLU,PXLCLU,PXCONE,PXEXPL.
+
+     7  + +KEEP,LASTMOD. << PX114/01 to PRO area
+     8  >       IDAMPX =      000323
+
+     9  + +PAM,16,R=ROCDES,T=ATTACH,CARDS,T=CARDS.    rope418
+
+ ---> start reading file  rope418.car
+
+ Read Pam file: ROPE    4.18/07 000320 22.50    THE OPAL RECONSTRUCTION PROG
+
+     1  + +PAM,17,T=ATTACH,CARDS,T=CARDS.      px114 
+
+ ---> start reading file  px114.car
+
+ Read Pam file: PX      1.14/01   990820 19:15    OPAL Physics Utility Routi
+
+     1  + +QUIT.
+
+ --------------------------------------
+ Summary of patches in processing order
+
+ Processing mode selections                        Other status bits for P=X
+
+ U - use                                           F - skipped by +PATCH,X,IF=...
+ L - list                                           M - skipped by +IMITATE,X
+ E - exe                                             X - not +EXE but deck to ASM
+ D - divert                                           P - partial +USE,X,D=...
+ X - xdivert                Self +         Self        R - P=X,T=REPEAT
+                    Inhibit Foreign  Trans   only       Q - quoted in IF=X
+                    ------- ------- ------ ------
+        Patch        ULEDX   ULEDX   LEDX   LEDX   FMXPRQ  Used from P=
+
+      0 CRA*               . U E   .      .  E   .     R   CRA*
+
+ ROPE 4.18/07 000320 22.50 THE OPAL
+      0 @ROPE              .   E   .      .  E   .
+      2 ROCDES             . U E   .      .  E   .         CRA*
+     45 CRA*               . U E   .      .  E   .     R   CRA*
+
+ PX 1.14/01 990820 19:15 OPAL P
+    100 @PX                .   E   .      .  E   .
+    103 PXCMDS             . U E   .      .  E   .         CRA*
+    104 PXKERN             . U E   .      .  E   .         CRA*
+    159 PXEECO             . U E   .      .  E   .         CRA*
+    162 PXAKOP             . U E   .      .  E   .         CRA*
+    164 PXFOXW             . U E   .      .  E   .         CRA*
+    165 PXJSPH             . U E   .      .  E   .         CRA*
+    171 PXTTHR             . U E   .      .  E   .         CRA*
+    173 PXLTHR             . U E   .      .  E   .         CRA*
+    178 PXYCLU             . U E   .      .  E   .         CRA*
+    191 PXLCLU             . U E   .      .  E   .         CRA*
+    194 PXCONE             . U E   .      .  E   .         CRA*
+    203 PXEXPL             . U E   .      .  E   .         CRA*
+    206 CRA*               . U E   .      .  E   .     R   CRA*
+
+ Quoted patches not seen on the PAM files
+
+      0 APOLLO             .   E   .      .  E   .      Q
+      0 CRAY               .   E   .      .  E   .      Q
+      0 DECS               .   E   .      .  E   .      Q
+      0 DOC                .   E   .      .  E   .      Q
+      0 ERRECO             .   E   .      .  E   .      Q
+      0 HPUX               .   E   .      .  E   .      Q
+      0 IBM                .   E   .      .  E   .      Q
+      0 IBMRT              .   E   .      .  E   .      Q
+      0 NOBITFUN           .   E   .      .  E   .      Q
+      0 ONLINE             .   E   .      .  E   .      Q
+      0 PCLINUX            . U E   .      .  E   .      Q  CRA*
+      0 QMALPH             .   E   .      .  E   .      Q
+      0 QMVAOS             .   E   .      .  E   .      Q
+      0 RODOC              .   E   .      .  E   .      Q
+      0 SGI                .   E   .      .  E   .      Q
+      0 SUN                .   E   .      .  E   .      Q
+      0 TYPE               . U E   .      .  E   .      Q  CRA*
+      0 VAX                .   E   .      .  E   .      Q
+
+ Other patches not seen
+
+      0 UNIX               . U E   .      .  E   .         CRA*
+
+ Name stack:       significant name length is 32 characters
+                3% used of   6000 name slots available
+                2% used of  48000 bytes of text available
+
+ Read:          11 lines from the cradle
+             60033 lines from   2 PAM files for  2 lines +PAM
+
+ Written:
+
+   physical FORT:0         93 units   7831 lines to file  /home/pcl2483/pedro/tmp/ytofort17150/px114.f
+
+    logical FORT:1         93 decks written via FORT:0
+
+ No errors, no warnings.
+

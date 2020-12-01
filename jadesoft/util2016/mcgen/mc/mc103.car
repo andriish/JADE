@@ -1,0 +1,1816 @@
+C MC103/09 04.04.97 12:00 Code to generate 4-vector MC. Stefan Kluth
+C
+C contains the following patches:
+C HISTORY history
+C MCCDES  KEEP sequences for MC code
+C MCJT74  JETSET 7.4
+C MCPY57  PYTHIA 5.7 (Z/gamma only)
+C MCHW58  HERWIG 5.8 (Z/gamma only)
+C MCHW59  HERWIG 5.8 (Z/gamma only)
+C MCJ623  COJETS 6.23 (Z/gamma only)
+C MCAR48P PYTHIA/ARIADNE 4.08 (Z/gamma only)
+C MCAR48J JETSET/ARIADNE 4.08 (Z/gamma only)
+C MCKERN  Package code
+C
++PATCH,HISTORY.
+C 22.01.96, Stefan Kluth: Reorganise JETSET job to separate analysis from
+C                         generation of partons and hadrons, should allow
+C                         to use the same analysis routines with HERWIG
+C                         or ARIADNE. Use FFREAD to read in MC pars.
+C 10.07.96, STK: Name MC100.car
+C 16.07.96, STK: New parton selection and FSR treatment in MCUSEV,
+C                reorganised FFREAD common blocks
+C 17.07.96, STK: Replace VZERO by VBLANK for initialising hollerith arrays
+C 24.07.96, STK: Remove ISR from hadrons in MCUSEV,
+C                introduce private version of HWCONV for HERWIG
+C 25.07.96, STK: Change algorithms in MCUSEV,
+C                set up clean version of ARIADNE 4.08
+C 18.09.96, STK: New version 101, drop HWCONV, is in HERWIG59.CAR now,
+C                make removal of ISR from hadrons dependent on switch ISRRM
+C 19.09.96, STK: Introduce individual PATCHes for MC drivers, remove
+C                PROGRAM MCPROG 
+C 24.09.96, STK: Reorganise use of HP error trapping code, 
+C                new code for JETSET/ARIADNE in PATCH MCAR48J,
+C                SAVE statements for KEEPed COMMONs and where needed 
+C                (hopefully)
+C 04.05.97, STK: Move user code in PATCH,MCUSER to separate cards file
+C 07.04.97, STK: Add sequence MCPAW and CALL HLIMIT to all PROGRAMs. 
+C
+C 11.05.00, PMF: 
+C
++PATCH,MCCDES.
++KEEP,MCPAW.
+C  Stuff for HBOOK:
+      INTEGER LIMIT
+      PARAMETER( LIMIT=250000 )
+      REAL HMEM
+      COMMON /PAWC/ HMEM(LIMIT)
+      SAVE /PAWC/
++KEEP,MCFFR.
+C  Stuff for FFREAD:
+      INTEGER NAMLEN,NBYTEW,NWONAM
+      PARAMETER( NAMLEN=80, NBYTEW=4, NWONAM=NAMLEN/NBYTEW )
+      CHARACTER*(NAMLEN) CHMCTYP,CHEVFILE
+      LOGICAL LSTBL,LISR,LFSR,LSTART,L4VEC
+      INTEGER NEVNT,IMCRDM,NRTOPR,IRUN
+      REAL ECMASS,JTB,JTSQ,JTQ0,JTAS2, CROSS,ECROSS
+      COMMON /MCFFR/ LSTBL,LISR,LFSR,LSTART,L4VEC
+     &              ,NEVNT,IMCRDM,NRTOPR,IRUN
+     &              ,ECMASS,JTB,JTSQ,JTQ0,JTAS2
+     &              ,CROSS,ECROSS
+     &              ,CHMCTYP,CHEVFILE
+      SAVE /MCFFR/
+C+KEEP,HPERTP.
+C  Error trapping for HPUX:
+C      ON REAL DIV 0     CALL ROTRAP
+C      ON REAL UNDERFLOW CALL ROTRAU
+C      ON DOUBLE PRECISION UNDERFLOW CALL ROTRAU
+C      ON REAL OVERFLOW  CALL ROTRAO
+C      ON REAL ILLEGAL   CALL ROTRAI
++PATCH,MCJT74.
++DECK,MCJT74.
+      PROGRAM MCJT74
+      IMPLICIT NONE
+*.********************************************************************
+*.
+*. Standalone example for Jetset74.
+*. This example writes 4-vectors to disk for Gopal interface
+*. via a card file, using the Opal production criteria for Jetset.
+*.
+*. AUTHOR    :  J.W.Gary
+*. CREATED   :  23-Jun-91
+*. LAST MOD  :  23-Jun-91
+*. Modified for JETSET 74 8.2.95 Stefan Kluth
+*. 03.07.96, STK: Very heavily modified for use with MC4VEC package
+*. 20.09.96, STK: Mods for version 101
+*.
+*.********************************************************************
++SEQ,GUJETS.
++SEQ,GUDAT1.
++SEQ,GUDAT3.
++SEQ,GUDAT4.
++SEQ,GUDATR.
++SEQ,MCFFR.
++SEQ,MCPAW.
+      EXTERNAL LUDATA
+      INTEGER IEVT,IFLAV,IERR
+      CHARACTER*8 CH8
+C
+C  Error trapping sequences:
++SEQ,HPERTP,IF=HPUX,IF=ERRTRP.
+C
+C  Initialise HBOOK:
+      CALL HLIMIT(LIMIT)
+C
+C  Read FFREAD cards:
+      CALL MCINIT
+      CHMCTYP= 'JETSET'
+C
+C  Check array dimensions for LUJETS:
+      IF( NLUPDM.GT.MSTU(5) ) THEN
+        WRITE (6,FMT='('' L74LON: Warning, NLUPDM='',I6,
+     &     '' larger than MSTU(5)='',I6)') NLUPDM,MSTU (5)
+        MSTU(5)= NLUPDM
+      ENDIF
+      MSTU(4)= NLUPDM
+C
+C  Update JETSET parameters, switches and decay table from OPAL default:
+      PRINT*,' '
+      PRINT*,'OPAL JETSET 7.4 default:'
+      PRINT*,' '
+      CALL JT74OP
+      PRINT*,' '
+      PRINT*,'Changes from OPAL JETSET 7.4 default:'
+      PRINT*,' '
+      WRITE(CH8,FMT='(F8.5)') JTB
+      CALL LUGIVE('PARJ(42)='//CH8)
+      WRITE(CH8,FMT='(F8.5)') JTSQ
+      CALL LUGIVE('PARJ(21)='//CH8)
+      WRITE(CH8,FMT='(F8.5)') JTQ0
+      CALL LUGIVE('PARJ(82)='//CH8)
+      IF(JTAS2.GT.1.5) PRINT *,'Generating according to as^2 ME!'
+      PRINT*,' '
+C
+C  Print JETSET welcome message:
+      MSTU(12)= 1
+C
+C  Initial and final-state photon radiation, 107=0 no isr; 1 for isr,
+C  41=2 for FSR on:
+      PRINT*,'Switches for ISR and FSR:'
+      IF( LISR ) THEN
+        CALL LUGIVE('MSTJ(107)=1')
+      ELSE
+        CALL LUGIVE('MSTJ(107)=0')
+      ENDIF
+      IF( LFSR ) THEN
+        CALL LUGIVE('MSTJ(41)=2')
+      ELSE
+        CALL LUGIVE('MSTJ(41)=1')
+      ENDIF
+
+      IF( JTAS2.gt.1.5 ) THEN
+        CALL LUGIVE('MSTJ(101)=2')
+      ENDIF
+
+C
+C  Set long-lived hadrons stable if desired:
+      PRINT*,' '
+      IF( LSTBL ) CALL MCSTBL
+C
+C  Random numbers and 4-vector writing:
+      IF( IMCRDM.GT.0 ) MRLU(1)= IMCRDM
+      IF( L4VEC ) CALL MCWRIT('I',IERR)
+
+
+C
+C  Other initialization:
+      IFLAV= 0
+C
+C  User initialisation:
+      CALL MCUSIN
+C
+C  Event loop:
+      PRINT*,' '
+      PRINT*,'Start JETSET event generation now, NEVNT=',NEVNT
+      DO IEVT=1,NEVNT
+C
+C       Generate 1 event:
+   10   CALL LUEEVT(IFLAV,ECMASS)
+C
+C       Check for errors (mainly L=1 meson decays):
+        IF( MSTU(24).EQ.4 .OR. MSTU(24).EQ.5 ) THEN
+          PRINT*,'MCJT74: JETSET error: ',MSTU(24),' regenerate'
+          GOTO 10
+        ENDIF
+C
+C       Write 4-vectors if demanded:
+        IF( L4VEC ) CALL MCWRIT('W',IERR)
+C
+C       User event analysis:
+        CALL MCUSEV
+
+      ENDDO
+C
+      CROSS=1.
+C
+C  Now call MCUSFI to to finish things off:
+      CALL MCUSFI
+
+      IF( L4VEC ) CALL MCWRIT('F',IERR)
+C
+C  The End:
+      STOP
+      END
++PATCH,MCPY57.
++DECK,MCPY57.
+      PROGRAM MCPY57
+      IMPLICIT NONE
+*.********************************************************************
+*.
+*. Standalone example for Pythia 5.7.
+*. This example writes 4-vectors to disk for Gopal interface
+*. via a card file.
+*.
+*. Based on JETSET example job J73LON from J.W.Gary
+*.
+*. AUTHOR    :  D.Charlton
+*. CREATED   :  8-Nov-94
+*. LAST MOD  : 21-Sep-95
+*.
+*. 21-Sep-95  D.Charlton   Small mods for JETSET 7.408
+*.  8-Jun-95  D.Charlton   The choices for a new generation
+*.  8-Nov-94  D.Charlton   Try to set up a clean version
+*. 25.07.96, STK: Lots of mods for use with MC package
+*.
+*.********************************************************************
+C  GUJETS, GUDAT1 only needed for NLUPDM checking...
++SEQ,GUJETS.
++SEQ,GUDAT1.
++SEQ,GUDATR.
+C  PYPARS is only needed for PARI, for the final cross-section!
++SEQ,PYPARS.
+C  DGC Attempt to debug cross-section calculation
++SEQ,PYINT5.
++SEQ,MCFFR.
++SEQ,MCPAW.
+      REAL RLU
+      EXTERNAL RLU
+C  Other stuff:
+      INTEGER ITYPE,IEVT,IERR,I
+      CHARACTER*8 CH8
+C
+C  Error trapping sequences:
++SEQ,HPERTP,IF=HPUX,IF=ERRTRP.
+C
+C  Initialise HBOOK:
+      CALL HLIMIT(LIMIT)
+C
+C  Read FFREAD cards:
+      CALL MCINIT
+C
+C  User Initialisation:
+      CALL MCUSIN
+      CHMCTYP= 'PYTHIA'
+C
+C  Standard OPAL jetset parameters:
+      PRINT*,' '
+      PRINT*,'Standard OPAL JETSET/PYHTIA parameters:'
+      PRINT*,' '
+      CALL JT74OP
+      PRINT*,' '
+      PRINT*,'Changes from OPAL JETSET 7.4 default:'
+      PRINT*,' '
+      WRITE(CH8,FMT='(F8.5)') JTB
+      CALL LUGIVE('PARJ(42)='//CH8)
+      WRITE(CH8,FMT='(F8.5)') JTSQ
+      CALL LUGIVE('PARJ(21)='//CH8)
+      WRITE(CH8,FMT='(F8.5)') JTQ0
+      CALL LUGIVE('PARJ(82)='//CH8)
+      PRINT*,' '
+C
+C  Use our own W mass and width:
+      CALL LUGIVE ('PMAS(C24,1)=80.22')
+      CALL LUGIVE ('PMAS(C24,2)=2.085')
+C
+C  Special PYTHIA program options:
+C
+C  Initial state radiation if 1, none if 0:
+      IF( LISR ) THEN
+        CALL LUGIVE('MSTP(11)=1')
+      ELSE
+        CALL LUGIVE('MSTP(11)=0')
+      ENDIF
+C
+C  Final state radiation if 1, none if 0:
+      IF( LFSR ) THEN
+        CALL LUGIVE('MSTP(71)=1')
+      ELSE
+        CALL LUGIVE('MSTP(71)=0')
+      ENDIF
+C
+C  Turn off frag, decay (0) & QCD (-1):
+      CALL LUGIVE('MSTP(111)=1')
+C
+C  Protect against poor initialisation - use scale factor:
+      CALL LUGIVE('MSTP(121)=1')
+C
+C  Following scale factor for weights needs to be >2 if ISR:
+C  included for W+W- events, it seems.
+      CALL LUGIVE('PARP(121)=2.5')
+C
+C  Choose the process to be generated
+C  Here:   Process 25 =  f1f2 -> W+W-
+C                  22 =  Z0 Z0
+C                  35 =  Z0 e e
+C                  36 =  W e nu
+C          Process 1  =  f1f1 -> gamma*/Z0
+      CALL LUGIVE('MSEL=0;MSUB(1)=1')
+C
+C  Select Lambda-LLA for timelike showers (from Bill):
+      CALL LUGIVE('MSTP(3)=1')
+C
+C  Declare K0s, hyperons stable:
+      IF( LSTBL ) CALL MCSTBL
+C
+C  Pass random number seed from FFREAD card:
+      IF( IMCRDM.GT.0 ) MRLU(1)= IMCRDM
+      IF( L4VEC ) CALL MCWRIT('I',IERR)
+
+      print *,'rlu(1)=',mrlu(2),rlu(1),imcrdm
+
+C
+C  PYINIT call tells Pythia f1f2 = e+e- (etc):
+      CALL PYINIT('CMS','E-','E+',ECMASS)
+      CALL LULIST(0)
+C
+C  Event loop:
+      DO IEVT=1,NEVNT
+C
+C       Generate event:
+   10   CALL PYEVNT
+C
+C       Protect against pathological cases:
+        IF( MSTU(24).EQ.4 .OR. MSTU(24).EQ.5 ) THEN
+          PRINT *,'MCPY57 PROBLEM: regenerate',MSTU(24),MSTU(25)
+          GOTO 10
+        ENDIF
+C
+C       Process event for qq_bar only:
+        CALL MYTYPE(ITYPE)
+        IF( ITYPE.NE.1 ) THEN
+          IF( IEVT.LE.NRTOPR*10 )
+     &      PRINT*,'MCPY57: Not a qqbar, regenerate'
+          GOTO 10
+        ENDIF
+C
+C       Fix up event record:
+        DO I=1,N
+          IF( K(I,1).EQ.21 ) THEN
+            IF( K(I,2).EQ.23 ) K(I,1)= 11
+            IF( ABS(K(I,2)).LE.6 ) K(I,1)= 15
+          ENDIF
+        ENDDO
+        CALL LUEDIT(15)
+C
+C       Write 4-vectors if demanded:
+        IF( L4VEC ) CALL MCWRIT('W',IERR)
+
+C
+C       User analysis:
+        CALL MCUSEV
+C
+C       Print some info once in a while:
+        IF( MOD(IEVT,1000).EQ.0 .OR. IEVT.EQ.NEVNT ) THEN
+          WRITE(*,'(1X,''Done '',I7,'' out of '',I7)') IEVT,NEVNT
+        ENDIF
+
+      ENDDO
+C
+C  Run termination:
+      CALL PYSTAT(4)
+      WRITE(6,'('' Total cross-section:'',F10.5,''+/-'',F10.5,
+     &      '' pb'')'),PARI(1)*1.E9,PARI(1)*1.E9/SQRT(FLOAT(NEVNT))
+C
+      PRINT *,'CROSS SECTION ',PARI(1)*1.E9
+      CROSS=PARI(1)*1.E9
+      ECROSS=PARI(1)*1.E9/SQRT(FLOAT(NEVNT))
+C
+C
+C
+C  Finsh off:
+      CALL MCUSFI
+      IF( L4VEC ) CALL MCWRIT('F',IERR)
+C
+C  The End:
+      STOP
+      END
++PATCH,MCHW58.
++DECK,MCHW58.
+      PROGRAM MCHW58
+      IMPLICIT NONE
+*.********************************************************************
+*. ------
+*. H58DLO
+*. ------
+*. Standalone example program for Herwig58D.
+*.
+*. AUTHOR    :  J.W.Gary
+*. CREATED   :  15-Jun-95
+*. LAST MOD  :  15-Jun-95
+*.
+*. modification log:
+*. 03-04-96  :  S. Bentvelsen  HERWIG ISR by default.
+*. 16-04-96  :  S. Bentvelsen  Update Electro-Weak parameters
+*. 22-04-96  :  S. Bentvelsen  Complete new version of routine that
+*.                             uses HEPEVT common
+*. 03.07.96, STK: mods for use with MC4VEC package
+*.********************************************************************
++SEQ,HWPDEF.
++SEQ,HEPEVT.
++SEQ,GUDATR.
++SEQ,GUJETS.
++SEQ,GUDAT1.
++SEQ,MCFFR.
++SEQ,MCPAW.
+      REAL PARVAL(NHWPAR)
+      INTEGER IFLAVR,NHWPRT,IERR,IEVT
+C
+C  Error trapping sequences:
++SEQ,HPERTP,IF=HPUX,IF=ERRTRP.
+C
+C  Initialise HBOOK:
+      CALL HLIMIT(LIMIT)
+C
+C  Read FFREAD cards:
+      CALL MCINIT
+C
+C  Initialisation of the analysis routine:
+      CALL MCUSIN
+      CHMCTYP= 'HERWIG58'
+C
+C  Electro-weak parameters:
+      PARVAL(IHZ0MS)= 91.1887
+      PARVAL(IHTMAS)= 178.
+      PARVAL(IHHMAS)= 800.
+      PARVAL(IHSIN2)= 0.2320
+      PARVAL(IHZ0WD)= 2.4973
+      PARVAL(IHWMAS)= 80.32
+C
+C  Fragmentation parameters:
+C  Lambda-LLA (QCDLAM):
+      PARVAL(IHQLAM)= 0.16
+C
+C  Maximum cluster mass (CLMAX):
+      PARVAL(IHCLMX)= 3.40
+C
+C  Extra cutoff for gluon (VGCUT):
+      PARVAL(IHGMAS)= 0.10
+C
+C  Extra cutoff for quark (VQCUT):
+      PARVAL(IHQMAS)= 0.48
+C
+C  Power in cluster mass relation (CLPOW):
+      PARVAL(IHCLPO)= 1.30
+C
+C  Cutoff for final-state photon emission (VPCUT):
+      PARVAL(IHVPCU)= 0.40
+C
+C  Cluster decay direction:
+      PARVAL(IHCLDI)= 1
+C
+C  Smearing of cluster decay direction:
+      PARVAL(IHCLSM)= 0.35
+C
+C  Initial-state radiation,
+C  in version 58d, HERWIG generates the ISR by default.
+C  PARVAL(IHIRAD)= 0:   HERWIG ISR Generated
+C  PARVAL(IHIRAD)= 1:   no ISR generated
+      IF( LISR ) THEN
+        PARVAL(IHIRAD)= 0
+      ELSE
+        PARVAL(IHIRAD)= 1
+      ENDIF
+C
+C  Amount of cluster collapse to 1 hadron (default=0.0):
+      PARVAL(IHC1DK)= 0.0
+C
+C  Number of flavors:
+      PARVAL(IHNFLA)= 5
+C
+C  JETSET welcome message:
+      MSTU(12)= 1
+C
+C  Use the JETSET masses:
+      CALL FXHLMS
+C
+C  Printout LUN:
+      PARVAL(IHWLUN)= 6
+C
+C  Declare some longlived hadrons stable if demanded:
+      IF( LSTBL ) CALL MCSTBL
+C
+C  Other initialization:
+      IFLAVR= 0
+      CALL H58DDRIV(ECMASS,IFLAVR,PARVAL,NHWPRT,IERR,'I')
+      PARVAL(IHZORI)= 0
+C
+C  Initialise 4-vector writing if demanded:
+      IF( IMCRDM.GT.0 ) MRLU(1)= IMCRDM
+      IF( L4VEC ) CALL MCWRIT('I',IERR)
+
+
+C
+C  Event loop:
+      DO IEVT=1,NEVNT
+C
+C       Generate event:
+        NHWPRT= 0
+        CALL H58DDRIV(ECMASS,IFLAVR,PARVAL,NHWPRT,IERR,'E')
+C
+C       HERWIG printout:
+        IF( IEVT.LE.NRTOPR ) CALL HWUEPR
+C
+C       Convert to JETSET common block and do the JETSET decays:
+        CALL HWCONV(IERR)
+        IF( IERR.NE.0 ) THEN
+          PRINT*,'MCHW58: conversion HEPEVT -> JETSET failed'
+          GOTO 180
+        ENDIF
+C
+C       Write 4-vectors if demanded:
+        IF( L4VEC ) CALL MCWRIT('W',IERR)
+C
+C       User event analysis:
+        CALL MCUSEV
+
+  180   CONTINUE
+
+      ENDDO
+C
+C  Run termination:
+      CALL MCUSFI
+      IF( L4VEC ) CALL MCWRIT('F',IERR)
+C
+C  The End:
+      STOP
+      END
++DECK,HWCONV.
+      SUBROUTINE HWCONV(IERR)
+**************************************************************************
+*     CONVERT HEPEVT TO JETSET COMMON BLOCKS FOR HERWIG EVENTS
+*
+*     Modify the HEP common block for HERWIG events in order to save
+*     the hard process and remove the clusters.
+*     Convert to JETSET common blocks and remove empty lines.
+*     Decay of primary hadrons using JETSET.
+*
+*     Stan Bentvelsen 18-04-96
+*
+*  Modifications:
+*  24.07.96, STK: Convert HEPEVT to JETSET first, then do all the editing,
+*                 this leaves the event history in one piece.
+*  08.08.96, SB : Set the CMSHOWER unstable, so that we get rid of it in 
+*                 the event record.
+*  19.08.96, SB : Secure to remain in bounds of array K
+*  24.08.96, SB : Adapt to WW production as well
+**************************************************************************
+      IMPLICIT NONE
++SEQ,HEPEVT.
++SEQ,GUJETS.
++SEQ,GUDAT1.
+      INTEGER NRTOPR
+
+      INTEGER IERR,I,IPA,INR,ICALL
+      DATA ICALL  / 0 /
+      SAVE ICALL
+      DATA NRTOPR / 3 /
+      SAVE NRTOPR
+      ICALL= ICALL+1
+      IERR= 0
+C
+C  Convert HEPEVT to JETSET event record:
+      CALL LUHEPC(2)
+C
+C  Set status codes for Z0, partons and clusters such that quarks
+C  from gluon splitting and clusters will be dropped during the next
+C  LUEDIT call. Also set all primary hadrons unstable so that JETSET
+C  can decay them:
+      DO I=1,N
+        IF( K(I,2).EQ.23 ) K(I,1)= 11
+        IF( K(I,2).EQ.24 ) K(I,1)= 11
+        IF( K(I,2).EQ.-24) K(I,1)= 11
+        IF( K(I,2).EQ.94 ) K(I,1)= 21
+        IF( K(I,2).GE.91 .AND. K(I,2).LE.93 ) K(I,1)= 21
+        IF( ABS(K(I,2)).GE.1 .AND. ABS(K(I,2)).LE.16 ) THEN
+          INR = K(I,3)
+          IF(INR.GT.0.AND.INR.LE.N) THEN
+            IF( (K(INR,2).EQ.23.OR.ABS(K(INR,2)).EQ.24) ) THEN
+              IF( ABS(K(I,2)).LE.6) then 
+                K(I,1)= 15
+              ELSE
+                K(I,1) = 1
+              ENDIF
+            ELSEIF( K(I,1).EQ.0 ) THEN
+              K(I,1)= 21
+            ENDIF
+          ENDIF
+        ENDIF
+        IF( ABS(K(I,2)).GT.100 .AND. K(I,1).EQ.0 ) K(I,1)= 1
+      ENDDO
+
+      IF( ICALL.LE.NRTOPR ) THEN
+        PRINT*,' '
+        PRINT*,'Before fixing event history'
+        CALL LULIST(2)
+      ENDIF
+C
+C  Fix event history, for entries whose parent is going to go during
+C  the next LUEDIT call put the grand- (or grand-grand- and so on) parent
+C  as the parent:
+      DO I=1,N
+        INR = K(I,3)
+        IF(INR.GT.0.AND.INR.LE.N) THEN
+          IF( K(INR,1).EQ.21 ) THEN
+            IPA= I
+   10       CONTINUE
+            IPA= K(IPA,3)
+            IF(IPA.GT.0.AND.IPA.LE.N) THEN
+              IF( K(IPA,1).NE.21 ) THEN
+                K(I,3)= IPA
+                GOTO 20
+              ELSE
+                GOTO 10
+              ENDIF
+            ENDIF
+   20       CONTINUE
+          ENDIF
+        ENDIF
+      ENDDO
+
+      IF( ICALL.LE.NRTOPR ) THEN
+        PRINT*,' '
+        PRINT*,'After fixing event history'
+        CALL LULIST(2)
+      ENDIF
+C
+C  Remove lines with K(I,1)=0 and K(I,1)>20:
+      CALL LUEDIT(12)
+      CALL LUEDIT(15)
+C
+C  Decay primary hadrons using JETSET decay tables:
+      CALL LUEXEC
+C
+C  Catch infinite loops in the JETSET decays:
+      IF( MSTU(24).EQ.4 .OR. MSTU(24).EQ.5 ) THEN
+        PRINT*,'HWCONV: Infinite loop in LUEXEC'
+        CALL HWUEPR
+        CALL LULIST(2)
+        IERR= MSTU(24)
+        RETURN
+      ENDIF
+C
+C  Final state photons set stable:
+      DO I=1,N
+        IF( K(I,2).EQ.22 .AND. K(I,1).NE.1 ) K(I,1)= 1
+      ENDDO
+C
+C  The End:
+      RETURN
+      END
++PATCH,MCHW59.
++DECK,MCHW59.
+      PROGRAM MCHW59
+      IMPLICIT NONE
+*.********************************************************************
+*. ------
+*. MCHW59
+*. ------
+*. Standalone program for Herwig59.
+*.
+*. AUTHOR    :  J.W.Gary
+*. CREATED   :  15-Jun-95
+*. LAST MOD  :  15-Jun-95
+*.
+*. modification log:
+*. 03-04-96  :  S. Bentvelsen  HERWIG ISR by default.
+*. 16-04-96  :  S. Bentvelsen  Update Electro-Weak parameters
+*. 22-04-96  :  S. Bentvelsen  Complete new version of routine that
+*.                             uses HEPEVT common
+*. 03.07.96, STK: mods for use with MC4VEC package
+*. 20.09.96, STK: Copy from MCHW58, replace 58 by 59 
+*.********************************************************************
++SEQ,HWPDEF.
++SEQ,HEPEVT.
++SEQ,GUDATR.
++SEQ,GUJETS.
++SEQ,GUDAT1.
++SEQ,MCFFR.
++SEQ,MCPAW.
+      REAL PARVAL(NHWPAR)
+      real rlu
+      external rlu
+      COMMON /HWPARS/ PARVAL
+      INTEGER IPRCCR,NHWPRT,IERR,IEVT
+C
+C  Error trapping sequences:
++SEQ,HPERTP,IF=HPUX,IF=ERRTRP.
+C
+C  Initialise HBOOK:
+      CALL HLIMIT(LIMIT)
+C
+C  Read FFREAD cards:
+      CALL MCINIT
+      WRITE(*,*) 'HERWIG CM ENERGY: ',ECMASS
+
+      CHMCTYP= 'HERWIG59'
+      WRITE(*,*) 'MCHW59: HERWIG cm energy: ',ECMASS
+C
+C  Electro-weak parameters:
+      PARVAL(IHZ0MS)= 91.1887
+      PARVAL(IHTMAS)= 178.
+      PARVAL(IHHMAS)= 800.
+      PARVAL(IHSIN2)= 0.2320
+      PARVAL(IHZ0WD)= 2.4973
+      PARVAL(IHWMAS)= 80.32
+C
+C  Fragmentation parameters:
+C  Lambda-LLA (QCDLAM):
+      PARVAL(IHQLAM)= 0.16
+C
+C  Gluon effective mass (RMASS(13)):
+      PARVAL (IHRM13) =  0.75
+C
+C  Maximum cluster mass (CLMAX):
+      PARVAL(IHCLMX)= 3.75
+C
+C  Extra cutoff for gluon (VGCUT):
+      PARVAL(IHGMAS)= 0.10
+C
+C  Extra cutoff for quark (VQCUT):
+      PARVAL(IHQMAS)= 0.48
+C
+C  Power in cluster mass relation (CLPOW):
+      PARVAL(IHCLPO)= 1.30
+C
+C  Cutoff for final-state photon emission (VPCUT):
+      PARVAL(IHVPCU)= 0.40
+C
+C  Cluster decay direction:
+      PARVAL(IHCLDI)= 1
+C
+C  Smearing of cluster decay direction:
+      PARVAL(IHCLSM)= 0.35
+C
+C  Initial-state radiation,
+C  in version 58d, HERWIG generates the ISR by default.
+C  PARVAL(IHIRAD)= 0:   HERWIG ISR Generated
+C  PARVAL(IHIRAD)= 1:   no ISR generated
+      IF( LISR ) THEN
+        PARVAL(IHIRAD)= 0
+      ELSE
+        PARVAL(IHIRAD)= 1
+      ENDIF
+C
+C  Amount of cluster collapse to 1 hadron (default=0.0):
+      PARVAL(IHC1DK)= 0.0
+C
+C  Number of flavors:
+      PARVAL(IHNFLA)= 5
+C
+C  JETSET welcome message:
+      MSTU(12)= 1
+C
+C  Use the JETSET masses:
+      CALL FXHLMS
+C
+C  Printout LUN:
+      PARVAL(IHWLUN)= 6
+C
+C  Declare some longlived hadrons stable if demanded:
+      IF( LSTBL ) CALL MCSTBL
+C
+C  User initialisation:
+      CALL MCUSIN
+C
+C  Other initialization:
+      IPRCCR= 100
+      WRITE(*,*) 'HERWIG CM ENERGY: ',ECMASS
+      CALL H59DRIV(ECMASS,IPRCCR,PARVAL,NHWPRT,IERR,'I')
+      PARVAL(IHZORI)= 0
+C
+C  Initialise 4-vector writing if demanded:
+      IF( IMCRDM.GT.0 ) then
+         MRLU(1)= IMCRDM
+c         MRLU(2)=0 !!!!
+      ENDIF
+      IF( L4VEC ) CALL MCWRIT('I',IERR)
+C
+      PRINT *,'RLU(1)=',MRLU(2),RLU(1),IMCRDM
+C
+C
+C  Event loop:
+      DO IEVT=1,NEVNT
+C
+C       Generate event:
+        NHWPRT= 0
+        CALL H59DRIV(ECMASS,IPRCCR,PARVAL,NHWPRT,IERR,'E')
+C
+C       HERWIG printout:
+        IF( IEVT.LE.NRTOPR ) CALL HWUEPR
+C
+C       Convert to JETSET common block and do the JETSET decays:
+        CALL HWCONV(IERR)
+        IF( IERR.NE.0 ) THEN
+          PRINT*,'MCHW59: conversion HEPEVT -> JETSET failed'
+          GOTO 180
+        ENDIF
+C
+C       Write 4-vectors if demanded:
+        IF( L4VEC ) CALL MCWRIT('W',IERR)
+C
+C       User event analysis:
+        CALL MCUSEV
+
+  180   CONTINUE
+
+      ENDDO
+C
+      CALL GETCRO(CROSS,ECROSS)
+C
+C
+C  Run termination:
+      CALL MCUSFI
+      IF( L4VEC ) CALL MCWRIT('F',IERR)
+C
+C  The End:
+      STOP
+      END
+C
+C
+      SUBROUTINE GETCRO(CROSS,ECROSS)
++SEQ,HWCOM59.
+      REAL CROSS,ECROSS
+      REAL RNWGT,SPWGT,ERWGT
+C
+      RNWGT=1./FLOAT(NWGTS)
+      AVWGT=WGTSUM*RNWGT
+      SPWGT=SQRT(MAX(WSQSUM*RNWGT-AVWGT**2,ZERO))
+      ERWGT=SPWGT*SQRT(RNWGT)
+      CROSS=1000.*AVWGT
+      ECROSS=1000.*ERWGT
+      END
++PATCH,MCJ623.
++KEEP,LOCAL.
+      INTEGER  ITKDM,MXTRK,MXJET
+      PARAMETER  (ITKDM=20,MXTRK=200,MXJET=10)
++DECK,MCJ623
+      PROGRAM MCJ623
+******************************************************************
+*
+*     ADAPTED THE COJET 6.23 PACKAGE FOR THE MC101 JOB
+*     STAN BENTVELSEN, 26-11-1996
+*
+******************************************************************
+C     **************
+C
+C-- Unit number 1 for file COJTABLE (ASMD or ASMD2 from YPATCHY)
+C-- Unit number 2 fake file, used for output in /HEPEVT/:  + all particles,
+C--               - stable particles only, unit number ignored
+C-- Unit number 5 for input cards (defaults to input stream is unassigned)
+C-- Unit number 6 for output list (defaults to output stream is unassigned)
+C
++SEQ,HPERTP,IF=HPUX,IF=ERRTRP.
+      OPEN (UNIT=55,FILE='cj623tab.dat',STATUS='OLD')
+      OPEN (UNIT=56,FILE='cj623inp.dat',STATUS='OLD')
+*
+*  event generation
+*  ----- ----------
+C      CALL COJETS(-55,2,-56,6)
+      CALL COJETS(-55,2,5,6)
+      STOP
+      END
++DECK,CJUSER
+      SUBROUTINE CJUSER (ACCEPT)
+C     *************************
+C...Shell of user's routine called:
+C...  i) Before starting generation of events, with NEVHEP=-1
+C... ii) After finishing generation of events, with NEVHEP=-2
+C...iii) After each event generation, with NEVHEP > 0 ; if ACCEPT = .FALSE.
+C...     is returned, the event is counted as rejected (the next event
+C...     will have the same NEVHEP)
+C
++SEQ,LOCAL.
++SEQ,HEPEVT.
++SEQ,CJCONT.
++SEQ,GUDATR.
++SEQ,GUJETS.
++SEQ,GUDAT1.
++SEQ,GUDAT2.
++SEQ,MCFFR.
++SEQ,MCPAW.
+      INTEGER  LWRIT,LRAN,LRAN2
+      PARAMETER  (LWRIT=33,LRAN=34,LRAN2=35)
+      INTEGER  ITYPE, NTOPR,NREVT
+      PARAMETER  (NTOPR=2,NREVT=1500)
+      INTEGER  IHIST (NMXHEP),IRRLU (25)
+      INTEGER  IID,ICHG,NPART,IERR,IENUM,IZRN,IFLAV,IEVX
+      SAVE  ENDWR,IEVX,IENUM,ICNT,VTX,IZRN,FST,NWRITE
+C
+      IF( NEVHEP.EQ.-1 ) THEN
+C
+C  Initialise HBOOK:
+        CALL HLIMIT(LIMIT)
+C
+C  Initialisation of the analysis routine:
+        CALL MCINIT
+        CALL MCUSIN
+        CHMCTYP= 'COJET623'
+*     
+*     initialization
+*     --------------
+         IF( L4VEC ) THEN
+           CALL MCWRIT('I',IERR)
+         ENDIF
+C     
+C     INITIALISE NUMBERS
+C
+         IEVX = 0
+
+         GO TO 990
+      ELSE IF (NEVHEP.EQ.-2) THEN
+C     
+C     Run termination:
+        IF( L4VEC ) THEN
+          CALL MCWRIT('F',IERR)
+        ENDIF
+C
+        CROSS=1.E9*PHEP(1,1)
+        ECROSS=PHEP(1,1)*1.E9/SQRT(FLOAT(ISTHEP(1)))
+        PRINT *,'CROSS SECTION',CROSS,ECROSS
+C
+        CALL MCUSFI
+        GO TO 990
+      END IF
+C     
+C     FILL THE JETSET COMMON BLOCKS
+C
+      CALL LUHEPC(2)
+C     
+C     PRINT THE FIRST FEW EVENTS
+C
+      IF(IEVX.LE.5) THEN
+        WRITE(*,*) 'PUT IN JETSET COMMON FORMAT'
+        CALL LULIST(2)
+      ENDIF
+C     
+C     THROW AWAY THE NON-HADRONIC DECAYS
+C
+      IF(ABS(K(1,2)).LE.6) THEN
+
+        IF (IEVX.LE.50.OR.MOD (IEVX,500).EQ.1)
+     +    WRITE (6,FMT='('' NEVHEP,IEVX,IENUM ='',4I6)')
+     +    NEVHEP,IEVX,IENUM
+        
+        IENUM  = IENUM + 1
+        IEVX   = IEVX + 1
+C     
+C     Write 4-vectors if demanded:
+        IF( L4VEC ) CALL MCWRIT('W',IERR)
+C     
+C     User event analysis:
+C     
+        CALL MCUSEV
+      ELSE
+        IF( ICNT.LE.50 )
+     &    PRINT*,'MCJ623: Not a qqbar, regenerate'
+      ENDIF
+C
+C The End:
+ 990  RETURN
+      END
++PATCH,MCAR48P.
++DECK,MCAR48P.
+      PROGRAM MCAR48P
+      IMPLICIT NONE
+*.********************************************************************
+*.
+*. Stand-alone driver for ARIADNE with PYTHIA
+*.
+*. AUTHOR    :  J.W.Gary
+*. CREATED   :  06-Apr-95
+*. LAST MOD  :  06-Apr-95
+*.
+*. Modifications:
+*. 25.01.96, STK: Add some comments
+*. 25.07.96, STK: Thorough clean up
+*. 26.07.96, STK: Run with PYTHIA instead of JETSET
+*. 20.09.96, STK: Put in 4-vector writing routines
+*.
+*.********************************************************************
++SEQ,GUJETS.
++SEQ,GUDAT1.
++SEQ,GUDAT2.
++SEQ,GUDAT3.
++SEQ,GUDAT4.
++SEQ,GUDATR.
++SEQ,PYPARS.
++SEQ,MCFFR.
++SEQ,MCPAW.
+      INTEGER MSTA
+      REAL PARA
+      COMMON /ARDAT1/ PARA(40),MSTA(40)
+      SAVE /ARDAT1/
+      INTEGER IEVT,IERR,ITYPE,I
+C
+C  Error trapping sequences:
++SEQ,HPERTP,IF=HPUX,IF=ERRTRP.
+C
+C  Initialise HBOOK:
+      CALL HLIMIT(LIMIT)
+C
+C  Read FFREAD cards:
+      CALL MCINIT
+C
+C  Initialize:
+      CALL MCUSIN
+      CHMCTYP= 'ARIADNEP'
+C
+C  Defaults for JETSET/PYTHIA:
+      PRINT*,' '
+      PRINT*,'Parameter changes from JETSET/PYTHIA defaults:'
+      CALL LUGIVE ('PMAS(C24,1)=80.22')
+C-----CALL LUGIVE ('PMAS(C24,1)=80.33')
+      CALL LUGIVE ('PMAS(C24,2)=2.085')
+C
+C  Initial and final-state photon radiation:
+      PRINT*,'Switches for ISR and FSR:'
+      IF( LISR ) THEN
+        CALL LUGIVE('MSTP(11)=1')
+      ELSE
+        CALL LUGIVE('MSTP(11)=0')
+      ENDIF
+      IF( LFSR ) THEN
+        PRINT*,'MCAR48P: FSR switched on'
+        MSTA(20)= 1
+      ELSE
+        PRINT*,'MCAR48P: FSR switched off'
+        MSTA(20)= 0
+      ENDIF
+C
+C  Special PYTHIA program options:
+C  Protect against poor initialisation - use scale factor:
+      CALL LUGIVE('MSTP(121)=1')
+C
+C  Following scale factor for weights needs to be >2 if ISR:
+C   included for W+W- events, it seems.
+      CALL LUGIVE('PARP(121)=2.5')
+C
+C  Long-lived hadrons (K0s, hyperons) stable if desired:
+      IF( LSTBL ) CALL MCSTBL
+C
+C  Choose the process to be generated:
+C  Here:    Process 25 =  f1f2 -> W+W-
+C                   22 =  Z0 Z0
+C                   35 =  Z0 e e
+C                   36 =  W e nu
+C           Process 1  =  f1f1 -> gamma*/Z0
+      CALL LUGIVE('MSEL=0;MSUB(1)=1')
+C
+C  Select lambda-LLA for timelike showers (from Bill):
+      CALL LUGIVE('MSTP(3)=1')
+C
+C  Call ARIADE initialisation routines:
+      CALL ARTUNE('OPAL')
+      CALL ARINIT('PYTHIA')
+      MSTP(61)= 1
+C
+C  PYINIT call tells PYTHIA that f1f2 = e+e-:
+      CALL PYINIT('CMS','E-','E+',ECMASS)
+C
+C  Random seed:
+      IF( IMCRDM.GT.0 ) MRLU(1)= IMCRDM
+      IF( L4VEC ) CALL MCWRIT('I',IERR)
+C
+C  Event loop:
+      DO IEVT=1,NEVNT
+C
+C       Generate PYTHIA intial state:
+   10   CALL PYEVNT
+C
+C       ARIADNE parton shower and JETSET hadronisation and decays:
+        CALL AREXEC
+C
+C       Protect against pathological cases in JETSET decays:
+        IF( MSTU(24).EQ.4 .OR. MSTU(24).EQ.5 ) THEN
+          PRINT *,'MCAR48P: Problem, regenerating',MSTU(24),MSTU(25)
+          GOTO 10
+        ENDIF
+C
+C       Is it an hadronic event? If not, regenerate:
+        CALL MYTYPE(ITYPE)
+        IF( ITYPE.NE.1 ) THEN
+          IF( IEVT.LE.NRTOPR*10 )
+     &      PRINT*,'MCAR48P: Not a qqbar, regenerate'
+          GOTO 10
+        ENDIF
+C
+C       Fix up event record:
+        DO I=1,N
+          IF( K(I,1).EQ.21 ) THEN
+            IF( K(I,2).EQ.23 ) K(I,1)= 11
+            IF( ABS(K(I,2)).LE.6 ) K(I,1)= 15
+          ENDIF
+        ENDDO
+        CALL LUEDIT(15)
+C
+C       Write 4-vectors if demanded:
+        IF( L4VEC ) CALL MCWRIT('W',IERR)
+C 
+C       Call event analysis routine:
+        CALL MCUSEV
+
+      ENDDO
+C
+      CROSS=PARI(1)*1.E9
+      ECROSS=PARI(1)*1.E9/SQRT(FLOAT(NEVNT))
+      PRINT *,'CROSS', CROSS
+C
+C
+C  Finish, output of histograms:
+      CALL MCUSFI
+      IF( L4VEC ) CALL MCWRIT('F',IERR)
+C
+C  The End:
+      STOP
+      END
++PATCH,MCAR48J.
++DECK,MCAR48J.
+      PROGRAM MCAR48J
+      IMPLICIT NONE
+*.********************************************************************
+*.
+*. Stand-alone driver for ARIADNE with JETSET
+*.
+*. AUTHOR    :  J.W.Gary
+*. CREATED   :  06-Apr-95
+*. LAST MOD  :  06-Apr-95
+*.
+*. Modifications:
+*. 25.01.96, STK: Add some comments
+*. 25.07.96, STK: Thorough clean up
+*. 26.07.96, STK: Run with PYTHIA instead of JETSET
+*. 20.09.96, STK: Put in 4-vector writing routines
+*. 24.09.96, STK: Copy from PATCH,MCAR48P, change for use with JETSET
+*.
+*.********************************************************************
++SEQ,GUJETS.
++SEQ,GUDAT1.
++SEQ,GUDAT2.
++SEQ,GUDAT3.
++SEQ,GUDAT4.
++SEQ,GUDATR.
++SEQ,MCFFR.
++SEQ,MCPAW.
+      INTEGER MSTA
+      REAL PARA
+      COMMON /ARDAT1/ PARA(40),MSTA(40)
+      SAVE /ARDAT1/
+      INTEGER IEVT,IERR,I,IFLAV
+C
+C  Error trapping sequences:
++SEQ,HPERTP,IF=HPUX,IF=ERRTRP.
+C
+C  Initialise HBOOK:
+      CALL HLIMIT(LIMIT)
+C
+C  Read FFREAD cards:
+      CALL MCINIT
+C
+C  Initialize:
+      CALL MCUSIN
+      CHMCTYP= 'ARIADNEJ'
+C
+C  Print JETSET welcome message:
+      MSTU(12)= 1
+C
+C  Initial and final-state photon radiation:
+      PRINT*,'Switches for ISR and FSR:'
+      IF( LISR ) THEN
+        CALL LUGIVE('MSTJ(107)=1')
+      ELSE
+        CALL LUGIVE('MSTJ(107)=0')
+      ENDIF
+      IF( LFSR ) THEN
+        PRINT*,'MCAR48J: FSR switched on'
+        MSTA(20)= 1
+      ELSE
+        PRINT*,'MCAR48J: FSR switched off'
+        MSTA(20)= 0
+      ENDIF
+C
+C  Long-lived hadrons (K0s, hyperons) stable if desired:
+      IF( LSTBL ) CALL MCSTBL
+C
+C  Call ARIADE initialisation routines:
+      CALL ARTUNE('OPAL')
+      CALL ARINIT('JETSET')
+C
+C  Random seed and 4-vector writing:
+      IF( IMCRDM.GT.0 ) MRLU(1)= IMCRDM
+      IF( L4VEC ) CALL MCWRIT('I',IERR)
+C
+C  Other initialization:
+      IFLAV= 0
+C
+C  Event loop:
+      DO IEVT=1,NEVNT
+C
+C       Generate JETSET intial state:
+   10   CALL LUEEVT(IFLAV,ECMASS)
+C
+C       ARIADNE parton shower and JETSET hadronisation and decays:
+        CALL AREXEC
+C
+C       Protect against pathological cases in JETSET decays:
+        IF( MSTU(24).EQ.4 .OR. MSTU(24).EQ.5 ) THEN
+          PRINT *,'MCAR48J: Problem, regenerating',MSTU(24),MSTU(25)
+          GOTO 10
+        ENDIF
+C
+C       Write 4-vectors if demanded:
+        IF( L4VEC ) CALL MCWRIT('W',IERR)
+C 
+C       Call event analysis routine:
+        CALL MCUSEV
+
+      ENDDO
+
+      CROSS=1000.*PARJ(148)
+      ECROSS=1000.*PARJ(148)/SQRT(FLOAT(NEVNT))
+
+C
+C  Finish, output of histograms:
+      CALL MCUSFI
+      IF( L4VEC ) CALL MCWRIT('F',IERR)
+C
+C  The End:
+      STOP
+      END
++PATCH,MCKERN.
++DECK,MYTYPE.
+      SUBROUTINE MYTYPE(ITYPE)
+      IMPLICIT NONE
+*. WWTYPE   Determines event type for WW or Z/gamma events.
+*.
+*. INPUT     :
+*. OUTPUT    :  ITYPE = 1  Z  --> hadrons
+*.                      2  Z  --> leptons
+*.                      3  WW --> jjjj
+*.                      4  WW --> jjll
+*.                      5  WW --> llll
+*.                      6  ZZ --> jjjj
+*.                      7  ZZ --> jjll
+*.                      8  ZZ --> llll
+*.                      0  anything else
+*.
+*.**********************************************************************
+*.
++SEQ,GUJETS.
+      INTEGER ITYPE,NW,NZ,NQQ,ITREE,IID,NPAR,IPAR(2)
+*
+      ITYPE = 0
+      NPAR  = 0
+      IPAR(1) = 0
+      IPAR(2) = 0
+*
+*--- Find number of Ws and Zs, and determine if they decay to quarks
+*--- or leptons..
+*
+      NW = 0
+      NZ = 0
+      NQQ = 0
+      DO 10 ITREE = 1,N
+        IID = ABS(K(ITREE,2))
+        IF(K(ITREE,3).NE.0) GO TO 10
+        IF(IID.LT.23 .OR. IID.GT.24) GO TO 10
+        NPAR = NPAR + 1
+        IPAR(NPAR) = ITREE
+        IF(IID.EQ.23) THEN
+          NZ = NZ + 1
+        ELSE
+          NW = NW + 1
+        ENDIF
+   10 CONTINUE
+      DO 20 ITREE = 1,N
+        IID = ABS(K(ITREE,2))
+        IF(K(ITREE,3).EQ.0) GO TO 20
+        IF(K(ITREE,3).NE.IPAR(1) .AND. K(ITREE,3).NE.IPAR(2)) GO TO 20
+        IF(IID.GE.1.AND.IID.LE.8) NQQ = NQQ + 1
+   20 CONTINUE
+      IF(NW.EQ.0 .AND. NZ.EQ.0) GO TO 999
+*
+*--- Classify event.
+*
+      IF(NW.EQ.2) THEN
+        IF(NQQ.EQ.4) THEN
+          ITYPE = 3
+        ELSEIF(NQQ.EQ.2) THEN
+          ITYPE = 4
+        ELSEIF(NQQ.EQ.0) THEN
+          ITYPE = 5
+        ELSE
+          ITYPE = 0
+        ENDIF
+      ELSEIF(NZ.EQ.2) THEN
+        IF(NQQ.EQ.4) THEN
+          ITYPE = 6
+        ELSEIF(NQQ.EQ.2) THEN
+          ITYPE = 7
+        ELSEIF(NQQ.EQ.0) THEN
+          ITYPE = 8
+        ELSE
+          ITYPE = 0
+        ENDIF
+      ELSEIF(NZ.EQ.1) THEN
+        IF(NQQ.EQ.2) THEN
+          ITYPE = 1
+        ELSEIF(NQQ.EQ.0) THEN
+          ITYPE = 2
+        ELSE
+          ITYPE = 0
+        ENDIF
+      ENDIF
+*
+  999 RETURN
+      END
++DECK,MCSTBL.
+      SUBROUTINE MCSTBL
+      IMPLICIT NONE
+C  Routine to set hadrons with PDG IDs in list IDSTBL stable within JETSET.
+C  Code taken from L74LON and moved into subroutine to allow consistent
+C  use with other MCs.
+C  Stefan Kluth, 26.1.96
+C  Modifications:
++SEQ,GUDAT1.
++SEQ,GUDAT2.
++SEQ,GUDAT3.
++SEQ,GUDAT4.
+      INTEGER IP,NSTBL,LUCOMP
+      PARAMETER( NSTBL=7 )
+      INTEGER IDSTBL(NSTBL)
+      CHARACTER*8 CNAMS(NSTBL)
+      CHARACTER*16 CHAU
+      DATA IDSTBL / 3112,3122,3222,3312,3322,3334,310 /
+      SAVE IDSTBL
+C
+C  Loop over list, get particle names and set stable:
+      DO IP=1,NSTBL
+        CALL LUNAME(IDSTBL(IP),CHAU)
+        CNAMS(IP)= CHAU
+        MDCY(LUCOMP(IDSTBL(IP)),1)= 0
+      ENDDO
+C
+C  Print information:
+      PRINT*,'+++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+      PRINT*,'MCSTBL:'
+      PRINT*,'The following particles (and their anti-particles) have'
+      PRINT*,'been declared stable for JETSET'
+      CALL PXPRCV('CNAMS',NSTBL,CNAMS)
+      PRINT*,'All other particles will decay by Jetset7.4'
+      PRINT*,'+++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+C
+C  The End:
+      RETURN
+      END
++DECK,MCINIT.
+      SUBROUTINE MCINIT
+      IMPLICIT NONE
+C  Routine reads MC FFREAD cards and calls user FFREAD routine:
+C  Stefan Kluth, 22.1.96
+C  Modifications:
+C  17.07.96, STK: Replace VZERO by VBLANK for hollerith arrays
++SEQ,MCFFR.
+      INTEGER HEVFILE(NWONAM)
+C
+C  Get FFREAD info:
+      PRINT*,'MCINIT: read FFREAD cards'
+      CALL FFINIT(0)
+      CALL FFSET('SIZE',8)
+C
+C  General:
+      IRUN= 6666
+      CALL FFKEY('MCIRUN',IRUN,1,'INTEGER')
+      NEVNT= 1000
+      CALL FFKEY('MCNEVT',NEVNT,1,'INTEGER')
+      ECMASS= 91.173
+      CALL FFKEY('MCECMS',ECMASS,1,'REAL')
+      IMCRDM= 13121965
+      CALL FFKEY('MCRDM',IMCRDM,1,'INTEGER')
+      NRTOPR= 3
+      CALL FFKEY('MCNPRI',NRTOPR,1,'INTEGER')
+      LSTBL= .FALSE.
+      CALL FFKEY('MCSTBL',LSTBL,1,'LOGI')
+      LISR= .FALSE.
+      CALL FFKEY('MCISR',LISR,1,'LOGI')
+      LFSR= .TRUE.
+      CALL FFKEY('MCFSR',LFSR,1,'LOGI')
+      LSTART= .FALSE.
+      CALL FFKEY('MCSTART',LSTART,1,'LOGI')
+      L4VEC= .FALSE.
+      CALL FFKEY('MC4VEC',L4VEC,1,'LOGI')
+      CALL VBLANK(HEVFILE,NWONAM)
+      CALL FFKEY('MCEVFILE',HEVFILE,NWONAM,'MIXED')
+C
+C  JETSET related:
+      JTB= 0.52
+      CALL FFKEY('JTPB',JTB,1,'REAL')
+      JTSQ= 0.40
+      CALL FFKEY('JTPSQ',JTSQ,1,'REAL')
+      JTQ0= 1.90
+      CALL FFKEY('JTPQ0',JTQ0,1,'REAL')
+      JTAS2=1.0
+      CALL FFKEY('JTPAS2',JTAS2,1,'REAL')
+C
+C  User cards:
+      CALL MCUSFF
+C
+C  Ok, lets go:
+      CALL FFGO
+C
+C  Convert hollerith to CHARACTER:
+      CALL UHTOC(HEVFILE,NBYTEW,CHEVFILE,NAMLEN)
+C
+C     The End:
+      WRITE(*,*) 'MCINIT: event generation at ecm: ',ECMASS
+      RETURN
+      END
++DECK,MCUSFF0.
+      SUBROUTINE MCUSFF0
+      IMPLICIT NONE
+C  Dummy routine
+      INTEGER ICALL
+      DATA ICALL /0/
+      SAVE ICALL
+      ICALL= ICALL+1
+      IF( ICALL.EQ.1 ) THEN
+        PRINT*,' '
+        PRINT*,'Dummy routine MCUSFF called'
+        PRINT*,' '
+      ENDIF
+      RETURN
+      END
++DECK,MCWRIT.
+      SUBROUTINE MCWRIT(CHMODE,IERR)
+*********************************************************************
+*.
+*...  MCWRIT Write a Monte Carlo event out
+*.
+*...  Pack the JETSET event record and write the event to disk    
+*...  Copy code from J74PAK 
+*.
+*.  Input:  CHMODE    Switch, I= initialise, F= finish, W= write
+*.  Output: IERR      Error flag
+*.  
+*.    Stan bentvelsen   17-04-96
+*.
+*. Modification log
+*. 03-Apr-90  J.W.Gary     Fix bug in parton history      
+*. 17-Jun-91  J.W.Gary     Update for Jetset73             
+*. 22-Apr-95  A.S.Turcot   Change KF codes for P-wave   
+*.                         baryons to standard PDG values  
+*.                         Affects LUND KF/KC codes 41-51 
+*. 06-Sep-95  A.S.Turcot   Fix Bug in PDG values for P-wave 
+*.                         anti-baryons (sigh...)
+*. 01-Mar-96  A.S.Turcot   Update for compatability with SUSYGEN 
+*.                         Avoid sparticle - P-wave confusion
+*. 19.09.96, STK: Copied from herwig59.car, renamed, 
+*.                routine handles random numbers and event counting
+*.
+*.********************************************************************
+      IMPLICIT NONE
++SEQ,GUJETS.
++SEQ,GUDAT2.
++SEQ,GUDATR.
++SEQ,MCFFR.
+      CHARACTER*1 CHMODE
+      INTEGER IERR,IFEVT,NEVT,IENUM
+      SAVE IFEVT,NEVT
+      INTEGER LWRIT,LRAN,LRAN2,LENOCC
+      PARAMETER( LWRIT=33, LRAN=34, LRAN2=35 )
+      REAL PLTRK(NPLBUF,NLUPDM)
+      REAL VTX(3)
+      SAVE VTX
+      DATA VTX /3*0.0/
+      INTEGER  IP,IX,IPA
+      LOGICAL  QPWAV, QFRST
+      INTEGER  KFPWAV(11)
+      DATA KFPWAV / 13122,  3124, 13114, 13214, 13224, 13314, 13324, 
+     &              12112, 12212,  1214,  2124 /
+      DATA QFRST /.TRUE./
+      DATA QPWAV /.FALSE./
+      SAVE QFRST,QPWAV,KFPWAV
+C
+C  Check for P-wave baryons, key off mass in BDB decay table:
+      IF( QFRST ) THEN
+        QFRST= .FALSE.
+        IF( PMAS(41,1).EQ.1.407 ) QPWAV= .TRUE.
+      ENDIF    
+C
+C  Do special things for initialisation and finishing:
+      IF( CHMODE.EQ.'I' ) THEN
+C       Open 4-vector file:
+        PRINT*,'MCWRIT: Output of 4-vectors to: '
+     &        ,CHEVFILE(1:LENOCC(CHEVFILE))
+        OPEN(UNIT=LWRIT,STATUS='NEW',FILE=CHEVFILE)
+C       Random number stuff:
+        IF( LSTART ) THEN
+C         Initialise random number files:
+          IENUM= 0
+          CALL MCRNST(LRAN,LRAN2,IENUM,'I',IERR)
+          IF( IERR.NE.0 ) STOP
+        ENDIF
+C       Read initial random number sequence and event number from disk:
+        CALL MCRNST(LRAN,LRAN2,IENUM,'R',IERR)
+        IF( IERR.NE.0 ) STOP
+        PRINT*,'MCWRIT: Initial seeds'
+        WRITE(6,FMT='('' MRLU ='',6(I12))') MRLU
+        CALL PXPRRV('RRLU',100,RRLU)
+        IFEVT= IENUM
+        PRINT*,'MCWRIT: The run number will be ',IRUN
+        PRINT*,'MCWRIT: The first event number will be ',IFEVT+1
+C       Set event counter for this run to zero:
+        NEVT= 0
+        RETURN
+      ELSEIF( CHMODE.EQ.'F' ) THEN
+C       Give some summary info:
+        PRINT*,'MCWRIT: First and last event written in this run: '
+     &        ,IFEVT+1,IFEVT+NEVT
+        PRINT*,'MCWRIT: Final seeds'
+        WRITE(6,FMT='('' MRLU ='',6I12)') MRLU
+        CALL PXPRRV('RRLU',100,RRLU)
+        IENUM= IFEVT+NEVT
+C       Save random seeds on disk:
+        CALL MCRNST(LRAN,LRAN2,IENUM,'W',IERR)
+        CLOSE(UNIT=LWRIT)
+        RETURN
+      ENDIF
+
+C
+C  Make copy of event record:
+      CALL LUEDIT(21)
+C
+C  Modify event record a bit:
+      DO IP=1,N
+C       Convert P-wave baryon codes:
+        IF( QPWAV ) THEN
+          IPA= ABS(K(IP,2))
+          IF( IPA.GE.41 .AND. IPA.LE.51 ) THEN
+            IF( K(IP,2).LT.0 ) THEN
+              K(IP,2)= -KFPWAV(IPA-40)
+            ELSE
+              K(IP,2)= KFPWAV(IPA-40)
+            ENDIF
+          ENDIF
+        ENDIF
+C       Reverse order of P array:
+        DO IX=1,5
+          PLTRK(IX,IP)= P(IP,IX)
+        ENDDO
+      ENDDO
+C     
+C  Write event record to disk:
+      NEVT= NEVT+1
+      CALL EVWRIT(N,NPLBUF,NLUPDM,PLTRK,K(1,2),K(1,3)
+     &           ,VTX,IRUN,IFEVT+NEVT,0,LWRIT,'W',IERR)
+C
+C  Restore event record:
+      CALL LUEDIT(22)
+C
+C  The End:
+      RETURN
+      END
++DECK,MCRNST.
+      SUBROUTINE MCRNST(ILUN,ILCT,IENUM,MODE,IERR)
+*.********************************************************************
+*. Read or write random seeds for Herwig from or to disk
+*.                                                              
+*. INPUT     : ILUN     Logical unit number for random sequence
+*. INPUT     : ILCT     Logical unit number for pointer to last sequence
+*. INPUT     : IENUM    Event number corresponding to the random numbers
+*. INPUT     : MODE     = 'R' for read
+*.                      = 'W' for write
+*.                      = 'I' for initial call (to create file)
+*. OUTPUT    : IERR     = 0 if all is OK
+*. 
+*. AUTHOR    :  J.W.Gary                                                    
+*. CREATED   :  26-Apr-89
+*. LAST MOD  :  19.09.96
+*. Modifications:
+*. 19.09.96, STK: Copied from herwig59.car, renamed, cosmetic mods
+*.  
+********************************************************************          
++SEQ,GUDATR.
+      INTEGER IDUM(6),IRRLU(100),IRDUM(100)
+      INTEGER ILUN,IPOS,I1,I2,INXT,ISKIP,IENUM,IERR,ILCT,IEDUM
+      CHARACTER*1 MODE
+      CHARACTER*11 FILNAM,FILCNT              
+      EQUIVALENCE( IRRLU(1),RRLU(1) )
+      DATA FILNAM / 'mcrnset.dat' / 
+      DATA FILCNT / 'mcrncnt.dat' /
+      SAVE FILNAM,FILCNT
+C
+C  Check input sensibility:
+      IF ( .NOT.(MODE.EQ.'I'.OR.MODE.EQ.'R'.OR.MODE.EQ.'W') ) THEN
+         WRITE (6,FMT='('' MCRNST:  Error, MODE '',A5,
+     &     '' is unknown'')')
+         RETURN
+      ENDIF
+C
+C  Open files:
+      IF( MODE.EQ.'I' ) THEN
+C       Create new files and write initial entries: 
+        OPEN(UNIT=ILUN,STATUS='NEW',FILE=FILNAM)
+        OPEN(UNIT=ILCT,STATUS='NEW',FILE=FILCNT)
+        IPOS= 1                    
+        WRITE(ILCT,1060) IPOS
+        WRITE(ILUN,1080) (MRLU(I1),I1=1,6),IENUM,(IRRLU(I2),I2=1,100)
+        CLOSE(ILUN)
+        CLOSE(ILCT)
+      ELSE 
+C       Find last position, read in or write out:
+        OPEN(UNIT=ILCT,STATUS='OLD',FILE=FILCNT)
+        OPEN(UNIT=ILUN,STATUS='OLD',FILE=FILNAM)
+        READ(ILCT,1060) IPOS
+        IF( MODE.EQ.'W' ) THEN
+          INXT= IPOS + 1
+          REWIND(ILCT)
+          WRITE(ILCT,1060) INXT
+        ENDIF
+        CLOSE(ILCT)
+        DO ISKIP=1,IPOS
+          READ(ILUN,1080) (IDUM (I1),I1=1,6),IEDUM,(IRDUM (I2),I2=1,100)
+        ENDDO
+        IF( MODE.EQ.'W' ) THEN
+          WRITE(ILUN,1080) (MRLU(I1),I1=1,6),IENUM,(IRRLU(I2),I2=1,100)
+        ELSEIF( MODE.EQ.'R' ) THEN
+          IENUM= IEDUM
+          CALL PXCOPV(6,IDUM,MRLU)
+          CALL PXCOPV(100,IRDUM,IRRLU)
+        ENDIF
+        CLOSE(ILUN)
+      ENDIF
+      RETURN
+ 1060 FORMAT(I12)
+ 1080 FORMAT(7I11,20(/5I16))
+      END
++DECK,MCGETP.
+      SUBROUTINE MCGETP(IMODE,IDIM,NTRAK,PTRAK,ILIN,IID,IPAR)
+      IMPLICIT NONE
+C  Select "stable" QCD partons and optionally FSR photons from JETSET
+C  event record
+C  Input:  IMODE   =1 select FSR photons too, =0 don't 
+C          IDIM    1st dimension of array PTRAK
+C  Output: NTRAK   Number of selected partons
+C          PTRAK() Array of 5-momenta of selected partons (px,py,pz,E,P)
+C          ILIN()  Line numbers in JETSET record
+C          IID()   Particle IDs
+C          IPAR()  Parent line numbers
+C  Author: Stefan Kluth
+C  Created: 06.11.96
+C  Modifications:
++SEQ,GUJETS.
++SEQ,MCFFR.
+      LOGICAL LKEEP
+      INTEGER IDIM,IMODE,NTRAK,I,II,J
+      INTEGER ILIN(*),IID(*),IPAR(*)
+      REAL PTRAK(IDIM,*)
+C
+C         If it has no parent it can't come from a shower:
+C         except for COJETS
+      NTRAK= 0
+c      print *,'this many partons',n
+      DO I=1,N
+        II= ABS(K(I,2))
+        LKEEP= .FALSE.
+C       First see if there is a candidate worth looking at, we
+C       want a quark, gluon or photon with a parent:
+        IF( K(I,3).GT.0 .AND. K(I,3).LE.N ) THEN
+           IF( II.GE.1 .AND. II.LE.6 ) LKEEP= .TRUE.
+           IF( II.EQ.21 ) LKEEP= .TRUE.
+           IF( IMODE.EQ.1 .AND. II.EQ.22 .AND. 
+     &        ABS(K(K(I,3),2)).GE.1 .AND. 
+     &        ABS(K(K(I,3),2)).LE.6 ) LKEEP= .TRUE.
+        ELSEIF( K(I,3).EQ.0 .AND. INDEX(CHMCTYP,'COJET').GT.0 ) THEN
+           LKEEP= .TRUE.
+        ENDIF
+        IF( LKEEP ) THEN
+C         Check if there are any parton or CMshower daughters in the record:
+          DO J=I+1,N
+            IF( K(J,3).EQ.I .AND. (ABS(K(J,2)).LE.6 .OR.
+     &          ABS(K(J,2)).EQ.21 .OR. ABS(K(J,2)).EQ.94) )
+     &        LKEEP= .FALSE.
+          ENDDO
+C         For ARIADNE check that selected quarks point to a string:
+          IF( INDEX(CHMCTYP,'ARIADNE').GT.0 .AND. II.LE.6 .AND.
+     &        K(I,4).GT.0 .AND. K(I,4).LE.N ) THEN
+            IF( K(K(I,4),2).NE.92 ) LKEEP= .FALSE.
+          ENDIF
+        ENDIF
+C       If all is ok we keep it:
+        IF( LKEEP ) THEN
+          NTRAK= NTRAK+1
+          ILIN(NTRAK)= I
+          IID(NTRAK)=  K(I,2)
+          IPAR(NTRAK)= K(I,3)
+          PTRAK(1,NTRAK)= P(I,1)
+          PTRAK(2,NTRAK)= P(I,2)
+          PTRAK(3,NTRAK)= P(I,3)
+          PTRAK(4,NTRAK)= P(I,4)
+          PTRAK(5,NTRAK)= SQRT(P(I,1)**2+P(I,2)**2+P(I,3)**2)
+        ENDIF
+      ENDDO
+C
+C  The End:
+      RETURN
+      END
++DECK,MCGETF.
+      SUBROUTINE MCGETF(JFLAV)
+      IMPLICIT NONE
+C  Get event flavour in Z/gamma events
+C  Output:  JFLAV  flavour code, 1,..,6 = u,d,s,c,b,t
+C                                =0: could not determine flavour
+C  Author: Stefan Kluth
+C  Created: 06.11.96
+C  Modifications:
++SEQ,GUJETS.
++SEQ,MCFFR.
+      INTEGER JFLAV,I
+C
+      JFLAV= 0
+      IF( INDEX(CHMCTYP,'PYTHIA').GT.0 .OR. 
+     &    INDEX(CHMCTYP,'HERWIG').GT.0 .OR. 
+     &    INDEX(CHMCTYP,'ARIADNEP').GT.0 ) THEN
+C       Try the obvious and trace partons back to Z/gamma:
+        DO I=1,N
+          IF( ABS(K(I,2)).GE.1 .AND. ABS(K(I,2)).LE.6 .AND.
+     &        K(K(I,3),2).EQ.23 ) THEN
+            JFLAV= ABS(K(I,2))
+            GOTO 10
+          ENDIF
+        ENDDO
+   10   CONTINUE
+      ELSEIF( INDEX(CHMCTYP,'JETSET74').GT.0) THEN
+C       Try first quark with no parent:
+        DO I=1,N
+          IF( ABS(K(I,2)).GE.1 .AND. ABS(K(I,2)).LE.6 .AND.
+     &        K(I,3).EQ.0 ) THEN
+            JFLAV= ABS(K(I,2))
+            GOTO 20
+          ENDIF
+        ENDDO
+   20   CONTINUE
+      ENDIF
+C
+C  The End:
+      RETURN
+      END
++DECK,MCGETH.
+      SUBROUTINE MCGETH(IDIM,NTRAK,PTRAK)
+      IMPLICIT NONE
+C  Select "stable" hadrons from JETSET event record,
+C  fill some histograms
+C  Input:  IDIM    1st dimension of PTRAK array, if IDIM.gt.6 the
+C                  charge will returned in PTRAK(,6) 
+C  Output: NTRAK   Number of selected hadrons
+C          PTRAK() 5-vectors of selected hadrons, optionally charge
+C  Author: Stefan Kluth (based on code from David Ward)
+C  Created: 06.11.96
+C  Modifications:
++SEQ,GUJETS.
+      INTEGER IDIM,NTRAK,I,II,III,LUCHGE,LUCOMP
+      REAL PTRAK(IDIM,*)
+C
+C  Edit JETSET event record to leave only "stable" particles:
+      CALL LUEDIT(5)
+C
+C  Get hadrons:
+      NTRAK= 0
+      DO I=1,N
+        II= ABS(K(I,2))
+        IF( II.GT.6 .AND. II.NE.21 ) THEN
+          CALL HFILL(36,REAL(LUCOMP(K(I,2))),0.0,1.0)
+          NTRAK= NTRAK+1
+          PTRAK(1,NTRAK)= P(I,1)
+          PTRAK(2,NTRAK)= P(I,2)
+          PTRAK(3,NTRAK)= P(I,3)
+          PTRAK(4,NTRAK)= P(I,4)
+          PTRAK(5,NTRAK)= SQRT(P(I,1)**2+P(I,2)**2+P(I,3)**2)
+          IF( IDIM.GE.6 ) PTRAK(6,NTRAK)= REAL(LUCHGE(K(I,2)))
+          III= 35
+          IF( II.EQ.22 )  III= 21
+          IF( II.EQ.12 .OR. II.EQ.14 .OR. II.EQ.16) III= 22
+          IF( II.EQ.11 )  III= 23
+          IF( II.EQ.13 )  III= 24
+          IF( II.EQ.211 ) III= 25
+          IF( II.EQ.111 ) III= 26
+          IF( II.EQ.321 ) III= 27
+          IF( II.EQ.130 ) III= 28
+          IF( II.EQ.2212 ) III= 29
+          IF( II.EQ.2112 ) III= 30
+          IF( II.EQ.15 )  III= 31
+          IF( II.EQ.310) III= 32
+          IF( II.EQ.311) III= 33
+          IF( II.EQ.3122 .OR. II.EQ.3222 .OR. II.EQ.3212 .OR.
+     &        II.EQ.3112 .OR. II.EQ.3312 .OR. II.EQ.3322 .OR.
+     &        II.EQ.3332 ) III= 34
+          IF( PTRAK(5,NTRAK).GT.0 )
+     &      CALL HFILL(III,LOG10(PTRAK(5,NTRAK)),0.0,1.0)
+          IF( PTRAK(5,NTRAK).LE.0 )
+     &      PRINT *,II,' mom =',PTRAK(5,NTRAK)
+C          IF( III.EQ.35 ) PRINT*, 'MCGETH: Mysterious particle code:',II
+        ENDIF
+      ENDDO
+C
+C  The End:
+      RETURN
+      END

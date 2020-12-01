@@ -1,0 +1,59 @@
+1Nypatchy executing with files / options
+
+   1  PAM      -
+   2  FORT      /home/pcl2483/pedro/tmp/ytofort15446/ckern104.f
+   3  read      /home/pcl2483/pedro/tmp/ytofort15446/ckern104.cra
+   4  print     /home/pcl2483/pedro/tmp/ytofort15446/ckern104.lis
+   5  CC       -    ...
+
+ Version: PATCHY  5.05 /3  1996/06/29 17.00     .RJP, today: 03/09/22  7.10
+
+     1  + +EXE.
+     2  + +USE,CKCMDS.
+     3  + +USE,CKKERN,CKUTIL.
+
+     4  + +PAM,17,T=ATTACH,CARDS,T=C. ckern104.car
+
+ ---> start reading file  ckern104.car
+
+ Read Pam file: unknown
+
+     1  + +QUIT.
+
+ --------------------------------------
+ Summary of patches in processing order
+
+ Processing mode selections                        Other status bits for P=X
+
+ U - use                                           F - skipped by +PATCH,X,IF=...
+ L - list                                           M - skipped by +IMITATE,X
+ E - exe                                             X - not +EXE but deck to ASM
+ D - divert                                           P - partial +USE,X,D=...
+ X - xdivert                Self +         Self        R - P=X,T=REPEAT
+                    Inhibit Foreign  Trans   only       Q - quoted in IF=X
+                    ------- ------- ------ ------
+        Patch        ULEDX   ULEDX   LEDX   LEDX   FMXPRQ  Used from P=
+
+      0 CRA*               . U E   .      .  E   .     R   CRA*
+
+ unknown
+      1 CKCMDS             . U E   .      .  E   .         CRA*
+      2 CKKERN             . U E   .      .  E   .         CRA*
+     15 CKUTIL             . U E   .      .  E   .         CRA*
+     19 CRA*               . U E   .      .  E   .     R   CRA*
+
+ Name stack:       significant name length is 32 characters
+                0% used of   6000 name slots available
+                1% used of  48000 bytes of text available
+
+ Read:           5 lines from the cradle
+              1149 lines from   1 PAM files for  1 lines +PAM
+
+ Written:
+
+   physical FORT:0         15 units   1048 lines to file  /home/pcl2483/pedro/tmp/ytofort15446/ckern104.f
+
+    logical FORT:1         15 decks written via FORT:0
+
+ No errors, no warnings.
+

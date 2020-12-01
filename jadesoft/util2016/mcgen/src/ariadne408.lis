@@ -1,0 +1,71 @@
+1Nypatchy executing with files / options
+
+   1  PAM      -
+   2  FORT      /home/pcl2483/pedro/tmp/ytofort4252/ariadne408.f
+   3  read      /home/pcl2483/pedro/tmp/ytofort4252/ariadne408.cra
+   4  print     /home/pcl2483/pedro/tmp/ytofort4252/ariadne408.lis
+   5  CC       -    ...
+
+ Version: PATCHY  5.05 /3  1996/06/29 17.00     .RJP, today: 03/09/22  7.05
+
+     1  + +EXE.
+     2  + +USE,LUCMMN.
+
+     3  + +PAM,11,T=C,A.jt74opal
+
+ ---> start reading file  jt74opal.car
+
+ Read Pam file: JETSET VERSION 7.4 TUNED TO OPAL DATA
+
+  29 cradle  ====================================================================  p=CRA* d=CRA*  1 ==========
+
+     1  + +USE,ARIADNE.
+
+     2  + +PAM,11,T=C,A.ariadne408
+
+ ---> start reading file  ariadne408.car
+
+ Read Pam file: unknown
+
+     1  + +QUIT.
+
+ --------------------------------------
+ Summary of patches in processing order
+
+ Processing mode selections                        Other status bits for P=X
+
+ U - use                                           F - skipped by +PATCH,X,IF=...
+ L - list                                           M - skipped by +IMITATE,X
+ E - exe                                             X - not +EXE but deck to ASM
+ D - divert                                           P - partial +USE,X,D=...
+ X - xdivert                Self +         Self        R - P=X,T=REPEAT
+                    Inhibit Foreign  Trans   only       Q - quoted in IF=X
+                    ------- ------- ------ ------
+        Patch        ULEDX   ULEDX   LEDX   LEDX   FMXPRQ  Used from P=
+
+      0 CRA*               . U E   .      .  E   .     R   CRA*
+
+ JETSET VERSION 7.4 TUNED TO OPAL DATA
+      0 @JETSET            .   E   .      .  E   .
+      2 LUCMMN             . U E   .      .  E   .         CRA*
+     29 CRA*               . U E   .      .  E   .     R   CRA*
+
+ unknown
+    103 ARIADNE            . U E   .      .  E   .         CRA*
+    235 CRA*               . U E   .      .  E   .     R   CRA*
+
+ Name stack:       significant name length is 32 characters
+                3% used of   6000 name slots available
+                2% used of  48000 bytes of text available
+
+ Read:           6 lines from the cradle
+             34120 lines from   2 PAM files for  2 lines +PAM
+
+ Written:
+
+   physical FORT:0        131 units  13009 lines to file  /home/pcl2483/pedro/tmp/ytofort4252/ariadne408.f
+
+    logical FORT:1        131 decks written via FORT:0
+
+ No errors, no warnings.
+

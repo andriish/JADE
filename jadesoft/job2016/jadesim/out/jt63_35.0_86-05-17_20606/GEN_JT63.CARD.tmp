@@ -1,0 +1,86 @@
+C E+E- ANNIHILATION INTO U,D,S,C,B QUARKS
+C 35.0,50,1,1
+C E+E-
+C KEEQED
+C 0
+C STOP
+LIST
+C
+C Input Card for a PYTHIA/HERWIG/ARIADNE/COJETS job
+C
+C
+C Cards for MC package:
+MCIRUN 6666
+MCSTART ON
+MC4VEC  ON
+C
+C Define the name of the 4-vector output file:
+C   - extension .cprod forces binary format (JADE 'CPROD' format)
+C   - extension .nt forces a HBOOK NTuple format
+C   - other extensions yield to a readable ascii format (for test purposes)
+C
+MCEVFILE
+'jt63_35.0.cprod'
+MCNEVT 50
+MCECMS 35.0
+MCNPRI 100
+MCISR  ON
+MCFSR  ON
+C List of PDG IDs for particles to be declared as stable if MCSTBL = ON
+MCSTBL OFF
+MCIDST  3112 3122 3222 3312 3322 3334 310
+        411 421 431
+        511 513 521 523 531 533 541 543 5122
+MCBOOS OFF
+MCRDM  101234567
+C
+C QUARK TYPE TO ANALYSE:
+C
+C MCUDSC = ON: Only UDSC flavours are filled at parton level AND hadron level
+C MCBQRK = ON: Only B quark flavour is analysed for partons/hadrons
+C MCFLAV = I : I=0: all flavours analysed, I=1-5: Flavour I is analysed
+C
+MCUDSC OFF
+MCBQRK OFF
+MCFLAV 0
+C
+C JETSET 6.3 JADE standard parameters: b=        0.90   PAR(32)
+C                                      sigma_Q=  0.30   PAR(12)
+C                                      Q_0=      1.0    PARE(22)
+C                                      eps_c=   -0.050  PAR(44)
+C                                      eps_b=   -0.010  PAR(45)
+C                                      a=        0.50   PAR(31)
+C                                      Lamb_QCD= 0.400  PARE(21)
+JTPB    0.90
+JTPSQ   0.30
+JTPQ0   1.0
+JTPEC  -0.050
+JTPEB  -0.010
+JTPA    0.50
+JTPLAMB 0.40
+C
+C
+C Jetrates (time saving option) calculation
+C
+C MCJTEV: Number of events to analyse for jet finding, -1: all
+C MCDURH = ON: Analyse using the Durham jet finding
+C MCJDE0 = ON: Analyse using the JADE E0 jet finding
+C MCCONE = ON: Analyse using the Cone jet finders
+C MCCAMJ = ON: Analyse using the Cambridge Jet finder
+C MCCKRN = ON: Analyse using the CKERN Cambridge
+C
+MCJTEV 0
+MCJDE0 OFF
+MCDURH OFF
+MCCONE OFF
+MCCAMJ OFF
+MCCKRN OFF
+C
+C User cards for MCUSxx routines:
+OUTFILE 'jt63_35.0.hist'
+FSRRM OFF
+ISRRM OFF
+C Write out some event shape data into an extra file
+MCTAB  OFF
+STOP
+C

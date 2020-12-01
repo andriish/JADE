@@ -1,0 +1,225 @@
+#!/usr/bin/ksh
+cmd=`basename $0`
+usage="usage: $cmd [-bnih] fortran.f"
+
+bindopt=0
+libdir=`pwd`    #put the library 
+srcdir=`pwd`    # and the source in local directory by default
+devflg=''
+allopt=$@
+instal=0
+debug=0
+gpar="-g3"
+Opar="-O4"
+if [ "$HARDWARE" = "pentium" ]; then Opar=' '; gpar='-g '; fi
+if [ "$HARDWARE" = "RS6000" ]; then Opar=' '; gpar='-g'; fi
+
+if [ \( "$HARDWARE" = "pentium" \) -o \( "$HARDWARE" = "RS6000" \) ]; then
+   options="bnihDgO:"
+else
+   options="bnihDg:O:"
+fi
+
+while getopts $options xopt ; do
+    case $xopt in
+    b) bindopt=1;;
+    i) instal=1;;
+    n) devflg='-n';;
+    D) debug=1;;
+    O) Opar="-O$OPTARG ";;
+    g) if [ \( "$HARDWARE" = "pentium" \) -o \( "$HARDWARE" = "RS6000" \) ]; then
+         gpar="-g"
+       else
+         gpar="-g$OPTARG"
+       fi;;
+    h) echo '$cmd to create a library from a fortran file \(e.g. fxx.f\) given in'
+	 echo 'the argument. The fortran file name can be specified with or without .f.'
+	 echo 'A directory with the same name \(e.g. fxx\) is created in the local'
+	 echo 'directory and the source is copied and fcasplit in that directory.'
+	 echo 'The individual files are compiled; errors and warnings are left in'
+	 echo 'the file fxx.err in the fxx directory.'
+	 echo 'A library is created with the name libFXX.a in the local directory.'
+	 echo
+	 echo 'Switches:'
+	 echo '-h this help'
+	 echo '-b prebind source in the library. This results in faster loading, but'
+	 echo '  it is not correct for libraries which should be only partly loaded'
+	 echo '-i install the source and the library under the directory specified by'
+	 echo '  the propath environment variable in ../src and ../lib respectively.'
+	 echo '-n user devpath instead of propath for the installation.'
+	 echo '----------------------------------------------------'
+	 ;;
+    \?) echo $usage; exit 9;;
+    esac
+done
+shift `expr $OPTIND - 1 `
+
+if [ $# -le 0 ]; then
+    echo $usage
+    exit 9
+fi
+
+if [ -f $cmd.log ] ; then rm -f $cmd.log ; fi
+
+log=`date`" $USER $cmd $allopt" ; echo $log | tee -a $cmd.log
+
+#set -x
+#set -v
+fortfile=`basename $1`
+fortdir=`basename $1 '.f'`
+fortpath=`dirname $1`
+if [ ! -f $1 ]; then
+   if [ \( ! -f $fortdir \) -a $fortpath = '.' ]; then #maybe a symbol?
+   	if [ $debug = 1 ]; then echo "whicho $devflg -i -s .f $fortdir"; fi
+   	xf=`whicho $devflg -i -s .f $fortdir`
+	
+        if [ $? = 0 ]; then 
+        		fortdir=`basename $xf '.f'`;
+        		fortpath=`dirname $xf`
+        	else
+        		echo 'fortran file $1 not found.Exit.'
+        		exit 1
+        	fi
+        fi
+else
+   xf=$1
+fi
+echo found $fortfile as $xf
+if [ ! \( -f $fortpath/$fortdir.f \) ]; then echo 'file $1 not found. exit'; exit 1; fi
+
+if [ $instal = 1 ]; then 
+	if [ $HARDWARE != "pentium" ]; then
+		libdir=`whicho $devflg -i -d lib`
+		if [ $? != 0 ]; then libdir=`pwd`; fi
+	fi
+	if [ $HARDWARE = "pentium" ]; then
+		libdir=`whicho $devflg -i -d Plib`; if [ $? != 0 ]; then libdir=`pwd`; fi
+		if [ $? != 0 ]; then libdir=`pwd`; fi
+	fi
+	if [ $HARDWARE = "RS6000" ]; then
+		libdir=`whicho $devflg -i -d Rlib`; if [ $? != 0 ]; then libdir=`pwd`; fi
+		if [ $? != 0 ]; then libdir=`pwd`; fi
+	fi
+	srcdir=`whicho $devflg -i -d src`; if [ $? != 0 ]; then srcdir=`pwd`; fi
+
+	if [ $debug = 1 ]; then echo libdir=$libdir srcdir=$srcdir; fi
+fi
+
+if [ -d $srcdir/$fortdir ]; then /bin/rm -r -f $srcdir/$fortdir; fi
+echo "creating directory $srcdir/$fortdir" | tee -a $cmd.log
+
+mkdir $srcdir/$fortdir
+
+cp $xf $srcdir/$fortdir/${fortdir}.for
+if [ $instal = 1 ]; then 
+	rm $xf
+fi
+     
+cd $srcdir/$fortdir
+if [ $debug = 1 ]; then echo "running fcasplit. wait." | tee -a $cmd.log; fi
+#fcasplit $fortdir.for
+endlabel $fortdir.for
+fcasplit $fortdir.for
+#if [ "$HARDWARE" != "pentium" ]; then
+   if [ `/bin/ls -1 *.f | /usr/bin/wc -l` -gt 0 ]; then 
+      for xf in *.f; do
+   	   mv $xf ${xf%.f}.for
+      done
+   fi
+   if [ `/bin/ls -1 *.for | /usr/bin/wc -l` -gt 1 ]; then mv $fortdir.for $fortdir.f; fi
+   if [ $debug = 1 ]; then echo "running fsplit. wait." | tee -a $cmd.log; fi
+#fi
+if [ "$HARDWARE" = "RS6000" ]; then
+   for xf in *.for; do
+	fsplit $xf
+   done
+elif [ "$HARDWARE" = "pentium" ]; then
+   for xf in *.for; do
+	fsplit $xf
+   done
+else
+   for xf in *.for; do
+	fsplit -silent $xf
+   done
+fi
+if [ -f $fortdir.f ]; then  mv $fortdir.f $fortdir.for; fi
+
+# special treatment for c routines in ROPE
+if [ -f evget.c ]; then mv evget.c rocgep.c; fi
+
+trap '/bin/rm $fortdir.a $fortdir.bind *.o 2>/dev/null; echo "$cmd Interrupt! " | tee -a $cmd.log; exit 1' 1 2 15
+
+errors=0
+if [ $debug = 1 ]; then echo "fort $Opar $gpar > $fortdir.err"; fi
+fort $Opar $gpar > $fortdir.err
+for xf in *.f ; do
+	echo "   ...compiling $xf:"
+	fort $Opar $gpar $xf 2>&1  | tee $fortdir.err1 | tee -a $fortdir.err
+	#fort $xf 2>&1 | egrep 'Error |Warning ' | tee -a $fortdir.err
+	fgrep 'fort: Error:' $fortdir.err1 >/dev/null
+	if [ $? = 0 ]; then
+		if [ ! -t ]; then
+		#if [ X$ENVIRONMENT = 'XBATCH' ]; then
+			nl -ba $xf
+		fi
+		errors=1
+	fi
+done
+
+for xc in *.c ; do
+	echo "   ...compiling $xc:"
+	cc -c -O $gpar -Dunix $xc 2>&1  | tee $fortdir.err1 | tee -a $fortdir.err
+	#fort $xf 2>&1 | egrep 'Error |Warning ' | tee -a $fortdir.err
+	grep 'cfe: Error:' $fortdir.err1 >/dev/null
+	if [ $? = 0 ]; then
+		if [ ! -t ]; then
+		#if [ X$ENVIRONMENT = 'XBATCH' ]; then
+			nl -ba $xc
+		fi
+		errors=1
+	fi
+done
+rm $fortdir.err1
+
+if [ $errors = 1 ]; then
+    echo '______________________________________'
+    echo 'compilation errors in $fortdir.err' 
+    echo 'library not installed.'
+    rm *.o $fortdir.bind 2> /dev/null
+    exit 2
+fi
+
+if [ $HARDWARE = "RS6000" ]; then
+	if [ $bindopt -eq 1 ]; then  
+    		# prebinding doesn't allow for user symbols 
+    		# to be called from std symbols:
+    		ld -r -o $fortdir.bind *.o
+    		/usr/bin/ar qsv $fortdir.a $fortdir.bind
+	else
+    		/usr/bin/ar qsvl $fortdir.a *.o
+	fi
+elif [ $HARDWARE = "pentium" ]; then
+	if [ $bindopt -eq 1 ]; then  
+    		# prebinding doesn't allow for user symbols 
+    		# to be called from std symbols:
+    		ld -r -o $fortdir.bind *.o
+    		/usr/bin/ar qsv $fortdir.a $fortdir.bind
+	else
+    		/usr/bin/ar qsvl $fortdir.a *.o
+	fi
+else
+	if [ $bindopt -eq 1 ]; then  
+    		# prebinding doesn't allow for user symbols 
+    		# to be called from std symbols:
+    		ld -r -o $fortdir.bind *.o
+    		/usr/lib/cmplrs/cc/ar qsv $fortdir.a $fortdir.bind
+	else
+    		/usr/lib/cmplrs/cc/ar qsvl $fortdir.a *.o
+	fi
+fi
+
+mv $fortdir.a $libdir/$fortdir.a
+echo library $libname is installed in directory $libdir
+
+rm *.o *.bin $fortdir.bind 2> /dev/null
+exit 0
