@@ -128,6 +128,7 @@ SET(ZLIB            zlib)
 
 # Define some directories
 SET(SRC ${CMAKE_SOURCE_DIR}/src2016)
+SET(UTIL ${CMAKE_SOURCE_DIR}/util2016)
 SET(SRCMAIN ${CMAKE_SOURCE_DIR}/main2016)
 SET(LIB ${CMAKE_SOURCE_DIR}/lib)
 SET(BIN ${CMAKE_SOURCE_DIR}/bin)
@@ -153,7 +154,7 @@ SET(SRCVERTEX         ${SRC}/vertex)
 SET(SRCWERTEX         ${SRC}/wertex)
 SET(SRCZLIB         ${SRC}/zlib)
 # Have the .mod files placed in the lib folder
-SET(CMAKE_Fortran_MODULE_DIRECTORY ${LIB})
+SET(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${LIB})
 
 
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
@@ -748,6 +749,23 @@ else()
     ${JEXTERN_LIBRARIES} -Wl,--end-group)
 endif()
 
+########################################################################
+
+SET(RCONVEXE  rconv)
+SET(CONVEXE   conv)
+ADD_EXECUTABLE(${CONVEXE} ${UTIL}/ccal/conv.f)
+TARGET_LINK_LIBRARIES(${CONVEXE}  ${JEXTERN_LIBRARIES})
+
+ADD_EXECUTABLE(${RCONVEXE} ${UTIL}/ccal/rconv.f)
+TARGET_LINK_LIBRARIES(${RCONVEXE}  ${JEXTERN_LIBRARIES})
+
+INSTALL(TARGETS ${CONVEXE} ${RCONVEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+
+SET(ZREADEXE      zread)
+ADD_EXECUTABLE(${ZREADEXE} ${UTIL}/zread/zread.f)
+INSTALL(TARGETS ${ZREADEXE}  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+TARGET_LINK_LIBRARIES(${ZREADEXE}  ${JEXTERN_LIBRARIES})
 
 ########################################################################
 INSTALL(TARGETS ${MCJADEEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

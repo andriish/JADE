@@ -166,6 +166,8 @@ ${TOP}/src/chtoi.F
 ${TOP}/src/itoch.F
 ${TOP}/src/upkch.F
 ${TOP}/src/indexc.F
+
+${TOP}/src/ckrack.F
 )
 SET(PICOGRAFLIB_src
 #The C++ code with ROOT
