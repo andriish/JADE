@@ -2494,7 +2494,7 @@ C
       RETURN
       END
 CDECK  ID>, PYMAXI.
-      SUBROUTINE PYMAXI
+      SUBROUTINE PYMAXIAV
 C      IMPLICIT NONE 
 C...Finds optimal set of coefficients for kinematical variable selection
 C...and the maximum of the part of the differential cross-section used

@@ -185,7 +185,7 @@ C  The End:
       STOP
       END
 CDECK  ID>, HWCONV.
-      SUBROUTINE HWCONV(IERR)
+      SUBROUTINE HWCONVAV(IERR)
 **************************************************************************
 *     CONVERT HEPEVT TO JETSET COMMON BLOCKS FOR HERWIG EVENTS
 *

@@ -23,7 +23,7 @@ echo 'Start at:'`date`
 echo
 
 #
-. ../../../Init_jade_env.ksh
+#. ../../../Init_jade_env.ksh
 
 # Set version number:
 VERSION=105j
@@ -48,7 +48,9 @@ cat > mc$VERSION.cra <<EOF
 +PAM,13,T=A,C. mc$VERSION.car
 +QUIT.
 EOF
-
+exit
+export devpath=$(pwd)
+export propath=$(pwd)
 # Run ypatchy:
 ytofort mc$VERSION
 
