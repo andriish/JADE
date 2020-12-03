@@ -44,7 +44,8 @@ C-------------------------------------------------------------------C
       INTEGER*2 HDATA
 C-----------
       LOGICAL JPOINT
-      COMMON/CALIBR/JPOINT(1)
+CAV      COMMON/CALIBR/JPOINT(1)
+      COMMON/CALIBR/JPOINT(100)
       DIMENSION ACALIB(1)
       EQUIVALENCE (JPOINT(1),ACALIB(1))
 C-----------

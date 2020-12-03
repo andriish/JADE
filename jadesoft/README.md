@@ -20,8 +20,7 @@ The structure of this directory:
       
  - `util2016`  The sources for the utilities 
       - `ccal`
-      - `mcgen`  Copied as is. The MC generation with the old generators should be obsolete now.
-      - `Scripts`
+      - `mcgen`  The codes for old MC generats.
       - `zread`
 
  - `CMakeLists.txt` CMake script for the compilation

@@ -4,34 +4,54 @@ SET(VERSION 2020.11)
 include("GNUInstallDirs")
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
+option( JADE_OLD_MC  "Compile old MC executables" ON)
 ########################################################################
 #Setup Fortran compiller
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
   if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -fallow-invalid-boz  -cpp -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=legacy -g -O0 -fallow-invalid-boz  -cpp -fno-range-check -ffixed-line-length-none  -finit-local-zero -fno-automatic -fno-align-commons ")
   else()
-    set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=legacy -g -O0                           -fno-range-check -ffixed-line-length-none  -finit-local-zero -fno-automatic -fno-align-commons ")
   endif()
 endif()
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "Intel")
-#NOT USED
-  set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -g -O0  -diag-disable=6371 -diag-disable=7713 -diag-disable=8291 -noalign -noauto -zero     -nbs -extend-source 132")
+  set(CMAKE_Fortran_FLAGS   "${CMAKE_Fortran_FLAGS} -g -O0  -debug extended -traceback  -fpe0  -fpp  -diag-disable=6371 -diag-disable=6375  -diag-disable=7784 -diag-disable=7713 -diag-disable=8291 -noalign -noauto -zero -nbs -extend-source 132")
 endif()
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
-#PPC64 only
-  set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}  -qfixed=256  -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
-#-q32  -melf32ppc
-endif()
-if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "SunPro")
-#NOT WELL TESTED
-#Local variables are static by default. Alternate is STATIC statement. 
-  set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}   -ftrap=%none -f77 -e  -g  ")
-#-m32 
+  set(CMAKE_Fortran_FLAGS   "${CMAKE_Fortran_FLAGS} -g -qfixed=256 -qsigtrap -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")
 endif()
 message(STATUS "Fortran compiler        : ${CMAKE_Fortran_COMPILER_ID}")
 message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
 ########################################################################
+#Setup C compiller
+if (${CMAKE_C_COMPILER_ID}  MATCHES "Clang")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O1")
+endif()
+if (${CMAKE_C_COMPILER_ID}  MATCHES "GNU")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O1")
+endif()
+if (${CMAKE_C_COMPILER_ID}  MATCHES  "Intel")
+  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -g -O1  -debug extended -traceback   -diag-disable=2196 -diag-disable=303   ")
+endif()
+if (${CMAKE_C_COMPILER_ID}  MATCHES  "XL")
+  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -g")
+endif()
+message(STATUS "C compiler            : ${CMAKE_C_COMPILER_ID}")
+message(STATUS "C compiler flags      : ${CMAKE_C_FLAGS}")
+########################################################################
 #Setup C++ compiller
+if (${CMAKE_CXX_COMPILER_ID}  MATCHES "Clang")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O1")
+endif()
+if (${CMAKE_CXX_COMPILER_ID}  MATCHES "GNU")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O1")
+endif()
+if (${CMAKE_CXX_COMPILER_ID}  MATCHES  "Intel")
+  set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -g -O1  -debug extended -traceback   -diag-disable=2196 -diag-disable=303   ")
+endif()
+if (${CMAKE_CXX_COMPILER_ID}  MATCHES  "XL")
+  set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -g")
+endif()
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++1y" COMPILER_SUPPORTS_CXX1y)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -60,28 +80,26 @@ message(STATUS "LAPACK libraries        : ${LAPACK_LIBRARIES_DIR}")
 find_package(HepMC3)
 message(STATUS "HEPMC3 libraries        : ${HEPMC3_LIBRARIES} ${HEPMC3_ROOTIO_LIBRARIES}")
 ########################################################################
-set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
-find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
-if (ROOT_CONFIG)
-  message(STATUS "ROOTConfig.cmake found and will be used: ${ROOT_CONFIG}")
-  include(${ROOT_CONFIG})
-  message(STATUS "ROOT use file: ${ROOT_USE_FILE}")
-  include(${ROOT_USE_FILE})
-  if(ROOT_LIBRARIES AND ROOT_INCLUDE_DIRS)
-    set(ROOT_FOUND TRUE)
-  endif()
-else()
-  message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
-  find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
-endif()
+set(CMAKE_CXX_FLAGS_BEFORE_ROOT "${CMAKE_CXX_FLAGS}")
+set(CMAKE_C_FLAGS_BEFORE_ROOT "${CMAKE_C_FLAGS}")
+set(CMAKE_Fortran_FLAGS_BEFORE_ROOT "${CMAKE_Fortran_FLAGS}")
+find_package(ROOT REQUIRED  Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+message(STATUS "ROOT use file: ${ROOT_USE_FILE}")
+include(${ROOT_USE_FILE})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_BEFORE_ROOT}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS_BEFORE_ROOT}")
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS_BEFORE_ROOT}")
+string(REPLACE " " ";" ROOT_CXX_FLAGS_LIST ${ROOT_CXX_FLAGS})
+#foreach(fl ${ROOT_CXX_FLAGS_LIST})
+#  CHECK_CXX_COMPILER_FLAG(${fl} COMPILER_SUPPORTS_${fl})
+#  if(COMPILER_SUPPORTS_${fl})
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${fl}")
+#  endif()
+#endforeach(fl ${ROOT_CXX_FLAGS_LIST})
+include_directories(${ROOT_INCLUDE_DIRS})
 message(STATUS "ROOT includes : ${ROOT_INCLUDE_DIRS}")
 message(STATUS "ROOT libraries: ${ROOT_LIBRARIES}")
 message(STATUS "ROOT_FOUND    : ${ROOT_FOUND}")
-if(ROOT_FOUND)
-  include_directories(${ROOT_INCLUDE_DIRS})
-else()
-  message(STATUS "JADESOFT warning: ROOT not found")
-endif()
 ########################################################################
 option(JADE_USE_CERNLIB      OFF)
 if (JADE_USE_CERNLIB)
@@ -155,7 +173,10 @@ SET(SRCWERTEX         ${SRC}/wertex)
 SET(SRCZLIB         ${SRC}/zlib)
 # Have the .mod files placed in the lib folder
 SET(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${LIB})
-
+#Workaround for gfortran bug
+if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
+ file(MAKE_DIRECTORY ${LIB} )
+endif()
 
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
   file(GLOB myfortag ${SRCTAGG}/*.for)
@@ -767,6 +788,102 @@ ADD_EXECUTABLE(${ZREADEXE} ${UTIL}/zread/zread.f)
 INSTALL(TARGETS ${ZREADEXE}  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 TARGET_LINK_LIBRARIES(${ZREADEXE}  ${JEXTERN_LIBRARIES})
 
+#####################################################################
+
+if (JADE_OLD_MC)
+
+set( MCLIBS    ariadne408 coj623d herwig58d herwig59 jt63jade jt74opal pythia5722 ckern104 ckern105  px114 )
+foreach ( ml ${MCLIBS} )  
+ ADD_LIBRARY(${ml} STATIC ${UTIL}/mcgen/src/${ml}.f)
+endforeach (  ml ${MCLIBS} )
+
+ADD_LIBRARY(mc105j STATIC                        ${UTIL}/mcgen/mc/mc105j.f  )
+  
+
+if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
+  target_compile_options(coj623d  PRIVATE -fdefault-real-8 -fdefault-double-8)
+endif()
+
+ADD_EXECUTABLE(ar48p   ${UTIL}/mcgen/ariadne/mcar48p_105j.f  ${UTIL}/mcgen/src/pymaxi.f)
+TARGET_LINK_LIBRARIES(ar48p  PRIVATE 
+                       jt74opal 
+                       mc105j
+                       pythia5722
+                       ariadne408   
+                       ckern105   
+                       px114  
+                       ${JEXTERN_LIBRARIES}  ${BLAS_LIBRARIES})
+
+ADD_EXECUTABLE(cj623   ${UTIL}/mcgen/cojets/mccj623_105j.f ${UTIL}/mcgen/src/pystfu.f)
+TARGET_LINK_LIBRARIES(cj623   PRIVATE  
+                       mc105j 
+                       pythia5722 
+                       coj623d   
+                       ckern105   
+                       jt74opal   
+                       px114  
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+
+
+
+ADD_EXECUTABLE(hw59   ${UTIL}/mcgen/herwig/mchw59_105j.f )
+TARGET_LINK_LIBRARIES(hw59    PRIVATE                       
+                       mc105j 
+                       pythia5722  
+                       herwig59 
+                       ckern105   
+                       jt74opal  
+                       px114  
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+
+ADD_EXECUTABLE(hw58d   ${UTIL}/mcgen/herwig/mchw58d_105j.f )
+TARGET_LINK_LIBRARIES(hw58d   PRIVATE                        
+                       mc105j 
+                       pythia5722  
+                       herwig58d  
+                       ckern105   
+                       jt74opal  
+                       px114  
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+
+
+ADD_EXECUTABLE(jt63   ${UTIL}/mcgen/jetset/mcjt63_105j.f ${UTIL}/mcgen/src/lugive.f)
+TARGET_LINK_LIBRARIES(jt63   PRIVATE    -Wl,--start-group                   
+                       jt63jade   
+                       ckern105   
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}
+                       px114 
+                       mc105j  
+                       -Wl,--end-group
+                       )
+
+ADD_EXECUTABLE(jt74   ${UTIL}/mcgen/jetset/mcjt74_105j.f )
+TARGET_LINK_LIBRARIES(jt74    PRIVATE                 
+                       mc105j  
+                       ckern105   
+                       jt74opal   
+                       px114  
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+
+
+ADD_EXECUTABLE(lepton   ${UTIL}/mcgen/lepton/lepton.f )
+TARGET_LINK_LIBRARIES(lepton    PRIVATE                
+                       mc105j 
+                       ckern105  
+                       jt63jade  
+                       px114  
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+                       
+ADD_EXECUTABLE(py57   ${UTIL}/mcgen/pythia/mcpy57_105j.f ${UTIL}/mcgen/src/pymaxi.f ${UTIL}/mcgen/src/pystfu.f)
+TARGET_LINK_LIBRARIES(py57    PRIVATE                
+                       mc105j 
+                       ckern105  
+                       pythia5722
+                       jt74opal
+                       px114  
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+                       
+endif()
 ########################################################################
 INSTALL(TARGETS ${MCJADEEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
