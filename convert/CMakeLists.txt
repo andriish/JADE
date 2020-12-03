@@ -11,7 +11,7 @@ include(JADE_compiler_setup)
   find_package(LAPACK REQUIRED)
 message(STATUS "LAPACK libraries        : ${LAPACK_LIBRARIES_DIR}")
 ########################################################################
-find_package(HepMC3)
+find_package(HepMC3  HINTS /u/andriish/Z/share/HepMC3/cmake/)
 message(STATUS "HEPMC3 libraries        : ${HEPMC3_LIBRARIES} ${HEPMC3_ROOTIO_LIBRARIES}")
 ########################################################################
 include(JADE_ROOT_setup)

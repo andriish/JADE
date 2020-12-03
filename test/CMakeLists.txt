@@ -9,12 +9,15 @@ include(JADE_compiler_setup)
 ########################################################################
 include(JADE_ROOT_setup)
 ########################################################################
-macro( jade_fortran_test testname gnuenv  intelenv)
+macro( jade_fortran_test testname gnuenv  intelenv nagenv)
   if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "GNU")
      set_property( TEST ${testname} PROPERTY ENVIRONMENT "${gnuenv}") 
   endif()
   if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "Intel")
      set_property( TEST ${testname} PROPERTY ENVIRONMENT "${intelenv}") 
+  endif()
+  if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "NAG")
+     set_property( TEST ${testname} PROPERTY ENVIRONMENT "${nagenv}") 
   endif()
 endmacro( jade_fortran_test )
 
@@ -33,7 +36,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006    ${CMAKE_C
 
 
 add_test(NAME FPTOBOS_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/fptobos1.card  ${JADEPREFIX}/bin/fptobos)
-jade_fortran_test(FPTOBOS_1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=") 
+jade_fortran_test(FPTOBOS_1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " ") 
 
 #add_test(NAME SUPERV_DATA1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/supervfile006.card  ${JADEPREFIX}/bin/superv ) 
 #set_property( TEST SUPERV_DATA1 PROPERTY  DEPENDS FPTOBOS_1) 
@@ -62,24 +65,24 @@ else()
   
   add_test(NAME MCJADE_MC1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/mcjade1.card  ${JADEPREFIX}/bin/mcjade )
   set_property( TEST MCJADE_MC1 PROPERTY DEPENDS HepMC3_to_CPROD_MC1)   
-  jade_fortran_test(MCJADE_MC1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=")
+  jade_fortran_test(MCJADE_MC1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " " )
 
   add_test(NAME SUPERV_MC1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/superv1.card  ${JADEPREFIX}/bin/superv ) 
   set_property( TEST SUPERV_MC1 PROPERTY  DEPENDS CPROD_BOS_MC1) 
-  jade_fortran_test(SUPERV_MC1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100") 
+  jade_fortran_test(SUPERV_MC1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " " ) 
   #NOTE: superv.stat needs a random number generator seeds. Otherwise it will use the same each time
    
   add_test(NAME ZE4V_MC1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/ze4v1.card  ${JADEPREFIX}/bin/ze4v)
   set_property( TEST ZE4V_MC1 PROPERTY  DEPENDS SUPERV_MC1) 
-  jade_fortran_test(ZE4V_MC1 "GFORTRAN_CONVERT_UNIT=big_endian" "F_UFMTENDIAN=big") 
+  jade_fortran_test(ZE4V_MC1 "GFORTRAN_CONVERT_UNIT=big_endian" "F_UFMTENDIAN=big" " ") 
 
   add_test(NAME JZREAD_MC1 COMMAND  sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/jzread1.card  ${JADEPREFIX}/bin/jzread )
   set_property( TEST JZREAD_MC1 PROPERTY  DEPENDS ZE4V_MC1) 
-  jade_fortran_test(JZREAD_MC1 PROPERTY ENVIRONMENT "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=") 
+  jade_fortran_test(JZREAD_MC1 PROPERTY ENVIRONMENT "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " ") 
 
   add_test(NAME JTJOB_MC1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/jtjob1.card  ${JADEPREFIX}/bin/jtjob)
   set_property( TEST JTJOB_MC1 PROPERTY  DEPENDS JZREAD_MC1) 
-  jade_fortran_test(JTJOB_MC1 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22" "F_UFMTENDIAN=big:2,22") 
+  jade_fortran_test(JTJOB_MC1 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22" "F_UFMTENDIAN=big:2,22" "FORT_CONVERT2=big_ieee FORT_CONVERT22=big_ieee") 
 
 endif()
 
