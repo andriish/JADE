@@ -11,7 +11,7 @@ if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
   if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=legacy -g -O0 -fallow-invalid-boz  -cpp -fno-range-check -ffixed-line-length-none  -finit-local-zero -fno-automatic -fno-align-commons ")
   else()
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=legacy -g -O0                           -fno-range-check -ffixed-line-length-none  -finit-local-zero -fno-automatic -fno-align-commons ")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -std=legacy -g -O0                      -cpp -fno-range-check -ffixed-line-length-none  -finit-local-zero -fno-automatic -fno-align-commons ")
   endif()
 endif()
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "Intel")
@@ -827,8 +827,6 @@ TARGET_LINK_LIBRARIES(cj623   PRIVATE
                        px114  
                        ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
 
-
-
 ADD_EXECUTABLE(hw59   ${UTIL}/mcgen/herwig/mchw59_105j.f )
 TARGET_LINK_LIBRARIES(hw59    PRIVATE                       
                        mc105j 
@@ -853,9 +851,8 @@ TARGET_LINK_LIBRARIES(jt63   PRIVATE
                        mc105j 
                        jt63jade   
                        ckern105   
-                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}
                        px114 
-                       
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}
                        )
 
 ADD_EXECUTABLE(jt74   ${UTIL}/mcgen/jetset/mcjt74_105j.f )
