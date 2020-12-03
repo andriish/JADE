@@ -24,13 +24,13 @@ message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
 ########################################################################
 #Setup C compiller
 if (${CMAKE_C_COMPILER_ID}  MATCHES "Clang")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O1")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O1 -Wno-conditional-uninitialized -Wno-incompatible-library-redeclaration -Wno-implicit-function-declaration -Wno-implicit-int -Wno-return-type")
 endif()
 if (${CMAKE_C_COMPILER_ID}  MATCHES "GNU")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O1")
 endif()
 if (${CMAKE_C_COMPILER_ID}  MATCHES  "Intel")
-  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -g -O1  -debug extended -traceback   -diag-disable=2196 -diag-disable=303   ")
+  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -g -O1  -debug extended -traceback   -diag-disable=2196  -diag-disable=161  -diag-disable=303   ")
 endif()
 if (${CMAKE_C_COMPILER_ID}  MATCHES  "XL")
   set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -g")
@@ -40,13 +40,13 @@ message(STATUS "C compiler flags      : ${CMAKE_C_FLAGS}")
 ########################################################################
 #Setup C++ compiller
 if (${CMAKE_CXX_COMPILER_ID}  MATCHES "Clang")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O1")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O1  -Wno-conditional-uninitialized -Wno-incompatible-library-redeclaration -Wno-implicit-function-declaration -Wno-implicit-int -Wno-return-type")
 endif()
 if (${CMAKE_CXX_COMPILER_ID}  MATCHES "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O1")
 endif()
 if (${CMAKE_CXX_COMPILER_ID}  MATCHES  "Intel")
-  set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -g -O1  -debug extended -traceback   -diag-disable=2196 -diag-disable=303   ")
+  set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -g -O1  -debug extended -traceback   -diag-disable=2196  -diag-disable=161  -diag-disable=303   ")
 endif()
 if (${CMAKE_CXX_COMPILER_ID}  MATCHES  "XL")
   set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -g")
@@ -180,7 +180,7 @@ ${TOP}/src/upkch.F
 ${TOP}/src/indexc.F
 
 ${TOP}/src/ckrack.F
-${TOP}/src/ranmar.F
+##${TOP}/src/ranmar.F
 ${TOP}/src/eisrs1.F
 ${TOP}/src/tql2.F
 ${TOP}/src/tred2.F

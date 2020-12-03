@@ -553,7 +553,7 @@ extern "C" {
 
     void itx_(float &x, float &y, char* txt)
     {
-        PRINT_IF_DEBUG    printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%f\n", x,y, txt, jTextAlignment,jTextAngle );
+        PRINT_IF_DEBUG    printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%i\n", x,y, txt, jTextAlignment,jTextAngle );
         std::string vn(txt);
         if (vn.size()>0)vn[vn.size()-1]=0;
         while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
@@ -570,7 +570,7 @@ extern "C" {
 
     void itxn_(float &x, float &y, char* txt, int& n)
     {
-        PRINT_IF_DEBUG    printf("void itxn_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%f\n", x,y, txt, jTextAlignment,jTextAngle );
+        PRINT_IF_DEBUG    printf("void itxn_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%i\n", x,y, txt, jTextAlignment,jTextAngle );
         std::string vn(txt);
         if (vn.size()>0)vn[vn.size()-1]=0;
         while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
@@ -614,7 +614,7 @@ extern "C" {
 
     void itxl_(float &x, float &y, char* txt, int& l)
     {
-        PRINT_IF_DEBUG   printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%f\n", x,y, txt, jTextAlignment,jTextAngle );
+        PRINT_IF_DEBUG   printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%i\n", x,y, txt, jTextAlignment,jTextAngle );
         std::string vn(txt);
         while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
 

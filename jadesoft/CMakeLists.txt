@@ -25,13 +25,13 @@ message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
 ########################################################################
 #Setup C compiller
 if (${CMAKE_C_COMPILER_ID}  MATCHES "Clang")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O1")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O1 -Wno-conditional-uninitialized -Wno-incompatible-library-redeclaration -Wno-implicit-function-declaration -Wno-implicit-int -Wno-return-type")
 endif()
 if (${CMAKE_C_COMPILER_ID}  MATCHES "GNU")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O1")
 endif()
 if (${CMAKE_C_COMPILER_ID}  MATCHES  "Intel")
-  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -g -O1  -debug extended -traceback   -diag-disable=2196 -diag-disable=303   ")
+  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -g -O1  -debug extended -traceback   -diag-disable=2196  -diag-disable=161  -diag-disable=303   ")
 endif()
 if (${CMAKE_C_COMPILER_ID}  MATCHES  "XL")
   set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -g")
@@ -41,13 +41,13 @@ message(STATUS "C compiler flags      : ${CMAKE_C_FLAGS}")
 ########################################################################
 #Setup C++ compiller
 if (${CMAKE_CXX_COMPILER_ID}  MATCHES "Clang")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O1")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O1  -Wno-conditional-uninitialized -Wno-incompatible-library-redeclaration -Wno-implicit-function-declaration -Wno-implicit-int -Wno-return-type")
 endif()
 if (${CMAKE_CXX_COMPILER_ID}  MATCHES "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O1")
 endif()
 if (${CMAKE_CXX_COMPILER_ID}  MATCHES  "Intel")
-  set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -g -O1  -debug extended -traceback   -diag-disable=2196 -diag-disable=303   ")
+  set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -g -O1  -debug extended -traceback   -diag-disable=2196  -diag-disable=161  -diag-disable=303   ")
 endif()
 if (${CMAKE_CXX_COMPILER_ID}  MATCHES  "XL")
   set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -g")
@@ -111,10 +111,13 @@ if (JADE_USE_CERNLIB)
 else()
   find_library(LIBPICOKERNLIB REQUIRED NAMES libpicokernlib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
   find_library(LIBPICOGRAFLIB REQUIRED NAMES libpicograflib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
-  set(PICOCERNLIB "${LIBPICOKERNLIB};${LIBPICOGRAFLIB};${ROOT_LIBRARIES}")
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+     set(PICOCERNLIB ${LIBPICOKERNLIB} ${LIBPICOGRAFLIB} ${ROOT_LIBRARIES} -lc++)
+  else()
+    set(PICOCERNLIB ${LIBPICOKERNLIB} ${LIBPICOGRAFLIB} ${ROOT_LIBRARIES} -lstdc++)
+  endif()
 endif()
-########################################################################
-set(JEXTERN_LIBRARIES  ${PICOCERNLIB}   -lstdc++)
+set(JEXTERN_LIBRARIES  ${PICOCERNLIB} )
 message(STATUS "JEXTERN_LIBRARIES    : ${JEXTERN_LIBRARIES}")
 set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
@@ -738,19 +741,19 @@ SET(ZE4V_src ${SRCZE4V}/ze4vjb.f ${SRCMCJADE}/mcrand.f ${SRCSUPERV}/showb.f )
 ADD_EXECUTABLE(${ZE4VEXE} ${ZE4V_src})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  TARGET_LINK_LIBRARIES(${JADEZEXE} -lc++ -mmacosx-version-min=10.12 ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  TARGET_LINK_LIBRARIES(${JADEZEXE}  -mmacosx-version-min=10.12 ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
 
-  TARGET_LINK_LIBRARIES(${JADEZROOTEXE} -lc++  -mmacosx-version-min=10.12 ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  TARGET_LINK_LIBRARIES(${JADEZROOTEXE}  -mmacosx-version-min=10.12 ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
 
-  TARGET_LINK_LIBRARIES(${MCJADEEXE}  -lc++ -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
+  TARGET_LINK_LIBRARIES(${MCJADEEXE}   -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
     ${JEXTERN_LIBRARIES}  )
 
-  TARGET_LINK_LIBRARIES(${SUPERVEXE}  -lc++ -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  TARGET_LINK_LIBRARIES(${SUPERVEXE}   -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES}   )
 
-  TARGET_LINK_LIBRARIES(${ZE4VEXE}  -lc++ -mmacosx-version-min=10.12 ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  TARGET_LINK_LIBRARIES(${ZE4VEXE}   -mmacosx-version-min=10.12 ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} )
 else()
   TARGET_LINK_LIBRARIES(${JADEZEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
@@ -829,7 +832,6 @@ TARGET_LINK_LIBRARIES(cj623   PRIVATE
 ADD_EXECUTABLE(hw59   ${UTIL}/mcgen/herwig/mchw59_105j.f )
 TARGET_LINK_LIBRARIES(hw59    PRIVATE                       
                        mc105j 
-                       pythia5722  
                        herwig59 
                        ckern105   
                        jt74opal  
@@ -839,7 +841,6 @@ TARGET_LINK_LIBRARIES(hw59    PRIVATE
 ADD_EXECUTABLE(hw58d   ${UTIL}/mcgen/herwig/mchw58d_105j.f )
 TARGET_LINK_LIBRARIES(hw58d   PRIVATE                        
                        mc105j 
-                       pythia5722  
                        herwig58d  
                        ckern105   
                        jt74opal  
@@ -848,13 +849,13 @@ TARGET_LINK_LIBRARIES(hw58d   PRIVATE
 
 
 ADD_EXECUTABLE(jt63   ${UTIL}/mcgen/jetset/mcjt63_105j.f ${UTIL}/mcgen/src/lugive.f)
-TARGET_LINK_LIBRARIES(jt63   PRIVATE    -Wl,--start-group                   
+TARGET_LINK_LIBRARIES(jt63   PRIVATE                    
+                       mc105j 
                        jt63jade   
                        ckern105   
                        ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}
                        px114 
-                       mc105j  
-                       -Wl,--end-group
+                       
                        )
 
 ADD_EXECUTABLE(jt74   ${UTIL}/mcgen/jetset/mcjt74_105j.f )
@@ -872,7 +873,9 @@ TARGET_LINK_LIBRARIES(lepton    PRIVATE
                        ckern105  
                        jt63jade  
                        px114  
-                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES} 
+                       ${INTERFACE} #ranmar
+                       )
                        
 ADD_EXECUTABLE(py57   ${UTIL}/mcgen/pythia/mcpy57_105j.f ${UTIL}/mcgen/src/pymaxi.f ${UTIL}/mcgen/src/pystfu.f)
 TARGET_LINK_LIBRARIES(py57    PRIVATE                

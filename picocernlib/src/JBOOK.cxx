@@ -41,7 +41,7 @@ std::vector<std::string> tokenize(const std::string& str, const std::string& del
 }
 bool invalidChar (char c) 
 {  
-    return !(c>=0 && c <128);   
+    return !(c>=0 && c <127);   
 } 
 void stripUnicode(std::string & str) 
 { 
