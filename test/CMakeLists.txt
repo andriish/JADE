@@ -114,6 +114,12 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006    ${CMAKE_C
 add_test(NAME FPTOBOS_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/fptobos1.card  ${JADEPREFIX}/bin/fptobos)
 jade_fortran_test(FPTOBOS_1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=") 
 
+#add_test(NAME SUPERV_DATA1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/supervfile006.card  ${JADEPREFIX}/bin/superv ) 
+#set_property( TEST SUPERV_DATA1 PROPERTY  DEPENDS FPTOBOS_1) 
+#jade_fortran_test(SUPERV_DATA1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100") 
+#NOTE: superv.stat needs a random number generator seeds. Otherwise it will use the same each time
+
+
 if(NOT PYTHIA8_FOUND)
   message(STATUS "JADE test: Pythia8 package not found, was disabled or too old. The minimal supported Pythia8 version is 8.220. Please check if PYTHIA8_ROOT_DIR is set properly.") 
 
