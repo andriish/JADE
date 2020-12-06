@@ -13,21 +13,31 @@ The prerequirements to build the software are:
  - bash-compatible shell
  - make
  
- The following platforms are supported:
+ The following platforms/toolchains are supported:
  
   - CentOS 7 x86_64 with GNU gcc compilers
   - CentOS 8 x86_64 with GNU gcc compilers
-  - MacOSX 10.15 64 with XCode and gfortran
+  - MacOSX 10.15+ x86_64 with XCode and gfortran
   
- The following combinations should technicaly work as well
+  With the following platforms/toolchains it should be possible to compile the software as well
   
   - CentOS 7 x86_64 with Intel compilers
   - CentOS 8 x86_64 with Intel compilers
   - CentOS 7 ppc64 with IBM XL compilers
   - CentOS 8 ppc64 with IBM XL compilers
+  - CentOS 7 x86_64 with NAG Fortran compiler and gcc
+  - CentOS 8 x86_64 with NAG Fortran compiler and gcc
   - CentOS 7 ppc64/i686/arm64 with GNU gcc compilers
   - CentOS 8 ppc64/i686/arm64 with GNU gcc compilers
-  - MacOSX 10.15 64 with Intel compilers
+  - MacOSX 10.15+ x86_64 with Intel compilers
+  
+  However, some of the combinations above will produce excutables that would crash in runtime or
+  would not be able to read the input files in different endianess.
+  The compilation on the following platforms could be enabled in the nearest future
+   
+   - MacOSX 11.0 arm64 with NAG Fortran and XCode
+  
+  
 
 
 To build the software:
@@ -76,6 +86,15 @@ To build the software:
     `` sh jadeinstall.sh `` 
     The software will be installed to ``installed`` directory.
     To change the location run ``sh jadeinstall.sh --prefix=/full/path/to/desired/location``
+
+    For all supported platforms the corresponding compilers should be detected automatically.
+    The alternative compiler toolchains can be selected using the ``--toolschain`` flag, e.g.
+     ``sh jadeinstall.sh --prefix=/full/path/to/desired/location  --toolchain=NAG`` 
+     The supported values are 
+      - ``GNU`` 
+      - ``Intel`` 
+      - ``XL`` 
+      - ``NAG`` 
     
 Please note that JADE software consists of multiple packages that can be compiled sequenially, 
 without invocation of the ``jadeinstall.sh``.
@@ -97,6 +116,7 @@ To run some simple tests:
      ```    
     
  - Run the ``jadetest.sh`` script with ``--prefix=/full/path/to/the /installed/software`` (should be the same as for compilation). 
-   The script will  run several sequential tests in the `test` directory
+   The script will  run several sequential tests in the `test` directory.
+   The script supports the same values for the ``--toolhain`` flag as the ``jadeinstall.sh`` script.
 
 

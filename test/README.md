@@ -1,4 +1,4 @@
-This directory contains a test suite for the JADE software
+ This directory contains a test suite for the JADE software
 
      - ``FPTOBOS_1`` will convert JADE sample data into BOS format.
      - ``pythia8_HepMC3_MC1`` will produce events in HepMC format using Pythia8 MC generator.
@@ -8,3 +8,5 @@ This directory contains a test suite for the JADE software
      - ``ZE4V_MC1``   
      - ``JZREAD_MC1``   
      - ``JTJOB_MC1``   
+     
+  Please note that many tests require Fortran runtime that supports endianess conversion (e.g. GNU or Intel)
