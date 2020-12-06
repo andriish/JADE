@@ -3,39 +3,39 @@ This is a repository with software of JADE experiment.
 
 The prerequirements to build the software are:
  
- - C++ compiler with C++11 standard support (tested with g++, clang++, icpc and xlC)
- - Fortran compiler (tested with gfortran, ifort and xlf)
- - ROOT6 (>6.10 is recommended)
- - cmake (>3.4.5 or higher version required by the used ROOT version)
- - HepMC3 with development packages (>3.1.0)
+ - C++ compiler with C++11 standard support (tested with ``g++``, ``clang++``, ``icpc`` and ``xlC``)
+ - Fortran compiler (tested with ``gfortran``, ``ifort`` and ``xlf``)
+ - ``ROOT6`` (>6.10 is recommended)
+ - ``cmake`` (>3.4.5 or higher version required by the used ROOT version)
+ - ``HepMC3`` with development packages (>3.1.0)
  - Lapack with development packages 
- - X11 or XQuartz with development packages
+ - X11 or XQuartz libraries with development packages
  - bash-compatible shell
- - make
+ - ``make``
  
  The following platforms/toolchains are supported:
  
-  - CentOS 7 x86_64 with GNU gcc compilers
-  - CentOS 8 x86_64 with GNU gcc compilers
-  - MacOSX 10.15+ x86_64 with XCode and gfortran
+  - CentOS 7 x86_64 with **GNU** gcc compilers
+  - CentOS 8 x86_64 with **GNU** gcc compilers
+  - MacOSX 10.15+ x86_64 with **GNU** gfortran and XCode
   
-  With the following platforms/toolchains it should be possible to compile the software as well
+  In addition, it should be possible to compile the software  with the following platforms/toolchains:
   
-  - CentOS 7 x86_64 with Intel compilers
-  - CentOS 8 x86_64 with Intel compilers
-  - CentOS 7 ppc64 with IBM XL compilers
-  - CentOS 8 ppc64 with IBM XL compilers
-  - CentOS 7 x86_64 with NAG Fortran compiler and gcc
-  - CentOS 8 x86_64 with NAG Fortran compiler and gcc
-  - CentOS 7 ppc64/i686/arm64 with GNU gcc compilers
-  - CentOS 8 ppc64/i686/arm64 with GNU gcc compilers
-  - MacOSX 10.15+ x86_64 with Intel compilers
+  - CentOS 7 x86_64 with **Intel** compilers
+  - CentOS 8 x86_64 with **Intel** compilers
+  - CentOS 7 ppc64 with IBM **XL** compilers
+  - CentOS 8 ppc64 with IBM **XL** compilers
+  - CentOS 7 x86_64 with **NAG** Fortran compiler and gcc
+  - CentOS 8 x86_64 with **NAG** Fortran compiler and gcc
+  - CentOS 7 ppc64/i686/arm64 with **GNU** gcc compilers
+  - CentOS 8 ppc64/i686/arm64 with **GNU** gcc compilers
+  - MacOSX 10.15+ x86_64 with **Intel** compilers
   
   However, some of the combinations above will produce excutables that would crash in runtime or
   would not be able to read the input files in different endianess.
   The compilation on the following platforms could be enabled in the nearest future
    
-   - MacOSX 11.0 arm64 with NAG Fortran and XCode
+   - MacOSX 11.0 arm64 with **NAG** Fortran and XCode
   
   
 
@@ -90,12 +90,12 @@ To build the software:
     For all supported platforms the corresponding compilers should be detected automatically.
     The alternative compiler toolchains can be selected using the ``--toolschain`` flag, e.g.
      ``sh jadeinstall.sh --prefix=/full/path/to/desired/location  --toolchain=NAG`` 
-    The supported values are:
+    The supported values for this flag are:
       
-     - ``GNU`` 
-     - ``Intel`` 
-     - ``XL`` 
-     - ``NAG`` 
+     - **GNU** 
+     - **Intel** 
+     - **XL** 
+     - **NAG** 
     
 Please note that JADE software consists of multiple packages that can be compiled sequenially, 
 without invocation of the ``jadeinstall.sh``.
