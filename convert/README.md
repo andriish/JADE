@@ -1,1 +1,2 @@
-Directory with code to convert different formats of MC evets into JADE format.
+Directory with code to convert different formats of MC events, e.g. 
+HepMC/HepMC3 into JADE format.

@@ -90,11 +90,12 @@ To build the software:
     For all supported platforms the corresponding compilers should be detected automatically.
     The alternative compiler toolchains can be selected using the ``--toolschain`` flag, e.g.
      ``sh jadeinstall.sh --prefix=/full/path/to/desired/location  --toolchain=NAG`` 
-     The supported values are 
-      - ``GNU`` 
-      - ``Intel`` 
-      - ``XL`` 
-      - ``NAG`` 
+    The supported values are:
+      
+     - ``GNU`` 
+     - ``Intel`` 
+     - ``XL`` 
+     - ``NAG`` 
     
 Please note that JADE software consists of multiple packages that can be compiled sequenially, 
 without invocation of the ``jadeinstall.sh``.

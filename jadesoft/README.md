@@ -1,3 +1,5 @@
+This directory contains the JADE software in its original form, the software 
+with the amendments implemented in the 200x and the most recent versions. 
 The structure of this directory:
 
  - `cal`       Calibration files

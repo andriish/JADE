@@ -1,2 +1,2 @@
-Directory with selected codes of CERNLIB routines taken either from the CERNLIB
-or rewritten using ROOT.
+This directory contains selected codes of ``CERNLIB`` routines taken from the ``CERNLIB``
+or rewritten equivalents based on ``ROOT``.
