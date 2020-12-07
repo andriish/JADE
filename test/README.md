@@ -10,3 +10,7 @@ This directory contains a test suite for the JADE software:
  - ``JTJOB_MC1``   
      
   Please note that many tests require Fortran runtime that supports endianess conversion (e.g. ``GNU`` or ``Intel``).
+  
+  The directory ``cards`` contains all the steering cards for the used programs.
+  The directory  ``src`` contains source files for the Pythia8 main program.
+  The firectory  ``jadetapes`` contains a small data file used for the tests.
