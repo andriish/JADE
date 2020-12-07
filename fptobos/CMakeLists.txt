@@ -5,76 +5,12 @@ include("GNUInstallDirs")
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 ########################################################################
-#Setup Fortran compiller
-if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -fallow-invalid-boz  -cpp -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
-  else()
-    set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
-    set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -fno-range-check")
-  endif()
-endif()
-if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "Intel")
-#NOT USED
-  set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -g -O0  -diag-disable=6371 -diag-disable=7713 -diag-disable=8291 -noalign -noauto -zero     -nbs -extend-source 132")
-endif()
-
-if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
-#PPC64 only
-  set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}  -qfixed=256  -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
-#-q32  -melf32ppc
-endif()
-if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "SunPro")
-#NOT WELL TESTED
-#Local variables are static by default. Alternate is STATIC statement. 
-   set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}   -ftrap=%none -f77 -e  -g  ")
-#-m32 
-endif()
-message(STATUS "Fortran compiler        : ${CMAKE_Fortran_COMPILER_ID}")
-message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
-########################################################################
-#Setup C++ compiller
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++1y" COMPILER_SUPPORTS_CXX1y)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-if(COMPILER_SUPPORTS_CXX1y)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
-else()
-  if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  else()
-    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
-  endif()
-endif()
-message(STATUS "C++ compiler            : ${CMAKE_CXX_COMPILER_ID}")
-message(STATUS "C++ compiler flags      : ${CMAKE_CXX_FLAGS}")
+include(JADE_compiler_setup)
 ########################################################################
   find_package(BLAS REQUIRED)
   find_package(LAPACK REQUIRED)
 ########################################################################
-find_package(ROOT)
-set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
-find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
-if (ROOT_CONFIG)
-  message(STATUS "ROOTConfig.cmake found and will be used: ${ROOT_CONFIG}")
-  include(${ROOT_CONFIG})
-  message(STATUS "ROOT use file: ${ROOT_USE_FILE}")
-  include(${ROOT_USE_FILE})
-  if(ROOT_LIBRARIES AND ROOT_INCLUDE_DIRS)
-    set(ROOT_FOUND TRUE)
-  endif()
-else()
-  message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
-  find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
-endif()
-message(STATUS "ROOT includes : ${ROOT_INCLUDE_DIRS}")
-message(STATUS "ROOT libraries: ${ROOT_LIBRARIES}")
-message(STATUS "ROOT_FOUND    : ${ROOT_FOUND}")
-if(ROOT_FOUND)
-  include_directories(${ROOT_INCLUDE_DIRS})
-else()
-  message(STATUS "JADESOFT warning: ROOT not found")
-endif()
+include(JADE_ROOT_setup)
 ########################################################################
 option(JADE_USE_CERNLIB      OFF)
 if (JADE_USE_CERNLIB)
@@ -86,13 +22,13 @@ if (JADE_USE_CERNLIB)
 else()
   find_library(LIBPICOKERNLIB REQUIRED NAMES libpicokernlib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
   find_library(LIBPICOGRAFLIB REQUIRED NAMES libpicograflib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
-if ("${BUILD_ARCH}" STREQUAL "i686")
-  set(PICOCERNLIB "${LIBPICOKERNLIB}")
-else()
-  set(PICOCERNLIB "${LIBPICOKERNLIB};${LIBPICOGRAFLIB}")
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+     set(PICOCERNLIB ${LIBPICOKERNLIB} ${LIBPICOGRAFLIB} ${ROOT_LIBRARIES} -lc++)
+  else()
+    set(PICOCERNLIB ${LIBPICOKERNLIB} ${LIBPICOGRAFLIB} ${ROOT_LIBRARIES} -lstdc++)
+  endif()
 endif()
-endif()
-set(JEXTERN_LIBRARIES  ${PICOCERNLIB} ${ROOT_LIBRARIES} -lstdc++)
+set(JEXTERN_LIBRARIES  ${PICOCERNLIB} )
 set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
 ########################################################################
@@ -112,7 +48,6 @@ SET(UNPJADEXE unpjad)
 FIND_PATH(JADELIB_LIBRARY_DIR NAMES libinterface.a libjadegs.a libboslib.a libzlib.a PATHS
   ${JADELIB_ROOT_DIR}/lib
   ${JADELIB_ROOT_DIR}/lib64
-  /usr/lib/jadesoft
   ../jadesoft/lib
   ../jadesoft/
   NO_DEFAULT_PATH

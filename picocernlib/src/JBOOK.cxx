@@ -1,10 +1,12 @@
 #include "TFile.h"
 #include "TH1F.h"
+#include "TH2F.h"
 #include "TTree.h"
 #include <iostream>
 #include <map>
 #include <string>
 #include <sstream>
+#include <algorithm>
 //http://stackoverflow.com/questions/3418231/c-replace-part-of-a-string-with-another-string
 static void replace_all(std::string& str, const std::string& from, const std::string& to)
 {
@@ -37,7 +39,19 @@ std::vector<std::string> tokenize(const std::string& str, const std::string& del
     }
     return tokens;
 }
+bool invalidChar (char c) 
+{  
+    return !(c>=0 && c <127);   
+} 
+void stripUnicode(std::string & str) 
+{ 
+    str.erase(std::remove_if(str.begin(),str.end(), invalidChar), str.end());  
+}
+
+
+
 std::map<int, TH1F*> gmapTH1F;
+std::map<int, TH2F*> gmapTH2F;
 std::map<int, TTree*> gmapTTree;
 std::map<std::string, TFile*> gmapTFile;
 extern "C" {
@@ -63,6 +77,10 @@ extern "C" {
     void hf1_(int* a,float* x, float* w) {
         if (gmapTH1F.find(*a)!=gmapTH1F.end())gmapTH1F[*a]->Fill(*x,*w);
     }
+    void hf2_(int* a,float* x,float* y, float* w) {
+        if (gmapTH2F.find(*a)!=gmapTH2F.end())gmapTH2F[*a]->Fill(*x,*y,*w);
+    }
+
     int hexist_(int *a) {
         if (gmapTH1F.find(*a)!=gmapTH1F.end()) return 1;
         else return 0;
@@ -70,6 +88,7 @@ extern "C" {
     void hrput_(int a,char* n, char b)
     {
         std::string s(n);
+        stripUnicode(s);
         while (s.back()==' '||s.back()=='\n') s.pop_back();
         TFile* f= new TFile(Form("%s.root",s.c_str()),"recreate");
         f->cd();
@@ -246,8 +265,6 @@ extern "C" {
             (*it)[5]+="/";
             (*it)[5]+=(*it)[2];
         }
-//for (std::vector<std::vector<std::string> >  ::iterator it=vars.begin();it!=vars.end();it++)
-//printf("->|%s|%s|%s|%s|%s|%s|\n",(*it)[0].c_str(),(*it)[1].c_str(),(*it)[2].c_str(),(*it)[3].c_str(),(*it)[4].c_str(),(*it)[5].c_str());
         char* poi=re;
         for (std::vector<std::vector<std::string> >  ::iterator it=vars.begin(); it!=vars.end(); it++)
         {
@@ -255,4 +272,72 @@ extern "C" {
             poi+=std::stoi((*it)[4]);
         }
     }
+    void hbook2_(int* a,const char* CHTITL,int* NNX,float* XX0,float* XX1,int* NNY,float* YY0,float* YY1,float* VALMAX)
+    {
+      gmapTH2F[*a]=new TH2F(Form("%i",*a),CHTITL,*NNX,*XX0,*XX1,*NNY,*YY0,*YY1); 
+    }
+///NOT IMPLEMENTED
+    /*
+          SUBROUTINE HREBIN(ID,X,Y,DX,DY,NNR,IFIRST,ILAST)
+    *.==========>
+    *.    CHANNELS OF ID BETWEEN IFIRST,ILAST ARE CUMULATED INTO
+    *.       NNR BINS
+    *.    X  ARRAY OF NEW ABCISSA VALUES
+    *.    Y  ARRAY OF CUMULATED CONTENTS
+    *.    DX ARRAY OF X ERRORS
+    *.    DY ARRAY OF Y ERRORS
+    */
+    void hrebin_(int* id, float ** X, float** Y,float ** DX, float** DY, int *NNR, int* IFIRST, int* *ILAST)
+    {
+
+    }
+    /*
+    *.==========>
+    *.           RETURNS THE NUMBER OF ENTRIES OF IDD
+    *..=========> ( R.Brun )
+    */
+    void hnoent_(int* IDD,int* NUMB) {
+
+
+    }
+    void hopera_(int* ID1,const char* CHOP,int* ID2,int* ID3,float* CC1,float* CC2)
+    {
+
+    }
+    /*
+    *.==========>
+    *.           Operations between histograms
+    *.             CHOP='+'   ID3=C1*ID1+C2*ID2
+    *.             CHOP='-'   ID3=C1*ID1-C2*ID2
+    *.             CHOP='*'   ID3=C1*ID1*C2*ID2
+    *.             CHOP='/'   ID3=C1*ID1/(C2*ID2)
+    *.             If option 'E' errors will be computed on ID3
+    *.             If option '/B' is given , binomial errors are computed.
+    *..=========> ( R.Brun )
+    */
+
+
+    void hgive_(int* IDD,const char *CHTITL,int* NCX,float* XMIN,float* XMAX,int* NCY,float* YMIN,float* YMAX,int*  NWT,int* IDB)
+    {
+    }
+    /*
+    *.==========>
+    *.           RETURN BOOKING PARAMETERS OF IDD
+    *..=========> ( R.Brun )
+
+    */
+
+    void hbookb_(int* IDD,const char* CHTITL,int* NX,float* XBINS,float* VALMAX)
+    {
+
+    }
+    /*
+    *.==========>
+    *.           booking of a 1-dim histogram
+    *.           with non-equidistant bins
+    *..=========> ( R.Brun )
+    */
+
+
+    void hidopt_(int* ID1,const char* KKOPT) {}
 }

@@ -1,0 +1,297 @@
+CDECK  ID>, LEPAIR. 
+      PROGRAM LEPAIR
+      IMPLICIT NONE
+C
+C  Simple lepton pair generator without any underlying physics.
+C  Generates 4-vectors of back-to-back leptons in JADE MC /CPROD/ format.
+C
+C  08/11/2000 Pedro Movilla Fernandez
+C
+C  4-vector format for the JADE simulation program MCJADE
+C  (see JADE Computer Note 69)
+      REAL PP,PF,XM,XMF,BEAM,PT,THETA,PHI,PSTRT
+      INTEGER NEV,NP,NC,NN,JCH,JTP,JP,NF,NCF,NNF,ICF,ITF,IFLAVR
+      CHARACTER*16 CP,CF
+      COMMON/CPROD/ NEV,BEAM,PT,PHI,THETA,IFLAVR,
+     *        NP,NC,NN,PP(4,500),XM(500),JCH(500),JTP(500),JP(500,2),
+     *        NF,NCF,NNF,PF(4,300),XMF(300),ICF(300),ITF(300),
+     *        PSTRT(3,300)
+      COMMON/CHCPRD/ CP(500),CF(300)
+C  Stuff for FFREAD:
+      INTEGER NAMLEN,NBYTEW,NWONAM
+      PARAMETER( NAMLEN=80, NBYTEW=4, NWONAM=NAMLEN/NBYTEW )
+      CHARACTER*(NAMLEN) CHEVFILE
+      CHARACTER COPT*4
+      INTEGER NEVENT,LTYP
+      REAL CMS
+C
+      INTEGER HEVFILE(NWONAM),HOPT
+      INTEGER I,IEVT,LUN,IERR,LENOCC,INDEX
+      PARAMETER(  LUN=77 )
+      REAL UMASS(3) / 0.0 , 0.511E-3 , 0.1057 /
+      CHARACTER*16 LNAME(3) /'GAMMA','E','MU'/
+      REAL RN,TWOPI,RPHI,RTH
+      PARAMETER( TWOPI = 6.2831853 )
+      CHARACTER C16*16,CFORM*12
+Code:
+C
+C Initialize FFREAD
+      CALL FFINIT(0)
+      CALL FFSET('SIZE',8)
+C
+C Read FFREAD Cards
+      NEVENT= 1000
+      CALL FFKEY('NEVENT',NEVENT,1,'INTEGER')
+      CMS= 35.0
+      CALL FFKEY('CMS',CMS,1,'REAL')
+      LTYP= 1
+      CALL FFKEY('TYPE',LTYP,1,'INTEGER')
+      CALL VBLANK(HEVFILE,NWONAM)
+      CALL FFKEY('MCEVFILE',HEVFILE,NWONAM,'MIXED')
+      CALL VBLANK(HOPT,1)
+      CALL FFKEY('FORMAT',HOPT,1,'MIXED')
+      CALL FFGO
+C Check input
+      IF (LTYP.LT.1.OR.LTYP.GT.2) THEN
+         WRITE (*,'(A,I3,/A)') '...Wrong lepton flavour TYPE=,',LTYP
+     >        ,'...Will stop now!'
+         STOP
+      ENDIF
+      LTYP=LTYP+1
+      WRITE(*,'(/,A,F7.3)') '> Center-of-mass energy:',CMS
+      WRITE(*,'(A,I3)') '> Lepton flavour:',LTYP
+C
+C Output file
+C     Format
+      CALL UHTOC(HOPT,4,COPT,4)
+      IF (INDEX(COPT,'A').NE.0) THEN
+       WRITE (*,'(A)') '> Output of 4-vectors in readable ASCII format'
+       CFORM='FORMATTED'
+      ELSEIF (INDEX(COPT,'B').NE.0) THEN
+       WRITE (*,'(A)') '> Output of 4-vectors in binary CPROD format'
+       CFORM='UNFORMATTED'
+      ELSE
+         WRITE (*,FMT='('' COPT ='',A6,
+     +        '' option unknown'')')  COPT
+         STOP
+      ENDIF
+C     File name
+      CALL UHTOC(HEVFILE,NBYTEW,CHEVFILE,NAMLEN)
+      WRITE(*,'(A,A)') '> Output of 4-vectors to: '
+     &     ,CHEVFILE(1:LENOCC(CHEVFILE))
+      OPEN(UNIT=LUN,STATUS='NEW',FILE=CHEVFILE,FORM=CFORM)
+
+C
+C  Fill general stuff in common /CPROD/:
+C
+C     General info part
+      PT=0.
+      PHI=0.
+      THETA=0.
+      BEAM=CMS/2.0
+C     Event flavour in Z0/gamma
+      IFLAVR=0
+C---  List of 'all' (final + intermediate)  particles
+C     Total number of 'all' particles
+      NP=2
+      NN=0
+      NC=2
+      DO I=1,NP
+C     Particle type (JADE convention)
+         JTP(I)=LTYP
+C     Parent and first daughter of the particle
+         JP(I,1)=0
+         JP(I,2)=0
+C     Mass of the particle
+         XM(I)=UMASS(LTYP)
+      ENDDO
+C Charges (e+e-, mu+mu-)
+      JCH(1)=-1
+      JCH(2)=1
+C Flavour names
+      CP(1)=LNAME(LTYP)(1:INDEX(LNAME(LTYP),' ')-1)//'-'
+      CP(2)=LNAME(LTYP)(1:INDEX(LNAME(LTYP),' ')-1)//'+'
+C---  List of 'final' (stable)  particles
+C     Number of charged/neutral particles
+      NF=2
+C     Number of charged/neutral particles in the 'final' list
+      NNF=0
+      NCF=2
+C     Type/Mass/charge
+      DO I=1,NF
+         ITF(I)=JTP(I)
+         XMF(I)=XM(I)
+         ICF(I)=JCH(I)
+         CALL UCOPY(PP(1,I),PF(1,I),4)
+C     Origin of the particles in [mm]
+         PSTRT(1,I)=0.
+         PSTRT(2,I)=0.
+         PSTRT(3,I)=0.
+C     Flavour names
+         CF(I)=CP(I)
+      ENDDO
+C
+C     Dice the 4-vectors for NEVENT colinear lepton pairs
+      DO IEVT= 1,NEVENT
+C     /CPROD/ event counter
+         NEV=IEVT
+         CALL RANMAR(RN,1)
+         RPHI=RN*TWOPI
+         CALL RANMAR(RN,1)
+         RTH=RN*TWOPI
+C        -first particle
+         PP(1,1)=BEAM*SIN(RTH)*SIN(RPHI)
+         PP(2,1)=BEAM*SIN(RTH)*COS(RPHI)
+         PP(3,1)=BEAM*COS(RTH)
+         PP(4,1)=BEAM
+         CALL UCOPY(PP(1,1),PF(1,1),4)
+C        -second particle
+         PP(1,2)=-PP(1,1)
+         PP(2,2)=-PP(2,1)
+         PP(3,2)=-PP(3,1)
+         PP(4,2)=PP(4,1)
+         CALL UCOPY(PP(1,2),PF(1,2),4)
+C
+C     Write out common /CPROD/
+         IF (INDEX(COPT,'B').NE.0) THEN
+C     - Binary format (JADE 'CPROD' format)
+            CALL WRCPRD(LUN,IERR)
+            IF( IERR.NE.0 ) GOTO 90
+C     - Readable ASCII format
+         ELSE IF(INDEX(COPT,'A').NE.0) THEN
+            CALL PRCPRD(LUN,IERR)
+            IF( IERR.NE.0 ) GOTO 90
+         ENDIF
+      ENDDO
+C
+      WRITE (*,'(A,I8,1X,A,A)') '>',IEVT-1
+     >     ,LNAME(LTYP)(1:INDEX(LNAME(LTYP),' ')-1),
+     >     ' events generated succesfully!'
+      CLOSE( LUN )
+      STOP
+ 90   WRITE (*,'(A,I8,/A)') '...Error while writing out event!',IEVT
+     >               ,'...Will stop now!'
+      STOP
+      END
+CDECK  ID>, WRCPRD. 
+      SUBROUTINE WRCPRD(LUN,IERR)
+      IMPLICIT NONE
+*********************************************************************
+*.
+*.  Write out 4-vector information in a binary format
+*.  (JADE 'CPROD' format, see JADE Computer Note 69)
+*.
+*********************************************************************
+C  4-vector format for the JADE simulation program MCJADE
+C  (see JADE Computer Note 69)
+      REAL PP,PF,XM,XMF,BEAM,PT,THETA,PHI,PSTRT
+      INTEGER NEV,NP,NC,NN,JCH,JTP,JP,NF,NCF,NNF,ICF,ITF,IFLAVR
+      CHARACTER*16 CP,CF
+      COMMON/CPROD/ NEV,BEAM,PT,PHI,THETA,IFLAVR,
+     *        NP,NC,NN,PP(4,500),XM(500),JCH(500),JTP(500),JP(500,2),
+     *        NF,NCF,NNF,PF(4,300),XMF(300),ICF(300),ITF(300),
+     *        PSTRT(3,300)
+      COMMON/CHCPRD/ CP(500),CF(300)
+      INTEGER I1,I2,I3,I4,I5,N,N2
+      INTEGER LUN,IERR
+Code:
+      WRITE(UNIT=LUN,ERR=10,IOSTAT=IERR)
+     *     NEV, BEAM, PT, PHI, THETA, IFLAVR,
+     *     NP, NC, NN, ( (PP(I4,N), I4=1,4), XM(N), JCH(N), JTP(N),
+     *     (JP(N,I2), I2=1,2), N=1,NP),
+     *     NF, NCF, NNF, ( (PF(I4,N2),I4=1,4), XMF(N2), ICF(N2),ITF(N2),
+     *     (PSTRT(I3,N2),I3=1,3),N2=1,NF)
+      RETURN
+ 10   WRITE(LUN,'(A,2I7)') ' WRCPRD: WRITE ERROR, NEV, IOSTAT=',NEV,IERR
+      RETURN
+      END
+C
+CDECK  ID>, PRCPRD. 
+      SUBROUTINE PRCPRD(LUN,IERR)
+      IMPLICIT NONE
+*********************************************************************
+*.
+*.  Print out 4-vector information in common /CPROD/
+*.  in a readable format.
+*.
+*********************************************************************
+C  4-vector format for the JADE simulation program MCJADE
+C  (see JADE Computer Note 69)
+      REAL PP,PF,XM,XMF,BEAM,PT,THETA,PHI,PSTRT
+      INTEGER NEV,NP,NC,NN,JCH,JTP,JP,NF,NCF,NNF,ICF,ITF,IFLAVR
+      CHARACTER*16 CP,CF
+      COMMON/CPROD/ NEV,BEAM,PT,PHI,THETA,IFLAVR,
+     *        NP,NC,NN,PP(4,500),XM(500),JCH(500),JTP(500),JP(500,2),
+     *        NF,NCF,NNF,PF(4,300),XMF(300),ICF(300),ITF(300),
+     *        PSTRT(3,300)
+      COMMON/CHCPRD/ CP(500),CF(300)
+      INTEGER I1,I2,I3,I4,I5,N,N2
+      INTEGER LUN,IERR
+Code:
+      WRITE(LUN,'(/A,I8)') ' PRCPRD: Content of common /CPROD/ in event'
+     *     ,NEV
+      WRITE(LUN,'(/A6,I7,A6,F6.2,A8,I2)')
+     *     ' NEV=',NEV,' BEAM=',BEAM,' IFLAVR=',IFLAVR
+      WRITE(LUN,'(A14,3F7.4)') ' PT/PHI/THETA=',PT, PHI, THETA
+      WRITE(LUN,'(/A15,A10,3I4)') ' All particles:'
+     *     ,' NP/NC/NN=',NP, NC, NN
+      WRITE(LUN,'(T21,5A9,A5,A8,A6)')
+     *     'PP(1,I)','PP(2,I)','PP(3,I)','PP(4,I)','PP(5,I)'
+     *     ,'JCH','JTP','JP'
+      WRITE(LUN,'(I3,A17,5F9.3,I5,I8,2I4)')
+     *     ( N,CP(N),(PP(I4,N), I4=1,4), XM(N), JCH(N), JTP(N),
+     *     (JP(N,I2), I2=1,2), N=1,NP)
+      WRITE(LUN,'(/A23,A13,3I4)') ' Final state particles:'
+     *     ,' NF/NCF/NNF=',NF, NCF, NNF
+      WRITE(LUN,'(T21,5A9,2A5,A21)')
+     *     'PF(1,I)','PF(2,I)','PF(3,I)','PF(4,I)','PF(5,I)'
+     *     ,'ICF','ITF','PSTRT-X -Y -Z'
+      WRITE(LUN,'(I3,A17,5F9.3,2I5,3F9.3)')
+     *     (N2,CF(N2),(PF(I4,N2),I4=1,4), XMF(N2), ICF(N2),ITF(N2),
+     *     (PSTRT(I3,N2),I3=1,3),N2=1,NF)
+C
+      RETURN
+      END
+CDECK  ID>, INCPRD. 
+      SUBROUTINE INCPRD
+      IMPLICIT NONE
+*********************************************************************
+*.
+*.  Initialization of common /CPROD/
+*.
+*********************************************************************
+C  4-vector format for the JADE simulation program MCJADE
+C  (see JADE Computer Note 69)
+      REAL PP,PF,XM,XMF,BEAM,PT,THETA,PHI,PSTRT
+      INTEGER NEV,NP,NC,NN,JCH,JTP,JP,NF,NCF,NNF,ICF,ITF,IFLAVR
+      CHARACTER*16 CP,CF
+      COMMON/CPROD/ NEV,BEAM,PT,PHI,THETA,IFLAVR,
+     *        NP,NC,NN,PP(4,500),XM(500),JCH(500),JTP(500),JP(500,2),
+     *        NF,NCF,NNF,PF(4,300),XMF(300),ICF(300),ITF(300),
+     *        PSTRT(3,300)
+      COMMON/CHCPRD/ CP(500),CF(300)
+Code:
+      PT=0.
+      PHI=0.
+      THETA=0.
+      NP=0
+      NC=0
+      NN=0
+      NF=0
+      NCF=0
+      NNF=0
+      CALL VZERO(PP,4*500)
+      CALL VZERO(XM,500)
+      CALL VZERO(JCH,500)
+      CALL VZERO(JTP,500)
+      CALL VZERO(JP,2*500)
+      CALL VZERO(PF,4*300)
+      CALL VZERO(XMF,300)
+      CALL VZERO(ICF,300)
+      CALL VZERO(ITF,300)
+      CALL VZERO(PSTRT,3*300)
+      CALL VBLANK(CP,4)
+      CALL VBLANK(CF,4)
+      RETURN
+      END
+C

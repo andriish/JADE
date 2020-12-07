@@ -34,10 +34,10 @@ which $CMAKE
 if [ "$?" != "0" ]; then 
   echo 'cannot locate cmake' ; exit 1; 
 fi
-set -x
 
-tmp=$( echo "$*" | egrep -- '--\<prefix\>' | cut -f2 -d=)
-if test -n "$tmp"; then
+
+tmpprefix=$( echo "$*" | egrep -- '--\<prefix\>' | cut -f2 -d=)
+if test -n "$tmpprefix"; then
  if [ "$(uname)" == "Darwin" ]; then
  export TOP=$(greadlink -f $tmp)
  else
@@ -47,32 +47,52 @@ else
  export TOP=$(pwd)/installed
 fi
 ########################################################################
+tmptoolchain=$( echo "$*" | egrep -- '--\<toolchain\>' | cut -f2 -d=)
+toolchain=GNU
+if test -z "$tmptoolchain"; then
+ tmptoolchain="GNU"
+fi
+if  [ "$tmptoolchain" != "GNU" ] && [ "$tmptoolchain" !=  "Intel" ] && [ "$tmptoolchain" !=  "XL" ] && [ "$tmptoolchain" !=  "NAG" ]; then
+ echo "Unknown toolchain "$tmptoolchain" using GNU instead."
+ echo "Possible values for the toolchain are Intel, GNU, and XL"
+else 
+ toolchain=$tmptoolchain
+fi
+echo "Used toolchain="$toolchain
 ##This is for Intel on Linux
-#if [ "$(uname)" == "Linux" ]; then
- #module use /opt/intel/oneapi/debugger/latest/modulefiles
- #module use /opt/intel/oneapi/tbb/latest/modulefiles
- #module use /opt/intel/oneapi/dev-utilities/latest/modulefiles
- #module use /opt/intel/oneapi/compiler/latest/modulefiles
- #module use /opt/intel/oneapi/mpi/latest/modulefiles
- #module use /opt/intel/oneapi/clck/latest/modulefiles
- #module use /opt/intel/oneapi/itac/latest/modulefiles
- #module use /opt/intel/oneapi/mkl/latest/modulefiles
- #module use /opt/intel/oneapi/dal/latest/modulefiles
- #module use /opt/intel/oneapi/advisor/latest/modulefiles
- #module use /opt/intel/oneapi/inspector/latest/modulefiles
- #.  /opt/intel/oneapi/setvars.sh
- #export CC=icc
- #export CXX=icpc
- #export FC=ifort
-#fi
+if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "Intel" ]; then
+ .  /opt/intel/oneapi/setvars.sh
+ export CC=icc
+ export CXX=icpc
+ export FC=ifort
+fi
 ##This is for GNU on Linux
-if [ "$(uname)" == "Linux" ]; then
+if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "GNU" ]; then
  export CC=gcc
  export CXX=g++
  export FC=gfortran
 fi
+##This is for XL on Linux
+if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "XL" ]; then
+ export CC=xlc
+ export CXX=xlC
+ export FC=xlf
+fi
+##This is for NAG on Linux
+if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "NAG" ]; then
+ export CC=gcc
+ export CXX=g++
+ export FC=nagfor
+fi
+##This is for Intel on MacOSX
+if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "Intel" ]; then
+ .  /opt/intel/oneapi/setvars.sh
+ export CC=icc
+ export CXX=icpc
+ export FC=ifort
+fi
 ##This is for GNU/Clang on MacOSX
-if [ "$(uname)" == "Darwin" ]; then
+if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU" ]; then
  export CC=clang
  export CXX=clang++
  export FC=gfortran

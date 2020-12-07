@@ -4,48 +4,9 @@ SET(VERSION 2020.11)
 include("GNUInstallDirs")
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
+option( JADE_OLD_MC  "Compile old MC executables" ON)
 ########################################################################
-#Setup Fortran compiller
-if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -fallow-invalid-boz  -cpp -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
-  else()
-    set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS}  -std=legacy -g -ffixed-line-length-none -finit-local-zero   -fno-automatic -O0   -fno-align-commons ")
-  endif()
-endif()
-if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "Intel")
-#NOT USED
-  set(CMAKE_Fortran_FLAGS            "${CMAKE_Fortran_FLAGS} -g -O0  -diag-disable=6371 -diag-disable=7713 -diag-disable=8291 -noalign -noauto -zero     -nbs -extend-source 132")
-endif()
-if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
-#PPC64 only
-  set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}  -qfixed=256  -qsigtrap -g -qsave -qrndsngl -qmaxmem=-1 -qextname -qfloat=fltint:hsflt:hssngl:nans:rndsngl -qcharlen=32767 -qxlf77=leadzero -qfullpath -qctyplss -qintlog ")	
-#-q32  -melf32ppc
-endif()
-if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "SunPro")
-#NOT WELL TESTED
-#Local variables are static by default. Alternate is STATIC statement. 
-  set(CMAKE_Fortran_FLAGS           "${CMAKE_Fortran_FLAGS}   -ftrap=%none -f77 -e  -g  ")
-#-m32 
-endif()
-message(STATUS "Fortran compiler        : ${CMAKE_Fortran_COMPILER_ID}")
-message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
-########################################################################
-#Setup C++ compiller
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++1y" COMPILER_SUPPORTS_CXX1y)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-if(COMPILER_SUPPORTS_CXX1y)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
-else()
-  if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  else()
-    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
-  endif()
-endif()
-message(STATUS "C++ compiler            : ${CMAKE_CXX_COMPILER_ID}")
-message(STATUS "C++ compiler flags      : ${CMAKE_CXX_FLAGS}")
+include(JADE_compiler_setup)
 ########################################################################
   find_package(BLAS REQUIRED)
   find_package(LAPACK REQUIRED)
@@ -60,28 +21,7 @@ message(STATUS "LAPACK libraries        : ${LAPACK_LIBRARIES_DIR}")
 find_package(HepMC3)
 message(STATUS "HEPMC3 libraries        : ${HEPMC3_LIBRARIES} ${HEPMC3_ROOTIO_LIBRARIES}")
 ########################################################################
-set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
-find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
-if (ROOT_CONFIG)
-  message(STATUS "ROOTConfig.cmake found and will be used: ${ROOT_CONFIG}")
-  include(${ROOT_CONFIG})
-  message(STATUS "ROOT use file: ${ROOT_USE_FILE}")
-  include(${ROOT_USE_FILE})
-  if(ROOT_LIBRARIES AND ROOT_INCLUDE_DIRS)
-    set(ROOT_FOUND TRUE)
-  endif()
-else()
-  message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
-  find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
-endif()
-message(STATUS "ROOT includes : ${ROOT_INCLUDE_DIRS}")
-message(STATUS "ROOT libraries: ${ROOT_LIBRARIES}")
-message(STATUS "ROOT_FOUND    : ${ROOT_FOUND}")
-if(ROOT_FOUND)
-  include_directories(${ROOT_INCLUDE_DIRS})
-else()
-  message(STATUS "JADESOFT warning: ROOT not found")
-endif()
+include(JADE_ROOT_setup)
 ########################################################################
 option(JADE_USE_CERNLIB      OFF)
 if (JADE_USE_CERNLIB)
@@ -93,10 +33,13 @@ if (JADE_USE_CERNLIB)
 else()
   find_library(LIBPICOKERNLIB REQUIRED NAMES libpicokernlib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
   find_library(LIBPICOGRAFLIB REQUIRED NAMES libpicograflib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
-  set(PICOCERNLIB "${LIBPICOKERNLIB};${LIBPICOGRAFLIB};${ROOT_LIBRARIES}")
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+     set(PICOCERNLIB ${LIBPICOKERNLIB} ${LIBPICOGRAFLIB} ${ROOT_LIBRARIES} -lc++)
+  else()
+    set(PICOCERNLIB ${LIBPICOKERNLIB} ${LIBPICOGRAFLIB} ${ROOT_LIBRARIES} -lstdc++)
+  endif()
 endif()
-########################################################################
-set(JEXTERN_LIBRARIES  ${PICOCERNLIB}   -lstdc++)
+set(JEXTERN_LIBRARIES  ${PICOCERNLIB} )
 message(STATUS "JEXTERN_LIBRARIES    : ${JEXTERN_LIBRARIES}")
 set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
@@ -128,6 +71,7 @@ SET(ZLIB            zlib)
 
 # Define some directories
 SET(SRC ${CMAKE_SOURCE_DIR}/src2016)
+SET(UTIL ${CMAKE_SOURCE_DIR}/util2016)
 SET(SRCMAIN ${CMAKE_SOURCE_DIR}/main2016)
 SET(LIB ${CMAKE_SOURCE_DIR}/lib)
 SET(BIN ${CMAKE_SOURCE_DIR}/bin)
@@ -153,8 +97,11 @@ SET(SRCVERTEX         ${SRC}/vertex)
 SET(SRCWERTEX         ${SRC}/wertex)
 SET(SRCZLIB         ${SRC}/zlib)
 # Have the .mod files placed in the lib folder
-SET(CMAKE_Fortran_MODULE_DIRECTORY ${LIB})
-
+SET(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${LIB})
+#Workaround for gfortran bug
+if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
+ file(MAKE_DIRECTORY ${LIB} )
+endif()
 
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
   file(GLOB myfortag ${SRCTAGG}/*.for)
@@ -716,19 +663,19 @@ SET(ZE4V_src ${SRCZE4V}/ze4vjb.f ${SRCMCJADE}/mcrand.f ${SRCSUPERV}/showb.f )
 ADD_EXECUTABLE(${ZE4VEXE} ${ZE4V_src})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  TARGET_LINK_LIBRARIES(${JADEZEXE} -lc++ -mmacosx-version-min=10.12 ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  TARGET_LINK_LIBRARIES(${JADEZEXE}  -mmacosx-version-min=10.12 ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
 
-  TARGET_LINK_LIBRARIES(${JADEZROOTEXE} -lc++  -mmacosx-version-min=10.12 ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  TARGET_LINK_LIBRARIES(${JADEZROOTEXE}  -mmacosx-version-min=10.12 ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
 
-  TARGET_LINK_LIBRARIES(${MCJADEEXE}  -lc++ -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
+  TARGET_LINK_LIBRARIES(${MCJADEEXE}   -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
     ${JEXTERN_LIBRARIES}  )
 
-  TARGET_LINK_LIBRARIES(${SUPERVEXE}  -lc++ -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  TARGET_LINK_LIBRARIES(${SUPERVEXE}   -mmacosx-version-min=10.12 ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES}   )
 
-  TARGET_LINK_LIBRARIES(${ZE4VEXE}  -lc++ -mmacosx-version-min=10.12 ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  TARGET_LINK_LIBRARIES(${ZE4VEXE}   -mmacosx-version-min=10.12 ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} )
 else()
   TARGET_LINK_LIBRARIES(${JADEZEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
@@ -748,7 +695,117 @@ else()
     ${JEXTERN_LIBRARIES} -Wl,--end-group)
 endif()
 
+########################################################################
 
+SET(RCONVEXE  rconv)
+SET(CONVEXE   conv)
+ADD_EXECUTABLE(${CONVEXE} ${UTIL}/ccal/conv.f)
+TARGET_LINK_LIBRARIES(${CONVEXE}  ${JEXTERN_LIBRARIES})
+
+ADD_EXECUTABLE(${RCONVEXE} ${UTIL}/ccal/rconv.f)
+TARGET_LINK_LIBRARIES(${RCONVEXE}  ${JEXTERN_LIBRARIES})
+
+INSTALL(TARGETS ${CONVEXE} ${RCONVEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+
+SET(ZREADEXE      zread)
+ADD_EXECUTABLE(${ZREADEXE} ${UTIL}/zread/zread.f)
+INSTALL(TARGETS ${ZREADEXE}  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+TARGET_LINK_LIBRARIES(${ZREADEXE}  ${JEXTERN_LIBRARIES})
+
+#####################################################################
+
+if (JADE_OLD_MC)
+
+set( MCLIBS    ariadne408 coj623d herwig58d herwig59 jt63jade jt74opal pythia5722 ckern104 ckern105  px114 )
+foreach ( ml ${MCLIBS} )  
+ ADD_LIBRARY(${ml} STATIC ${UTIL}/mcgen/src/${ml}.f)
+endforeach (  ml ${MCLIBS} )
+
+ADD_LIBRARY(mc105j STATIC                        ${UTIL}/mcgen/mc/mc105j.f  )
+  
+
+if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
+  target_compile_options(coj623d  PRIVATE -fdefault-real-8 -fdefault-double-8)
+endif()
+
+ADD_EXECUTABLE(ar48p   ${UTIL}/mcgen/ariadne/mcar48p_105j.f  ${UTIL}/mcgen/src/pymaxi.f)
+TARGET_LINK_LIBRARIES(ar48p  PRIVATE 
+                       jt74opal 
+                       mc105j
+                       pythia5722
+                       ariadne408   
+                       ckern105   
+                       px114  
+                       ${JEXTERN_LIBRARIES}  ${BLAS_LIBRARIES})
+
+ADD_EXECUTABLE(cj623   ${UTIL}/mcgen/cojets/mccj623_105j.f ${UTIL}/mcgen/src/pystfu.f)
+TARGET_LINK_LIBRARIES(cj623   PRIVATE  
+                       mc105j 
+                       pythia5722 
+                       coj623d   
+                       ckern105   
+                       jt74opal   
+                       px114  
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+
+ADD_EXECUTABLE(hw59   ${UTIL}/mcgen/herwig/mchw59_105j.f )
+TARGET_LINK_LIBRARIES(hw59    PRIVATE                       
+                       mc105j 
+                       herwig59 
+                       ckern105   
+                       jt74opal  
+                       px114  
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+
+ADD_EXECUTABLE(hw58d   ${UTIL}/mcgen/herwig/mchw58d_105j.f )
+TARGET_LINK_LIBRARIES(hw58d   PRIVATE                        
+                       mc105j 
+                       herwig58d  
+                       ckern105   
+                       jt74opal  
+                       px114  
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+
+
+ADD_EXECUTABLE(jt63   ${UTIL}/mcgen/jetset/mcjt63_105j.f ${UTIL}/mcgen/src/lugive.f)
+TARGET_LINK_LIBRARIES(jt63   PRIVATE                    
+                       mc105j 
+                       jt63jade   
+                       ckern105   
+                       px114 
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}
+                       )
+
+ADD_EXECUTABLE(jt74   ${UTIL}/mcgen/jetset/mcjt74_105j.f )
+TARGET_LINK_LIBRARIES(jt74    PRIVATE                 
+                       mc105j  
+                       ckern105   
+                       jt74opal   
+                       px114  
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+
+
+ADD_EXECUTABLE(lepton   ${UTIL}/mcgen/lepton/lepton.f )
+TARGET_LINK_LIBRARIES(lepton    PRIVATE                
+                       mc105j 
+                       ckern105  
+                       jt63jade  
+                       px114  
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES} 
+                       ${INTERFACE} #ranmar
+                       )
+                       
+ADD_EXECUTABLE(py57   ${UTIL}/mcgen/pythia/mcpy57_105j.f ${UTIL}/mcgen/src/pymaxi.f ${UTIL}/mcgen/src/pystfu.f)
+TARGET_LINK_LIBRARIES(py57    PRIVATE                
+                       mc105j 
+                       ckern105  
+                       pythia5722
+                       jt74opal
+                       px114  
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+                       
+endif()
 ########################################################################
 INSTALL(TARGETS ${MCJADEEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 

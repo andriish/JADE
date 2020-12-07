@@ -20,7 +20,8 @@ C********************************************************************
       COMMON /CZSCAL/ IPVERS,ZAL,RESFAC,SECH(5)
 C----*----------------TCORR(4,96),XTALK(2,96),PAR(7,1536)-------------
 C-----------
-      COMMON/CALIBR/JPOINT(1)
+CAV      COMMON/CALIBR/JPOINT(1)
+      COMMON/CALIBR/JPOINT(100)
       DIMENSION ACALIB(1)
       EQUIVALENCE (JPOINT(1),ACALIB(1))
 C-----------

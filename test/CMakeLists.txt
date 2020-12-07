@@ -5,49 +5,19 @@ include("GNUInstallDirs")
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 ########################################################################
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++1y" COMPILER_SUPPORTS_CXX1y)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-if(COMPILER_SUPPORTS_CXX1y)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
-else()
-  if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  else()
-    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
-  endif()
-endif()
+include(JADE_compiler_setup)
 ########################################################################
-find_package(ROOT)
-set (ROOT_FIND_COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
-find_file(ROOT_CONFIG ROOTConfig.cmake HINTS $ENV{ROOTSYS} ${ROOT_DIR} NO_DEFAULT_PATH PATH_SUFFIXES cmake)
-if (ROOT_CONFIG)
-  message(STATUS "ROOTConfig.cmake found and will be used: ${ROOT_CONFIG}")
-  include(${ROOT_CONFIG})
-  message(STATUS "ROOT use file: ${ROOT_USE_FILE}")
-  include(${ROOT_USE_FILE})
-  if(ROOT_LIBRARIES AND ROOT_INCLUDE_DIRS)
-    set(ROOT_FOUND TRUE)
-  endif()
-else()
-  message(STATUS "ROOTConfig.cmake not found, trying to use FindROOT.cmake...")
-  find_package(ROOT QUIET REQUIRED COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
-endif()
-message(STATUS "ROOT includes : ${ROOT_INCLUDE_DIRS}")
-message(STATUS "ROOT libraries: ${ROOT_LIBRARIES}")
-message(STATUS "ROOT_FOUND    : ${ROOT_FOUND}")
-if(ROOT_FOUND)
-  include_directories(${ROOT_INCLUDE_DIRS})
-else()
-  message(STATUS "JADESOFT warning: ROOT not found")
-endif()
+include(JADE_ROOT_setup)
 ########################################################################
-macro( jade_fortran_test testname gnuenv  intelenv)
+macro( jade_fortran_test testname gnuenv  intelenv nagenv)
   if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "GNU")
      set_property( TEST ${testname} PROPERTY ENVIRONMENT "${gnuenv}") 
   endif()
   if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "Intel")
      set_property( TEST ${testname} PROPERTY ENVIRONMENT "${intelenv}") 
+  endif()
+  if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "NAG")
+     set_property( TEST ${testname} PROPERTY ENVIRONMENT "${nagenv}") 
   endif()
 endmacro( jade_fortran_test )
 
@@ -65,9 +35,14 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/bupdat1.b    ${CMAKE_CURRENT_BINA
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006    ${CMAKE_CURRENT_BINARY_DIR}/jadetapes/JAD073/file006 COPYONLY)
 
 
-
 add_test(NAME FPTOBOS_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/fptobos1.card  ${JADEPREFIX}/bin/fptobos)
-jade_fortran_test(FPTOBOS_1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=") 
+jade_fortran_test(FPTOBOS_1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " ") 
+
+#add_test(NAME SUPERV_DATA1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/supervfile006.card  ${JADEPREFIX}/bin/superv ) 
+#set_property( TEST SUPERV_DATA1 PROPERTY  DEPENDS FPTOBOS_1) 
+#jade_fortran_test(SUPERV_DATA1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100") 
+#NOTE: superv.stat needs a random number generator seeds. Otherwise it will use the same each time
+
 
 if(NOT PYTHIA8_FOUND)
   message(STATUS "JADE test: Pythia8 package not found, was disabled or too old. The minimal supported Pythia8 version is 8.220. Please check if PYTHIA8_ROOT_DIR is set properly.") 
@@ -90,24 +65,24 @@ else()
   
   add_test(NAME MCJADE_MC1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/mcjade1.card  ${JADEPREFIX}/bin/mcjade )
   set_property( TEST MCJADE_MC1 PROPERTY DEPENDS HepMC3_to_CPROD_MC1)   
-  jade_fortran_test(MCJADE_MC1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=")
+  jade_fortran_test(MCJADE_MC1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " " )
 
   add_test(NAME SUPERV_MC1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/superv1.card  ${JADEPREFIX}/bin/superv ) 
   set_property( TEST SUPERV_MC1 PROPERTY  DEPENDS CPROD_BOS_MC1) 
-  jade_fortran_test(SUPERV_MC1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100") 
+  jade_fortran_test(SUPERV_MC1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " " ) 
   #NOTE: superv.stat needs a random number generator seeds. Otherwise it will use the same each time
    
   add_test(NAME ZE4V_MC1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/ze4v1.card  ${JADEPREFIX}/bin/ze4v)
   set_property( TEST ZE4V_MC1 PROPERTY  DEPENDS SUPERV_MC1) 
-  jade_fortran_test(ZE4V_MC1 "GFORTRAN_CONVERT_UNIT=big_endian" "F_UFMTENDIAN=big") 
+  jade_fortran_test(ZE4V_MC1 "GFORTRAN_CONVERT_UNIT=big_endian" "F_UFMTENDIAN=big" " ") 
 
   add_test(NAME JZREAD_MC1 COMMAND  sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/jzread1.card  ${JADEPREFIX}/bin/jzread )
   set_property( TEST JZREAD_MC1 PROPERTY  DEPENDS ZE4V_MC1) 
-  jade_fortran_test(JZREAD_MC1 PROPERTY ENVIRONMENT "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=") 
+  jade_fortran_test(JZREAD_MC1 PROPERTY ENVIRONMENT "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " ") 
 
   add_test(NAME JTJOB_MC1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/jtjob1.card  ${JADEPREFIX}/bin/jtjob)
   set_property( TEST JTJOB_MC1 PROPERTY  DEPENDS JZREAD_MC1) 
-  jade_fortran_test(JTJOB_MC1 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22" "F_UFMTENDIAN=big:2,22") 
+  jade_fortran_test(JTJOB_MC1 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22" "F_UFMTENDIAN=big:2,22" "FORT_CONVERT2=big_ieee FORT_CONVERT22=big_ieee") 
 
 endif()
 
