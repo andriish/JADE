@@ -26,12 +26,12 @@ find_package(Pythia8 8.220)
 ENABLE_TESTING()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/wrapper.sh.in      ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/aupdat1      ${CMAKE_CURRENT_BINARY_DIR}/aupdat1 COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/aupdat1.b    ${CMAKE_CURRENT_BINARY_DIR}/aupdat1.b COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/bupdat0      ${CMAKE_CURRENT_BINARY_DIR}/bupdat0 COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/bupdat0.b    ${CMAKE_CURRENT_BINARY_DIR}/bupdat0.b COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/bupdat1      ${CMAKE_CURRENT_BINARY_DIR}/bupdat1 COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/old/bupdat1.b    ${CMAKE_CURRENT_BINARY_DIR}/bupdat1.b COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/cal/aupdat1      ${CMAKE_CURRENT_BINARY_DIR}/aupdat1 COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/cal/aupdat1.b    ${CMAKE_CURRENT_BINARY_DIR}/aupdat1.b COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/cal/bupdat0      ${CMAKE_CURRENT_BINARY_DIR}/bupdat0 COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/cal/bupdat0.b    ${CMAKE_CURRENT_BINARY_DIR}/bupdat0.b COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/cal/bupdat1      ${CMAKE_CURRENT_BINARY_DIR}/bupdat1 COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/cal/bupdat1.b    ${CMAKE_CURRENT_BINARY_DIR}/bupdat1.b COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006    ${CMAKE_CURRENT_BINARY_DIR}/jadetapes/JAD073/file006 COPYONLY)
 
 
