@@ -1,0 +1,65 @@
+C   23/11/81 311291534  MEMBER NAME  RNCONT   (S)           FORTRAN
+      FUNCTION RNCONT(A)
+C
+C     GENERATES RANDUM NUMBERS
+C       F(X) = X**A(1)/(EXP(A(3))+X**A(1))*EXP(A(2)*X)
+C
+      COMMON /NRNDM/ NRNDM
+      DIMENSION A(3)
+      DIMENSION YMAX(150),AREA(150)
+      DIMENSION Y(151)
+      DATA IXDIV/ 15/
+      DATA ISW/ 0/
+      DATA FACT/ 1.2/
+C
+C
+      XWID=1.5/FLOAT(IXDIV)
+C
+      ASUM=0.
+C
+      DO 5 I=1,IXDIV
+      X=FLOAT(I-1)*XWID
+      Y(I)=X**A(1)/(EXP(A(3))+X**A(1))*EXP(A(2)*X)
+    5 CONTINUE
+C
+      X=1.5
+      Y(IXDIV+1)=X**A(1)/(EXP(A(3))+X**A(1))*EXP(A(2)*X)
+C
+      DO 10 I=1,IXDIV
+      YMAX(I)=AMAX1(Y(I),Y(I+1))
+      AREA(I)=ASUM+YMAX(I)*XWID
+      ASUM=AREA(I)
+C     WRITE(6,620) I,XLOW,YMAX(I),AREA(I),ASUM
+  620 FORMAT(1H ,I2,' X = ',F15.7,'  YMAX,AREA = ',2F15.7,
+     *           '  ASUM = ',F15.7)
+   10 CONTINUE
+C
+      IF(ISW.NE.0) GO TO 100
+      ISW=1
+      DO 50 I=1,IXDIV
+C     WRITE(6,660) I,YMAX(I),AREA(I)
+  660 FORMAT(1H ,I3,'  YMAX,AREA = ',2F15.7)
+   50 CONTINUE
+C
+      NRNDM=0
+C
+  100 RNA=ASUM*RN(DUM)
+C
+      NRNDM=NRNDM+1
+C
+      DO 30 I=1,IXDIV
+      IF(RNA.LT.AREA(I)) GO TO 200
+   30 CONTINUE
+C
+      STOP
+C
+  200 XMIN=FLOAT(I-1)*XWID
+C
+      X=XMIN+XWID*RN(DUM)
+      FVAL=RN(DUM)*YMAX(I)*FACT
+      IF(FVAL.GT.X**A(1)/(EXP(A(3))+X**A(1))*EXP(A(2)*X)) GO TO 100
+C
+      RNCONT=X
+      RETURN
+C
+      END
