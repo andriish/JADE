@@ -2,7 +2,7 @@
 #Setup Fortran compiller
 include(CheckFortranCompilerFlag)
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
-  set(Fortran_FLAGS_TO_CHECK "-fallow-invalid-boz" "-fallow-argument-mismatch" )
+  set(Fortran_FLAGS_TO_CHECK "-fallow-invalid-boz" "-fallow-argument-mismatch"  "-Wno-argument-mismatch" )
   foreach(fl ${Fortran_FLAGS_TO_CHECK})
     CHECK_Fortran_COMPILER_FLAG(${fl} Fortran_COMPILER_SUPPORTS_${fl})
     if(Fortran_COMPILER_SUPPORTS_${fl})
