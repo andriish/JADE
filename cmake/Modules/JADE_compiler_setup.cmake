@@ -41,7 +41,7 @@ message(STATUS "C compiler flags      : ${CMAKE_C_FLAGS}")
 ########################################################################
 #Setup C++ compiller
 include(CheckCXXCompilerFlag)
-set(CXX_FLAGS_TO_CHECK "-std=c++11 -std=c++1y -Wno-implicit-int" )
+set(CXX_FLAGS_TO_CHECK "-std=c++11" "-std=c++1y" "-Wno-implicit-int" )
 foreach(fl ${CXX_FLAGS_TO_CHECK})
   CHECK_CXX_COMPILER_FLAG(${fl} CXX_COMPILER_SUPPORTS_${fl})
   if(CXX_COMPILER_SUPPORTS_${fl})
