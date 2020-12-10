@@ -35,7 +35,8 @@ C
       COMMON / BCS / IW(1)
       DIMENSION HW(1),RW(1)
       EQUIVALENCE (HW(1),IW(1),RW(1))
-      LOGICAL FIRST / .TRUE. /
+      LOGICAL FIRST 
+      DATA FIRST / .TRUE. /
 C
       IF( FIRST ) THEN
         FIRST = .FALSE.

@@ -37,7 +37,8 @@ C
       EQUIVALENCE (HW(1),IW(1),RW(1))
       DIMENSION LADD(-1:2)
       INTEGER RUN, EVENT
-      LOGICAL FIRST / .TRUE. /
+      LOGICAL FIRST 
+      DATA FIRST / .TRUE. /
 C
 C
       IF( FIRST ) THEN

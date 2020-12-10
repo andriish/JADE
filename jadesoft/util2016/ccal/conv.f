@@ -22,11 +22,13 @@ C
 C
       INTEGER NUNIT,MUNIT,NWORD,IRET,IOUT,NREC,MAXREC
       DATA NUNIT/10/,MUNIT/11/
-      CHARACTER*100 CFILE/'aupdat1'/,CFILEC/'aupdat1.b'/
+      CHARACTER*100 CFILE, CFILEC
+      DATA CFILE /'aupdat1'/, CFILEC/'aupdat1.b'/
       DATA MAXREC /-1/
 C
       INTEGER I,J,K,L,M,N
-      LOGICAL FIRST /.TRUE./
+      LOGICAL FIRST 
+      DATA FIRST /.TRUE./
 C
 C Open formatted calibration file
       OPEN(NUNIT,FILE=CFILE,FORM='FORMATTED',STATUS='UNKNOWN')
@@ -111,7 +113,8 @@ C
       LOGICAL FIRST
 C
       INTEGER IOPT,IFORC
-      CHARACTER*34 SBANK/'JTPL LGMA LGST MUCA SPTG TAGF TAGS'/
+      CHARACTER*34 SBANK
+      DATA SBANK /'JTPL LGMA LGST MUCA SPTG TAGF TAGS'/
       CHARACTER BANK*4,OBANK*4
       INTEGER  NBANKS
       PARAMETER (NBANKS=17)
@@ -279,9 +282,10 @@ C
      +     ,(SLINE(1),KLINE(1))
 C
       CHARACTER CLINE*200,CLINE0*201,CH*1,CHS*1
-      CHARACTER*2 CLEN(-1:2)/'*4','*4','*2','*2'/
+      CHARACTER*2 CLEN(-1:2)
+      DATA CLEN /'*4','*4','*2','*2'/
       CHARACTER*4 CTYPE(-1:4)
-     +     /'char','blnk','bit ','int ','real','dble'/
+      DATA CTYPE     /'char','blnk','bit ','int ','real','dble'/
 C
       LOGICAL FLIP
 C     
