@@ -22,9 +22,12 @@ C
       IMPLICIT INTEGER*2 (H)
 C
 C
-      INTEGER ILIST(21)/68,  71, 100, 248, 254, 332, 360, 366, 449, 456,
+      INTEGER ILIST(21)
+      DATA ILIST/68,  71, 100, 248, 254, 332, 360, 366, 449, 456,
      *                 548, 555, 569, 576, 615, 740, 744, 871, 906, 908,
-     *                 946 /, ICUR / 1 /
+     *                 946 /
+      INTEGER ICUR 
+      DATA ICUR / 1 /
 C
       COMMON / BCS / IW(1)
       DIMENSION HW(1),RW(1)
@@ -44,10 +47,13 @@ C  CUT VALUES
      + DFHCUT,SUMCUT,ENECUT,PCHCUT,ESHCUT,JEVERS,EPCUT,EPHCUT,AMICUT
 C
       REAL*4 RVTX(3), PACT(3), RDOCA(3)
-      INTEGER ONE / 1 /
+      INTEGER ONE 
+      DATA ONE / 1 /
       LOGICAL LDEDX
-      INTEGER LEVEL1 / 0 /, LEVEL2 / 0 /, LEVEL3 / 0 /
-      LOGICAL FIRST / .TRUE. /
+      INTEGER LEVEL1 , LEVEL2 , LEVEL3 
+      DATA LEVEL1 / 0 /, LEVEL2 / 0 /, LEVEL3 / 0 /
+      LOGICAL FIRST 
+      DATA FIRST / .TRUE. /
       EXTERNAL EKAND
 C
       IF( FIRST ) THEN

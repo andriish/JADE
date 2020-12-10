@@ -15,10 +15,14 @@ C
       EQUIVALENCE (HW(1),RW(1),IW(1))
 #include "calibr.for"
       REAL*4 R(3)
-      INTEGER NHZCT / 7 /
-      REAL*4 ZMXCT / 80. /
-      INTEGER IPVXDF / 16389 /
-      INTEGER IEV / 0 /
+      INTEGER NHZCT 
+      DATA NHZCT/ 7 /
+      REAL*4 ZMXCT 
+      DATA ZMXCT / 80. /
+      INTEGER IPVXDF 
+      DATA IPVXDF / 16389 /
+      INTEGER IEV 
+      DATA IEV / 0 /
 C
       IEV = IEV + 1
       DO 1 I=1,3

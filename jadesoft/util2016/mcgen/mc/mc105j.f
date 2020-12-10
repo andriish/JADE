@@ -1560,7 +1560,9 @@ C  Stuff for FFREAD:
       SAVE /MCFFR/
       INTEGER IDIM,NTRAK,I,II,III,LUCHGE,LUCOMP
       REAL PTRAK(IDIM,*)
-      INTEGER IERR,IREP,ICALL /0/
+      INTEGER IERR,IREP
+      INTEGER ICALL 
+      DATA ICALL/0/ 
       SAVE ICALL
 C
 C  Edit JETSET event record to leave only "stable" particles:

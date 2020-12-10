@@ -39,11 +39,14 @@ C
 C
       DIMENSION PACT(3), R(3), RDOCA(3)
 C                                           MAX NO OF PARTONS STORED
-      INTEGER NPRONM / 0 /
+      INTEGER NPRONM 
+      DATA NPRONM / 0 /
 C                                           DATE
-      INTEGER DATE   / 0 /
+      INTEGER DATE   
+      DATA DATE   / 0 /
 C
-      INTEGER NWARN(2) / 2*0 /
+      INTEGER NWARN(2) 
+      DATA NWARN / 2*0 /
       DATA IEV / 0 /, IEVLIM / 0 /
 C                                            FORMAT OF ZEHD BANK
       DIMENSION HRUN(2)

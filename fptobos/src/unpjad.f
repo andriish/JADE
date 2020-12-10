@@ -62,7 +62,8 @@ C**************************************
       DIMENSION NRUNSD(8)
       CHARACTER*(*) DSNAME*52,CBNAME*4,CHASCI*4
 **************************
-      LOGICAL ISTART /.TRUE./
+      LOGICAL ISTART 
+      DATA ISTART /.TRUE./
       SAVE
 *
 * ---------------  CODE  -----------------------------

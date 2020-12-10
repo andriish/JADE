@@ -9,19 +9,25 @@ C
       IMPLICIT NONE
 C
 C Insert HERE name of file to be converted
-      CHARACTER CIN*100 /'aupdat1.b'/
-      INTEGER NUNIT/10/
+      CHARACTER CIN*100 
+      DATA CIN /'aupdat1.b'/
+      INTEGER NUNIT
+      DATA NUNIT/10/
 C 
 C Insert HERE name, number and validation date of a bank
 **      CHARACTER*4 BANK /'VTXC'/  
 **      INTEGER NR /1/,IDATE /225118651/
 *      CHARACTER*4 BANK /'JTPL'/  
 *      INTEGER NR /1/,IDATE /14688000/
-      CHARACTER*4 BANK /'MUCA'/  
-      INTEGER NR /2/,IDATE /171331200/
+      CHARACTER*4 BANK   
+      DATA BANK /'MUCA'/  
+      INTEGER NR ,IDATE 
+      DATA NR /2/
+      DATA IDATE /171331200/
 C
       INTEGER ICYCL
-      LOGICAL SEE/.FALSE./
+      LOGICAL SEE
+      DATA SEE/.FALSE./
 C
       REAL ABUF(10000)
       INTEGER IBUF(10000)
