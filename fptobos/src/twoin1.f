@@ -9,7 +9,8 @@
 *         J.Olsson   13.12.2005
 *
       INTEGER IUPP,ILOW
-      DATA IUPP,ILOW /'FFFF0000'X,'0000FFFF'X/
+CAV USE STANDARD PREFIX SYNTAX
+      DATA IUPP,ILOW /Z'FFFF0000',Z'0000FFFF'/
 *
 * ---------  CODE  --------------
 *

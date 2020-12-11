@@ -14,8 +14,9 @@
       DATA CHAS(81:120) /'PQRSTUVWXYZ[ ]^_`abcdefghijklmnopqrstuvw'/
       DATA CHAS(121:128)/'xyz{|}~ '/
 *
-      DATA IBYT1,IBYT2 /'FF000000'X,'00FF0000'X/
-      DATA IBYT3,IBYT4 /'0000FF00'X,'000000FF'X/
+CAV USE STANDARD PREFIX SYNTAX
+      DATA IBYT1,IBYT2 /Z'FF000000',Z'00FF0000'/
+      DATA IBYT3,IBYT4 /Z'0000FF00',Z'000000FF'/
 *
 * ----------------------  CODE  --------------------
 *
