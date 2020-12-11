@@ -4,7 +4,6 @@ building JADE software.
   - ``Modules/JADE_compiler_setup.cmake`` is a scripts that sets up the compilers on different platforms.
   - ``Modules/JADE_ROOT_setup.cmake`` is a script that sets up ROOT. The main purpose of this script is 
       to prevent propagation of undesireable compiler flags. 
-  - ``Modules/FindHepMC2.cmake`` is needed to look for the HepMC2 installation.
   - ``Modules/FindPythia8.cmake`` is  needed to look for the Pythia8 installation.
   - ``Modules/FindCERNLIB.cmake`` is needed to look for the CERNLIB if the CERNLIB is used at all.
 
