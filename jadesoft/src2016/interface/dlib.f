@@ -73,7 +73,6 @@ C
       INTEGER ISL
       COMMON /SLATE/ ISL(40)
 C
-      WRITE(*,*)'DAY2-->'
       CALL DATIME(IDUMMY,IDUMMY)
       DAT(1)=ISL(1)
       DAT(2)=0
@@ -94,7 +93,7 @@ C
       ENDIF
 C
        
-      write(*,*)'DAT---->', DAT(1),DAT(2),DAT(3),DAT(4),DAT(5)
+CAV      write(*,*)'DAT', DAT(1),DAT(2),DAT(3),DAT(4),DAT(5)
 CAV      write(*,*) IDUMMY
       RETURN
       END

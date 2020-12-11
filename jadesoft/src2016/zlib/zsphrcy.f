@@ -27,13 +27,10 @@ C
        T(4) = T(4) - P(1,J)*P(3,J)
        T(5) = T(5) - P(2,J)*P(3,J)
    20  T(6) = T(6) + P(1,J)*P(1,J) + P(2,J)*P(2,J)
-       write(*,*)'BF EI'
 CCCCCCCCC
 C   DIAGONALIZE MOMENTUM TENSOR T
 C
 CAV       CALL EIGEN( T, R, 3, 0 )
-       write(*,*)'BF EI2'
-
 C
 C      LOAD SPHERICTY AND JET AXIS
 C

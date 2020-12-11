@@ -29,13 +29,10 @@ C                                           COPY VECTORS
   200 PC(4,K) = P(6,J)
 C
 C                                           SPHERICITY
-      write(*,*)'AKP1'
       IF( ISPH.NE.0 ) CALL zSPHRCY( PC, NMOM, SPH, AXISSP ) ! PMF 11/04/00 SPHRCY->zSPHRCY
 C                                           THRUST
-      write(*,*)'AKP2'
       IF( ITH.NE.0 ) CALL THRUST( PC, NMOM, 15, THR, AXISTH, IER )
 C                                      AKOPLANARITY
-      write(*,*)'AKP3'
       IF( IAKO.NE.0 ) CALL AKOP( PC, NMOM, 15, AKO, AXISAK, IER )
 C
 C                                           COPY TO LOCATIONS IN P

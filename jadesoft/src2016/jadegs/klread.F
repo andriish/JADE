@@ -318,17 +318,15 @@ C        ITIME(4)=1
 C        ITIME(5)=1
 C        ITIME(6)=1986
 CAV
-      write(*,*)'TIME AV'
 CAV  IT LOOKS THE TWO LAST ARE SWITCHED FOR WHATEVER STUPID REASON
+      IF (ITIME(5). GE. 50 ) THEN
       ITIME(6)=HDATA(IHHEAD+7)
       ITIME(5)=HDATA(IHHEAD+8)      
+      ENDIF
 CAV
       IEVTIM=KTMCON(ITIME,NOW,LASTIM)
 C
 C                          CHECK IF EVENT TIME IN RANGE OF CONSTANTS
-CAV
-      write(*,*)'TIME AV'
-CAV
       write(*,*) ITIME(1),ITIME(2),ITIME(3),ITIME(4),ITIME(5),ITIME(6) 
       write(*,*) LSTIME(1) 
       write(*,*) IEVTIME 

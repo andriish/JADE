@@ -21,8 +21,6 @@ macro( jade_fortran_test testname gnuenv  intelenv nagenv)
   endif()
 endmacro( jade_fortran_test )
 
-
-
 find_package(HepMC3 REQUIRED)
 find_package(Pythia8 8.220)
 ENABLE_TESTING()
@@ -35,6 +33,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/cal/bupdat0.b    ${CMAKE_
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/cal/bupdat1      ${CMAKE_CURRENT_BINARY_DIR}/bupdat1 COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/cal/bupdat1.b    ${CMAKE_CURRENT_BINARY_DIR}/bupdat1.b COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006    ${CMAKE_CURRENT_BINARY_DIR}/jadetapes/JAD073/file006 COPYONLY)
+
 
 add_test(NAME FPTOBOS_1_CLEANUP COMMAND rm -f ${CMAKE_CURRENT_BINARY_DIR}/file006.bos)
 add_test(NAME FPTOBOS_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/fptobos1.card  ${JADEPREFIX}/bin/fptobos)
