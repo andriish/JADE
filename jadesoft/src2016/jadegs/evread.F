@@ -85,7 +85,8 @@ C
       IMUCO = IBLN('MUCO')
             
 C                                            CADMIN FLAG
-CAV  THIS LINE IS NNEDED FOR THE REAL DATA BUR IS NOT IMPLEMENTED?    LBREAD(3) = .TRUE. 
+CAV  THIS LINE IS NNEDED FOR THE REAL DATA BUR IS NOT IMPLEMENTED?    
+      LBREAD(3) = .TRUE. 
 
       FLG100 = .FALSE.
       IF( IFLG .EQ. 100 ) FLG100 = .TRUE.

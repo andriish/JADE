@@ -6,7 +6,7 @@ SVSTART ON
 C First and last event to be reconstructed
 C      LAST=0: process until end of input file
 FIRST  1
-LAST   100000
+LAST   0
 
 C Name of the input BOS file
 MCBOS './file006.bos'
@@ -20,9 +20,9 @@ C - Name of the calibration file
 AUPDAT0
 './aupdat1.b'
 BUPDAT0
-'./bupdat0.b'
+''
 BUPDAT1
-'./bupdat1.b'
+''
 
 
 C - Calibration constants reading flags

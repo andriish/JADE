@@ -110,7 +110,9 @@ C                                      INIT ERROR MESSAGES
       CALL FEHLTX( 19,'CORR. ECL < 0 (NO CL. IN LGANAL)')
 C                                   CHECK IF MONTE CARLO
       IRUN = IRNEVT(DUMMY)
-      MC = HRUN(1).LT.100
+CAV     MC = HRUN(1).LT.100
+      MC = HRUN(1).LT.10
+      write(*,*)' OURRUN= ',HRUN(1),MC
 C                                   CALC LENGTH OF BANK
       LZEHD = LZHD + LCUT + LMCH
 C                                   CREATE NEW BANK
@@ -208,7 +210,8 @@ C
       ENDIF
 C
 C                                      IF NOT MC LMC = 0
-      MC = HRUN(1).LT.100
+CAV      MC = HRUN(1).LT.100
+      MC = HRUN(1).LT.10
       IF( MC ) THEN
         LMC = 1 + NPRONM*4
       ELSE
@@ -326,6 +329,7 @@ C
       LP = IW( NPPATR + 3 )
       IP9 = IP0 + ( NTR - 1) * LP
 C                                      LOCATE HWDS
+      write(*,*)'good',IP0, IP9, LP
       CALL CLOC( NPHWDS, 'HWDS', IW(NPPATR-2) )
 C                                           LOOP OVER TRACKS
       DO 300 J = IP0, IP9, LP
@@ -339,6 +343,7 @@ C                                           LOOP OVER TRACKS
         CALL PRTOCI( J, CAP, RMIN, PHIM, SIG )
         IF( ABS( RMIN ) .GT. RMINCT )    CALL FEHLER ( 14, *300 )
 C                                      SET REFERNCE POINT FOR CRDOCA
+                write(*,*)'good1111'
         CALL CRDOCA( J, R, PACT, RDOCA, CHARGE )
         PTOT = SQRT( PACT(1)**2 + PACT(2)**2 + PACT(3)**2 )
         IF( PTOT .LT. PCT )      CALL FEHLER ( 15, *300 )
@@ -360,6 +365,7 @@ C                                      EX,EY,EZ
         DO 1200 I = 1,3
           RW( NP + I ) = PACT(I)/PTOT
  1200   CONTINUE
+                 write(*,*)'good9'
 C                                      # OF VERTEX OF PARTICLE ORIGIN
         HW( NP2 + 9) = 1
 C                                      # OF SEC VERTEX
@@ -392,11 +398,13 @@ C                                      LG-INFORMATION
 C
         NPART = 0
         NPHOT = IW(IPPHOT)
+                write(*,*)'good11'
         DO 210 WHILE( NPHOT.GT.0 .AND. NPART.EQ.0 )
           IF(IW(NPHOT+24).EQ.IW(J+1)) NPART = IW(NPHOT+25)
           IF(IW(NPHOT+25).EQ.IW(J+1)) NPART = IW(NPHOT+24)
           NPHOT = IW(NPHOT-1)
   210   CONTINUE
+                  write(*,*)'good12'
 C                                      PATR NUMBER OF PHOT PARTNER
   220   HW( NP2 + 7 ) = NPART
 C                                           MC PART
@@ -415,9 +423,11 @@ C                                      NEW ENTRY IN ZE4VMC
         ENDIF
 C                                      NUMBER OF CORR. TPTR BANK
         NPTPTR = IW(IBLN('TPTR'))
+        write(*,*)'good15'
         DO 230 WHILE( NPTPTR.GT.0 .AND. HW(NPTPTR*2+4).NE.NUMTRK )
           NPTPTR = IW(NPTPTR-1)
   230   CONTINUE
+          write(*,*)'good16'
         IF( NPTPTR .GT. 0 ) THEN
           HW(NP2 + 17 ) = IW(NPTPTR-2)
         ELSE
@@ -447,6 +457,7 @@ C                                      (X,Y,Z) TRACK AT DOCA
         RW( NP + LT + 7) = RDOCA( 2 )
         RW( NP + LT + 8) = RDOCA( 3 )
 C
+        write(*,*)'good2'
         DEDX = 0.
         SIDEDX = 0.
         MUONQU = 0
@@ -499,6 +510,7 @@ C
   300 CONTINUE
 C                                      SAVE PATR BANK SINCE LG ANALYSIS
 C                                      OVERWRITES CLUSTER INFORMATION
+              write(*,*)'good22222'
       IPPATR = IBLN('PATR')
       NPPATR = IW(IPPATR)
       IF( NPPATR.GT.0 ) THEN
@@ -518,6 +530,7 @@ C                                      RESTORE PATR
         ENDIF
         CALL BDLS( '--BU', 1 )
       ENDIF
+              write(*,*)'good2rr'
 C
 C
 C------------------------------------- NEUTRAL PRIMARY
@@ -612,6 +625,7 @@ C                                      # OF (BLOCKS - CH TRACKS) (2.CL)
 C
 C
  2050 CONTINUE
+               write(*,*)'good2tttyyy'
 C
       IF( LVECS.NE.0 ) GO TO 2100
          N = HW( NPZE4V*2 + 6 )
@@ -622,13 +636,17 @@ C                                           SAVE AWAY BLANK COMMON
  2100 CONTINUE
       IF( IEV.LT.IEVLIM) CALL BPRS( 'ZE4V', IGEN )
       CALL ZE4VUN( NST, N, 0 )
+      
+              write(*,*)'good2tffff'
       IF( N.LE.0 ) GO TO 2150
          IF( IEV.LT.IEVLIM) CALL PWRT( NST+1, NST+N, 10000 )
          NPZE4V = IW(IBLN('ZE4V'))
+         write(*,*)'good2deded000000'
          CALL zSPTHAK( NST+1, NST+N, NST+N+4, THR, ! PMF 11/04/00 SPTHAK->zSPTHAK
      &                              NST+N+1, SPH,
      &                              NST+N+5, AKO, IER )
 C                                      SPHERICITY
+                 write(*,*)'good2deded'
          CALL UCOPY( P(1,NST+N+1), RW(NPZE4V+ 9), 4 )
          CALL UCOPY( P(1,NST+N+2), RW(NPZE4V+13), 4 )
          CALL UCOPY( P(1,NST+N+3), RW(NPZE4V+17), 4 )
@@ -640,10 +658,12 @@ C                                      AKOPLANARITY
          IF( IEV.LT.IEVLIM) CALL PWRT( NST+N+1, NST+N+5, 10000 )
 C                                           RESTORE BLANK COMMON
  2150 CONTINUE
+              write(*,*)'good2fvvvv'
       IF( LVECS.NE.0 ) GO TO 2200
          CALL UCOPY( RW(NPBUF+1), P(1,NST+1), 10*(N+5) )
          CALL BDLS( '--BU', 0 )
  2200 CONTINUE
+               write(*,*)'goodt'
 C
       GO TO 8000
 C
