@@ -29,8 +29,15 @@ C
    20  T(6) = T(6) + P(1,J)*P(1,J) + P(2,J)*P(2,J)
 CCCCCCCCC
 C   DIAGONALIZE MOMENTUM TENSOR T
+
+       if ( isnan(T(1))) GOTO 31
+       if ( isnan(T(2))) GOTO 31
+       if ( isnan(T(3))) GOTO 31
+       if ( isnan(T(4))) GOTO 31
+       if ( isnan(T(5))) GOTO 31
+       if ( isnan(T(6))) GOTO 31
 C
-CAV       CALL EIGEN( T, R, 3, 0 )
+       CALL EIGEN( T, R, 3, 0 )
 C
 C      LOAD SPHERICTY AND JET AXIS
 C
@@ -38,6 +45,14 @@ C
        SPHITY(1) = 3.* T(6) / SUM
        SPHITY(2) = 3.* T(3) / SUM
        SPHITY(3) = 3.* T(1) / SUM
+       GOTO 32
+   31  CONTINUE
+        WRITE(*,*)'NAN in zsphrcy.f',p
+        WRITE(*,*)'NMOM=',NMOM
+        WRITE(*,*)'P=',p
+        WRITE(*,*)'T=',T
+   32  CONTINUE
+
        DO 30 I=1,3
    30  AXIS(I) = R(I+6)
        DO 40 I=4,6

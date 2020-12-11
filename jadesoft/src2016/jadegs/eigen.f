@@ -25,6 +25,7 @@ C        ...............................................................
 C
 C        GENERATE IDENTITY MATRIX
 C
+      WRITE(*,*) A, R, N, MV
     5 RANGE=1.0E-6
       IF(MV-1) 10,25,10
    10 IQ=-N
