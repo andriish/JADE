@@ -80,6 +80,9 @@ if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "XL" ]; then
 fi
 ##This is for NAG on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "NAG" ]; then
+ export NAG_KUSARI_FILE=/opt/NAG/licence.lic
+ export PATH=/opt/NAG/bin:$PATH
+ export LD_LIBRARY_PATH=/opt/NAG/lib/NAG_Fortran:$LD_LIBRARY_PATH
  export CC=gcc
  export CXX=g++
  export FC=nagfor
