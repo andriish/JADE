@@ -41,7 +41,7 @@ add_executable(convert_example_JADE.exe
         )
 target_compile_definitions( convert_example_JADE.exe PUBLIC HEPMCCONVERT_EXTENSION_JADE  )
 target_include_directories(convert_example_JADE.exe PUBLIC ${HEPMC3_INCLUDE_DIR})
-target_link_libraries(convert_example_JADE.exe ${HEPMC3_LIBRARIES}   ${LAPACK_LIBRARIES})
+target_link_libraries(convert_example_JADE.exe ${HEPMC3_LIBRARIES}   ${LAPACK_LIBRARIES} )
 add_dependencies( convert_example_JADE.exe cmdline  )
 ########################################################################
 # installs 

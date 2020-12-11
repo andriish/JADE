@@ -20,9 +20,9 @@ C - Name of the calibration file
 AUPDAT0
 './aupdat1.b'
 BUPDAT0
-''
+'./bupdat0.b'
 BUPDAT1
-''
+'./bupdat1.b'
 
 
 C - Calibration constants reading flags
