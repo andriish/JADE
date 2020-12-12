@@ -167,8 +167,10 @@ C-----------------------------------------------------------
       DIMENSION HW(1)
       EQUIVALENCE (HW(1),IW(1))
       INTEGER CELL, SECTOR, TRIG2W, BIT, BITPAT
-      INTEGER ONE / 1 /
-      LOGICAL FIRST / .TRUE. /
+      INTEGER ONE 
+      DATA ONE / 1 /
+      LOGICAL FIRST 
+      DATA FIRST / .TRUE. /
 C
       IF( .NOT. FIRST ) GO TO 1
 C       WRITE(6,9201)

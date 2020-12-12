@@ -4,7 +4,7 @@ SET(VERSION 2020.11)
 include("GNUInstallDirs")
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
-option( JADE_OLD_MC  "Compile old MC executables" ON)
+option( JADE_OLD_MC  "Compile old MC executables" OFF)
 ########################################################################
 include(JADE_compiler_setup)
 ########################################################################
