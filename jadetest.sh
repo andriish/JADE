@@ -56,7 +56,7 @@ toolchain=GNU
 if test -z "$tmptoolchain"; then
  tmptoolchain="GNU"
 fi
-if  [ "$tmptoolchain" != "GNU" ] && [ "$tmptoolchain" !=  "Intel" ] && [ "$tmptoolchain" != "NAG" ] && [ "$tmptoolchain" !=  "XL" ] && [ "$tmptoolchain" !=  "PGI" ]; then
+if  [ "$tmptoolchain" != "GNU" ] && [ "$tmptoolchain" !=  "Intel" ] && [ "$tmptoolchain" != "NAG" ] && [ "$tmptoolchain" !=  "XL" ] && [ "$tmptoolchain" !=  "PGI" ] && [ "$tmptoolchain" !=  "SUN" ]; then
  echo "Unknown toolchain "$tmptoolchain" using GNU instead."
  echo "Possible values for the toolchain are Intel, GNU, and XL"
 else 
@@ -96,6 +96,14 @@ if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "PGI" ]; then
   export CC=pgcc
   export CXX=pgc++
   export FC=pgf77
+fi
+##This is for SUN on Linux
+if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "SUN" ]; then
+ export PATH=/opt/oracle/developerstudio12.6/bin:$PATH
+ export LD_LIBRARY_PATH=/opt/oracle/developerstudio12.6/lib:$LD_LIBRARY_PATH
+ export CC=suncc
+ export CXX=sunCC
+ export FC=sunf77
 fi
 ##This is for Intel on MacOSX
 if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "Intel" ]; then
