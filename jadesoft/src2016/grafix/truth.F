@@ -354,6 +354,26 @@ C---            FROM LOOP 12
 C---     WILL JUMP BACK TO STATEMENT 4 AND USE THE SAME CODING.
 C---
       IF(ICHRG.NE.0) GO TO 9
+CAV ====================================================================     
+    9 CONTINUE
+      IF(ISTEP.EQ.2) CALL MOVEA(X0,Y0)
+CHECK TO SEE IF ALREADY OUTSIDE
+      IF(LASTVW.LT.17.OR.LASTVW.GT.19) GO TO 9213
+      RRRF = SQRT(X1*X1 + Y1*Y1)
+      IF(RRRF.LE.RFRF) GO TO 9213
+      RATF = (RFRF-RRRF1)/(RRRF-RRRF1)
+      X1 = X0 + RATF*(X1-X0)
+      Y1 = Y0 + RATF*(Y1-Y0)
+9213  CALL DASHA(X1,Y1,1)
+      call iuwk(0)
+      IF(RRRF.GT.RFRF) GO TO 1212
+      XORG=XEND
+      YORG=YEND
+      ZORG=ZEND
+      RRRF1=RRRF
+      GOTO 1212
+CAV ====================================================================
+      
 C---
 C---     FINISHED WITH THE GAMMA RAY. DRAW SAWTOOTH SYMBOL ON SCREEN.
 C---
@@ -596,7 +616,7 @@ C---     JUMP BACKWARDS INTO THE GAMMA CODING TO TAKE CARE OF THE
 C---     SCREEN COORDINATES
 C---
       GO TO 4
-    9 CONTINUE
+CAV    9 CONTINUE
       IF(ISTEP.EQ.2) CALL MOVEA(X0,Y0)
 CHECK TO SEE IF ALREADY OUTSIDE
       IF(LASTVW.LT.17.OR.LASTVW.GT.19) GO TO 5213
