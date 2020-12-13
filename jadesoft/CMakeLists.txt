@@ -448,7 +448,7 @@ ${SRCJADEMUS}/mufsta.F
 ${SRCJADEMUS}/muhdsp.F
 ${SRCJADEMUS}/muhit.F
 ${SRCJADEMUS}/muhits.F
-${SRCJADEMUS}/muini.F
+
 ${SRCJADEMUS}/muloch.F
 ${SRCJADEMUS}/mumess.f
 ${SRCJADEMUS}/muons.F
@@ -462,6 +462,12 @@ ${SRCJADEMUS}/muwire.F
 ${SRCJADEMUS}/tanthm.F
 ${SRCJADEMUS}/xymud.F
 )
+if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "PGI")
+  LIST(APPEND JADEMUS_src ${SRCJADEMUS}/muininohash.F)
+else()
+  LIST(APPEND JADEMUS_src ${SRCJADEMUS}/muini.F)
+endif()
+
 ADD_LIBRARY(${JADEMUS} STATIC ${JADEMUS_src})
 #SET(JADESR_src
 #)

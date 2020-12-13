@@ -88,14 +88,14 @@ C
      3 8HMU EVENT,8HMU TYP 1,8HMU TYP 5,8HMU TYP 9,8H    ..  ,
      4 8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,8HBAD DRFT,
      5 8HBAD LONG,8HX PULLED,8HZ PULLED,8HMULT-PUL,8HHIT REC.,
-     6 8HHIT SEQ1,8HHIT SEQ2,8HHIT# ERR,8HNEW CH? ,8HSING ERR,
+     6 8HHIT SEQ1,8HHIT SEQ2,8HHIT  ERR,8HNEW CH? ,8HSING ERR,
      7 8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,
      8 8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,8HDC-->HIT,
-     9 8HBAD CH# ,8HCH ORDER,8HCH-/->CR,8HSING BAD,8H    ..  ,
+     9 8HBAD CH  ,8HCH ORDER,8HCH-/->CR,8HSING BAD,8H    ..  ,
      A 8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,8H    ..    /
       DATA MUT2    /
      1 8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,
-     2 8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,8HBAD CR# ,
+     2 8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,8HBAD CR  ,
      3 8HCR ORDER,8HNO T.REF,8HEOC REC.,8HCR. MARK,8HEOC ERR.,
      4 8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,8H    ..  ,
      5 8HMCRATE 1,8HMCRATE 2,8HMCRATE 3,8HMCRATE 4,8HMCRATE 5,
