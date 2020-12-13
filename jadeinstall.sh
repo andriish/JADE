@@ -52,7 +52,7 @@ toolchain=GNU
 if test -z "$tmptoolchain"; then
  tmptoolchain="GNU"
 fi
-if  [ "$tmptoolchain" != "GNU" ] && [ "$tmptoolchain" !=  "Intel" ] && [ "$tmptoolchain" !=  "XL" ] && [ "$tmptoolchain" !=  "NAG" ]; then
+if  [ "$tmptoolchain" != "GNU" ] && [ "$tmptoolchain" !=  "Intel" ] && [ "$tmptoolchain" !=  "XL" ] && [ "$tmptoolchain" !=  "NAG" ] && [ "$tmptoolchain" !=  "PGI" ]; then
  echo "Unknown toolchain "$tmptoolchain" using GNU instead."
  echo "Possible values for the toolchain are Intel, GNU, and XL"
 else 
@@ -87,6 +87,15 @@ if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "NAG" ]; then
  export CXX=g++
  export FC=nagfor
 fi
+##This is for PGI on Linux
+if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "PGI" ]; then
+ module use  /opt/nvidia/hpc_sdk/modulefiles/nvhpc/
+ module load 20.9
+ export CC=pgcc
+ export CXX=pgc++
+ export FC=pgf77
+fi
+
 ##This is for Intel on MacOSX
 if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "Intel" ]; then
  .  /opt/intel/oneapi/setvars.sh

@@ -1,7 +1,9 @@
 # JADE
 This is a repository with software of JADE experiment.
 
-The prerequirements to build the software are:
+## General information 
+
+ To build the JADE software, the following dependencies should be satisfied:
  
  - C++ compiler with C++11 standard support (tested with ``g++``, ``clang++``, ``icpc`` and ``xlC``)
  - Fortran compiler (tested with ``gfortran``, ``ifort`` and ``xlf``)
@@ -12,6 +14,7 @@ The prerequirements to build the software are:
  - X11 or XQuartz libraries with development packages
  - bash-compatible shell
  - ``make``
+ - ``git`` 
  
  The following platforms/toolchains are supported:
  
@@ -23,29 +26,35 @@ The prerequirements to build the software are:
   
   - CentOS 7 x86_64 with **Intel** compilers
   - CentOS 8 x86_64 with **Intel** compilers
-  - CentOS 7 ppc64 with IBM **XL** compilers
-  - CentOS 8 ppc64 with IBM **XL** compilers
-  - CentOS 7 x86_64 with **NAG** Fortran compiler and gcc
-  - CentOS 8 x86_64 with **NAG** Fortran compiler and gcc
-  - CentOS 7 ppc64/i686/arm64 with **GNU** gcc compilers
-  - CentOS 8 ppc64/i686/arm64 with **GNU** gcc compilers
   - MacOSX 10.15+ x86_64 with **Intel** compilers
-  
+  - CentOS 7 ppc64le/i686/arm64 with **GNU** gcc compilers
+  - CentOS 8 ppc64le/i686/arm64 with **GNU** gcc compilers
+
   However, some of the combinations above will produce excutables that would crash in runtime or
   would not be able to read the input files in different endianess.
-  The compilation on the following platforms could be enabled in the nearest future
+
+  Below are some remarks about other Fortran compilers on the supported operating systems/platforms that could be potentially used 
    
-   - MacOSX 11.0 arm64 with **NAG** Fortran and XCode
-  
-  
+   - MacOSX 11.0 arm64 with **GNU** Fortran and XCode
+      GNU Fortran is is not supported officialy. This option has not been tested yet.
+   - CentOS 7 x86_64/CentOS 8 x86_64 with **NAG** Fortran and gcc 
+      nagfor 7.0 compiler will not accept the old style-init. The earlier versions seems to be fine.
+   - MacOSX 10.15+ x86_64/MacOSX 11.0 arm64/ with **NAG** Fortran and XCode 
+      nagfor 7.0 compiler will not accept the old style-init.  These options have not been tested yet.
+   - CentOS 8 ppc64le/CentOS 7 ppc64le with IBM **XL** compilers
+      Newest xlf will not accept the jumps inside loops.
+   - CentOS 7 x86_64/CentOS 8 x86_64/MacOSX 10.15+ x86_64 with **PGI** (NVidia) compilers
+      The **PGI** toolchain is not supported so far, as the runtime requires hardcoded little/big endian flags for the I/O.
+   - CentOS 7 x86_64/CentOS 8 x86_64 with **SUN** (Oracle) compilers
+      The **SUN** toolchain is not supported so far.
 
+## Building JADE software:
 
-To build the software:
  - Install the dependencies
    - For CentOS7 all the dependencies are in the default and EPEL repositories  
     ```
     yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    yum -y install  gcc gcc-c++ gcc-gfortran make
+    yum -y install  gcc gcc-c++ gcc-gfortran make git
     yum -y install  cmake3 cmake3-data
     yum -y install  HepMC3*
     yum -y install  lapack-static  lapack-devel lapack  gengetopt  blas-devel blas atlas-devel atlas
@@ -58,7 +67,7 @@ To build the software:
     yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
     yum -y install dnf-plugins-core
     dnf config-manager --set-enabled PowerTools
-    yum -y install  gcc gcc-c++ gcc-gfortran make
+    yum -y install  gcc gcc-c++ gcc-gfortran make git
     yum -y install  cmake cmake-data cmake-filesystem
     yum -y install  HepMC3*
     yum -y install  lapack-static  lapack-devel lapack  gengetopt  blas-devel blas atlas-devel atlas  
@@ -78,6 +87,7 @@ To build the software:
       ```
      - Install ROOT, e.g. from  `https://root.cern/install/all_releases/` and enable it
      - Install cmake
+     The git and LAPACK should be preinstalled on the newest MacOS.
        
 - Clone the repository using git 
      ``git clone https://github.com/andriish/JADE``
@@ -95,11 +105,13 @@ To build the software:
      - **GNU** 
      - **Intel** 
      - **XL** 
-     - **NAG** 
+     - **NAG**
+     - **PGI** 
     
 Please note that JADE software consists of multiple packages that can be compiled sequenially, 
 without invocation of the ``jadeinstall.sh``.
 
+## Testing
 To run some simple tests:
 
  - Install the dependencies
@@ -119,5 +131,14 @@ To run some simple tests:
  - Run the ``jadetest.sh`` script with ``--prefix=/full/path/to/the /installed/software`` (should be the same as for compilation). 
    The script will  run several sequential tests in the `test` directory.
    The script supports the same values for the ``--toolhain`` flag as the ``jadeinstall.sh`` script.
+
+
+## Development options
+
+Some cmake scripts support the following options
+  - ``JADE_OLD_MC:BOOL``  "Compile old MC executables" default is ``ON``
+  - ``JADE_FPE:BOOL``  "Trap floating point exceptions" default is  ``OFF``
+  - ``JADE_USE_CERNLIB:BOOL`` "Attempt to use CERNLIB instead of buildin code (picocernlib)" default is  ``OFF``
+  
 
 
