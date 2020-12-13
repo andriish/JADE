@@ -59,7 +59,7 @@ jade_fortran_test(JTJOB_DATA1 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22" "F
 
 
 
-if(NOT PYTHIA8_FOUNDX)
+if(NOT PYTHIA8_FOUND)
   message(STATUS "JADE test: Pythia8 package not found, was disabled or too old. The minimal supported Pythia8 version is 8.220. Please check if PYTHIA8_ROOT_DIR is set properly.") 
 
 else()
