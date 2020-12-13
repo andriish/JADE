@@ -120,9 +120,11 @@ SET(BOSLIB_src
          ${SRCBOSLIB}/ibln.F ${SRCBOSLIB}/indar.F ${SRCBOSLIB}/itoda.for ${SRCBOSLIB}/msgpr.for
          ${SRCBOSLIB}/pall.f ${SRCBOSLIB}/pcond.for ${SRCBOSLIB}/pcorr.for ${SRCBOSLIB}/phist.for
          ${SRCBOSLIB}/poda.F ${SRCBOSLIB}/pstor.for ${SRCBOSLIB}/ptabl.for ${SRCBOSLIB}/ptext1.f
-         ${SRCBOSLIB}/pvert.for ${SRCBOSLIB}/rdda.F ${SRCBOSLIB}/rdvar.for ${SRCBOSLIB}/readhl.for
+         ${SRCBOSLIB}/pvert.for ${SRCBOSLIB}/rdda.F ${SRCBOSLIB}/readhl.for
          ${SRCBOSLIB}/sort4.for ${SRCBOSLIB}/ucorr.for ${SRCBOSLIB}/uhist.for ${SRCBOSLIB}/uwp.for
          ${SRCBOSLIB}/vall.for  ${SRCBOSLIB}/vecsub.f
+         
+       #  ${SRCBOSLIB}/rdvar.for 
 )
 
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
@@ -446,7 +448,7 @@ ${SRCJADEMUS}/mufsta.F
 ${SRCJADEMUS}/muhdsp.F
 ${SRCJADEMUS}/muhit.F
 ${SRCJADEMUS}/muhits.F
-${SRCJADEMUS}/muini.F
+
 ${SRCJADEMUS}/muloch.F
 ${SRCJADEMUS}/mumess.f
 ${SRCJADEMUS}/muons.F
@@ -460,6 +462,12 @@ ${SRCJADEMUS}/muwire.F
 ${SRCJADEMUS}/tanthm.F
 ${SRCJADEMUS}/xymud.F
 )
+if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "PGI")
+  LIST(APPEND JADEMUS_src ${SRCJADEMUS}/muininohash.F)
+else()
+  LIST(APPEND JADEMUS_src ${SRCJADEMUS}/muini.F)
+endif()
+
 ADD_LIBRARY(${JADEMUS} STATIC ${JADEMUS_src})
 #SET(JADESR_src
 #)
