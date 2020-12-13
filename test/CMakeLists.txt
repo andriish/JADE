@@ -35,8 +35,10 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/cal/bupdat1.b    ${CMAKE_
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006    ${CMAKE_CURRENT_BINARY_DIR}/jadetapes/JAD073/file006 COPYONLY)
 
 
+add_test(NAME FPTOBOS_1_CLEANUP COMMAND rm -f ${CMAKE_CURRENT_BINARY_DIR}/file006.bos)
 add_test(NAME FPTOBOS_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/fptobos1.card  ${JADEPREFIX}/bin/fptobos)
 jade_fortran_test(FPTOBOS_1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " ") 
+set_property( TEST FPTOBOS_1 PROPERTY  DEPENDS FPTOBOS_1_CLEANUP)
 
 #add_test(NAME SUPERV_DATA1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/supervfile006.card  ${JADEPREFIX}/bin/superv ) 
 #set_property( TEST SUPERV_DATA1 PROPERTY  DEPENDS FPTOBOS_1) 

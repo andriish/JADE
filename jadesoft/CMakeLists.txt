@@ -5,6 +5,7 @@ include("GNUInstallDirs")
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 option( JADE_OLD_MC  "Compile old MC executables" ON)
+option( JADE_FPE  "Trap floating point exceptions" OFF)
 ########################################################################
 include(JADE_compiler_setup)
 ########################################################################
