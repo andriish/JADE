@@ -78,8 +78,7 @@ C
      1   ' ---- ABEND'/)
       END
       SUBROUTINE IBCERR
-      INTEGER INI
-      DATA INI/0/
+      INTEGER INI/0/
       EXTERNAL ERR213,ERR218
       IF(INI.NE.0) GOTO 100
       CALL ERRSET(213,256,0,0,ERR213)
