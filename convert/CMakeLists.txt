@@ -11,7 +11,7 @@ include(JADE_compiler_setup)
   find_package(LAPACK REQUIRED)
 message(STATUS "LAPACK libraries        : ${LAPACK_LIBRARIES_DIR}")
 ########################################################################
-find_package(HepMC3  HINTS /u/andriish/Z/share/HepMC3/cmake/)
+find_package(HepMC3  REQUIRED HINTS /u/andriish/Z/share/HepMC3/cmake/) #The later is to test JADE with NAG on Cobra
 message(STATUS "HEPMC3 libraries        : ${HEPMC3_LIBRARIES} ${HEPMC3_ROOTIO_LIBRARIES}")
 ########################################################################
 include(JADE_ROOT_setup)
@@ -41,7 +41,7 @@ add_executable(convert_example_JADE.exe
         )
 target_compile_definitions( convert_example_JADE.exe PUBLIC HEPMCCONVERT_EXTENSION_JADE  )
 target_include_directories(convert_example_JADE.exe PUBLIC ${HEPMC3_INCLUDE_DIR})
-target_link_libraries(convert_example_JADE.exe ${HEPMC3_LIBRARIES}   ${LAPACK_LIBRARIES})
+target_link_libraries(convert_example_JADE.exe ${HEPMC3_LIB} ${HEPMC3_SEARCH_LIB}  ${LAPACK_LIBRARIES})
 add_dependencies( convert_example_JADE.exe cmdline  )
 ########################################################################
 # installs 

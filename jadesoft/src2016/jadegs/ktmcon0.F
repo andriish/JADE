@@ -37,7 +37,7 @@ C---
 C---     VERIFY VALIDITY OF INPUT DATA "ITIME".
 C---
       IF(ITIME(6).LT.1979) GO TO 3
-      IF(ITIME(6).GT.1999) GO TO 3
+      IF(ITIME(6).GT.2999) GO TO 3
       IF(ITIME(5).LT.   1) GO TO 3
       IF(ITIME(5).GT.  12) GO TO 3
 C---
