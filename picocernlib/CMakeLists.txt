@@ -106,6 +106,7 @@ ${TOP}/src/ckrack.F
 ${TOP}/src/eisrs1.F
 ${TOP}/src/tql2.F
 ${TOP}/src/tred2.F
+${TOP}/src/gamma.F #SUNGAMMA
 )
 SET(PICOGRAFLIB_src
 #The C++ code with ROOT
