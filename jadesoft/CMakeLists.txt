@@ -737,7 +737,8 @@ TARGET_LINK_LIBRARIES(ar48p  PRIVATE
                        ariadne408   
                        ckern105   
                        px114  
-                       ${JEXTERN_LIBRARIES}  ${BLAS_LIBRARIES})
+                       ${JEXTERN_LIBRARIES}  ${BLAS_LIBRARIES}  ${LAPACK_lapack_LIBRARY} 
+                       )
 
 ADD_EXECUTABLE(cj623   ${UTIL}/mcgen/cojets/mccj623_105j.f ${UTIL}/mcgen/src/pystfu.f)
 TARGET_LINK_LIBRARIES(cj623   PRIVATE  
@@ -747,7 +748,8 @@ TARGET_LINK_LIBRARIES(cj623   PRIVATE
                        ckern105   
                        jt74opal   
                        px114  
-                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}  ${LAPACK_lapack_LIBRARY} 
+                       )
 
 ADD_EXECUTABLE(hw59   ${UTIL}/mcgen/herwig/mchw59_105j.f )
 TARGET_LINK_LIBRARIES(hw59    PRIVATE                       
@@ -756,7 +758,8 @@ TARGET_LINK_LIBRARIES(hw59    PRIVATE
                        ckern105   
                        jt74opal  
                        px114  
-                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}  ${LAPACK_lapack_LIBRARY} 
+                       )
 
 ADD_EXECUTABLE(hw58d   ${UTIL}/mcgen/herwig/mchw58d_105j.f )
 TARGET_LINK_LIBRARIES(hw58d   PRIVATE                        
@@ -765,7 +768,8 @@ TARGET_LINK_LIBRARIES(hw58d   PRIVATE
                        ckern105   
                        jt74opal  
                        px114  
-                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}  ${LAPACK_lapack_LIBRARY} 
+                       ) 
 
 
 ADD_EXECUTABLE(jt63   ${UTIL}/mcgen/jetset/mcjt63_105j.f ${UTIL}/mcgen/src/lugive.f)
@@ -774,7 +778,7 @@ TARGET_LINK_LIBRARIES(jt63   PRIVATE
                        jt63jade   
                        ckern105   
                        px114 
-                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}  ${LAPACK_lapack_LIBRARY} 
                        )
 
 ADD_EXECUTABLE(jt74   ${UTIL}/mcgen/jetset/mcjt74_105j.f )
@@ -783,8 +787,8 @@ TARGET_LINK_LIBRARIES(jt74    PRIVATE
                        ckern105   
                        jt74opal   
                        px114  
-                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
-
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_lapack_LIBRARY} 
+                       )
 
 ADD_EXECUTABLE(lepton   ${UTIL}/mcgen/lepton/lepton.f )
 TARGET_LINK_LIBRARIES(lepton    PRIVATE                
@@ -792,7 +796,7 @@ TARGET_LINK_LIBRARIES(lepton    PRIVATE
                        ckern105  
                        jt63jade  
                        px114  
-                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES} 
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_lapack_LIBRARY} 
                        ${INTERFACE} #ranmar
                        )
                        
@@ -803,7 +807,8 @@ TARGET_LINK_LIBRARIES(py57    PRIVATE
                        pythia5722
                        jt74opal
                        px114  
-                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES})
+                       ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}  ${LAPACK_lapack_LIBRARY} 
+                       )
                        
 endif()
 ########################################################################

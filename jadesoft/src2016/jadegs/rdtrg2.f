@@ -247,18 +247,21 @@ C                                           CODE FOR NARROW COPLANARITY
 C                                           CHECK LINKING TO FAST TRACKS
       ICOPLA = 0
       IF( NJTRKF .LE. 1 ) GO TO 790
+
         DO 700 I=1,72
-        IF( HJTRKF(I) .EQ. 0 ) GO TO 701
-        JLO = I + 48 - IWIDT2*2
-        JHI = I + 48 + IWIDT2*2
-          DO 700 J=JLO,JHI
-          JOP = J
-          IF(JOP.GT.96) JOP = JOP - 96
-          IF( HJTRKF(JOP) .EQ. 0 ) GO TO 701
-          ICOPLA = 1
-          GO TO 790
-  701   CONTINUE
-  700   CONTINUE
+          IF( HJTRKF(I) .EQ. 0 ) GO TO 703
+            JLO = I + 48 - IWIDT2*2
+            JHI = I + 48 + IWIDT2*2
+            DO 702 J=JLO,JHI
+              JOP = J
+              IF(JOP.GT.96) JOP = JOP - 96
+              IF( HJTRKF(JOP) .EQ. 0 ) GO TO 701
+              ICOPLA = 1
+              GO TO 790
+  701 CONTINUE
+  702 CONTINUE
+  703 CONTINUE
+  700 CONTINUE
   790 CONTINUE
 C
  1000 CONTINUE
@@ -581,16 +584,18 @@ C                                           CHECK LINKING TO FAST TRACKS
       ICOPLA = 0
       IF( NJTRKF .LE. 1 ) GO TO 790
         DO 700 I=1,72
-        IF( HJTRKF(I) .EQ. 0 ) GO TO 701
-        JLO = I + 48 - IWIDT2*2
-        JHI = I + 48 + IWIDT2*2
-          DO 700 J=JLO,JHI
-          JOP = J
-          IF(JOP.GT.96) JOP = JOP - 96
-          IF( HJTRKF(JOP) .EQ. 0 ) GO TO 701
-          ICOPLA = 1
-          GO TO 790
+          IF( HJTRKF(I) .EQ. 0 ) GO TO 703
+            JLO = I + 48 - IWIDT2*2
+            JHI = I + 48 + IWIDT2*2
+            DO 702 J=JLO,JHI
+              JOP = J
+              IF(JOP.GT.96) JOP = JOP - 96
+              IF( HJTRKF(JOP) .EQ. 0 ) GO TO 701
+              ICOPLA = 1
+              GO TO 790
   701   CONTINUE
+  702   CONTINUE
+  703   CONTINUE
   700   CONTINUE
   790 CONTINUE
 C

@@ -23,22 +23,27 @@ The prerequirements to build the software are:
   
   - CentOS 7 x86_64 with **Intel** compilers
   - CentOS 8 x86_64 with **Intel** compilers
-  - CentOS 7 ppc64 with IBM **XL** compilers
-  - CentOS 8 ppc64 with IBM **XL** compilers
-  - CentOS 7 x86_64 with **NAG** Fortran compiler and gcc
-  - CentOS 8 x86_64 with **NAG** Fortran compiler and gcc
-  - CentOS 7 ppc64/i686/arm64 with **GNU** gcc compilers
-  - CentOS 8 ppc64/i686/arm64 with **GNU** gcc compilers
   - MacOSX 10.15+ x86_64 with **Intel** compilers
-  
+  - CentOS 7 ppc64le/i686/arm64 with **GNU** gcc compilers
+  - CentOS 8 ppc64le/i686/arm64 with **GNU** gcc compilers
+
   However, some of the combinations above will produce excutables that would crash in runtime or
   would not be able to read the input files in different endianess.
-  The compilation on the following platforms could be enabled in the nearest future
-   
-   - MacOSX 11.0 arm64 with **NAG** Fortran and XCode
-  
-  
 
+  Below are some remarks about other Fortran compilers on the supported operating systems/platforms that could be potentially used 
+   
+   - MacOSX 11.0 arm64 with **GNU** Fortran and XCode
+      GNU Fortran is is not supported officialy. This option has not been tested yet.
+   - CentOS 7 x86_64/CentOS 8 x86_64 with **NAG** Fortran and gcc 
+      nagfor 7.0 compiler will not accept the old style-init. The earlier versions seems to be fine.
+   - MacOSX 10.15+ x86_64/MacOSX 11.0 arm64/ with **NAG** Fortran and XCode 
+      nagfor 7.0 compiler will not accept the old style-init.  These options have not been tested yet.
+   - CentOS 8 ppc64le/CentOS 7 ppc64le with IBM **XL** compilers
+      Newest xlf will not accept the jumps inside loops.
+   - CentOS 7 x86_64/CentOS 8 x86_64/MacOSX 10.15+ x86_64 with **PGI** (NVidia) compilers
+      The **PGI** toolchain is not supported so far, as the runtime requires hardcoded little/big endian flags for the I/O.
+   - CentOS 7 x86_64/CentOS 8 x86_64 with **SUN** (Oracle) compilers
+      The **SUN** toolchain is not supported so far.
 
 To build the software:
  - Install the dependencies
