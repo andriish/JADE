@@ -6,6 +6,7 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 option( JADE_OLD_MC  "Compile old MC executables" ON)
 option( JADE_FPE  "Trap floating point exceptions" OFF)
+option(JADE_USE_CERNLIB "Attempt to use CERNLIB instead of buildin code (picocernlib)"     OFF)
 ########################################################################
 include(JADE_compiler_setup)
 ########################################################################
@@ -24,7 +25,6 @@ message(STATUS "HEPMC3 libraries        : ${HEPMC3_LIBRARIES} ${HEPMC3_ROOTIO_LI
 ########################################################################
 include(JADE_ROOT_setup)
 ########################################################################
-option(JADE_USE_CERNLIB      OFF)
 if (JADE_USE_CERNLIB)
   find_library (LIBGRAFLIB NAMES libgraflib.a HINTS /usr/lib64/cernlib/2006/lib/ /usr/lib64/cernlib/2006/lib/)
   find_library (LIBMATHLIB NAMES libmathlib.a HINTS /usr/lib64/cernlib/2006/lib/ /usr/lib64/cernlib/2006/lib/)

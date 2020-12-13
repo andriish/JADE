@@ -1,7 +1,9 @@
 # JADE
 This is a repository with software of JADE experiment.
 
-The prerequirements to build the software are:
+## General information 
+
+ To build the JADE software, the following dependencies should be satisfied:
  
  - C++ compiler with C++11 standard support (tested with ``g++``, ``clang++``, ``icpc`` and ``xlC``)
  - Fortran compiler (tested with ``gfortran``, ``ifort`` and ``xlf``)
@@ -46,7 +48,8 @@ The prerequirements to build the software are:
    - CentOS 7 x86_64/CentOS 8 x86_64 with **SUN** (Oracle) compilers
       The **SUN** toolchain is not supported so far.
 
-To build the software:
+## Building JADE software:
+
  - Install the dependencies
    - For CentOS7 all the dependencies are in the default and EPEL repositories  
     ```
@@ -108,6 +111,7 @@ To build the software:
 Please note that JADE software consists of multiple packages that can be compiled sequenially, 
 without invocation of the ``jadeinstall.sh``.
 
+## Testing
 To run some simple tests:
 
  - Install the dependencies
@@ -127,5 +131,14 @@ To run some simple tests:
  - Run the ``jadetest.sh`` script with ``--prefix=/full/path/to/the /installed/software`` (should be the same as for compilation). 
    The script will  run several sequential tests in the `test` directory.
    The script supports the same values for the ``--toolhain`` flag as the ``jadeinstall.sh`` script.
+
+
+## Development options
+
+Some cmake scripts support the following options
+  - ``JADE_OLD_MC:BOOL``  "Compile old MC executables" default is ``ON``
+  - ``JADE_FPE:BOOL``  "Trap floating point exceptions" default is  ``OFF``
+  - ``JADE_USE_CERNLIB:BOOL`` "Attempt to use CERNLIB instead of buildin code (picocernlib)" default is  ``OFF``
+  
 
 
