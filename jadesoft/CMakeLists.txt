@@ -13,7 +13,7 @@ include(JADE_compiler_setup)
   find_package(BLAS REQUIRED)
   find_package(LAPACK REQUIRED)
   if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-     set(JEXTERN_GRAPH_LIBRARIES -lc++)
+     set(JEXTERN_GRAPH_LIBRARIES )
   else()
     find_package(X11  REQUIRED)
     set(JEXTERN_GRAPH_LIBRARIES ${X11_LIBRARIES})
@@ -34,11 +34,7 @@ if (JADE_USE_CERNLIB)
 else()
   find_library(LIBPICOKERNLIB REQUIRED NAMES libpicokernlib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
   find_library(LIBPICOGRAFLIB REQUIRED NAMES libpicograflib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-     set(PICOCERNLIB ${LIBPICOKERNLIB} ${LIBPICOGRAFLIB} ${ROOT_LIBRARIES} -lc++)
-  else()
-    set(PICOCERNLIB ${LIBPICOKERNLIB} ${LIBPICOGRAFLIB} ${ROOT_LIBRARIES} -lstdc++)
-  endif()
+  set(PICOCERNLIB ${LIBPICOKERNLIB} ${LIBPICOGRAFLIB} ${ROOT_LIBRARIES})
 endif()
 set(JEXTERN_LIBRARIES  ${PICOCERNLIB} )
 message(STATUS "JEXTERN_LIBRARIES    : ${JEXTERN_LIBRARIES}")
@@ -124,9 +120,11 @@ SET(BOSLIB_src
          ${SRCBOSLIB}/ibln.F ${SRCBOSLIB}/indar.F ${SRCBOSLIB}/itoda.for ${SRCBOSLIB}/msgpr.for
          ${SRCBOSLIB}/pall.f ${SRCBOSLIB}/pcond.for ${SRCBOSLIB}/pcorr.for ${SRCBOSLIB}/phist.for
          ${SRCBOSLIB}/poda.F ${SRCBOSLIB}/pstor.for ${SRCBOSLIB}/ptabl.for ${SRCBOSLIB}/ptext1.f
-         ${SRCBOSLIB}/pvert.for ${SRCBOSLIB}/rdda.F ${SRCBOSLIB}/rdvar.for ${SRCBOSLIB}/readhl.for
+         ${SRCBOSLIB}/pvert.for ${SRCBOSLIB}/rdda.F ${SRCBOSLIB}/readhl.for
          ${SRCBOSLIB}/sort4.for ${SRCBOSLIB}/ucorr.for ${SRCBOSLIB}/uhist.for ${SRCBOSLIB}/uwp.for
          ${SRCBOSLIB}/vall.for  ${SRCBOSLIB}/vecsub.f
+         
+       #  ${SRCBOSLIB}/rdvar.for 
 )
 
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
@@ -450,7 +448,7 @@ ${SRCJADEMUS}/mufsta.F
 ${SRCJADEMUS}/muhdsp.F
 ${SRCJADEMUS}/muhit.F
 ${SRCJADEMUS}/muhits.F
-${SRCJADEMUS}/muini.F
+
 ${SRCJADEMUS}/muloch.F
 ${SRCJADEMUS}/mumess.f
 ${SRCJADEMUS}/muons.F
@@ -464,6 +462,12 @@ ${SRCJADEMUS}/muwire.F
 ${SRCJADEMUS}/tanthm.F
 ${SRCJADEMUS}/xymud.F
 )
+if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "PGI")
+  LIST(APPEND JADEMUS_src ${SRCJADEMUS}/muininohash.F)
+else()
+  LIST(APPEND JADEMUS_src ${SRCJADEMUS}/muini.F)
+endif()
+
 ADD_LIBRARY(${JADEMUS} STATIC ${JADEMUS_src})
 #SET(JADESR_src
 #)

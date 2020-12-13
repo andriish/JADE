@@ -27,13 +27,18 @@ This is a repository with software of JADE experiment.
   - CentOS 7 x86_64 with **Intel** compilers
   - CentOS 8 x86_64 with **Intel** compilers
   - MacOSX 10.15+ x86_64 with **Intel** compilers
+  - CentOS 7 x86_64 with **PGI** compilers
+  - CentOS 8 x86_64 with **PGI** compilers
   - CentOS 7 ppc64le/i686/arm64 with **GNU** gcc compilers
   - CentOS 8 ppc64le/i686/arm64 with **GNU** gcc compilers
+  - CentOS 7 x86_64 with **SUN** compilers
+  - CentOS 8 x86_64 with **SUN** compilers
 
   However, some of the combinations above will produce excutables that would crash in runtime or
   would not be able to read the input files in different endianess.
 
-  Below are some remarks about other Fortran compilers on the supported operating systems/platforms that could be potentially used 
+  Below are some remarks about other Fortran compilers on the supported operating systems/platforms that could be potentially used.
+  The usage of these compilers is intended for the debug purposes only. 
    
    - MacOSX 11.0 arm64 with **GNU** Fortran and XCode
       GNU Fortran is is not supported officialy. This option has not been tested yet.
@@ -46,7 +51,7 @@ This is a repository with software of JADE experiment.
    - CentOS 7 x86_64/CentOS 8 x86_64/MacOSX 10.15+ x86_64 with **PGI** (NVidia) compilers
       The **PGI** toolchain is not supported so far, as the runtime requires hardcoded little/big endian flags for the I/O.
    - CentOS 7 x86_64/CentOS 8 x86_64 with **SUN** (Oracle) compilers
-      The **SUN** toolchain is not supported so far.
+      The **SUN** toolchain is not supported so far, as the runtime requires hardcoded little/big endian flags for the I/O.
 
 ## Building JADE software:
 
