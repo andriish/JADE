@@ -34,8 +34,10 @@ C
 C
 #include "cwktag.for"
 C
-       LOGICAL NOMSG / .FALSE. /
-       LOGICAL LERROR  / .FALSE. /
+       LOGICAL NOMSG 
+       DATA NOMSG/ .FALSE. /
+       LOGICAL LERROR 
+       DATA LERROR  / .FALSE. /
        DIMENSION CALIB(2)
        DATA CALIB / 10.0 , 6.66667 /
        DATA ICOUNT / 0 /

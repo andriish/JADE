@@ -73,7 +73,8 @@ C
 C                     ===> DEFAULT .TRUE.,.FALSE.,.TRUE.,.FALSE.,.FALSE.
 C
       DATA TWOPI/6.28319/
-      REAL RADL/23.9/
+      REAL RADL
+      DATA RADL/23.9/
 *** PMF 15/10/99      DIMENSION R(1),PV(1)
       DIMENSION R(*),PV(*)
 *** PMF (end)
