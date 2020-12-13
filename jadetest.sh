@@ -91,11 +91,11 @@ if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "NAG" ]; then
 fi
 ##This is for PGI on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "PGI" ]; then
- module use  /opt/nvidia/hpc_sdk/modulefiles/nvhpc/
+  module use  /opt/nvidia/hpc_sdk/modulefiles/nvhpc/
   module load 20.9
-   export CC=pgcc
-    export CXX=pgc++
-     export FC=pgf77
+  export CC=pgcc
+  export CXX=pgc++
+  export FC=pgf77
 fi
 ##This is for Intel on MacOSX
 if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "Intel" ]; then
