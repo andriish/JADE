@@ -14,7 +14,6 @@ yum -y install  root-*6* --exclude=*doc* --exclude=*debug* --skip-broken
 
 sh jadeinstall.sh
 
-
 yum -y install pythia8-devel pythia8 pythia8-data 
 
 sh jadetest.sh
