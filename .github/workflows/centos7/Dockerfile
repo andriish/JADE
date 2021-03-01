@@ -1,7 +1,3 @@
-FROM centos:7.8.2003
-
-# Copies your code file from your action repository to the filesystem path `/` of the container
+FROM centos:7
 COPY entrypoint.sh /entrypoint.sh
-
-# Code file to execute when the docker container starts up (`entrypoint.sh`)
 ENTRYPOINT ["/entrypoint.sh"]
