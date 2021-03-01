@@ -116,7 +116,11 @@ fi
 if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU" ]; then
  export CC=clang
  export CXX=clang++
- export FC=gfortran
+ if [ "$?" = "0" ]; then 
+   export FC=gfortran-10
+ else
+   export FC=gfortran
+ fi
 fi
 ########################################################################
 mkdir -p build/test
