@@ -10,8 +10,7 @@ tar -zxf root_v6.22.02.macosx64-10.15-clang110.tar.gz
 
 sh jadeinstall.sh
 
-
-
 brew install pythia8
 
 sh jadetest.sh
+
