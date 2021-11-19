@@ -51,7 +51,7 @@ jobs:
        - docker/login-action@v1
          with:
           registry: quay.io
-        - ./.github/workflows/centos9
+       - ./.github/workflows/centos9
     - name: Get the output status
       run: exit ${{ steps.compileindocker.outputs.out }}
 
