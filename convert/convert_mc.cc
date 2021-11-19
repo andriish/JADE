@@ -237,7 +237,7 @@ int main(int argc, char** argv)
         else
         {
             printf("This format requires one option  Mode=0 (binary, native), Mode=1 (ASCII), Mode=2 (binary, LITTLE_ENDIAN), Mode=3 (binary, BIG_ENDIAN),!\n");
-            for (auto o: options) printf("%s=%s\n",o.first.c_str(),o.second.c_str()); 
+            for (auto o: options) printf("%s=%s\n",o.first.c_str(),o.second.c_str());
             exit (1);
         }
         break;

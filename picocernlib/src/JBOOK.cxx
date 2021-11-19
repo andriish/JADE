@@ -39,154 +39,150 @@ std::vector<std::string> tokenize(const std::string& str, const std::string& del
     }
     return tokens;
 }
-bool invalidChar (char c) 
-{  
-    return !(c>=0 && c <127);   
-} 
-void stripUnicode(std::string & str) 
-{ 
-    str.erase(std::remove_if(str.begin(),str.end(), invalidChar), str.end());  
+bool invalidChar (char c)
+{
+    return !( c >= 0 && c < 127);
 }
-
-
-
+void stripUnicode(std::string & str)
+{
+    str.erase(std::remove_if(str.begin(), str.end(), invalidChar), str.end());
+}
+/*** Functions in this file emulate the behaviour of the HBOOK using functions from
+ *   ROOT.
+ */
 std::map<int, TH1F*> gmapTH1F;
 std::map<int, TH2F*> gmapTH2F;
 std::map<int, TTree*> gmapTTree;
 std::map<std::string, TFile*> gmapTFile;
 extern "C" {
 
-
     void mzebra_(int *a) {}
+
     void mzpaw_(int *a) {}
 
-
-
     void hlimit_(int a) {}
-    void hcdir_(char*,char*)
-    {
-//Do better
-    }
+
+    void hcdir_(char*,char*) {}
+
     void hstaf_(char*) {}
-    void hldir_(char*,char*) {
-        gDirectory->ls();
-    }
+
+    void hldir_(char*, char*) { gDirectory->ls(); }
+
     void hbook1_(int* a, const char* titl, int* b, float* x1, float* x2) {
-        gmapTH1F[*a]=new TH1F(Form("%i",*a),titl,*b,*x1,*x2);
+        gmapTH1F[*a] = new TH1F(Form("%i",*a), titl, *b, *x1, *x2);
     }
+
     void hf1_(int* a,float* x, float* w) {
-        if (gmapTH1F.find(*a)!=gmapTH1F.end())gmapTH1F[*a]->Fill(*x,*w);
+        if (gmapTH1F.find(*a) != gmapTH1F.end()) gmapTH1F[*a]->Fill(*x,*w);
     }
-    void hf2_(int* a,float* x,float* y, float* w) {
-        if (gmapTH2F.find(*a)!=gmapTH2F.end())gmapTH2F[*a]->Fill(*x,*y,*w);
+
+    void hf2_(int* a, float* x, float* y, float* w) {
+        if (gmapTH2F.find(*a) != gmapTH2F.end()) gmapTH2F[*a]->Fill(*x, *y, *w);
     }
 
     int hexist_(int *a) {
-        if (gmapTH1F.find(*a)!=gmapTH1F.end()) return 1;
+        if (gmapTH1F.find(*a) != gmapTH1F.end()) return 1;
         else return 0;
     }
-    void hrput_(int a,char* n, char b)
+
+    void hrput_(int a, char* n, char b)
     {
         std::string s(n);
         stripUnicode(s);
-        while (s.back()==' '||s.back()=='\n') s.pop_back();
-        TFile* f= new TFile(Form("%s.root",s.c_str()),"recreate");
+        while (s.back() == ' ' || s.back() == '\n') s.pop_back();
+        TFile* f = new TFile(Form("%s.root", s.c_str()), "recreate");
         f->cd();
-        for (std::map<int, TH1F*>::iterator it=gmapTH1F.begin(); it!=gmapTH1F.end(); it++) it->second->Write();
+        for (std::map<int, TH1F*>::iterator it = gmapTH1F.begin(); it != gmapTH1F.end(); ++it) it->second->Write();
         f->Close();
     }
 
     void hbarx_(int* a)
     {
-        if (gmapTH1F.find(*a)!=gmapTH1F.end())
+        if (gmapTH1F.find(*a) != gmapTH1F.end())
             gmapTH1F[*a]->Sumw2();
     }
 
-    void  hbnt_(int* id,const char* t,const char* o)
+    void  hbnt_(int* id, const char* t, const char* o)
     {
-        gmapTTree[*id]= new TTree(Form("%i",*id),t);
+        gmapTTree[*id] = new TTree(Form("%i",*id),t);
     }
 
-    void hpake_(int* a,float* xe)
+    void hpake_(int* a, float* xe)
     {
-        if (gmapTH1F.find(*a)!=gmapTH1F.end())
-            for (int i=0; i<gmapTH1F[*a]->GetNbinsX(); i++)
-                gmapTH1F[*a]->SetBinError(i+1,xe[i]);
-
-    }
-    void hpak_(int* a,float* xe)
-    {
-        if (gmapTH1F.find(*a)!=gmapTH1F.end())
-            for (int i=0; i<gmapTH1F[*a]->GetNbinsX(); i++)
-                gmapTH1F[*a]->SetBinContent(i+1,xe[i]);
+        if (gmapTH1F.find(*a) != gmapTH1F.end())
+            for (int i = 0; i< gmapTH1F[*a]->GetNbinsX(); i++)
+                gmapTH1F[*a]->SetBinError(i + 1, xe[i]);
     }
 
-
-    void hrout_(int* id,int*,char*)
+    void hpak_(int* a, float* xe)
     {
-        if ((*id)==0)
-            for (std::map<int, TH1F*>::iterator it=gmapTH1F.begin(); it!=gmapTH1F.end(); it++) it->second->Write();
-        else if (gmapTH1F.find(*id)!=gmapTH1F.end())	gmapTH1F[*id]->Write();
+        if (gmapTH1F.find(*a) != gmapTH1F.end())
+            for (int i = 0; i < gmapTH1F[*a]->GetNbinsX(); i++)
+                gmapTH1F[*a]->SetBinContent( i + 1, xe[i]);
+    }
+
+
+    void hrout_(int* id, int* ,char*)
+    {
+        if ((*id) == 0)
+            for (std::map<int, TH1F*>::iterator it = gmapTH1F.begin(); it != gmapTH1F.end(); ++it) it->second->Write();
+        else if (gmapTH1F.find(*id) != gmapTH1F.end()) gmapTH1F[*id]->Write();
     }
 
     void hrend_(char*dir)
     {
         std::string d(dir);
-        while (d.back()==' '||d.back()=='\n') d.pop_back();
-        if (gmapTFile.find(d)!=gmapTFile.end())
+        while (d.back() == ' ' || d.back() == '\n') d.pop_back();
+        if (gmapTFile.find(d) != gmapTFile.end())
         {
-            for (std::map<int, TTree*>::iterator it=gmapTTree.begin(); it!=gmapTTree.end(); it++) it->second->Write();
+            for (std::map<int, TTree*>::iterator it = gmapTTree.begin(); it != gmapTTree.end(); ++it) it->second->Write();
             gmapTFile[d]->Close();
         }
     }
 
-    void hropen_(int* lun,const char* dir,const char*fname,const char* opt,
-                 int* rec,int* stat)
+    void hropen_(int* lun, const char* dir, const char* fname, const char* opt, int* rec, int* stat)
     {
         std::string d(dir);
-        while (d.back()==' '||d.back()=='\n') d.pop_back();
+        while (d.back() == ' ' || d.back()=='\n') d.pop_back();
         std::string f(fname);
-        while (f.back()==' '||f.back()=='\n') f.pop_back();
+        while (f.back() == ' ' || f.back()=='\n') f.pop_back();
 
-        gmapTFile[d]=new TFile(Form("%s.root",f.c_str()),"recreate");
-
+        gmapTFile[d] = new TFile(Form("%s.root", f.c_str()), "recreate");
     }
+
     void  hfnt_(int* id)
     {
-        if (gmapTTree.find(*id)!=gmapTTree.end())
+        if (gmapTTree.find(*id) != gmapTTree.end())
             gmapTTree[*id]->Fill();
     }
 
-    void hfill_(int*a,float*x,float*y,float*w)
+    void hfill_(int* a, float* x, float* y, float* w)
     {
-        if (std::abs(*y)<0.000001) hf1_(a,x,w);
+        if (std::abs(*y) < 0.000001) hf1_(a, x, w);
         else
             printf("Warning in hfill\n");
     }
 
-
-
-
-    void hbname_(int*id,const char* vname,char*re,const char* form,int,int)
+    void hbname_(int*id, const char* vname, char* re, const char* form, int, int)
     {
         std::string vn(vname);
-        while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
+        while (vn.back() == ' ' || vn.back() == '\n') vn.pop_back();
         std::string fo(form);
-        while (fo.back()==' '||fo.back()=='\n') fo.pop_back();
-        printf("in->|%s|<-\n",fo.c_str());
+        while (fo.back() == ' ' || fo.back() == '\n') fo.pop_back();
+        printf("in->|%s|<-\n", fo.c_str());
 
         std::map<std::string,size_t> sizes;
-        sizes["b"]=sizeof(unsigned int);
-        sizes["U"]=sizeof(unsigned int);
-        sizes["F"]=sizeof(float);
-        sizes["R"]=sizeof(float);
-        sizes["I"]=sizeof(int);
+        sizes["b"] = sizeof(unsigned int);
+        sizes["U"] = sizeof(unsigned int);
+        sizes["F"] = sizeof(float);
+        sizes["R"] = sizeof(float);
+        sizes["I"] = sizeof(int);
 
         std::vector<std::vector<std::string> > vars;
         bool in_brackets_sq,in_brackets_ro;
-        int n_vars=0;
-        in_brackets_sq=false;
-        in_brackets_ro=false;
+        int n_vars = 0;
+        in_brackets_sq = false;
+        in_brackets_ro = false;
         std::vector<std::string> def;
         def.push_back("");
         def.push_back("");
@@ -195,86 +191,83 @@ extern "C" {
         def.push_back("");
         def.push_back("");
         vars.push_back(def);
-        for (int i=0; i<fo.length(); i++)
+        for (int i = 0; i < fo.length(); i++)
         {
-            if (fo.at(i)==','&&!in_brackets_ro&&!in_brackets_sq) {
+            if (fo.at(i) == ',' && !in_brackets_ro && !in_brackets_sq) {
                 vars.push_back(def);
                 continue;
             }
-            if (fo.at(i)=='(') in_brackets_ro=true;
-            if (fo.at(i)==')') in_brackets_ro=false;
-            if (fo.at(i)=='[') in_brackets_sq=true;
-            if (fo.at(i)==']') in_brackets_sq=false;
-            if (fo.at(i)==']'||fo.at(i)=='[') continue;
-            if(in_brackets_sq) vars.back()[1]+=fo.at(i);
+            if (fo.at(i) == '(' ) in_brackets_ro = true;
+            if (fo.at(i) == ')' ) in_brackets_ro = false;
+            if (fo.at(i) == '[' ) in_brackets_sq = true;
+            if (fo.at(i) == ']' ) in_brackets_sq = false;
+            if (fo.at(i) == ']' || fo.at(i) == '[') continue;
+            if(in_brackets_sq) vars.back()[1] += fo.at(i);
             else
-                vars.back()[0]+=fo.at(i);
+                vars.back()[0] += fo.at(i);
         }
 
-//for (std::vector<std::vector<std::string> >  ::iterator it=vars.begin();it!=vars.end();it++)
-//printf("->|%s|%s|%s|%s|%s|%s|\n",(*it)[0].c_str(),(*it)[1].c_str(),(*it)[2].c_str(),(*it)[3].c_str(),(*it)[4].c_str(),(*it)[5].c_str());
-
-        for (std::vector<std::vector<std::string> >  ::iterator it=vars.begin(); it!=vars.end(); it++)
+        for (std::vector<std::vector<std::string> >::iterator it = vars.begin(); it != vars.end(); ++it)
         {
-            (*it)[1].erase(0,(*it)[1].find_first_of(",")+1);
-
-            (*it)[2]="I";
-            if (  (*it)[0].find(":U")!=std::string::npos) (*it)[2]="b";
-            if (  (*it)[0].find(":R")!=std::string::npos) (*it)[2]="F";
-            if (  (*it)[0].find(":I")!=std::string::npos) (*it)[2]="I";
-            replace_all((*it)[0],":U","");
-            replace_all((*it)[0],":R","");
-            replace_all((*it)[0],":I","");
-            replace_all((*it)[0],":","");
+            (*it)[1].erase(0,(*it)[1].find_first_of(",") + 1 );
+            (*it)[2] = "I";
+            if (  (*it)[0].find(":U") != std::string::npos) (*it)[2] = "b";
+            if (  (*it)[0].find(":R") != std::string::npos) (*it)[2] = "F";
+            if (  (*it)[0].find(":I") != std::string::npos) (*it)[2] = "I";
+            replace_all((*it)[0], ":U", "");
+            replace_all((*it)[0], ":R", "");
+            replace_all((*it)[0], ":I", "");
+            replace_all((*it)[0], ":", "");
         }
-        for (std::vector<std::vector<std::string> >  ::iterator it=vars.begin(); it!=vars.end(); it++)
+        for (std::vector<std::vector<std::string> >::iterator it = vars.begin(); it != vars.end(); ++it)
         {
-            replace_all((*it)[0],","," ");
-            replace_all((*it)[0],")"," ");
-            replace_all((*it)[0],"("," ");
-            std::vector<std::string> x=tokenize((*it)[0]," ");
+            replace_all((*it)[0], ",", " ");
+            replace_all((*it)[0], ")", " ");
+            replace_all((*it)[0], "(", " ");
+            std::vector<std::string> x = tokenize((*it)[0], " ");
             (*it)[0]=x[0];
-            for (int i=x.size()-1; i>0; i--) {
-                (*it)[3]+= x[i];
-                (*it)[3]+=" ";
+            for (int i = x.size() - 1; i > 0; i--) {
+                (*it)[3] += x[i];
+                (*it)[3] += " ";
             }
         }
-        for (std::vector<std::vector<std::string> >  ::iterator it=vars.begin(); it!=vars.end(); it++)
+        for (std::vector<std::vector<std::string> >::iterator it=vars.begin(); it!=vars.end(); ++it)
         {
-            int k=1;
-            if ((*it)[3]!="")
+            int k = 1;
+            if ((*it)[3] != "")
             {
-                std::vector<std::string> dims=tokenize((*it)[3]," ");
-                for (std::vector<std::string>:: iterator it2=dims.begin(); it2!=dims.end(); it2++)
+                std::vector<std::string> dims = tokenize((*it)[3], " ");
+                for (std::vector<std::string>::iterator it2 = dims.begin(); it2 != dims.end(); ++it2)
                 {
                     std::string nn=*it2;
-                    for (std::vector<std::vector<std::string> >  ::iterator it3=vars.begin(); it3!=vars.end(); it3++)
-                        if ((*it3)[0]==(*it2)) nn=(*it3)[1];
+                    for (std::vector<std::vector<std::string> >::iterator it3 = vars.begin(); it3 != vars.end(); ++it3)
+                        if ((*it3)[0] == (*it2)) nn = (*it3)[1];
                     k*=(int)(std::stof(nn));
                 }
             }
             char buf[20];
-            sprintf(buf,"%lu",k*sizes[(*it)[2]]);
-            (*it)[4]=std::string(buf);
+            sprintf(buf, "%lu", k*sizes[(*it)[2]]);
+            (*it)[4] = std::string(buf);
         }
-        for (std::vector<std::vector<std::string> >  ::iterator it=vars.begin(); it!=vars.end(); it++)
+        for (std::vector<std::vector<std::string> >::iterator it = vars.begin(); it != vars.end(); ++it)
         {
-            (*it)[5]=(*it)[0]+std::string("[")+(*it)[3];
-            replace_all((*it)[5]," ","][");
+            (*it)[5] = (*it)[0] + std::string("[") + (*it)[3];
+            replace_all((*it)[5], " ", "][");
             (*it)[5].pop_back();
-            (*it)[5]+="/";
-            (*it)[5]+=(*it)[2];
+            (*it)[5] += "/";
+            (*it)[5] += (*it)[2];
         }
-        char* poi=re;
-        for (std::vector<std::vector<std::string> >  ::iterator it=vars.begin(); it!=vars.end(); it++)
+        char* poi = re;
+        for (std::vector<std::vector<std::string> >::iterator it = vars.begin(); it != vars.end(); ++it)
         {
-            gmapTTree[*id]->Branch((*it)[0].c_str(),poi,(*it)[5].c_str());
-            poi+=std::stoi((*it)[4]);
+            gmapTTree[*id]->Branch((*it)[0].c_str(), poi, (*it)[5].c_str());
+            poi += std::stoi((*it)[4]);
         }
     }
-    void hbook2_(int* a,const char* CHTITL,int* NNX,float* XX0,float* XX1,int* NNY,float* YY0,float* YY1,float* VALMAX)
+
+    void hbook2_(int* a, const char* CHTITL, int* NNX, float* XX0, float* XX1, int* NNY, float* YY0, float* YY1, float* VALMAX)
     {
-      gmapTH2F[*a]=new TH2F(Form("%i",*a),CHTITL,*NNX,*XX0,*XX1,*NNY,*YY0,*YY1); 
+        gmapTH2F[*a] = new TH2F(Form("%i",*a), CHTITL, *NNX, *XX0, *XX1, *NNY, *YY0, *YY1);
     }
 ///NOT IMPLEMENTED
     /*
@@ -287,23 +280,15 @@ extern "C" {
     *.    DX ARRAY OF X ERRORS
     *.    DY ARRAY OF Y ERRORS
     */
-    void hrebin_(int* id, float ** X, float** Y,float ** DX, float** DY, int *NNR, int* IFIRST, int* *ILAST)
-    {
-
-    }
+    void hrebin_(int* id, float ** X, float** Y, float ** DX, float** DY, int *NNR, int* IFIRST, int* *ILAST){}
     /*
     *.==========>
     *.           RETURNS THE NUMBER OF ENTRIES OF IDD
     *..=========> ( R.Brun )
     */
-    void hnoent_(int* IDD,int* NUMB) {
+    void hnoent_(int* IDD, int* NUMB) {}
 
-
-    }
-    void hopera_(int* ID1,const char* CHOP,int* ID2,int* ID3,float* CC1,float* CC2)
-    {
-
-    }
+    void hopera_(int* ID1, const char* CHOP, int* ID2, int* ID3, float* CC1,float* CC2){}
     /*
     *.==========>
     *.           Operations between histograms
@@ -315,29 +300,19 @@ extern "C" {
     *.             If option '/B' is given , binomial errors are computed.
     *..=========> ( R.Brun )
     */
-
-
-    void hgive_(int* IDD,const char *CHTITL,int* NCX,float* XMIN,float* XMAX,int* NCY,float* YMIN,float* YMAX,int*  NWT,int* IDB)
-    {
-    }
+    void hgive_(int* IDD, const char *CHTITL, int* NCX, float* XMIN, float* XMAX, int* NCY, float* YMIN, float* YMAX, int*  NWT, int* IDB){}
     /*
     *.==========>
     *.           RETURN BOOKING PARAMETERS OF IDD
     *..=========> ( R.Brun )
 
     */
-
-    void hbookb_(int* IDD,const char* CHTITL,int* NX,float* XBINS,float* VALMAX)
-    {
-
-    }
+    void hbookb_(int* IDD, const char* CHTITL, int* NX, float* XBINS, float* VALMAX){}
     /*
     *.==========>
     *.           booking of a 1-dim histogram
     *.           with non-equidistant bins
     *..=========> ( R.Brun )
     */
-
-
-    void hidopt_(int* ID1,const char* KKOPT) {}
+    void hidopt_(int* ID1, const char* KKOPT) {}
 }

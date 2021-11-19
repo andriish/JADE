@@ -23,7 +23,7 @@ Frame::Frame(const TGWindow *p,UInt_t w,UInt_t h)
     hframe->AddFrame(exit, new TGLayoutHints(kLHintsCenterX,5,5,3,4));
     AddFrame(hframe,new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     // Sets window name and shows the main frame
-    SetWindowName("JADE DIsplay Frame");
+    SetWindowName("JADE Display Frame");
     MapSubwindows();
     Resize(GetDefaultSize());
 

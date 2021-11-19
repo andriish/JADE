@@ -1,14 +1,14 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
 PROJECT(JADECONVERT Fortran C CXX)
-SET(VERSION 2020.11)
+SET(VERSION 2021.11)
 include("GNUInstallDirs")
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 ########################################################################
 include(JADE_compiler_setup)
 ########################################################################
-  find_package(BLAS REQUIRED)
-  find_package(LAPACK REQUIRED)
+find_package(BLAS REQUIRED)
+find_package(LAPACK REQUIRED)
 message(STATUS "LAPACK libraries        : ${LAPACK_LIBRARIES_DIR}")
 ########################################################################
 find_package(HepMC3  REQUIRED HINTS /u/andriish/Z/share/HepMC3/cmake/) #The later is to test JADE with NAG on Cobra
@@ -33,17 +33,17 @@ endif()
 add_custom_target( cmdline DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.c ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.h)
 ########################################################################
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}  ${ROOT_INCLUDE_DIRS}  ${HEPMC3_INCLUDE_DIRS})
-add_executable(convert_example_JADE.exe
+add_executable(convert_mc_JADE.exe
         ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/convert_example.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/convert_mc.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/src/WriterJADE.cc 
         ${CMAKE_CURRENT_SOURCE_DIR}/src/jadeio.f
         )
-target_compile_definitions( convert_example_JADE.exe PUBLIC HEPMCCONVERT_EXTENSION_JADE  )
-target_include_directories(convert_example_JADE.exe PUBLIC ${HEPMC3_INCLUDE_DIR})
-target_link_libraries(convert_example_JADE.exe ${HEPMC3_LIB} ${HEPMC3_SEARCH_LIB}  ${LAPACK_LIBRARIES})
-add_dependencies( convert_example_JADE.exe cmdline  )
+target_compile_definitions( convert_mc_JADE.exe PUBLIC HEPMCCONVERT_EXTENSION_JADE  )
+target_include_directories(convert_mc_JADE.exe PUBLIC ${HEPMC3_INCLUDE_DIR})
+target_link_libraries(convert_mc_JADE.exe ${HEPMC3_LIB} ${HEPMC3_SEARCH_LIB}  ${LAPACK_LIBRARIES})
+add_dependencies( convert_mc_JADE.exe cmdline  )
 ########################################################################
 # installs 
-install(TARGETS convert_example_JADE.exe RUNTIME DESTINATION bin)
+install(TARGETS convert_mc_JADE.exe RUNTIME DESTINATION bin)
 ########################################################################
