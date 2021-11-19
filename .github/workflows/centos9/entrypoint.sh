@@ -2,7 +2,7 @@
 set -x
 uname -a 
 cat /etc/issue
-dnf -y install epel-release
+dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
 dnf -y install dnf-plugins-core
 dnf config-manager --set-enabled powertools
 dnf -y install  gcc gcc-c++ gcc-gfortran make which cmake cmake-data cmake-filesystem HepMC3*
