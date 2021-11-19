@@ -36,7 +36,7 @@ jobs:
   compilejobCentOS9:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: ubuntu-latest
-    name: JADE_on_CentOS9
+    name: JADE_on_CentOS9stream
     steps:
     - name: Checkout
       uses: actions/checkout@v2
