@@ -112,7 +112,7 @@ SET(BOSLIB_src
  sort4.for ucorr.for uhist.for uwp.for vall.for vecsub.f
  # rdvar.for 
 )
-list(TRANSFORM BOSLIB_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/${SRCBOSLIB}/")
+list(TRANSFORM BOSLIB_src PREPEND "${SRCBOSLIB}/")
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
   file(GLOB MyFiles ${SRCBOSLIB}/*.for)
   set_property(SOURCE ${MyFiles} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
@@ -141,11 +141,11 @@ rzdraw.F rzhits.F rzroll.F rztrck.F saege.F scannr.F sepcmd.f setcmd.f setdef.F 
 setupg.F spare.f spthak.F stplst.F tbgdis.F ternum.f tofds.F tonum.f tr3dsp.F trig2.F trkhit.F 
 trkrol.F trn4v.F trnumb.F trpvtx.F trtext.F truth.F vcdo.F vrxcir.F vtx.F vtx.F vxdisp.F 
 walloc.F welcme.f xcalcor.F xsafchk.F xtofvw.F xxxyyy.F xytag.F yamada.F zfitds.F zfit.F zinter.F ztrgvw.F grblock.F )
-list(TRANSFORM GRAFIX_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/${SRCGRAFIX}/")
+list(TRANSFORM GRAFIX_src PREPEND "${SRCGRAFIX}/")
 ADD_LIBRARY(${GRAFIX} STATIC ${GRAFIX_src})
 ########################################################################
 SET(INTERFACE_src hfix.f biby.f dlib.f igwlcm.F ips.f plot10.F   plot2016.F ranmar.f setcol.F )
-list(TRANSFORM INTERFACE_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/${SRCINTERFACE}/")
+list(TRANSFORM INTERFACE_src PREPEND "${SRCINTERFACE}/")
 ADD_LIBRARY(${INTERFACE} STATIC ${INTERFACE_src})
 ########################################################################
 SET(JADEGS_src 
@@ -167,7 +167,7 @@ SET(JADEGS_src
  zsfit.F zsline.F zspdbk.f zspur.F zsrft1.F zsrftv.F zsxy.F zvertf.F 
 #NOTE, The old version from PMF contains a bug: zrecal and zbug symbols are taken from zebra 
  zrecal.F zbug.f )
-list(TRANSFORM JADEGS_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/${SRCJADEGS}/")
+list(TRANSFORM JADEGS_src PREPEND "${SRCJADEGS}/")
 ADD_LIBRARY(${JADEGS} STATIC ${JADEGS_src})
 ########################################################################
 SET(JADEMUS_src
@@ -181,7 +181,7 @@ if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "PGI")
 else()
   LIST(APPEND JADEMUS_src muini.F)
 endif()
-list(TRANSFORM JADEMUS_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/${SRCJADEMUS}/")
+list(TRANSFORM JADEMUS_src PREPEND "${SRCJADEMUS}/")
 ADD_LIBRARY(${JADEMUS} STATIC ${JADEMUS_src})
 ########################################################################
 #SET(JADESR_src
@@ -200,14 +200,14 @@ SET(JMC_src
  statbp.f sthead.f stlatc.f stpall.F stvect.F svect1.f tags2h.F tags2h.F 
  tofmak.f trcdet.f trcdtv.f trcoil.f trkadc.f trkgam.f trkgmv.f trlgl.f 
  trlgs6.F trlgsh.F wegas.f wrtmcb.f )
-list(TRANSFORM SRCJMC_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/${SRCJMC}/")
+list(TRANSFORM JMC_src PREPEND "${SRCJMC}/")
 ADD_LIBRARY(${JMC} STATIC ${JMC_src})
 ########################################################################
 SET(PATRECSR_src
  adpatr.F backtr.F bakfit.F bakpak.F bside.F bstore.F crtrel.F deadcl.f errorm.F
  flinel.F ftrkel.F fxyz.F inpatc.F inpatr.F kntrel.F patrc1.F patrec.F
  patrol.F pcwork.F prhtar.F rincon.F rstbtr.F srtrel.F trlord.F xyfit.F zrfit.F )
-list(TRANSFORM PATRECSR_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/${SRCPATRECSR}/")
+list(TRANSFORM PATRECSR_src PREPEND "${SRCPATRECSR}/")
 ADD_LIBRARY(${PATRECSR} STATIC ${PATRECSR_src})
 ########################################################################
 SET(SOURCE_src
@@ -218,7 +218,7 @@ SET(SOURCE_src
   lgefil.F lgehit.f lgeign.F lgerse.F lgesmr.f lginit.f lgmesg.F lgnbls.f
   lgnmec.f lgrein.F lgsrth.F lgsubc.f lgthcr.f lkcorr.F posend.f shmax.f
   thcofa.F thcorr.F tpcnst.F )
-list(TRANSFORM SOURCE_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/${SRCSOURCE}/")
+list(TRANSFORM SOURCE_src PREPEND "${SRCSOURCE}/")
 ADD_LIBRARY(${SOURCE} STATIC ${SOURCE_src})
 ########################################################################
 SET(TAGG_src
@@ -232,25 +232,25 @@ if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
   file(GLOB myfortag ${SRCTAGG}/*.for)
   set_property(SOURCE ${myfortag} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
 endif()
-list(TRANSFORM TAGG_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/${SRCTAGG}/")
+list(TRANSFORM TAGG_src PREPEND "${SRCTAGG}/")
 ADD_LIBRARY(${TAGG} STATIC ${TAGG_src})
 ########################################################################
 SET(TOFLIB_src
  agrpr.f atfugr.f atofrw.f atofun.F cmass.f corcst.f mocard.F rd0880.F
  tfarnw.F tfctd1.F tfstor.f tofar2.F tofard.F tofbra.f tofcl2.f tofclc.F
  tofcor.f tofin2.F tofint.F tofma2.f tofmas.F tofsm2.f tofsm3.F tofsmp.F )
-list(TRANSFORM TOFLIB_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/${SRCTOFLIB}/")
+list(TRANSFORM TOFLIB_src PREPEND "${SRCTOFLIB}/")
 ADD_LIBRARY(${TOFLIB} STATIC ${TOFLIB_src})
 ########################################################################
 SET(VERTEX_src
  vertex.f  vtxaft.f  vtxbnk.F  vtxee.f vtxini.f  vtxpnt.f  vtxpre.F  vtxsrc.f )
-list(TRANSFORM VERTEX_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/${SRCVERTEX}/")
+list(TRANSFORM VERTEX_src PREPEND "${SRCVERTEX}/")
 ADD_LIBRARY(${VERTEX} STATIC ${VERTEX_src})
 ########################################################################
 SET(WERTEX_src
   parkor.F  wertex.f  wtxaft.f  wtxbnk.F  wtxcrv.f  wtxee.f  wtxeer.F  wtxerr.f
   wtxini.f  wtxpnt.f  wtxpre.F  wtxsrc.f xfwid.F  xfwvxc.F )
-list(TRANSFORM WERTEX_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/${SRCWERTEX}/")
+list(TRANSFORM WERTEX_src PREPEND "${SRCWERTEX}/")
 ADD_LIBRARY(${WERTEX} STATIC ${WERTEX_src})
 ########################################################################
 SET(ZLIB_src
@@ -263,7 +263,7 @@ if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
   file(GLOB myforzlib ${SRCZLIB}/*.for)
   set_property(SOURCE ${myforzlib} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
 endif()   
-list(TRANSFORM ZLIB_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/${SRCZLIB}/")
+list(TRANSFORM ZLIB_src PREPEND "${SRCZLIB}/")
 ADD_LIBRARY(${ZLIB} STATIC ${ZLIB_src})
 ########################################################################
 #JADEZ
