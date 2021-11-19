@@ -67,9 +67,9 @@ SET(WERTEX          wertex)
 SET(ZLIB            zlib)
 
 # Define some directories
-SET(SRC     ${CMAKE_SOURCE_DIR}/src2016)
-SET(UTIL    ${CMAKE_SOURCE_DIR}/util2016)
-SET(SRCMAIN ${CMAKE_SOURCE_DIR}/main2016)
+SET(SRC     ${CMAKE_SOURCE_DIR}/src)
+SET(UTIL    ${CMAKE_SOURCE_DIR}/util)
+SET(SRCMAIN ${CMAKE_SOURCE_DIR}/main)
 SET(LIB     ${CMAKE_SOURCE_DIR}/lib)
 SET(BIN     ${CMAKE_SOURCE_DIR}/bin)
 
