@@ -58,7 +58,7 @@ else()
                                          ${CMAKE_CURRENT_SOURCE_DIR}/cards/testPythia1.input 
                                          ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output )
  
-  add_test(NAME HepMC3_to_CPROD_MC1 COMMAND ${JADEPREFIX}/bin/convert_example_JADE.exe -i hepmc3 -o jade 
+  add_test(NAME HepMC3_to_CPROD_MC1 COMMAND ${JADEPREFIX}/bin/convert_mc_JADE.exe -i hepmc3 -o jade 
                                           ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output 
                                           ${CMAKE_CURRENT_BINARY_DIR}/testConvert1.cprod
                                           -e Mode=0 )

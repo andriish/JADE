@@ -19,7 +19,6 @@
 #include <TApplication.h>
 #include <TRootEmbeddedCanvas.h>
 
-
 #define JADEZROOT
 #define DEBUG 1
 
@@ -34,8 +33,6 @@
 #define __PRETTY_FUNCTION__    __FUNCTION__
 #endif
 
-
-
 #ifndef JADEZROOT
 TApplication* jApplication;
 #else
@@ -43,7 +40,7 @@ TApplication* jApplication;
 Frame* jFrame;
 void showFrame()
 {
-    jFrame=new Frame(gClient->GetRoot(),200,200);
+    jFrame = new Frame(gClient->GetRoot(), 200, 200);
 }
 #endif
 
@@ -65,8 +62,12 @@ float jPolyLineWidth;
 std::map<int,std::vector<double> >  gWN;
 int jNT;
 
+/*** This file implements PHIGZ routines using ROOT
+ *
+ */
+
 extern "C" {
-    void iswn_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)
+    void iswn_(int &NTS, float &XTMIN, float &XTMAX, float &YTMIN, float &YTMAX)
     {
         /*Action: This routine sets the boundaries of the window of a normalization transformation. The window
         must be specified in world coordinates. The boundaries of the window, together with the boundaries of
@@ -93,10 +94,10 @@ extern "C" {
         a.push_back(YTMIN);
         a.push_back(XTMAX);
         a.push_back(YTMAX);
-        gWN[NTS]=a;
+        gWN[NTS] = a;
     }
 
-    void isvp_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)
+    void isvp_(int &NTS, float &XTMIN, float &XTMAX, float &YTMIN, float &YTMAX)
     {
         /*
 
@@ -122,8 +123,6 @@ extern "C" {
         YMAX
          Y coordinate of the upper right hand corner in NDC space (0.0 ≤YMAX≤ 1.0).
         The last four parameters must satisfy the conditions XMIN < XMAX and YMIN < YMAX.
-
-
         */
         PRINT_IF_DEBUG printf("void isvp_(int &NTS,float &XTMIN,float &XTMAX,float &YTMIN,float &YTMAX)  %i %f %f %f %f\n", NTS, XTMIN, XTMAX, YTMIN, YTMAX);
 
@@ -140,31 +139,29 @@ extern "C" {
 
             jPad->cd();
             gPad->Update();
-            if (gWN.find(NTS)!=gWN.end())
+            if (gWN.find(NTS) != gWN.end())
             {
                 gPad->Range(BIGK*gWN[NTS][0],BIGK*gWN[NTS][1],BIGK*gWN[NTS][2],BIGK*gWN[NTS][3]);
             }
             else
             {
                 printf("Error in void isvp_\n");
-
             }
             gPad->Update();
         }
         jCanvas->cd();
 
-        if ( NTS==9)
+        if ( NTS == 9)
         {
             //  TPad* pad= new TPad(Form("jCanvas%iPad%i",NTS,jCanvas[NTS]->GetListOfPrimitives()->GetSize()+1),"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
-
             if (jCanvas->GetListOfPrimitives()->FindObject("Jpad"))
             {
                 jCanvas->GetListOfPrimitives()->FindObject("Jpad")->Clear();
                 jCanvas->GetListOfPrimitives()->FindObject("Jpad")->Delete();
             }
-            TString pname=Form("jCanvasPad%2.2f_%2.2f_%2.2f_%2.2f",XTMIN, YTMIN, XTMAX, YTMAX);
-            TPad* pad=(TPad*)(jCanvas->GetListOfPrimitives()->FindObject(pname));
-            if (!pad) pad= new TPad(pname,"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
+            TString pname = Form("jCanvasPad%2.2f_%2.2f_%2.2f_%2.2f",XTMIN, YTMIN, XTMAX, YTMAX);
+            TPad* pad = (TPad*)(jCanvas->GetListOfPrimitives()->FindObject(pname));
+            if (!pad) pad = new TPad(pname,"jPad", XTMIN, YTMIN, XTMAX, YTMAX);
 
             pad->SetFillStyle(4000);
             pad->SetFillColor(0);
@@ -173,9 +170,9 @@ extern "C" {
             pad->Draw();
             gPad->Update();
             pad->cd();
-            if (gWN.find(NTS)!=gWN.end())
+            if (gWN.find(NTS) != gWN.end())
             {
-                gPad->Range(BIGK*gWN[NTS][0],BIGK*gWN[NTS][1],BIGK*gWN[NTS][2],BIGK*gWN[NTS][3]);
+                gPad->Range(BIGK*gWN[NTS][0], BIGK*gWN[NTS][1], BIGK*gWN[NTS][2], BIGK*gWN[NTS][3]);
             }
             else
             {
@@ -184,14 +181,14 @@ extern "C" {
             gPad->Update();
         }
 
-        if (NTS==8)
+        if (NTS == 8)
         {
             if (jCanvas->GetListOfPrimitives()->FindObject("Jpad"))
             {
                 ((TPad*)(jCanvas->GetListOfPrimitives()->FindObject("Jpad")))->cd();
-                if (gWN.find(NTS)!=gWN.end())
+                if (gWN.find(NTS) != gWN.end())
                 {
-                    gPad->Range(BIGK*gWN[NTS][0],BIGK*gWN[NTS][1],BIGK*gWN[NTS][2],BIGK*gWN[NTS][3]);
+                    gPad->Range(BIGK*gWN[NTS][0], BIGK*gWN[NTS][1], BIGK*gWN[NTS][2], BIGK*gWN[NTS][3]);
                 }
                 gPad->Update();
             }
@@ -202,16 +199,16 @@ extern "C" {
             }
             gPad->Update();
         }
-        PRINT_IF_DEBUG  printf("jCanvas->GetListOfPrimitives()->GetSize()=%i\n",jCanvas->GetListOfPrimitives()->GetSize());
+        PRINT_IF_DEBUG  printf("jCanvas->GetListOfPrimitives()->GetSize()=%i\n", jCanvas->GetListOfPrimitives()->GetSize());
     }
 
     void iselnt_(int & t)
     {
         PRINT_IF_DEBUG printf("void iselnt_(int & t)  %i\n",t);
-        jNT=t;
-        if (gWN.find(t)!=gWN.end())
+        jNT = t;
+        if (gWN.find(t) != gWN.end())
         {
-            gPad->Range(BIGK*gWN[t][0],BIGK*gWN[t][1],BIGK*gWN[t][2],BIGK*gWN[t][3]);
+            gPad->Range(BIGK*gWN[t][0], BIGK*gWN[t][1], BIGK*gWN[t][2], BIGK*gWN[t][3]);
         }
         else
         {
@@ -222,7 +219,7 @@ extern "C" {
     void iclrwk_()
     {
         PRINT_IF_DEBUG  printf("iclrwk_()\n");
-//if (jCanvas) if(jCanvas->GetPad(1)) jCanvas->GetPad(1)->Clear();
+        //if (jCanvas) if(jCanvas->GetPad(1)) jCanvas->GetPad(1)->Clear();
         if(gPad) gPad->Clear();
         if (jCanvas) if (jCanvas->GetListOfPrimitives()->FindObject("Jpad")) jCanvas->GetListOfPrimitives()->FindObject("Jpad")->Clear();
     }
@@ -232,10 +229,11 @@ extern "C" {
         PRINT_IF_DEBUG  printf("iclwk_()\n");
         //if (gPad) gPad->Clear();
     }
+
     void igbox_(float& x1, float & x2,float& y1, float & y2)
     {
 
-        PRINT_IF_DEBUG printf("void igbox_(float& x1, float & x2,float& y1, float & y2) %f %f %f %f\n",x1,y1,x2,y2);
+        PRINT_IF_DEBUG printf("void igbox_(float& x1, float & x2,float& y1, float & y2) %f %f %f %f\n", x1, y1, x2, y2);
         TBox* B= new TBox(x1,y1,x2,y2);
         B->SetFillColor(1);
         B->SetFillStyle(1);
@@ -245,9 +243,9 @@ extern "C" {
         gPad->Update();
     }
 
-    void ixbox_(float& x1, float & x2,float& y1, float & y2, int mode)
+    void ixbox_(float& x1, float & x2, float& y1, float & y2, int mode)
     {
-        PRINT_IF_DEBUG   printf("void ixbox_(float& x1, float & x2,float& y1, float & y2) %f %f %f %f\n",x1,y1,x2,y2);
+        PRINT_IF_DEBUG   printf("void ixbox_(float& x1, float & x2,float& y1, float & y2) %f %f %f %f\n", x1, y1, x2, y2);
         TBox* B= new TBox(x1,y1,x2,y2);
         B->SetFillColor(1);
         B->SetFillStyle(1);
@@ -274,50 +272,47 @@ extern "C" {
         Floating point value of the parameter (must be specified as a REAL number).
         A value of 0.0 indicates that the parameter value must be reset to its default value.
         */
-        PRINT_IF_DEBUG printf("  void igset_(char* , float& val){ %s %f\n",a,val);
-//jTextAngle=atan(val)*180.0/TMath::Pi();
+        PRINT_IF_DEBUG printf("  void igset_(char* , float& val){ %s %f\n", a, val);
+        //jTextAngle=atan(val)*180.0/TMath::Pi();
         jTextAngle=val*180.0/TMath::Pi();
     }
 
-
-//`iginit_'
     void iginit_(int& a)
     {
-        PRINT_IF_DEBUG printf("iginit_(int a)   %i\n",a);
+        PRINT_IF_DEBUG printf("iginit_(int a)   %i\n", a);
 #ifndef JADEZROOT
-        jApplication=new TApplication("Jade display",0,0);
+        jApplication = new TApplication("Jade display", 0, 0);
 #else
         showFrame();
 #endif
-        jTextSize=0.01;
-        jTextColor=kRed;
-        jLineColor=kBlack;
-        jPolyLineColor=kBlack;
+        jTextSize = 0.01;
+        jTextColor = kRed;
+        jLineColor = kBlack;
+        jPolyLineColor = kBlack;
 
-        jFillAreaColor=kWhite;
-        jTextAlignment=12;
-        jTextFont=82;
-        jTextAngle=0;
-        jNT=0;
+        jFillAreaColor = kWhite;
+        jTextAlignment = 12;
+        jTextFont = 82;
+        jTextAngle = 0;
+        jNT = 0;
         std::vector<double> az;
         az.push_back(0);
         az.push_back(0);
         az.push_back(2*4096);
         az.push_back(2*4096);
-        gWN[0]=az;
-        jPolyMarkerSize=1.1;
-        jPolyLineWidth=1.0;
-        jLineStyle=kSolid;
+        gWN[0] = az;
+        jPolyMarkerSize = 1.1;
+        jPolyLineWidth = 1.0;
+        jLineStyle = kSolid;
 
-        jColors[0]=kWhite;
-        jColors[1]=kBlack;
-        jColors[2]=kRed;
-        jColors[3]=kGreen;
-        jColors[4]=kBlue;
-        jColors[5]=kYellow;
-        jColors[6]=kViolet;
-        jColors[7]=kCyan;
-
+        jColors[0] = kWhite;
+        jColors[1] = kBlack;
+        jColors[2] = kRed;
+        jColors[3] = kGreen;
+        jColors[4] = kBlue;
+        jColors[5] = kYellow;
+        jColors[6] = kViolet;
+        jColors[7] = kCyan;
     }
 
     void igend_()
@@ -331,37 +326,32 @@ extern "C" {
     {
         PRINT_IF_DEBUG printf("igloc_(int *is, int nt, int BN, float &a,float &b,float &c,float &d)\n");
     }
-    void igmess_(int &n,char** chmess,char *chtit,char chopt)
+
+    void igmess_(int &n,char** chmess,char *chtit,char chopt) {}
+
+    void igmeta_(int& LUN, int& KWTYPE) {}
+
+    void igpave_(float& x1, float&  x2, float& y1,float& y2,int*, int*,const char* )
     {
-
-
-    }
-    void igmeta_(int& LUN, int& KWTYPE)
-    {
-
-
-    }
-    void igpave_(float& x1, float&  x2,float& y1,float& y2,int*, int*,const char* )
-    {
-        PRINT_IF_DEBUG  printf("igpave_(float& x1, float&  x2,float& y1,float y2, %f %f %f %f\n",x1,y1,x2,y2);
+        PRINT_IF_DEBUG  printf("igpave_(float& x1, float&  x2,float& y1,float y2, %f %f %f %f\n",x1, y1, x2, y2);
         PRINT_IF_DEBUG  printf("%s \n", gPad->GetName());
         gPad->cd();
-        TPave* P= new TPave(x1,y1,x2,y2);
+        TPave* P = new TPave(x1, y1, x2, y2);
         P->Draw();
     }
 
     void ipl_(int&n, float* x, float* y)
     {
         PRINT_IF_DEBUG printf("ipl_(int&n, float x, float y) %i,%f %f\n", n, x[0], y[0]);
-        float l=0;
-        if (n==2)
+        float l = 0;
+        if (n == 2)
         {
-            l=pow(x[0]-x[1],2)+pow(y[0]-y[1],2);
-            if (l>10000)
+            l = pow(x[0] - x[1], 2) + pow(y[0] - y[1], 2);
+            if (l > 10000)
                 printf("ipl_(int&n, float x, float y) %i,%f %f   %f %f\n", n, x[0], y[0], x[1], y[1]);
         }
         gPad->cd();
-        TPolyLine* P=new TPolyLine(n,x,y);
+        TPolyLine* P = new TPolyLine(n, x, y);
         P->SetLineWidth(jPolyLineWidth);
         P->SetLineStyle(jLineStyle);
         P->SetLineColor(jPolyLineColor);
@@ -372,7 +362,7 @@ extern "C" {
     {
         gPad->cd();
         PRINT_IF_DEBUG  printf("void ipm_(int&n, float* x, float* y) %i,%f %f\n", n, x[0], y[0]);
-        TPolyMarker* P=new TPolyMarker(n,x,y);
+        TPolyMarker* P = new TPolyMarker(n, x, y);
         P->SetMarkerColor(jPolyMarkerColor);
         P->SetMarkerSize(jPolyMarkerSize);
         P->Draw();
@@ -392,13 +382,12 @@ extern "C" {
         nates and it must be positive.
         */
         PRINT_IF_DEBUG printf(" ischh  %f,  NOT IMPLEMENTED\n",h);
-        if (h<1)  jTextSize=h;
-        if (h>10) jTextSize=0.01;
+        if (h < 1)  jTextSize = h;
+        if (h > 10) jTextSize = 0.01;
     }
 
-    void iscr_(int &w, int &ci, float &r,float&g,float&b) {
+    void iscr_(int &w, int &ci, float &r,float& g, float&b) {
         PRINT_IF_DEBUG printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
-
     }
 
     void isfaci_(int& a )
@@ -411,7 +400,7 @@ extern "C" {
          Fill area colour index.
 
         */
-        PRINT_IF_DEBUG printf("isfaci_(int& col )   %i\n",a);
+        PRINT_IF_DEBUG printf("isfaci_(int& col )   %i\n", a);
     }
 
     void isfais_(int& a )
@@ -433,7 +422,7 @@ extern "C" {
 
 
         */
-        PRINT_IF_DEBUG printf("isfais_(int& sty )  %i\n",a);
+        PRINT_IF_DEBUG printf("isfais_(int& sty )  %i\n", a);
     }
 
     void isln_(int &a)
@@ -456,12 +445,11 @@ extern "C" {
         4
          Dashed-dotted lines
         */
-
-        PRINT_IF_DEBUG  printf("isln_(int *a)  %i\n",a);
-        if (a==1)jLineStyle=kSolid;
-        if (a==2)jLineStyle=kDashed;
-        if (a==3)jLineStyle=kDotted;
-        if (a==4)jLineStyle= kDashDotted;
+        PRINT_IF_DEBUG  printf("isln_(int *a)  %i\n", a);
+        if (a==1) jLineStyle = kSolid;
+        if (a==2) jLineStyle = kDashed;
+        if (a==3) jLineStyle = kDotted;
+        if (a==4) jLineStyle = kDashDotted;
     }
 
     void islwsc_(float& a)
@@ -477,8 +465,8 @@ extern "C" {
         WIDTH
          Line width scale factor.
         */
-        PRINT_IF_DEBUG printf("islwsc_(int& a)  %f\n",a);
-        jPolyLineWidth=a;
+        PRINT_IF_DEBUG printf("islwsc_(int& a)  %f\n", a);
+        jPolyLineWidth = a;
     }
 
     void ismk_(int &a)
@@ -499,9 +487,9 @@ extern "C" {
         4 Circle shape (◦).
         5 X shape (×).
         */
-        PRINT_IF_DEBUG printf("ismk_(int &a)  %i\n",a);
-
+        PRINT_IF_DEBUG printf("ismk_(int &a)  %i\n", a);
     }
+
     void ismksc_(int a)
     {
         /*
@@ -512,8 +500,8 @@ extern "C" {
         SSFM
          Scale factor applied to markers. (≥ 0.)
         */
-        PRINT_IF_DEBUG printf("ismksc_  %i\n",a);
-        gStyle->SetMarkerSize(1.0+0.1*a);
+        PRINT_IF_DEBUG printf("ismksc_  %i\n", a);
+        gStyle->SetMarkerSize(1.0 + 0.1 * a);
     }
 
     void ixsync_(bool mode)
@@ -543,23 +531,21 @@ extern "C" {
          update current view
         */
 
-        PRINT_IF_DEBUG printf("iuwk_(int&a, int&b) %i, %i\n",a,b);
+        PRINT_IF_DEBUG printf("iuwk_(int&a, int&b) %i, %i\n", a, b);
         if (jCanvas) jCanvas->Update();
         gPad->Modified();
         gPad->Update();
     }
 
-
-
     void itx_(float &x, float &y, char* txt)
     {
-        PRINT_IF_DEBUG    printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%i\n", x,y, txt, jTextAlignment,jTextAngle );
+        PRINT_IF_DEBUG    printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%i\n", x, y, txt, jTextAlignment, jTextAngle );
         std::string vn(txt);
-        if (vn.size()>0)vn[vn.size()-1]=0;
-        while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
+        if (vn.size() > 0)vn[vn.size()-1] = 0;
+        while (vn.back()== ' ' || vn.back() == '\n') vn.pop_back();
         TText *t;
         t = new TText(x,y,vn.c_str());
-        t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
+        t->SetTextAlign(jTextAlignment-jTextAlignment%10 + 1);
         t->SetTextColor(jTextColor);
         t->SetTextFont(jTextFont);
         t->SetTextSize(jTextSize);
@@ -567,18 +553,17 @@ extern "C" {
         t->Draw();
     }
 
-
     void itxn_(float &x, float &y, char* txt, int& n)
     {
-        PRINT_IF_DEBUG    printf("void itxn_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%i\n", x,y, txt, jTextAlignment,jTextAngle );
+        PRINT_IF_DEBUG    printf("void itxn_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%i\n", x, y, txt, jTextAlignment, jTextAngle );
         std::string vn(txt);
-        if (vn.size()>0)vn[vn.size()-1]=0;
-        while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
-        vn=vn.substr(0,std::min((int)vn.size(),n));
+        if (vn.size() > 0)vn[vn.size()-1] = 0;
+        while (vn.back() == ' ' || vn.back() == '\n') vn.pop_back();
+        vn = vn.substr(0, std::min((int)vn.size(), n));
 
         TText *t;
         t = new TText(x,y,vn.c_str());
-        t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
+        t->SetTextAlign(jTextAlignment-jTextAlignment%10 + 1);
         t->SetTextColor(jTextColor);
         t->SetTextFont(jTextFont);
         t->SetTextSize(jTextSize);
@@ -588,7 +573,7 @@ extern "C" {
 
     void drawpi_(float &x, float &y)
     {
-        PRINT_IF_DEBUG   printf("void drawpi_(float &x, float &y)   %f %f , jTextAlignment=%i  jTextAngle=%i\n", x,y, jTextAlignment,jTextAngle );
+        PRINT_IF_DEBUG   printf("void drawpi_(float &x, float &y)   %f %f , jTextAlignment=%i  jTextAngle=%i\n", x, y, jTextAlignment, jTextAngle );
         TLatex *t;
         t = new TLatex();
         t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
@@ -616,12 +601,12 @@ extern "C" {
     {
         PRINT_IF_DEBUG   printf("void itx_(float &x, float &y, char* txt)   %f %f %s, jTextAlignment=%i  jTextAngle=%i\n", x,y, txt, jTextAlignment,jTextAngle );
         std::string vn(txt);
-        while (vn.back()==' '||vn.back()=='\n') vn.pop_back();
+        while (vn.back()==' '|| vn.back()=='\n') vn.pop_back();
 
-        vn=vn.substr(0,std::min((int)(vn.length()),l));
+        vn=vn.substr(0, std::min((int)(vn.length()), l));
         TText *t;
         t = new TText(x,y,vn.c_str());
-        t->SetTextAlign(jTextAlignment-jTextAlignment%10+1);
+        t->SetTextAlign(jTextAlignment - jTextAlignment%10 + 1);
         t->SetTextColor(jTextColor);
         t->SetTextFont(jTextFont);
         t->SetTextSize(0.015);
@@ -629,7 +614,7 @@ extern "C" {
         t->Draw();
     }
 
-    void ixsetco_(int&i, float &r, float &g, float &b)
+    void ixsetco_(int& i, float &r, float &g, float &b)
     {
         /*
 
@@ -646,8 +631,8 @@ extern "C" {
         B
         Blue intensity between 0.0 and 1.0.
         */
-        PRINT_IF_DEBUG printf("ixsetco %i %f %f %f\n",i,r,g,b);
-        jColors[i]=TColor::GetColor(r,g,b);
+        PRINT_IF_DEBUG printf("ixsetco %i %f %f %f\n",i, r, g, b);
+        jColors[i] = TColor::GetColor(r, g, b);
     }
     void istxal_(int& a, int& b)
     {
@@ -675,18 +660,15 @@ extern "C" {
         2 Same as 2.
         3 Middle of tallest characters.
         */
-        int bb=1;
-
-        jTextAlignment=10*a+bb;
-
-
+        int bb = 1;
+        jTextAlignment = 10*a + bb;
     }
 
 
 
     void istxci_(int& a)
     {
-        PRINT_IF_DEBUG printf("istxci_(int& a), %i\n",a);
+        PRINT_IF_DEBUG printf("istxci_(int& a), %i\n", a);
         /*
         Text colour index.
         GKS
@@ -699,7 +681,7 @@ extern "C" {
         3.6.3
          Fill area interior style
         */
-        jTextColor=a;
+        jTextColor = a;
 
     }
     void isplci_(int&a)
@@ -716,7 +698,7 @@ extern "C" {
         */
 
         PRINT_IF_DEBUG printf("isplci_(int&a), %i\n",a);
-        if (jColors.find(a)!=jColors.end()) jPolyLineColor=jColors.at(a);
+        if (jColors.find(a) != jColors.end()) jPolyLineColor=jColors.at(a);
     }
 
     void ispmci_(int& a)
@@ -732,7 +714,7 @@ extern "C" {
         ICOLI
          Polymarker colour index.
         */
-        if (jColors.find(a)!=jColors.end()) jPolyMarkerColor=jColors.at(a);
+        if (jColors.find(a) != jColors.end()) jPolyMarkerColor = jColors.at(a);
 
         PRINT_IF_DEBUG printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
     }
@@ -758,7 +740,7 @@ extern "C" {
         PRINT_IF_DEBUG printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
     }
 
-    void ixsettc_(int&a)
+    void ixsettc_(int& a)
     {
         /*
         CALL IXSETTC
@@ -768,7 +750,7 @@ extern "C" {
         INDEX
          Colour index defined my IXSETCOL.
         */
-        if (jColors.find(a)!=jColors.end()) jTextColor=jColors.at(a);
+        if (jColors.find(a) != jColors.end()) jTextColor = jColors.at(a);
         PRINT_IF_DEBUG printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
     }
 
@@ -776,23 +758,22 @@ extern "C" {
     void ixsetlc_(int&a)
     {
         PRINT_IF_DEBUG printf("ixsetlc_(int&a), %i\n",a);
-        jLineColor=a;
+        jLineColor = a;
     }
 
     void ixsetmc_(int&a)
     {
-        if (jColors.find(a)!=jColors.end())  jPolyMarkerColor=a;
+        if (jColors.find(a) != jColors.end())  jPolyMarkerColor = a;
         PRINT_IF_DEBUG printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
-
     }
 
-    void ixsetfc_(int&a)
+    void ixsetfc_(int& a)
     {
-        if (jColors.find(a)!=jColors.end())  jFillAreaColor=a;
+        if (jColors.find(a) != jColors.end())  jFillAreaColor = a;
         PRINT_IF_DEBUG  printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
     }
 
-    void ixsetln_(int&a)
+    void ixsetln_(int& a)
     {
         PRINT_IF_DEBUG  printf ("__PRETTY_FUNCTION__ = %s %i\n", __PRETTY_FUNCTION__,a);
         jPolyLineWidth=a;
@@ -806,6 +787,5 @@ extern "C" {
     void igterm_()
     {
         PRINT_IF_DEBUG  printf ("__PRETTY_FUNCTION__ = %s\n", __PRETTY_FUNCTION__);
-
     }
 }
