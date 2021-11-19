@@ -42,9 +42,6 @@
 #ifdef HEPMCCONVERT_EXTENSION_DOT
 #include "WriterDOT.h"
 #endif
-#ifdef HEPMCCONVERT_EXTENSION_GZ
-#include "ReaderGZ.h"
-#endif
 #ifdef HEPMCCONVERT_EXTENSION_JADE
 #include "WriterJADE.h"
 #endif
@@ -127,13 +124,8 @@ int main(int argc, char** argv)
         input_file=(input_is_stdin?std::make_shared<ReaderLHEF>(std::cin):std::make_shared<ReaderLHEF>(ai.inputs[0]));
         break;
     case gz:
-#ifdef HEPMCCONVERT_EXTENSION_GZ
-        input_file=std::make_shared<ReaderGZ>(ai.inputs[0]);
-        break;
-#else
         printf("Input format %s  is not supported\n",ai.input_format_arg);
         exit(2);
-#endif
     case treeroot:
 #ifdef HEPMC3_ROOTIO
         input_file=std::make_shared<ReaderRootTree>(ai.inputs[0]);
@@ -232,12 +224,12 @@ int main(int argc, char** argv)
 #endif
 #ifdef HEPMCCONVERT_EXTENSION_JADE
     case jade:
-        if (options.find("Mode")!=options.end())
-            output_file=std::make_shared<WriterJADE>(ai.inputs[1],std::atoi(options.at("Mode").c_str()));
+        if (options.find("Mode") != options.end())
+            output_file = std::make_shared<WriterJADE>(ai.inputs[1], std::atoi(options.at("Mode").c_str()));
         else
         {
             printf("This format requires one option  Mode=0 (binary, native), Mode=1 (ASCII), Mode=2 (binary, LITTLE_ENDIAN), Mode=3 (binary, BIG_ENDIAN),!\n");
-            for (auto o: options) printf("%s=%s\n",o.first.c_str(),o.second.c_str());
+            for (auto o: options) printf("%s=%s\n", o.first.c_str(), o.second.c_str());
             exit (1);
         }
         break;

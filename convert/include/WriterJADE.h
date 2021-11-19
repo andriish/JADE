@@ -9,9 +9,7 @@ struct JADENAMES
 {
     char CP[500][16];
     char CF[300][16];
-
-}	;
-
+};
 
 struct JADEEVT
 {
@@ -37,7 +35,7 @@ struct JADEEVT
     int  ICF[300];
     int  ITF[300];
     float PSTR[300][3];
-} ;                               //!< Fortran common block HEPEVT
+} ;                               //!< Fortran common block
 
 //      REAL PP,PF,XM,XMF,BEAM,PT,THETA,PHI,PSTRT
 //      INTEGER NEV,NP,NC,NN,JCH,JTP,JP,NF,NCF,NNF,ICF,ITF,IFLAVR
@@ -51,8 +49,7 @@ struct JADEEVT
 
 extern "C"
 {
-
-    void jfopen_(const char * filename,int &u, int &O,int &size);
+    void jfopen_(const char * filename, int &u, int &O, int &size);
     void jfclose_(int&);
     void jfwrite_(int&, int&);
 }
