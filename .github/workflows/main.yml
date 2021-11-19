@@ -45,13 +45,13 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Login to Quay.io
+      uses: docker/login-action@v1
+      with:
+          registry: quay.io
     - name: Compile
       id: compileindocker
-      uses: 
-       - docker/login-action@v1
-         with:
-          registry: quay.io
-       - ./.github/workflows/centos9
+      uses: ./.github/workflows/centos9
     - name: Get the output status
       run: exit ${{ steps.compileindocker.outputs.out }}
 
