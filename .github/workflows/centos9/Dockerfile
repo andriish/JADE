@@ -1,3 +1,3 @@
-FROM centos/centos:stream9
+FROM docker://quay.io/centos/centos:stream9
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
