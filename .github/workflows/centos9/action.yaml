@@ -9,6 +9,9 @@ outputs:
   time: # id of output
     description: 'Some result'
 runs:
+   uses: docker/login-action@v1.10.0
+        with:
+          registry: quay.io
   using: 'docker'
   image: 'Dockerfile'
   args:
