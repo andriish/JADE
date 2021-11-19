@@ -455,7 +455,8 @@
      - KOPT.EQ.4
      -)THEN
       DO 13030 JT=1,NTSETI
-                         IF(KTSTZS(JT,1,ISET).EQ.ITR)KTSTZS(JT,2,ISET)=200059400
+                         IF(KTSTZS(JT,1,ISET).EQ.ITR)KTSTZS(JT,2,ISET)=2
+CAV                         00059400
 13030 CONTINUE
 13031 CONTINUE
       ELSE

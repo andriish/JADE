@@ -23,11 +23,12 @@ C
 #include "cgraph.for"
 C
       COMMON / CGVCDO / FLVCDO(20)
+      character*4 OPTDO1,OPTDO2,OPTDO3,OPTDO4
       COMMON / OPTDO  / OPTDO1(18,5),OPTDO2(18,5),OPTDO3(18,5),
      +                  OPTDO4(18,5)
       COMMON / CVCPV  / ICD, DFX, DFY, IRC, PTOTCT
 C
-      DATA HYES  / 'Y ' /
+      DATA HYES  / 2HY  /
 C
 C------------------  C O D E  ------------------------------------------
 C
@@ -94,6 +95,7 @@ C-----------------------------------------------------------------------
       BLOCK DATA BLCKG6  !PMF 03/12/99: add name
 C-----------------------------------------------------------------------
 C
+      character*4 OPTDO1,OPTDO2,OPTDO3,OPTDO4
       COMMON / OPTDO  / OPTDO1(18,5),OPTDO2(18,5),OPTDO3(18,5),
      +                  OPTDO4(18,5)
 C

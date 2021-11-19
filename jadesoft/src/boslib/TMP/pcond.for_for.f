@@ -1,1 +1,0 @@
-/home/pcl2483/pedro/jadesoft/src/boslib/TMP/pcond.for_amp.f

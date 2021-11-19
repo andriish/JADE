@@ -27,7 +27,7 @@ C
       EQUIVALENCE (IWORD,HWORD(1))
 C
       DATA  IPOINT / 2,2,1,3,4 /
-      DATA  HCHAR / 'O','O','O','A','F' /
+      DATA  HCHAR / 1HO,1HO,1HO,1HA,1HF /
       DATA  ICALL / 0 /
 C
 C------------------  C O D E  ------------------------------------------

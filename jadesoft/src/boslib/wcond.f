@@ -26,10 +26,10 @@ C
       NR=MOD(NF,8)
 C     WRITE(6,101) NS,NR,NF,NH
 C 101 FORMAT(1X,10I12)
-      CALL BLOC(I,'CON*',NS,&20)
+      CALL BLOC(I,'CON*',NS,*20)
    10 IW(I+NR+1)=IW(I+NR+1)+1
   100 RETURN
-   20 CALL BCRE(I,'CON*',NS,8,&100,IER)
+   20 CALL BCRE(I,'CON*',NS,8,*100,IER)
       GOTO 10
 C
       ENTRY QCOND(NCOND,NC,NUMBER)
@@ -40,7 +40,7 @@ C
       NH(2)=NC
       NS=(NF/8)*8
       NR=MOD(NF,8)
-      CALL BLOC(I,'CON*',NS,&100)
+      CALL BLOC(I,'CON*',NS,*100)
       NUMBER=IW(I+NR+1)
       GOTO 100
       END
@@ -52,7 +52,7 @@ C
       NN=0
       M=0
       CALL BPOS('CON*')
-   80 CALL BNXT(K,&98)
+   80 CALL BNXT(K,*98)
       IF(M.EQ.0) WRITE(6,101)
       M=1
       N=IW(K)

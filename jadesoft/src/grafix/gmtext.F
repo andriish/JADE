@@ -21,8 +21,8 @@ C
 C
       DIMENSION HSIGN(3),HDETEC(3,2),HPART(3,2),HTRCK(3)
 C
-      DATA HDETEC/'BA','RR','EL','EN','DC','AP'/
-      DATA HPART/'PH','OT','ON','CH','AR','GE'/
+      DATA HDETEC/2HBA,2HRR,2HEL,2HEN,2HDC,2HAP/
+      DATA HPART/2HPH,2HOT,2HON,2HCH,2HAR,2HGE/
 *** PMF 17/11/99: add variables needed for emulation of DESYLIB routine 'CORE'  
       CHARACTER cHWORK*80
       EQUIVALENCE (cHWORK,HWORK(1))

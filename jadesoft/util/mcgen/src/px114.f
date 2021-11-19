@@ -85,7 +85,7 @@ CDECK  ID>, PXINIT.
 *-- Set last mod (initially) to PAM release date.
       IDAMPX =      000323
  1000 FORMAT(
-     + 24HPX      1.14/01   990820                                          HOLD
+     + 24HPX      1.14/01   990820                                          
      +      )
  1001 FORMAT(8X,I1,1X,I2,1X,I2)
       IVPX = 100*IV1 + IV2

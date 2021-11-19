@@ -49,7 +49,7 @@ C
 C
        IF ( NDDINN .NE. 0 ) NOMSG = .TRUE.
 C
-       CALL BLOC(IND,'ATAG',0,&1000)
+       CALL BLOC(IND,'ATAG',0,*1000)
        NW    = IDATA(IND)
        IHIND = IND + IND
        IHSTA = IHIND + 7
@@ -63,8 +63,8 @@ C
 C---                                     TEST FOR ILLEGAL MARK
 C---                                     OR TAGMRK NOT CALLED
 C
-       IF ( (MARK .LT. 0) .OR. (MARK .GT. 2) ) CALL TAGMRK(&1000)
-       IF ( IFLMRK .NE. -1 ) CALL TAGMRK(&1000)
+       IF ( (MARK .LT. 0) .OR. (MARK .GT. 2) ) CALL TAGMRK(*1000)
+       IF ( IFLMRK .NE. -1 ) CALL TAGMRK(*1000)
 C
 C---                                     CHECK FOR RAW DATA
 C
@@ -82,7 +82,7 @@ C
 C---                                     CONVERT HARDWARE ADDRESSIHAD
 C---                                     TO SOFTWARE ADDRESS ISAD
 C
-           CALL TAGH2S(ISAD,IHAD,&20)
+           CALL TAGH2S(ISAD,IHAD,*20)
 C
            IF ( (ISAD .GT. IENDPZ) .OR. (ISAD .LT. 0) ) GOTO 19
 C
@@ -172,7 +172,7 @@ C
 C----------------------------------------RAW DATA-----------------------
 C
  1100  CONTINUE
-       CALL TAGRAW(IWRITE,&1000)
+       CALL TAGRAW(IWRITE,*1000)
        RETURN
        END
 C
@@ -182,8 +182,8 @@ C
 C
 C
 C   12/03/84            MEMBER NAME  TAGDAT   (S)           FORTRAN
-C      BLOCK DATA TAGDAT
-       BLOCK DATA
+       BLOCK DATA TAGDAT
+C       BLOCK DATA
 C
        COMMON / COMTAG / LISTOK,NLIST(64,9,2),
      1                   XMAP(64),YMAP(64)

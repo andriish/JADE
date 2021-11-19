@@ -28,7 +28,7 @@ C     C
 C     C    WRITE ONE EVENT
 C     C
 C          CALL BSLW
-C       30 CALL LSBOUT(NTOT,INIW,&40)
+C       30 CALL LSBOUT(NTOT,INIW,*40)
 C          CALL FWRT(2,NTOT,IW(INIW))
 C          GOTO 30
 C       40 CONTINUE
@@ -44,7 +44,7 @@ C    C
 C    C     WRITE BUFFER
 C    C
  50        CALL BMLT(0,BLA)
-C          CALL LSBOUT(NTOT,INIW,&60)
+C          CALL LSBOUT(NTOT,INIW,*60)
 C          CALL FWRT(2,NTOT,IW(INIW))
 C       60 CONTINUE
 C    C

@@ -11,7 +11,7 @@ C   07/06/96 606071906  MEMBER NAME  QTABL    (S4)          FORTG1
       II=I/16
       IJ=I-II*16
       NC=KA*16+II
-      CALL BLOC(IND,'TAB*',NC,&100)
+      CALL BLOC(IND,'TAB*',NC,*100)
       IND=IND+IJ*8
       DO 20 J=1,8
    20 NF(J)=IW(IND+J)

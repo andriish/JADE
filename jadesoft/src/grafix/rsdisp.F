@@ -46,7 +46,7 @@ C
 #include "cdata.for"
 #include "mccomf.for"
 C
-      DATA INAME  / 'PATR' /
+      DATA INAME  / 4HPATR /
 C
 C-----------------------------------------------------------------------
 C

@@ -37,7 +37,7 @@ C
 C
 C                           PRINT MUON STATISTICS
 C
-      WRITE(6,2) ( ( MUTIT(I),NMU(I) ),I=1,100 )
+CAV FIXME      WRITE(6,2) ( ( MUTIT(I),NMU(I) ),I=1,100 )
    2  FORMAT(////'      *****  MUON ANALYSIS STATISTICS  *****'/
      +                    20( /1X,5(A8,1X,I5,9X) )//
      +           '      *****  END OF MUON STATISTICS  *****'/////  )

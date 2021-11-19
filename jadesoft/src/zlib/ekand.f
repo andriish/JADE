@@ -33,7 +33,7 @@ C
       CALL CINIT
       IKAND=0
 C
-      CALL BLOC(NPLGZU,'LGZU',JTRK,&1200)
+      CALL BLOC(NPLGZU,'LGZU',JTRK,*1200)
 C                                 NUMBER OF TRACK IN 'ZE4V' BANK
       JREM=HW(NPLGZU*2+3)
 C
@@ -280,7 +280,7 @@ C  RETURN VALUES FOR NON CUT VARIABLES
       INTEGER ONE / 1 /
 C
       DO 103 IB1=1,32
-        IF( LAND(KA,iSHFTL(ONE,32-IB1)) ) THEN
+        IF( LAND(KA,iSHFTL(ONE,32-IB1)) .NE. 0 ) THEN
           JHBIT(IB1) = 1
         ELSE
           JHBIT(IB1) = 0

@@ -18,7 +18,7 @@ C
 C
       LOGICAL  HADONE
 C
-      LOGICAL*1  CARG(NCHAR), CHARS(15), CBLANK
+      character*1  CARG(NCHAR), CHARS(15), CBLANK
 C
       DATA  CBLANK / ' ' /
 C

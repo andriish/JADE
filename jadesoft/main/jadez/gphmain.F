@@ -25,7 +25,9 @@ C----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
-      REAL*8   DDN,VOLSR
+      character*4 IHLP
+      integer*2 HERR
+      CHARACTER*8   DDN,VOLSR
       LOGICAL  OK
 C
 C                            MACRO CBCSMX.... BOS COMMON + SIZE DEFINED
@@ -109,4 +111,4 @@ C
 C                            BLOCK DATA FOR GRAPHICS PROGRAM
 C
 C #include "grblock.for" PMF 5.11.98
-C#include "grblock.F"
+#include "grblock.F"

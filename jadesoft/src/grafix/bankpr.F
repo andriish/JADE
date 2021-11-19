@@ -74,19 +74,19 @@ C
 C
       DIMENSION DESTPL(7)
 C
-      DATA DESTPL  / 'L1      ','L2      ','L3      ','L4      ',
-     &               'L5      ','PLOTTER ','EXTPLOTT' /
+      DATA DESTPL  / 8HL1      ,8HL2      ,8HL3      ,8HL4      ,
+     &               8HL5      ,8HPLOTTER ,8HEXTPLOTT/
 C
-      DATA NAMES  /'JETC','PATR','TAGC','JHTL','ZETC',
-     &             'GVTX','DEDX','ZVTX','LGCL','TOFR',
-     &             'TPEV','TPTR','ATOF','TPVX','VECT',
-     &             'TRIG','N50S','MPRS','BK17','ZTRG',
-     &             'FAMP','BPCH','VTXC','VTHT','VPAT',
-     &             'VCVW','J68K','PALL','HWDS','HHTL'/
+      DATA NAMES  /4HJETC,4HPATR,4HTAGC,4HJHTL,4HZETC,
+     &             4HGVTX,4HDEDX,4HZVTX,4HLGCL,4HTOFR,
+     &             4HTPEV,4HTPTR,4HATOF,4HTPVX,4HVECT,
+     &             4HTRIG,4HN50S,4HMPRS,4HBK17,4HZTRG,
+     &             4HFAMP,4HBPCH,4HVTXC,4HVTHT,4HVPAT,
+     &             4HVCVW,4HJ68K,4HPALL,4HHWDS,4HHHTL/
 C
-      DATA HSYM /'0 ','1 ','2 ','3 ','4 ','5 ','6 ','7 ','8 ','9 '/
-      DATA HBLANK/'  '/,HMINUS/'- '/, NNAMES /30/
-      DATA HTX /'DS','N ','DA','TE','TI','ME'/
+      DATA HSYM /1H0 ,1H1 ,1H2 ,1H3 ,1H4 ,1H5 ,1H6 ,1H7 ,1H8 ,1H9 /
+      DATA HBLANK/2H  /,HMINUS/2H- /, NNAMES /30/
+      DATA HTX /2HDS,2HN ,2HDA,2HTE,2HTI,2HME/
 *** PMF 17/11/99: add variables needed for emulation of DESYLIB routine 'CORE'  
       CHARACTER cHWORK*140,cHDSPL*136,cfmt*7
       EQUIVALENCE (cHWORK,HWORK(1)),(cHDSPL,HDSPL(1))
@@ -629,7 +629,7 @@ C--------------- SPECIAL FORMAT FOR TPTR BANKS
       GO TO 90100
 C--------------- SPECIAL FORMAT FOR ATOF BANK
 13000 IPTOF = LIM2-1
-      CALL AGRPR(IPTOF,&13001)
+      CALL AGRPR(IPTOF,*13001)
       GO TO 13003
 13001 WRITE(JUSCRN,13002)
 13002 FORMAT(' ATFUGR ERROR, WRONG BANK DESCRIPTOR...' )

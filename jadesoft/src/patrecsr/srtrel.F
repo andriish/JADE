@@ -10,11 +10,11 @@
      ,         , (IERRCD,IDWRK(4)),(NTRKEL,IDWRK(5))
      ,         , (ITR   ,IDWRK(7)),(ITRNG ,IDWRK(8))
 #include "cpatlm.for"
-      DATA MKTREL / Z3000/
-      DATA MKLBTC / ZFFF/
-      DATA MKLFTR / Z 30000/, MKRGHT / Z20000/
-      INTEGER  MKLRHT(3) / Z800, Z0, Z900/
-      DATA LBZRCR / Z100/
+      DATA MKTREL / Z'3000'/
+      DATA MKLBTC / Z'FFF'/
+      DATA MKLFTR / Z'30000'/, MKRGHT / Z'20000'/
+      INTEGER  MKLRHT(3) / Z'800', Z'0', Z'900'/
+      DATA LBZRCR / Z'100'/
       DATA NANF /0/
       IF(NANF.EQ.0) IQPATR= IBLN('PATR')
       NANF = 1

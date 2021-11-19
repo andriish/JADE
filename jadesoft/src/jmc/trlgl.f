@@ -52,8 +52,8 @@ C
 C   K-H MEIER / N MAGNUSSEN EGS PROFILE SHOWER SIMULATION
       IF(.NOT.LFLAG(4)) GO TO 471
       IYEA = HDATE(6)
-      IF(IYEA.LT.1983) CALL TRLGSH(PV,R,&999)
-      IF(IYEA.GT.1982) CALL TRLGS6(PV,R,&999)
+      IF(IYEA.LT.1983) CALL TRLGSH(PV,R,*999)
+      IF(IYEA.GT.1982) CALL TRLGS6(PV,R,*999)
 471   CONTINUE
 C
       OUTR=OUTR2*OUTR2
@@ -220,7 +220,7 @@ C                                           OF THE END CAP COUNTERS
       R(1)=ZLAM*R(1)
       R(2)=ZLAM*R(2)
       R(3)=ZLAM*R(3)
-      CALL ENDCLG(R,NBL,&9000)
+      CALL ENDCLG(R,NBL,*9000)
       IF(NBL.LT.2689 .OR. NBL.GT.2880) GO TO 9000
 C
 C                                           ANTI ENERGY CORRECTION
@@ -275,7 +275,7 @@ C                                           CALCULATE INDEX FOR
 C                                           BLOCKS WHICH ARE HIT AND
 C                                           CHECK WHETHER PARTICLE IS
 C                                           STILL IN THE LEAD GLASS
-      CALL ENDCLG(R,NBL,&9000)
+      CALL ENDCLG(R,NBL,*9000)
       IF(NBL.LT.2689 .OR. NBL.GT.2880) GO TO 9000
 C
 C                                           ACCUMULATE PULSEHEIGHTS

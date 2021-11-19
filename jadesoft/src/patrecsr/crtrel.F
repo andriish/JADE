@@ -9,8 +9,8 @@
      ,           (ICELL ,IDWRK(1)),(NHIT  ,IDWRK(2)),(IRING ,IDWRK(3))
      ,         , (IERRCD,IDWRK(4)),(NTRKEL,IDWRK(5))
      ,         , (ITR   ,IDWRK(7)),(ITRNG ,IDWRK(8))
-      DATA MKATR / ZFF01/
-      INTEGER  MKLRHT(3) / Z800, Z0, Z900/
+      DATA MKATR / Z'FF01'/
+      INTEGER  MKLRHT(3) / Z'800', Z'0', Z'900'/
       IF(
      - HNTR.GE.200
      -)THEN

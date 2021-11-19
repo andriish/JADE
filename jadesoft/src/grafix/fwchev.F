@@ -60,11 +60,11 @@ C
 C
 CCC                        USE TAGMRK SO THAT WE CAN ALSO HANDLE MC DATA
 CCC
-CCC   CALL TAGMRK(&300)
+CCC   CALL TAGMRK(*300)
 C
 C                          USE TAGINT ONCE TO INITIALISE CWKTAG
 C
-      CALL TAGINT(&300)
+      CALL TAGINT(*300)
 C
       ADDEND = 84.0 * BLFI
       FDX    = 0.0
@@ -136,7 +136,7 @@ C
 C     IF( MARK .NE. 1 ) GO TO 2222
 C
       NBLIM = 64
-      CALL TAGADC(0,&300)
+      CALL TAGADC(0,*300)
       CALL TAGPED
       CALL TAGKAL(0)
       GO TO 210
@@ -151,7 +151,7 @@ C
 2222  CONTINUE
       IF( MARK .NE. 2 ) GO TO 999
 C
-      CALL TAGADC(0,&300)
+      CALL TAGADC(0,*300)
       CALL TAGPED
       CALL TAGKAL(0)
       NBLIM = IENDPZ

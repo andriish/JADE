@@ -32,7 +32,7 @@ C            ----> PRESERVE SPECIAL LIST.
  1    CALL BSLS(1)
 C            ----> READ CALIBRATION DATA RECORD.
 C
-      CALL BREAD (LUNIN,&10,&20)
+      CALL BREAD (LUNIN,*10,*20)
 C
 C            ----> MOVE FROM /BCS/ TO /CALIBR/ BY CALLING MUCON.
       CALL MUCON

@@ -23,7 +23,7 @@ C
       IMPLICIT INTEGER*2 (H)
 C
       REAL*8 DDN
-      LOGICAL*1 MESS(1),BAR
+      character*1 MESS(1),BAR
 C
       DIMENSION INAME(11)
       DATA BAR/'^'/
@@ -52,6 +52,6 @@ C
       IF( HERR .EQ. 0 ) RETURN
         WRITE(6,3) INAME
  3      FORMAT(' DSNAME ---> ',11A4)
-        CALL DSERR(HERR,JERR,DDN,&11)
+        CALL DSERR(HERR,JERR,DDN,*11)
         RETURN
       END

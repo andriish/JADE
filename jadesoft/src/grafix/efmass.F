@@ -44,10 +44,10 @@ C
       DIMENSION HMW(5) ! PMF 26/10/99 DIMENSION statement added
 C
       DATA ARMAS /0.0,.000511,.105659,.139567,.49367,.93828/
-      DATA HTEXT /'  ','  ','  ','  ','  ','BE','AM','-P','IP','E ',
-     $            'BP','-Z','AE','HL','ER','ID','-T','AN','K ','  ',
-     $            'RO','HA','CE','LL',' 1','RO','HA','CE','LL',' 2',
-     $            'RO','HA','CE','LL',' 3'/
+      DATA HTEXT /2H  ,2H  ,2H  ,2H  ,2H  ,2HBE,2HAM,2H-P,2HIP,2HE ,
+     $            2HBP,2H-Z,2HAE,2HHL,2HER,2HID,2H-T,2HAN,2HK ,2H  ,
+     $            2HRO,2HHA,2HCE,2HLL,2H 1,2HRO,2HHA,2HCE,2HLL,2H 2,
+     $            2HRO,2HHA,2HCE,2HLL,2H 3/
       DATA RLIMS /115.,127.,127.,167.,167.,174.,174.,195.,370.,410.,
      $            580.,625./
 C
@@ -144,22 +144,22 @@ C PASS THROUGH ROHACELL-0, INNER TANK, BEAMPIPECOUNTERS,BEAM PIPE
       POT = POTRH0
       ZARO = ZAROR0
       ILV = 1
-      CALL JEGAIN(PP,STRAC,POT,ZARO,&999)
+      CALL JEGAIN(PP,STRAC,POT,ZARO,*999)
       STRAC = DRITNK*SINT
       POT = POTIVE
       ZARO = ZAROIV
       ILV = 2
-      CALL JEGAIN(PP,STRAC,POT,ZARO,&999)
+      CALL JEGAIN(PP,STRAC,POT,ZARO,*999)
       STRAC = DRBPC*SINT
       POT = POTTRI
       ZARO = ZAROTR
       ILV = 3
-      CALL JEGAIN(PP,STRAC,POT,ZARO,&999)
+      CALL JEGAIN(PP,STRAC,POT,ZARO,*999)
       STRAC = DRPIP*SINT
       POT = POTBEA
       ZARO = ZAROBE
       ILV = 4
-      CALL JEGAIN(PP,STRAC,POT,ZARO,&999)
+      CALL JEGAIN(PP,STRAC,POT,ZARO,*999)
       PAR(NN,1) = PP(1)
       PAR(NN,2) = PP(2)
       PAR(NN,3) = PP(3)

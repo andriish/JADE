@@ -72,8 +72,8 @@ C
 C
 #include "cadmin.for"
 C
-      DATA HT1A85 /Z7F07/, HT1A86 /Z7F17/
-      DATA HT1P85 /Z7709/, HT1P86 /Z7F09/
+      DATA HT1A85 /Z'7F07'/, HT1A86 /Z'7F17'/
+      DATA HT1P85 /Z'7709'/, HT1P86 /Z'7F09'/
 C
 C------------------  C O D E  ------------------------------------------
 C
@@ -238,6 +238,7 @@ C
 C                                           ****************************
 C                                           *  1981 TRIGGER CONDITIONS *
 C                                           ****************************
+        
  1300 IF( IYEAR .GT. 81 ) GO TO 1400
 C
 C  MIN. TRACK NUMBER IN TOF + TOTAL LG ENERGY TRIGGER
@@ -618,10 +619,10 @@ C
       DATA HFT/0,1,1,0,7*1,0, 5*0,3*1,4*0, 0,1,1,0,7*1,0, 2*0,8*1,2*0/
 C
       COMMON /CMASK/ MASK(16),MASK4,MASK3,MASK2,MASK1,HKRE(3,8)
-      DATA MASK/Z1,Z2,Z4,Z8,Z10,Z20,Z40,Z80,Z100,Z200,Z400,Z800,
-     *                 Z1000,Z2000,Z4000,Z8000/
-      DATA MASK2/Z20000/, MASK1/Z10000/
-      DATA MASK4/Z40000/, MASK3/Z30000/
+      DATA MASK/Z'1',Z'2',Z'4',Z'8',Z'10',Z'20',Z'40',Z'80',Z'100',
+     +Z'200',Z'400',Z'800',Z'1000',Z'2000',Z'4000',Z'8000'/
+      DATA MASK2/Z'20000'/, MASK1/Z'10000'/
+      DATA MASK4/Z'40000'/, MASK3/Z'30000'/
 C  CORRELATIONS FOR ECAP QUADRANT - SEPTANT  COLLINEARITY
       DATA HKRE /5,6,0,   1,6,7,   1,2,3,   3,4,5,
      $           5,6,0,   1,6,7,   1,2,3,   3,4,5/

@@ -124,7 +124,7 @@ C                                           HITS/WORD
         NHPW = 32/JHTQBT
         LJHTQ = (IDATA(IJHTL)-1+NHPW-1)/NHPW + 1
         CALL BCRE( NPJHTQ, 'JHTQ', IDATA(IJHTL-2),
-     *                             LJHTQ, &41, IERJHT )
+     *                             LJHTQ, *41, IERJHT )
         CALL BSAW( 1, 'JHTQ' )
         IDATA(NPJHTQ+1) = JHTQBT
 C                                           CREATION OF BANK MAY HAVE

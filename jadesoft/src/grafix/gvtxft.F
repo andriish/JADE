@@ -57,10 +57,10 @@ C
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 C
       DATA ZDEEP /5800./,DER/20./
-      DATA HTEXT /'  ','  ','  ','  ','  ','BE','AM','-P','IP','E ',
-     +            'BP','-C','OU','NT','ER','ID','-T','AN','K ','  ',
-     +            'RO','HA','CE','LL',' 1','RO','HA','CE','LL',' 2',
-     +            'RO','HA','CE','LL',' 3'/
+      DATA HTEXT /2H  ,2H  ,2H  ,2H  ,2H  ,2HBE,2HAM,2H-P,2HIP,2HE ,
+     +            2HBP,2H-C,2HOU,2HNT,2HER,2HID,2H-T,2HAN,2HK ,2H  ,
+     +            2HRO,2HHA,2HCE,2HLL,2H 1,2HRO,2HHA,2HCE,2HLL,2H 2,
+     +            2HRO,2HHA,2HCE,2HLL,2H 3/
       DATA RLIMS /115.,127.,127.,167.,167.,174.,174.,195.,370.,410.,
      +            580.,625./
 C
@@ -244,7 +244,7 @@ C  ADJUST THE DEVIATION DER
      $' QUALITY FLAG',I3,' NR OF USED TRACKS ',I2,' CORXY ',F7.3)
       WRITE(6,1294) XVT,V(5),YVT,V(6),ZVT,V(7)
 1294  FORMAT(' --->  X Y Z   OF VERTEX: ',/,1X,2(F9.3,' +-',F6.3,3X),
-     &3X,F6.1,' +-',F5.1)
+     *3X,F6.1,' +-',F5.1)
       IRAD = 1
       DO 1296  KL = 1,6
       IF(R.GE.RLIMS(1,KL).AND.R.LT.RLIMS(2,KL)) IRAD = KL + 1

@@ -5,7 +5,7 @@ C     REVISED VERSION OF TONUM, TO GET FOUR INTEGERS FROM SCREEN, SEPA-
 C     RATED BY BLANK OR KOMMA.
 C
       IMPLICIT INTEGER*2 (H)
-      LOGICAL*1 BLANK,KOMMA,MINUS,TNN,ZW,SLASH
+      character*1 BLANK,KOMMA,MINUS,TNN,ZW,SLASH
       COMMON /CWORK1/ TNN(40)
       DATA BLANK/' '/,SLASH/'/'/
       DATA KOMMA/','/
@@ -32,9 +32,10 @@ C                                       GET INTEGER NUMBER 1
         IF(ZW.NE.MINUS) GOTO 32
         ISGN = -1
         GOTO 20
- 32     IF(ZW.LT.240-192 .OR. ZW.GT.249-192) GOTO 60 !PMF 20/11/99: substract 192 ( EBCDIC-> ASCII Code for numbers)
+ 32     CONTINUE
+CAVFIXME       IF(ZW.LT.240-192 .OR. ZW.GT.249-192) GOTO 60 !PMF 20/11/99: substract 192 ( EBCDIC-> ASCII Code for numbers)
         NUM1 = NUM1 + 1
-        INTD = ZW-240+192       !PMF 20/11/99: substract 192
+CAVFIXME        INTD = ZW-240+192       !PMF 20/11/99: substract 192
         INT = 10*INT + INTD
    20 CONTINUE
 C                                       CHECK IF MORE THAN 1 NUMBER
@@ -53,9 +54,10 @@ C                                       GET INTEGER NUMBER 2
         IF(ZW.NE.MINUS) GOTO 33
         ISGN = -1
         GOTO 41
-   33   IF(ZW.LT.240-192 .OR. ZW.GT.249-192) GOTO 60!PMF 20/11/99: substract 192
+   33   CONTINUE
+CAVFIXME   IF(ZW.LT.240-192 .OR. ZW.GT.249-192) GOTO 60!PMF 20/11/99: substract 192
         NUM1 = NUM1 + 1
-        INTD=ZW-240+192!PMF 20/11/99: substract 192
+CAVFIXME       INTD=ZW-240+192!PMF 20/11/99: substract 192
         INT = 10*INT + INTD
    41 CONTINUE
 C
@@ -74,9 +76,10 @@ C                                       GET INTEGER NUMBER 3
         IF(ZW.NE.MINUS) GOTO 733
         ISGN = -1
         GOTO 741
-  733   IF(ZW.LT.240-192 .OR. ZW.GT.249-192) GOTO 60  ! PMF 20/11/99: substract 192
+  733   CONTINUE
+CAVFIXME        IF(ZW.LT.240-192 .OR. ZW.GT.249-192) GOTO 60  ! PMF 20/11/99: substract 192
         NUM1 = NUM1 + 1
-        INTD=ZW-240+192                            ! PMF 20/11/99: substract 192
+CAVFIXME        INTD=ZW-240+192                            ! PMF 20/11/99: substract 192
         INT = 10*INT + INTD
   741 CONTINUE
 C
@@ -93,8 +96,9 @@ C                                       GET INTEGER NUMBER 4
         IF(ZW.NE.MINUS) GOTO 34
         ISGN = -1
         GOTO 40
-   34   IF(ZW.LT.240-192 .OR. ZW.GT.249-192) GOTO 60 ! PMF 20/11/99: substract 192
-        INTD=ZW-240+192                            ! PMF 20/11/99: substract 192
+ 34    CONTINUE
+CAVFIXME        IF(ZW.LT.240-192 .OR. ZW.GT.249-192) GOTO 60 ! PMF 20/11/99: substract 192
+CAVFIXME        INTD=ZW-240+192                            ! PMF 20/11/99: substract 192
         INT = 10*INT + INTD
    40 CONTINUE
 C

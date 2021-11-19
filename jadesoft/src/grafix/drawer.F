@@ -23,8 +23,8 @@ C
       COMMON / CGAMOD / MODEGA, GAHEX
       COMMON / CJTRIG / PI,TWOPI
 C
-      DATA HYES / 'Y ' /
-      DATA HBLK / '  ' /
+      DATA HYES / 2HY  /
+      DATA HBLK / 2H   /
 C
 C-----------------  C O D E  -------------------------------------------
 C

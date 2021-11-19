@@ -16,8 +16,8 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
-      LOGICAL*1  CHARS, CNAME(6), CID(16)
-      LOGICAL*1  CDEF
+      CHARACTER*1  CHARS, CNAME(6), CID(16)
+      CHARACTER*1  CDEF
       REAL*8  DDN, DNAME(6)
 C
       COMMON / CGRMAC / MACNR, MACSTA, MACDEP, MACPNT(2,10), CDEF(80,31)
@@ -26,10 +26,10 @@ C
 C
       EQUIVALENCE  ( CNAME(1), DNAME(1) )
 C
-      DATA  DNAME / 'F11LHO.G', 'RAPHICS.', 'PROFILE.',
-     +              'MACROS  ', '        ', '        ' /
+      DATA  DNAME / 8HF11LHO.G, 8HRAPHICS., 8HPROFILE.,
+     +              8HMACROS  , 8H        , 8H         /
 *** PMF 20/11/99
-      CHARACTER CHARS2*80,CDEF2*80(31)
+      CHARACTER*80 CHARS2,CDEF2(31)
       EQUIVALENCE (CHARS2,CHARS(1)),(CDEF2(1),CDEF(1,1))
 *** PMF (end)
 C

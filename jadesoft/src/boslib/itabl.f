@@ -13,7 +13,7 @@ C
       JJ=J/2
       JI=J-JJ*2+1
       NC=KA*16+II
-   10 CALL BLOC(IND,'TAB*',NC,&200)
+   10 CALL BLOC(IND,'TAB*',NC,*200)
 C
       IND=IND+IJ*8+JJ+1
       NW=IW(IND)
@@ -22,7 +22,7 @@ C
       NH(JI)=NCH(2)
       IW(IND)=NW
   100 RETURN
-  200 CALL BCRE(IND,'TAB*',NC,128,&100,IER)
+  200 CALL BCRE(IND,'TAB*',NC,128,*100,IER)
       IF(IER.NE.0) GOTO 100
       GOTO 10
       END

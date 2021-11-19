@@ -222,7 +222,7 @@ C                                           OF THE END CAP COUNTERS
       ZLAM=ABS(DISTZ/R(3))
       DO 1003 I3=1,3
  1003 R(I3)=ZLAM*R(I3)
-      CALL ENDCLG(R,NBL,&9000)
+      CALL ENDCLG(R,NBL,*9000)
 C
 C                                           ANTI ENERGY CORRECTION
 C                                           ABSORPTION IN COIL
@@ -277,7 +277,7 @@ C                                           CALCULATE INDEX FOR
 C                                           BLOCKS WHICH ARE HIT AND
 C                                           CHECK WHETHER PARTICLE IS
 C                                           STILL IN THE LEAD GLASS
-      CALL ENDCLG(R,NBL,&9000)
+      CALL ENDCLG(R,NBL,*9000)
 C
 C                                           ACCUMULATE PULSEHEIGHTS
       IF(LOSS.GE.2) GO TO 250
@@ -513,7 +513,7 @@ C
       RR(1) = R(1) + (IC-2)*100.
       DO 711 JC=1,3
       RR(2) = R(2) + (JC-2)*100.
-      CALL ENDCLG(RR,NBL,&711)
+      CALL ENDCLG(RR,NBL,*711)
       IF(NO.EQ.0) GO TO 714
       DO 712 N=1,NO
       IF(LISTBL(N).EQ.NBL) GO TO 711

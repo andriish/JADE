@@ -33,7 +33,7 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
-      LOGICAL*1  CICS(80), CSLASH, CHLP(4)
+      character  CICS(80), CSLASH, CHLP(4)
 C
       EQUIVALENCE( A1,CHLP(1))
 C

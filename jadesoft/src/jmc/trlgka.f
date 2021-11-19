@@ -210,7 +210,7 @@ C                                           OF THE END CAP COUNTERS
       ZLAM=ABS(DISTZ/R(3))
       DO 1003 I3=1,3
  1003 R(I3)=ZLAM*R(I3)
-      CALL ENDCLG(R,NBL,&9000)
+      CALL ENDCLG(R,NBL,*9000)
       IF(NBL.LT.2689 .OR. NBL.GT.2880) GO TO 9000
 C
 C                                           ANTI ENERGY CORRECTION
@@ -265,7 +265,7 @@ C                                           CALCULATE INDEX FOR
 C                                           BLOCKS WHICH ARE HIT AND
 C                                           CHECK WHETHER PARTICLE IS
 C                                           STILL IN THE LEAD GLASS
-      CALL ENDCLG(R,NBL,&9000)
+      CALL ENDCLG(R,NBL,*9000)
       IF(NBL.LT.2689 .OR. NBL.GT.2880) GO TO 9000
 C
 C                                           ACCUMULATE PULSEHEIGHTS

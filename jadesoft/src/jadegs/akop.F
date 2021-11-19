@@ -194,30 +194,30 @@
       A = 4. * ((AA / PSUM)**2)
       GOTO IZZZ04
       END
-      SUBROUTINE BALANC( P, NTOT, PSUM )
-      DIMENSION P(1)
-      PSUM1 = 0.
-      PSUM2 = 0.
-      PSUM3 = 0.
-      PSUM  = 0.
-      N4 = NTOT*4
-      DO 13000 J=1,N4,4
-      PSUM1 = P(J  ) + PSUM1
-      PSUM2 = P(J+1) + PSUM2
-      PSUM3 = P(J+2) + PSUM3
-      PSUM  = P(J+3) + PSUM
-13000 CONTINUE
-13001 CONTINUE
-      PTOT = SQRT( PSUM1*PSUM1 + PSUM2*PSUM2 + PSUM3*PSUM3 )
-      IF(
-     -  PTOT .GT. .01
-     -)THEN
-      P(N4+1) = -PSUM1
-      P(N4+2) = -PSUM2
-      P(N4+3) = -PSUM3
-      P(N4+4) = PTOT
-      PSUM = PSUM + PTOT
-      NTOT = NTOT + 1
-      ENDIF
-      RETURN
-      END
+c      SUBROUTINE BALANC( P, NTOT, PSUM )
+c      DIMENSION P(1)
+c      PSUM1 = 0.
+c      PSUM2 = 0.
+c      PSUM3 = 0.
+c      PSUM  = 0.
+c      N4 = NTOT*4
+c      DO 13000 J=1,N4,4
+c      PSUM1 = P(J  ) + PSUM1
+c      PSUM2 = P(J+1) + PSUM2
+c      PSUM3 = P(J+2) + PSUM3
+c      PSUM  = P(J+3) + PSUM
+c13000 CONTINUE
+c13001 CONTINUE
+c      PTOT = SQRT( PSUM1*PSUM1 + PSUM2*PSUM2 + PSUM3*PSUM3 )
+c      IF(
+c     -  PTOT .GT. .01
+c     -)THEN
+c      P(N4+1) = -PSUM1
+c      P(N4+2) = -PSUM2
+c      P(N4+3) = -PSUM3
+c      P(N4+4) = PTOT
+c      PSUM = PSUM + PTOT
+c      NTOT = NTOT + 1
+c      ENDIF
+c      RETURN
+c      END

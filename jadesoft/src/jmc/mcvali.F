@@ -108,7 +108,8 @@ C
         DO  3  J = 1,3
 C
           IF( ABS( PF(J,I) ) .GT. 1.0E-20          .AND.
-     +        ABS( PF(J,I) ) .LE. BEAM  .OR. PF(J,I) .EQ. 0.0  ) GO TO 300001070
+     +        ABS( PF(J,I) ) .LE. BEAM  .OR. PF(J,I) .EQ. 0.0  ) GO TO 3 
+CAVFIXME     00001070
 C
           CALL MCVERR( 2,'INVALID MOMENTUM COMPONENT^',PF(J,I),0,' GEV',
      +                                                NEV,I,VALSP)

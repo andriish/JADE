@@ -50,7 +50,7 @@ C
       EQUIVALENCE (LABL1,HELP1(1)),(LABL2,HELP2(1))
 C
       DATA HELP1/0,0/,HELP2/0,0/,HCALL/0/
-      DATA MSKTR1 / ZFE/
+      DATA MSKTR1 / Z'FE'/
 C
 C------------------  C O D E  ------------------------------------------
 C

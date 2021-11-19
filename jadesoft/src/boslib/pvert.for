@@ -9,9 +9,9 @@ C        IABS(NN)    =NUMBER OF DIGITS (3 TO 6)
 C        NN NEGATIVE = PRINT NO INDEXLINE BELOW ARRAY
       COMMON/CCONVT/JM,PX(32,9)
       REAL X(1)
-      INTEGER PX,BLK/'    '/,PE/'  E '/,PM/'   .'/
-      LOGICAL*1 LX(128,8),CHM/'-'/,CH(12)/'0','1','2',
-     1     '3','4','5','6','7','8','9',' ','*'/
+      INTEGER PX,BLK/4H    /,PE/4H  E /,PM/4H   ./
+      CHARACTER*1 LX(128,8),CHM/1H-/,CH(12)/1H0,1H1,1H2,
+     1     1H3,1H4,1H5,1H6,1H7,1H8,1H9,1H ,1H*/
       EQUIVALENCE (PX(1,1),LX(1,1))
 C
       JM=0

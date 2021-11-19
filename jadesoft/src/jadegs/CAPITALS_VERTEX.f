@@ -336,14 +336,14 @@ C
       INVX = IPHT+1+(INV-1)*10
       ISS = (INV-1)*10
       DO 1  I = 1,10
-1     IDATA(INVX+I) = IV(ISS+I)
+  1   IDATA(INVX+I) = IV(ISS+I)
       IDATA(IPHT+2+NV*10) = NT
 C
       DO 2  INT = 1,NT
       INTX = IPHT+2+NV*10 + (INT-1)*15
       ISS = (INT-1)*30
       DO 2  I = 1,15
-2     IDATA(INTX+I) = IT(ISS+I)
+  2   IDATA(INTX+I) = IT(ISS+I)
   100 RETURN
       END
 C   09/01/80 006251729  MEMBER NAME  VTXEE    (JADEGS)      FORTRAN

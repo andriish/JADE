@@ -514,7 +514,7 @@ C A LOGICAL ERROR, SINCE /CTR123/ OR /CTRIGG/ IS NOT UPDATED BEFORE
 C THE FIRST EVENT HAS BEEN READ AND RDDATE BEEN CALLED (IN RDJETC).
 C
   150 CALL BDLS( 'MTCO', 1)
-      CALL BCRE( IPMTCO, 'MTCO', 1, 159, &9090, IER )
+      CALL BCRE( IPMTCO, 'MTCO', 1, 159, *9090, IER )
 C
 C       COPY DETECTOR STATUS INTO MTCO BANK
 C
@@ -647,7 +647,7 @@ C
 C
          IPVTXC = IDATA (IBLN('VTXC'))
          IF( IPVTXC .LE. 0 )
-     *      CALL BCRE ( IPVTXC, 'VTXC',10, 5, &5304, IEVT )
+     *      CALL BCRE ( IPVTXC, 'VTXC',10, 5, *5304, IEVT )
          CALL BSAW(1, 'VTXC')
          IDATA(IPVTXC + 1 ) = 5
 C                                          DOUB. HIT RESO., INEFF.,
@@ -663,14 +663,14 @@ C
          IF( IJETCI .EQ. 0) GO TO 401
 C
             LENGTH = IDATA(IPJ)
-            CALL BCRE( IPJ9, 'JETC', 9, LENGTH, &401, IER )
+            CALL BCRE( IPJ9, 'JETC', 9, LENGTH, *401, IER )
             CALL MVCL( IDATA, IPJ9*4, IDATA, IPJ*4, LENGTH*4 )
 C
 C                       NOW SMEAR TIME AND Z-COORD VALUES
 C
  401  CALL RDRESO( BINMC )
 C
-      IF( IPJ .LE. 0 ) CALL BCRE( IPJ, 'JETC', 8, 50, &7788, IE )
+      IF( IPJ .LE. 0 ) CALL BCRE( IPJ, 'JETC', 8, 50, *7788, IE )
       CALL BSAW( 1, 'JETC' )
 C
 C                       CONSIDER DOUBLE HIT RESOLUTION,

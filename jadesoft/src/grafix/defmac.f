@@ -15,14 +15,15 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
-      LOGICAL*1  CHARS
-      LOGICAL*1  CDEF
+      CHARACTER*1  CHARS
+      CHARACTER*1  CDEF
 C
       COMMON / CWORK  / NFIELD, CHARS(80), ISTAFL(80), IENDFL(80)
       COMMON / CGRMAC / MACNR, MACSTA, MACDEP, MACPNT(2,10), CDEF(80,31)
 *** PMF 20/11/99
       CHARACTER*80 CHARS2,CCDEF(31)
-      EQUIVALENCE(CHARS2,CHARS(1)),(CCDEF(1),CDEF(1))
+      EQUIVALENCE(CHARS2,CHARS(1))
+      EQUIVALENCE(CCDEF,CDEF)
 *** PMF(end)
 C
 C------------------  C O D E  ------------------------------------------

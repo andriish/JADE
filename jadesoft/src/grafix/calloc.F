@@ -24,21 +24,21 @@ C
 C
       DIMENSION LUNC(11,4)
 C
-      DATA  HBLANK/'  '/, HCAL/'CC'/
-      DATA  LUNC /'F11L','HO.B','UPDA','T0  ','    ','    ',5*'    ',
-     +            'F11L','HO.B','UPDA','T1  ','    ','    ',5*'    ',
-     +            'F11L','HO.A','UPDA','T1  ','    ','    ',5*'    ',
-     +            'F11L','HO.K','ALWR','K0  ','    ','    ',5*'    '/
+      DATA  HBLANK/2H  /, HCAL/2HCC/
+      DATA  LUNC /4HF11L,4HHO.B,4HUPDA,4HT0  ,4H    ,4H    ,5*4H    ,
+     +            4HF11L,4HHO.B,4HUPDA,4HT1  ,4H    ,4H    ,5*4H    ,
+     +            4HF11L,4HHO.A,4HUPDA,4HT1  ,4H    ,4H    ,5*4H    ,
+     +            4HF11L,4HHO.K,4HALWR,4HK0  ,4H    ,4H    ,5*4H    /
 C
 C
 C------------------  C O D E  -----------------------------------------
 C
       CALL TRMOUT(80,'The default calibration dataset  F11LHO.AUPDAT1 wi
-     $ll now be allocated.^')
+     +ll now be allocated.')
       CALL TRMOUT(80,'If you want the BUPDAT0/BUPDAT1 files for LG calib
-     $ration (REFORM Data),^')
+     +ration (REFORM Data),')
       CALL TRMOUT(80,'then press any CHARACTER+RETURN, else press RETURN
-     $ for the first event^')
+     + for the first event')
       CALL TRMOUT(80,'  --->     Please wait a moment...^')
 C
 C                            ALLOCATE THE CALIBRATION DATA SETS
@@ -57,10 +57,10 @@ C
 C                            ERROR WHILE ALLOCATING AUPDAT1 FILE
 C
  100  CALL TRMOUT(80,'Error in allocating F11LHO.AUPDAT1.  The BUPDAT fi
-     $les will be tried..^')
+     +les will be tried..')
       IF( NCALI .EQ. 1 ) GO TO 130
  105  CALL TRMOUT(80,'Allocation Failure for both A and B files. Prematu
-     $re End.^')
+     +re End.')
 C
       OK = .FALSE.
       RETURN

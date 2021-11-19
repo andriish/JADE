@@ -2,12 +2,12 @@ C   14/10/82            MEMBER NAME  UWP      (S)           FORTRAN77
       SUBROUTINE UWP(BIN,NA,NB)
 C
       REAL*4 BIN(2)
-      REAL*8 FMT(13),FMTF/'  F12.4,'/,FMTG/'  G12.4,'/,
-     1     FMTI/'    I12,'/,FMTA/'  8X,A4,'/,FMT1/'        '/,
-     2     FMT2/'(11X,   '/
+      CHARACTER*8 FMT(13),FMTF/8H  F12.4,/,FMTG/8H  G12.4,/,
+     1     FMTI/8H    I12,/,FMTA/8H  8X,A4,/,FMT1/8H        /,
+     2     FMT2/8H(11X,   /
       INTEGER NEQ/0/,LIM(2,8)
-      LOGICAL*1 LFMT(96),LL(8),LAST/')'/
-      DATA FMT(1)/'(1X,I5, '/,FMT(2)/''' -'',I3,'/
+      LOGICAL*1 LFMT(96),LL(8),LAST/1H)/
+      DATA FMT(1)/8H(1X,I5, /,FMT(2)/8H' -',I3,/
       DATA LIM/75,80,91,97,107,111,123,136,
      1     193,201,209,217,226,233,240,249/
       EQUIVALENCE(FMT(1),LFMT(1)),(LL(1),REQ),(LL(5),NEQ)

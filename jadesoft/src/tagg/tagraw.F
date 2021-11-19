@@ -32,7 +32,7 @@ C
 C FIND THE POINTERS ETC
 C
 C
-       CALL BLOC(IND,'ATAG',0,&9001)
+       CALL BLOC(IND,'ATAG',0,*9001)
        I2S = ( IND * 2 ) + 3
        I2F = 2 * ( IND + IDATA(IND) )
        IF ( HDATA(I2F) .EQ. 0 ) I2F = I2F - 1
@@ -67,7 +67,7 @@ C
 C
 C CONVERT HARDWARE ADDRESS TO SOFTWARE ADDRESS
 C
-          CALL TAGH2S(ISAD,IADD,&19)
+          CALL TAGH2S(ISAD,IADD,*19)
 C
           IF ( (ISAD .GT. IENDPZ) .OR. (ISAD .LT. 0) ) GOTO 19
 C

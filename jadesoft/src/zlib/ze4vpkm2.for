@@ -72,7 +72,7 @@ C                                      INITIALISE FEHLER
       CALL FEHLIN
 C
   100 IF( JUHR(2) .EQ. 2 ) GO TO 4000
-      CALL BREAD( IRUNIT, &1000, &3000 )
+      CALL BREAD( IRUNIT, *1000, *3000 )
       IEOF = 0
       IEV = IEV + 1
       IRV = IRNEVT( DUMMY )
@@ -127,7 +127,7 @@ C
 C
 C                                           ERRORS
  1000 CONTINUE
-      CALL JOBFIN( 3, IEV, &1100 )
+      CALL JOBFIN( 3, IEV, *1100 )
  1100 IF( IEOF .NE. 0 ) GO TO 8000
 C
 C
@@ -135,7 +135,7 @@ C
       CALL BSLT
       CALL BDLG
       IF( IEV .LT. IEVLIM ) GO TO 100
-      CALL JOBFIN( 4, IEV, &8100 )
+      CALL JOBFIN( 4, IEV, *8100 )
 C
 C                                           EOF ON IRUNIT
  3000 IF( IFIL .GE. IFILMX .OR. IEOF.NE.0 )  GO TO 8000
@@ -153,11 +153,11 @@ C                                           EOF ON IRUNIT
       GO TO 100
 C
 C                                        TIME OUT
- 4000 CALL JOBFIN( 2, IEV, &8100 )
+ 4000 CALL JOBFIN( 2, IEV, *8100 )
 C
 C                                           END OF JOB
  8000 CONTINUE
-      CALL JOBFIN( 1, IEV, &8100 )
+      CALL JOBFIN( 1, IEV, *8100 )
  8100 CONTINUE
 C                                      MCREDU STATISTICS
       CALL FEHLPR

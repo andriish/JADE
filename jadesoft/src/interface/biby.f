@@ -107,8 +107,9 @@ C
 *        IW: INTEGER*4
 *        IX = binary 1-complement of IW
 *
-      INTEGER IW,IZ
-      DATA IZ/ZFFFFFFFF/
+      INTEGER IW
+      INTEGER*8 IZ
+      DATA IZ/Z'FFFFFFFF'/
 C
       LCOMPL=IZ-IW
 C

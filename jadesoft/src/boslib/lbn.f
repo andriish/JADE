@@ -4,7 +4,7 @@ C   07/06/96 606071853  MEMBER NAME  LBN      (S4)          FORTRAN
       REAL RW(1)
       EQUIVALENCE (RW(1),IW(1))
       LB=0
-      CALL BLOC(J,'$BIN',NX,&100)
+      CALL BLOC(J,'$BIN',NX,*100)
     5 NJ=MIN0(IW(J),4)+1
       GOTO (100,100,10,15,40),NJ
    10 NB=100

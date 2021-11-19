@@ -46,7 +46,7 @@ C
 C                            CALL TAGMRK TO DETERMINE APPARATUS
 C                            MARK, FOR MC AND REAL DATA
 C
-  20  CALL TAGMRK(&21)
+  20  CALL TAGMRK(*21)
   21  IF( MARK .EQ. 0 ) GO TO 1
       IF( MARK .EQ. 1 ) GO TO 641
 C

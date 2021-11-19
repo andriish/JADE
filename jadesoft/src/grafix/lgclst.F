@@ -27,7 +27,7 @@ C
      $,DUMM,NTRRES,IW52
       COMMON /CJTRIG/ PI,TWOPI
 C
-      DATA INAME /'LGCL'/
+      DATA INAME /4HLGCL/
 *** PMF 17/11/99: add variables needed for emulation of DESYLIB routine 'CORE'  
       CHARACTER cHWORK*80
       EQUIVALENCE (cHWORK,HWORK(1))

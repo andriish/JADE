@@ -52,7 +52,7 @@ C
       GO TO 200
 C
       END
-      BLOCK DATA
+      BLOCK DATA ONIDAT
       COMMON / CJJONI / POTBEA, ZAROBE
      *                 ,POTTRI, ZAROTR
      *                 ,POTIVE, ZAROIV

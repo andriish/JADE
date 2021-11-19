@@ -32,6 +32,7 @@ C
 C
 #include "cgraph.for"
 C
+      character*4 OPTIO1,OPTIO2,OPTIO3,OPTIO4,OPTIO5,OPTIO6
       COMMON / CGRAP2 / BCMD,DSPDTM(30),ISTVW,JTVW
       COMMON / OPTPH  / OPTIO1(18,9),OPTIO2(18,9),OPTIO3(18,9),
      +                  OPTIO4(18,9),OPTIO5(18,9),OPTIO6(18,9)
@@ -111,6 +112,7 @@ C-----------------------------------------------------------------------
       BLOCK DATA BLCKG1 !PMF 03/12/99: add name
 C-----------------------------------------------------------------------
 C
+      character*4 OPTIO1,OPTIO2,OPTIO3,OPTIO4,OPTIO5,OPTIO6
       COMMON / OPTPH  / OPTIO1(18,9),OPTIO2(18,9),OPTIO3(18,9),
      +                  OPTIO4(18,9),OPTIO5(18,9),OPTIO6(18,9)
 C

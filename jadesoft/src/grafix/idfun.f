@@ -23,10 +23,11 @@ C----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
-      REAL*8  RIDENT,RR(2),ARRAY(2,127),BLANK
-      REAL*8  AR1(2,22),AR2(2,22),AR3(2,22)
-      REAL*8  AR4(2,13),AR5(2,13),AR6(2,35)
+      character*8  RIDENT,RR(2),ARRAY(2,127),BLANK
+      character*8  AR1(2,22),AR2(2,22),AR3(2,22)
+      character*8  AR4(2,13),AR5(2,13),AR6(2,35)
 C
+      character*2 HNAME, HNAM
       DIMENSION HNAME(4),HNAM(4)
 C
       EQUIVALENCE (ARRAY(1,1),AR1(1,1)),(ARRAY(1,23),AR2(1,1))
@@ -86,7 +87,9 @@ C
      $'F22VIC  ','RAINER  ','F22WAL  ','IAN     ','F11PFE  ','MATHIAS ',
      $'F22HAU  ','VOLKE   ','F22PEP  ','PETER   ','F11OES  ','THORSTEN',
      $'F11PIT  ','DANIEL  ','F22WEG  ','ARMIN   ','F22SCH  ','FLORIAN '/
-C
+C 
+      
+      character*2 HBLANK
       DATA BLANK /'        '/,HBLANK/'  '/
 C
 C------------------  C O D E  -----------------------------------------

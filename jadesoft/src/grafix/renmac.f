@@ -14,10 +14,10 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
-      LOGICAL*1  CHARS
-      LOGICAL*1  CBLNK
-      LOGICAL*1  CDEF
-      LOGICAL*1  CCMD
+      character*1  CHARS
+      character*1  CBLNK
+      character*1  CDEF
+      character*1  CCMD
 C
       COMMON / CGRAP4 / IPOS4,CCMD(8,200),HCMD(5,200)
       COMMON / CWORK  / NFIELD, CHARS(80), ISTAFL(80), IENDFL(80)

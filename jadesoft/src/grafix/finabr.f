@@ -18,7 +18,7 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
-      LOGICAL*1  CCMD,CBLANK,CCS(LEN)
+      CHARACTER*1  CCMD,CBLANK,CCS(LEN)
 C
       COMMON / CGRAP4 / IPOS4,CCMD(8,200),HCMD(5,200)
 C

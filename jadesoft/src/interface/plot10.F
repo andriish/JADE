@@ -442,8 +442,8 @@ C get current beam position in the respective window coordinates
 C - Calculate target position
 C ... from relative coordinates
       IF( SYS.EQ.'R' ) THEN
-C   - Perform transformation of the relative moving vector
-C      if forced by subroutines RROTAT,RSCALE
+C       Perform transformation of the relative moving   v_e_c_t_o_r 
+C       if forced by subroutines RROTAT,RSCALE
          IF( LROTAT ) THEN
             X(2)=COS(ANGLE)*XGO-SIN(ANGLE)*YGO
             Y(2)=SIN(ANGLE)*XGO+COS(ANGLE)*YGO
@@ -658,7 +658,9 @@ C
 #include "cplot10.for"
 *
       INTEGER ICHAR
-      CHARACTER*1 WIN,TEXT*80(6),CHAR
+      CHARACTER*1 WIN
+      character*80 TEXT(6)
+      character*1 CHAR
       INTEGER NT,IBN
       REAL XNDC,YNDC,XWC,YWC
 Code:
@@ -716,14 +718,15 @@ C
 #include "cplot10.for"
 *
       INTEGER ICHAR
-      CHARACTER*1 CHAR
+      CHARACTER*1 CHARA
+      CHARACTER CHARM(8)
 Code:
 C NB.: alignment of character in HIGZ = middle/middle
 C      beam position before writing = bottom/left
 C      beam position after writing = bottom/right
 
 C- Convert to ASCII
-      CALL ITOCH(ICHAR,CHAR)
+      CALL ITOCH(ICHAR,CHARA)
 
 C - Force correct alignment at the top of the screen
       IF( YPOS0.GT.YTMAX-YCHAR ) YPOS0=YTMAX-YCHAR 
@@ -742,7 +745,14 @@ C - Goto home position if needed
 
 C - Print out character using 'screen window' coordinates
       CALL ISELNT(NTS)
-      CALL ITX(XPOS0+XCHAR/2.,YPOS0+YCHAR/2.,CHAR)
+      CHARm(1)=CHARA
+
+#if defined(JEXTERNISCERNLIB)      
+      CALL ITX(XPOS0+XCHAR/2.,YPOS0+YCHAR/2.,CHARA)
+#endif
+#if defined(JEXTERNISPICO)      
+C      CALL ITXN(XPOS0+XCHAR/2.,YPOS0+YCHAR/2.,CHARM,1)
+#endif
 
 C - Update beam position
       XPOS0=XPOS0+XCHAR
@@ -774,7 +784,7 @@ C
       END
 
 ************************************************************************
-      SUBROUTINE EOUTST(NBYTES,SOURCE)
+      SUBROUTINE EOUTST(INBYTES,SOURCE)
       IMPLICIT NONE
 *
 *     Output of an array of four characters packed per word.
@@ -787,10 +797,12 @@ C
       INTEGER ITYP/1/
       EQUIVALENCE (HTYP(1),ITYP)
 Code:
+CAV 
+      INTEGER INBYTES    
+      NBYTES=INBYTES
 C - use CERNLIB routine BLOW (M426) to unpack full words into bytes
       NBYTES=MIN(NBYTES,136)
       CALL BLOW(SOURCE,TARGET,NBYTES,8)
-
 C - test the byteorder of the present machine and
 C     print out each ASCII character coded in the INTEGER*4
 C     array TARGET
@@ -923,7 +935,8 @@ C
 #include "cplot10.for"
 *
       INTEGER NCHAR,ISV
-      CHARACTER TXT*(*),TEXT*1(136)
+      CHARACTER*1 TXT(*)
+      character*1 TEXT(136)
 *
       CHARACTER CFMT*9,C*1
       INTEGER LEN,NCH,I,L
@@ -934,12 +947,12 @@ Code:
          TEXT(I)=' '
       ENDDO
       L=LEN(TXT)
-      IF( TXT(L:L).EQ.'$') L=L-1
+      IF( TXT(L).EQ.'$') L=L-1
       DO I=1,MIN(NCHAR,L)
-         IF( TXT(I:I).EQ.'^' ) THEN
+         IF( TXT(I).EQ.'^' ) THEN
             TEXT(I)=' '
          ELSE
-            TEXT(I)=TXT(I:I)
+            TEXT(I)=TXT(I)
          ENDIF
       ENDDO
 
@@ -1116,7 +1129,8 @@ C         HEIGHT=64./35.*HGHT
 C         WIDTH=30.5/64.*HEIGHT
 C      ENDIF
       HEIGHT=HGHT*1.3
-      WIDTH=HEIGHT*55./117.
+CAV      WIDTH=HEIGHT*55./117.
+      WIDTH=HEIGHT*125./117. !FFTGJ
       CALL ISCHH(HEIGHT*.5)
       CALL IGSET('TANG',THETA)
 
@@ -1131,7 +1145,16 @@ C      to ensure equidistant character output !!!
          W=.5*WIDTH*CS
          H=.45*HEIGHT*(1+SN)
          IF( NSTR.GT.0 ) THEN
-            CALL ITX(XS+W,YS+H,CSTR(I)) ! normal text
+C            CALL ITX(XS+W,YS+H,CSTR(I)) ! normal text
+C            CALL ITXN(XS+W,YS+H,CSTR(I),1) ! normal text
+
+#if defined(JEXTERNISCERNLIB)      
+      CALL ITX(XS+W,YS+H,CSTR(I)) ! normal text
+#endif
+#if defined(JEXTERNISPICO)      
+C      CALL ITXN(XS+W,YS+H,CSTR(I),1) ! normal text
+#endif
+      
          ELSE
             CALL ISTXFP(0,2)
             CALL ITX(XS+W,YS+H
@@ -1427,7 +1450,7 @@ C
 *     software generator subroutines SYSSYM and USRSYM.
 *
       INTEGER I,J
-      CHARACTER C*4(0:15)
+      CHARACTER*4 C(0:15)
       DATA C /                  ! translate to IGTEXT 'specials' code
      +     '<"1#',              !  0 empty square
      +     '<"0#',              !  1 circle
@@ -1523,7 +1546,7 @@ C
 *
       INTEGER MINX,MAXX,MINY,MAXY,BEAMX,BEAMY
       REAL XMIN,XMAX,YMIN,YMAX,XBEAM,YBEAM
-      CHARACTER TEXT*80(9)
+      CHARACTER*80 TEXT(9)
 Code:
       CALL SEELOC(BEAMX,BEAMY)
       CALL SEELC2(XBEAM,YBEAM)
@@ -1555,7 +1578,7 @@ C
 *
       INTEGER BEAMX,BEAMY
       REAL XBEAM,YBEAM
-      CHARACTER TEXT*80(3)
+      CHARACTER*80 TEXT(3)
 Code:
       CALL SEELOC(BEAMX,BEAMY)
       CALL SEELC2(XBEAM,YBEAM)
@@ -1730,6 +1753,13 @@ C
 C
       RETURN
       END
+
+
+
+
+
+
+
 
 
 * The End

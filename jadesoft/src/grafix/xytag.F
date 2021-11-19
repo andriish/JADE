@@ -55,8 +55,8 @@ C
 C                            CALL TAGMRK TO CHOOSE 'MARK'
 C                            IF IFLMRK = -1  ALREADY DONE
 C
- 2121 IF( IFLMRK .NE. -1 ) CALL TAGMRK(&2000)
-      IF( (MARK .LT. -1) .OR. (MARK .GT. 2) ) CALL TAGMRK(&2000)
+ 2121 IF( IFLMRK .NE. -1 ) CALL TAGMRK(*2000)
+      IF( (MARK .LT. -1) .OR. (MARK .GT. 2) ) CALL TAGMRK(*2000)
 C
       IF( MARK .EQ. 1 ) GO TO 1000
       IF( MARK .EQ. 2 ) GO TO 2000

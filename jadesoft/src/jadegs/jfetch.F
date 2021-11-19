@@ -24,7 +24,7 @@
      ,                  .110, .110, .115, .140, .135,
      ,     .085, .045, .030, .040, .050, .055, .055, .055, .055, .055/
       REAL SLCOAR(60) / 60*0./
-      INTEGER MKLRT1 /Z1000000/, MKLRT2 /Z100/
+      INTEGER MKLRT1 /Z'1000000'/, MKLRT2 /Z'100'/
       IF(
      - JESCAL .GT. 0   .AND.   JESKEY .EQ. 54321
      -)THEN

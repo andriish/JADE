@@ -53,18 +53,18 @@ C------------------------- END OF MACRO CGEO1 --------------------------
 C
 C   23/03/97 703231948  MEMBER NAME  MVERTEX0 (PATRECSR)    SHELTRAN
 C**HEADER*** MEMBER  MVERTEX0       SAVED BY F22HAG  ON 88/05/24  AT 17:56
-C     PARAMETER MACRO FOR VERTEX-FIT ROUTINES                           00000000
+C     PARAMETER MACRO FOR VERTEX-FIT ROUTINES                           
 C01 MAY 80)    DISAXI    SYSTEM/370 FORTRAN H EXTENDED (ENHANCED)    DATE 97.082/19.55.23       PAGE   2
-      COMMON /CVTXC/ XB,YB,ZB,RTANK,DTANK,X0INN,SIGX0,SIGZ0,PNTMIN,     00000100
-     *               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,      00000200
-     *               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,    00000300
-     *               EEXYMX,PHEMAX,SIG1,SIG2,SIG3,CSECV,                00000400
-     *               ITDLEN,IVDLEN,SP0,SP1,DFMASS,SFMUSC, SIGFCZ        00000500
-C     MACRO FOR VERTEX-FIT ROUTINES ( AXIS AND STATISTICS )             00000100
-      COMMON /CVTX2/ MODE,TAXIS(12),SVR,HVTXST(120)                     00000200
+      COMMON /CVTXC/ XB,YB,ZB,RTANK,DTANK,X0INN,SIGX0,SIGZ0,PNTMIN,     
+     *               DISTB,COLL2,MITER,DSCONV,PRCUT,IREJTR,EEDPMN,      
+     *               EEDPMX,EEDTMX,EEDRMX,SEMAX,SIMAX,SIGFAC,EEXYMN,    
+     *               EEXYMX,PHEMAX,SIG1,SIG2,SIG3,CSECV,                
+     *               ITDLEN,IVDLEN,SP0,SP1,DFMASS,SFMUSC, SIGFCZ        
+C     MACRO FOR VERTEX-FIT ROUTINES ( AXIS AND STATISTICS )             
+      COMMON /CVTX2/ MODE,TAXIS(12),SVR,HVTXST(120)                     
 C                                                                       00000300
 C   NOTE (JEO 23.3.97)  THAT HVTXST HAS DIM. 140 ON F22KLE.VERTEX.S LIB 00000310
-      DIMENSION IVTXST(1)                                               00000400
+      DIMENSION IVTXST(1)                                               
 C                                                                       00000500
 C   23/03/97 703231949  MEMBER NAME  MTRINF   (PATRECSR)    SHELTRAN
 C**HEADER*** MEMBER  MTRINF         SAVED BY F22HAG  ON 87/04/03  AT 18:35
@@ -82,6 +82,7 @@ C
       COMMON / CHEADR / HEAD(108)
       COMMON / CVX / NNPATR, NDUMM, NNJETC, NNVTXC
       DIMENSION IDUM(20),PSAVE(4,60)
+      character*2 HDM, HDL, HB1, HB2, HB3, HB4, HC
       DIMENSION HDM(5,6),HDL(5,2),HB1(5,8),HB2(5,8),HB3(5,12),HB4(5,10)
       DIMENSION HC(5)
       DATA HDM / 'D0','  ','  ','  ','  ', 'D0',' b','ar','  ','  ', 'D+

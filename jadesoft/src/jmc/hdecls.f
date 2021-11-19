@@ -62,7 +62,7 @@ C
 C
       PT=SQRT(PE(1)**2+PE(2)**2)
       PP=SQRT(PE(3)**2+PT**2)
-      IF(PP.LE.0.) CALL ERRMSG('MOMENTUM = 0. ??$',&999)
+      IF(PP.LE.0.) CALL ERRMSG('MOMENTUM = 0. ??$',*999)
 C
       IF(IBE.NE.0) PLLG1=PLLG/PLLG0E
       IF(IBE.EQ.0) PLLG1=PLLG/PLLG0B

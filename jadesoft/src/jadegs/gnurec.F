@@ -13,7 +13,7 @@ C---
       NUREC=0
     1 CALL BSLT
       CALL BDLG
-      CALL BREAD(NFTN,&3,&2)
+      CALL BREAD(NFTN,*3,*2)
       NUREC=NUREC+1
       IF(IDATA(IPHEAD).LT.1) GO TO 1
       NEVNT=NEVNT+1

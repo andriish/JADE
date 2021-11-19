@@ -66,7 +66,7 @@ C
 C
       DIMENSION ITR4V(300), ITEMP(4)
 C
-      DATA MASK7F / Z7F / , IEFL1 / 0 / , IEFL2 / 0 /
+      DATA MASK7F / Z'7F' / , IEFL1 / 0 / , IEFL2 / 0 /
 C
 C-----------------------  C O D E  -------------------------------------
 C
@@ -148,7 +148,7 @@ C                            CREATE THE 'TR4V' BANK  WITH  BANK  NUMBER
 C                            THE SAME AS THE 'PATR' BANK.
 C
       LENGTH = NTRKS*8 + 1
-      CALL BCRE(IPT,'TR4V',NBANK,LENGTH,&1000,IER)
+      CALL BCRE(IPT,'TR4V',NBANK,LENGTH,*1000,IER)
       CALL BSAW(1,'TR4V')
       CALL UZERO(IDATA, IPT+1, IPT+LENGTH )
       IDATA(IPT+1) = NTRKS

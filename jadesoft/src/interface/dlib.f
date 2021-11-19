@@ -92,6 +92,9 @@ C
          DAT(2)=0
       ENDIF
 C
+       
+CAV      write(*,*)'DAT', DAT(1),DAT(2),DAT(3),DAT(4),DAT(5)
+CAV      write(*,*) IDUMMY
       RETURN
       END
 C

@@ -49,17 +49,17 @@ C
 C                CLEAR SPECIAL-LIST
 C
       CALL BSLC
-      CALL BCRE( IPMTCO, NAM1(1), 1, 100, &1000, IER )
+      CALL BCRE( IPMTCO, NAM1(1), 1, 100, *1000, IER )
 C
 C                                           JET CHAMBER CONST
 C
-      CALL BCRE( IND, NAM1(2), 2, LJET, &1000, IER )
+      CALL BCRE( IND, NAM1(2), 2, LJET, *1000, IER )
       CALL BSTR( IND, DRCH, LJET )
       IW(IPMTCO - 4 + 55 ) = IND - IPMTCO + 4
 C
 C                                           GEOMETRICAL CONST
 C
-      CALL BCRE( IND, NAM1(3), 3, LGEO, &1000, IER )
+      CALL BCRE( IND, NAM1(3), 3, LGEO, *1000, IER )
       CALL BSTR( IND, GEO, LGEO )
       IW(IPMTCO - 4 + 56 ) = IND - IPMTCO + 4
 C
@@ -81,44 +81,44 @@ C                   ORGANIZE OUTPUT FOR MT CARLO DATA
 C
 C                                           SET UP FIRST BANK
 C
-   10 CALL BCRE( IPHEAD, 'HEAD', 1, 100, &1000, IER )
+   10 CALL BCRE( IPHEAD, 'HEAD', 1, 100, *1000, IER )
       CALL BSAW( 1, 'HEAD' )
       CALL STHEAD( LENGTH, IW(IPHEAD+1) )
 C
 C                                           FILL LATC BANK
 C
       CALL LHLATC( LENGTH )
-      CALL BCRE( IND, 'LATC', 0, LENGTH, &1000, IER )
+      CALL BCRE( IND, 'LATC', 0, LENGTH, *1000, IER )
       CALL BSAW( 1, 'LATC' )
       CALL STLATC( LENGTH, IW(IND+1) )
 C
 C                                           SET TOF ADC/TDC BANK
 C
-      CALL BCRE( IND, 'ATOF', 0, 94, &1000, IER )
+      CALL BCRE( IND, 'ATOF', 0, 94, *1000, IER )
       CALL BSAW( 1, 'ATOF' )
       CALL BSTR( IND, IATDC, 94 )
 C
 C                                           SET BP ADC/TDC BANK
 C
       CALL LHATBP( LENGTH )
-      CALL BCRE( IND, 'ATBP', 0, LENGTH, &1000, IER )
+      CALL BCRE( IND, 'ATBP', 0, LENGTH, *1000, IER )
       CALL BSAW( 1, 'ATBP' )
       CALL STATBP( LENGTH, IW(IND+1) )
 C
 C                                           SET 4_VECTOR BANK 'VECT'
 C
-      CALL BLOC( IND, 'VECT', 0, &1000, IER )
+      CALL BLOC( IND, 'VECT', 0, *1000, IER )
       CALL BSAW( 1, 'VECT' )
 C
 C                                           SET 4_VECTOR BANK 'PALL'
 C
-      CALL BLOC( IND, 'PALL', 0, &1011, IER )
+      CALL BLOC( IND, 'PALL', 0, *1011, IER )
       CALL BSAW( 1, 'PALL' )
 C
 C                                           4_VECTOR/JETC HIT LABEL BANK
 C
 1011  LENGTH = ( NHALL + 2 ) / 2
-      CALL BCRE( IND, 'HITL', 8, LENGTH, &1000, IER )
+      CALL BCRE( IND, 'HITL', 8, LENGTH, *1000, IER )
       CALL BSAW( 1, 'HITL' )
       HW(IND*2 + 1) = NHALL
       CALL MVCL( HW, 4*IND + 2, H4VHIT, 0, NHALL * 2 )
@@ -127,24 +127,24 @@ C                                           LEAD GLASS AMPLITUDES
 C
       CALL LHALGN( LENGTH )
       IF( LENGTH.EQ.0 ) GO TO 30
-      CALL BCRE( IND, 'ALGN', 1, LENGTH, &1000, IER )
+      CALL BCRE( IND, 'ALGN', 1, LENGTH, *1000, IER )
       CALL BSAW( 1, 'ALGN' )
       CALL STALGN( LENGTH, IW(IND+1) )
 C
 C                                           MU CHAMBER DATA
 C
-   30 CALL BLOC( IND, 'MUEV', 0, &35, IER )
+   30 CALL BLOC( IND, 'MUEV', 0, *35, IER )
       CALL BSAW( 1, 'MUEV' )
-   35 CALL BLOC( IND, 'MUCH', 0, &36, IER )
+   35 CALL BLOC( IND, 'MUCH', 0, *36, IER )
       CALL BSAW( 1, 'MUCH' )
-   36 CALL BLOC( IND, 'MUHC', 0, &37, IER )
+   36 CALL BLOC( IND, 'MUHC', 0, *37, IER )
       CALL BSAW( 1, 'MUHC' )
 C
 C                                           TAGGING DATA
 C
    37 CALL LHATAG( LENGTH )
       IF( LENGTH .LE. 0 ) GO TO 40
-      CALL BCRE( IND, 'ATAG', 0, LENGTH, &1000, IER )
+      CALL BCRE( IND, 'ATAG', 0, LENGTH, *1000, IER )
       CALL BSAW( 1, 'ATAG' )
       CALL STATAG( LENGTH, IW(IND+1) )
 C
@@ -152,7 +152,7 @@ C                                           TRACK BANK
 C
    40 CONTINUE
       IF( KPATR .LT. 10 ) GO TO 50
-      CALL BCRE( IND, 'PATR', 12, KPATR, &1000, IER )
+      CALL BCRE( IND, 'PATR', 12, KPATR, *1000, IER )
       CALL BSAW( 1, 'PATR' )
       CALL BSTR( IND, APATR, KPATR )
 C
@@ -169,7 +169,7 @@ C                                           LOCATION IN HITAR.
 C
   60  LENGTH = (HPCELL(97) - 1) / 2 + 50
       IF( LENGTH .LE. 50 ) GO TO 90
-      CALL BCRE( IND, 'JETC', 8, LENGTH, &1000, IER )
+      CALL BCRE( IND, 'JETC', 8, LENGTH, *1000, IER )
       CALL BSAW( 1, 'JETC' )
       IW(IND+1) = 0
 C                                           COPY INFO: HPCELL & HITAR

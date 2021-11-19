@@ -37,7 +37,7 @@ C
 C
       DATA  HELP / 0,0 /
       DATA  RZ   / 10.0 /
-      DATA MASKZ/Z3F/,MSKSUB/Z3/,MSKSLO/Z7C/,MSKCRA/Z380/
+      DATA MASKZ/Z'3F'/,MSKSUB/Z'3'/,MSKSLO/Z'7C'/,MSKCRA/Z'380'/
 *** PMF 17/11/99: add variables needed for emulation of DESYLIB routine 'CORE'  
       CHARACTER cHWORK*200
       EQUIVALENCE (cHWORK,HWORK(1))

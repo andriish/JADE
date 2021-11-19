@@ -390,7 +390,7 @@ C             BACK-TRACKING AND 1ST STEP SAME AS IN STEP 3.
 C
       CALL MUFFLB
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C-----------------------------------------------------------------------
 C
@@ -404,7 +404,7 @@ C
       RDSTEP = RDJET2*COSEC + RDJETE/ADCZ
       DESTEP = DEJET2*COSEC + DEJETE/ADCZ
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C-----------------------------------------------------------------------
 C
@@ -423,7 +423,7 @@ C
       RDSTEP = RDEPLG/ADCZ
       DESTEP = DEEPLG/ADCZ
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C-----------------------------------------------------------------------
 C
@@ -435,7 +435,7 @@ C
       RDSTEP = RDEP/ADCZ
       DESTEP = DEEP/ADCZ
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C             THIS PARTICLE PENETRATED THE EC LEAD GLASS AND THE EC.
 C             FILL EXTRA.
@@ -548,7 +548,7 @@ C             BACK-TRACKING AND 1ST STEP SAME AS IN STEP 2.
 C
       CALL MUFFLB
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C-----------------------------------------------------------------------
 C
@@ -560,7 +560,7 @@ C
       RDSTEP = (RDJET2 + RDJET4 + RDJETO) * COSEC
       DESTEP = (DEJET2 + DEJET4 + DEJETO) * COSEC
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C-----------------------------------------------------------------------
 C
@@ -585,7 +585,7 @@ C        CHECK THAT THIS WON'T PUT THE TRACK INTO THE YOKE END PLATE.
       RDSTEP = RDCOIL * ( COSEC * FACOIL )
       DESTEP = DECOIL * ( COSEC * FACOIL )
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C-----------------------------------------------------------------------
 C
@@ -698,7 +698,7 @@ C              ------------------
                RDSTEP = (S * COSEC) * RDLGC
                DESTEP = (S * COSEC) * DELGC
 C
-               CALL MUFFLS(&5555)
+               CALL MUFFLS(*5555)
 C
 C              CHECK IF STILL HAVE TO GO THRO' SOME SF5 .
                IF(S.GT.0.999)GO TO 3338
@@ -712,7 +712,7 @@ C     ------------------
       RDSTEP = (S * COSEC) * RDLG
       DESTEP = (S * COSEC) * DELG
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C             FIND INTERSECTION WITH INTERNAL CHAMBERS AND YOKE.
 C
@@ -790,7 +790,7 @@ C
 C             GO TO 5555 IF TRACK STOPS (I.E. RUNS OUT OF ENERGY).
 C             NORMAL RETURN IF HIT FOUND AND PARTICLE NOT STOPPED.
 C
- 3360 CALL MUFFLY(HC,NHITS,NWHIT,HLUN,HTC,HAMB,NTPH,&5555)
+ 3360 CALL MUFFLY(HC,NHITS,NWHIT,HLUN,HTC,HAMB,NTPH,*5555)
 C
 C             BACK-TRACK  TO  LAST  NON-CHAMBER   REGION   EXIT   POINT
 C             (I.E. YOKE). (THIS  IS  NECESSARY  BECAUSE   UNDER   SOME
@@ -804,7 +804,7 @@ C
       RDSTEP = -RDOVER
       DESTEP = -DEOVER
 C
-      CALL MUFFLS(&5555)
+      CALL MUFFLS(*5555)
 C
 C             FILL EXTRA.
 C
@@ -904,7 +904,7 @@ C             TRACK THROUGH REGIONS.
 C             GO TO 5555 IF PARTICLE STOPS (I.E. RUNS OUT OF ENERGY).
 C             NORMAL RETURN IF HIT FOUND AND PARTICLE NOT STOPPED.
 C
-      CALL MUFFLY(HC,NHITS,NWHIT,HLUN,HTC,HAMB,NTPH,&5555)
+      CALL MUFFLY(HC,NHITS,NWHIT,HLUN,HTC,HAMB,NTPH,*5555)
 C
       GO TO 7777
 C
@@ -1200,7 +1200,7 @@ C
       DATA RCOILI/968./,RCOILO/1045./
 C             RCOILI/O ARE INNER/OUTER RADII OF COIL (MM).
 C
-      DATA PGMID/'MUFF'/
+      DATA PGMID/4HMUFF/
 C             PGMID IS PROGRAM IDENTIFIER.
 C
       DATA WMU/.10566/,WMUSQ/.011164/

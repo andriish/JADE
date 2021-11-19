@@ -27,7 +27,7 @@ C
         IF(NTIM.EQ.2) GO TO 300
 C
         DATA NUNITI/1/
-        CALL BREAD(NUNITI,&200,&200)
+        CALL BREAD(NUNITI,*200,*200)
           IPNPHD = IBLN(RHEAD)
           NPHD = IDATA(IPNPHD)
           IF(NPHD.LE.0) GO TO 20

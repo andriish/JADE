@@ -5,7 +5,7 @@ C     PRINTOUT OF RUN + EVENT # MASSAGE
 C     A. SATO
 C
       IMPLICIT INTEGER*2 (H)
-      LOGICAL * 1 MSG(1) ,CH1,CH2,CH3
+      character * 1 MSG(1) ,CH1,CH2,CH3
       DATA CH1/';'/,CH2/'$'/,CH3/'^'/
 C
 #include "cheadr.for"

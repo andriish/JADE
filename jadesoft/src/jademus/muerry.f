@@ -18,14 +18,14 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      LOGICAL*1 MESS(1)
-      LOGICAL*1 BAR/'^'/
+      character*1 MESS(1)
+      character*1 BAR/'^'/
 C
       INTEGER*2 NAME(3)
-      INTEGER*2 NANAC(3)/'MU','AN','AC'/,
-     *          NCOOR(3)/'MU','CO','OR'/,
-     *          NANAF(3)/'MU','AN','AF'/,
-     *          NCUTS(3)/'MU','CU','TS'/
+      INTEGER*2 NANAC(3)/2HMU,2HAN,2HAC/,
+     *          NCOOR(3)/2HMU,2HCO,2HOR/,
+     *          NANAF(3)/2HMU,2HAN,2HAF/,
+     *          NCUTS(3)/2HMU,2HCU,2HTS/
 C
       COMMON /CMUPRN/ MUPRIN,MUHPR,IANAC,ICOOR,IANAF,LANAC,LCOOR,LANAF,
      +                ITOTAL,LTOTAL,ICUTS,LCUTS
@@ -48,9 +48,12 @@ C                            NOT START WITH 'MU'.
 C
       IF( NAME(1) .NE. NANAC(1) ) GO TO 20
       IF( NAME(2) .EQ. NANAC(2)  .AND.  NAME(3) .EQ. NANAC(3) ) GO TO 5
-      IF( NAME(2) .EQ. NCOOR(2)  .AND.  NAME(3) .EQ. NCOOR(3) ) GO TO 1000020000
-      IF( NAME(2) .EQ. NANAF(2)  .AND.  NAME(3) .EQ. NANAF(3) ) GO TO 1500020400
-      IF( NAME(2) .EQ. NCUTS(2)  .AND.  NAME(3) .EQ. NCUTS(3) ) GO TO 1800020800
+      IF( NAME(2) .EQ. NCOOR(2)  .AND.  NAME(3) .EQ. NCOOR(3) ) GO TO 10
+CAV FIXME      00020000
+      IF( NAME(2) .EQ. NANAF(2)  .AND.  NAME(3) .EQ. NANAF(3) ) GO TO 15
+character      00020400
+      IF( NAME(2) .EQ. NCUTS(2)  .AND.  NAME(3) .EQ. NCUTS(3) ) GO TO 18
+character      00020800
       GO TO 20
 C
 C                            CALL FROM MUANAC :

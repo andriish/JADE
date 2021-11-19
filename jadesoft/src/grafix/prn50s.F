@@ -23,7 +23,8 @@ C
       DIMENSION HSX(13,16), HELP(2)
       EQUIVALENCE (IZWORD,HELP(1))
 C
-      DATA MASKMH  / Z001F /
+      DATA MASKMH  / Z'001F' /
+      character*2 HSX, HDUM, HSY
       DATA HSX/
      $'  ','  ','  ','  ','  ','  ','  ','  ','  ','  ','  ','  ','  ',
      $'  ','  ','  ','  ','  ','  ','  ','  ','  ','  ','  ','  ','  ',
@@ -70,7 +71,7 @@ C TRIGGERS
       CALL CORE(HWORK,77)
       WRITE(cHWORK,4) (HDATA(LH2+NTRI+K),K=1,4) ! PMF 17/11/99: JUSCRN changed to cHWORK
     4 FORMAT(' #T2 TRACKS ',I3,' R3 TRACKS CELLS 33-48 ',Z4,'  CELLS 17-
-     &32 ',Z4,'  CELLS 1-16 ',Z4)
+     *32 ',Z4,'  CELLS 1-16 ',Z4)
       CALL SYSSYM(XS,YS,SIZE,HWORK,77,0.)
 C COUNTERS
     5 NCOU = HDATA(LH2+5)
@@ -106,7 +107,7 @@ C LEAD GLASS
       WRITE(cHWORK,12) (HDATA(LH2+NL+K),K=1,4),AA1,AA2,AA3,AA4, ! PMF 17/11/99: JUSCRN changed to cHWORK
      &                 (HDATA(LH2+NL+KK),KK=9,10)
    12 FORMAT(' NR CLUSTERS TOTAL,BARREL,-EC,+EC : ',4I5,' ENERGIES: ',
-     &4F8.3,' NHCLI ',I6,' ERES ',I6)
+     *4F8.3,' NHCLI ',I6,' ERES ',I6)
       CALL SYSSYM(XS,YS,SIZE,HWORK,124,0.)
 C INNER DETECTOR ANALYSIS
    13 ND = HDATA(LH2+7)

@@ -134,7 +134,7 @@ C
 C                  CALCULATE ENERGY LOSS,MULTIPLE SCATTERING ETC.
 C                  IF THE TRACK STOPS, GO DIRECT TO CALL OF MULOCH
 C
-        CALL MUFFLS(&99)
+        CALL MUFFLS(*99)
 C
 C-----------------------------------------------------------------------
 C

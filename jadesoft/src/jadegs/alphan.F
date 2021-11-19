@@ -48,7 +48,7 @@ C                        . = 75
 C
 C-----------------------------------------------------------------------
       REAL*4 BLANK4/4H    /
-      LOGICAL*1 QZERO/Z00/,QONE/Z01/,QTHREE/Z03/
+      integer*1 QZERO/Z'00'/,QONE/Z'01'/,QTHREE/Z'03'/
       LOGICAL*1 QWORD1(80),QB1(80),QTHIS(2)
       EQUIVALENCE (QWORD1(1),REPLY(1)) , (HCHAR,QTHIS(1))
 C     ----------

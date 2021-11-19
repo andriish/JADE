@@ -42,32 +42,32 @@ C
 C
       PRINT11
  11   FORMAT(
-     # 1X,45('-')/
-     # ' DUMP OF JET CHAMBER CONSTANTS COMMON /CJDRCH/'/
-     # 1X,45('-'))
+     + 1X,45('-')/
+     + ' DUMP OF JET CHAMBER CONSTANTS COMMON /CJDRCH/'/
+     + 1X,45('-'))
 C
       PRINT12,(RDEC(I),I=1,4)
-     #       ,(PSIIN(I),I=1,3)
-     #       ,(RINCR(I),I=1,3)
-     #       ,(FIRSTW(I),I=1,3)
-     #       ,(FSENSW(I),I=1,3)
-     #       , RDEPTH,SWDEPL,YSUSPN,ZMAX,ZOFFS,ZRESOL,ZNORM,ZAL,ZSCAL
-     #       ,DRIDEV,DRISIN,DRICOS
+     +       ,(PSIIN(I),I=1,3)
+     +       ,(RINCR(I),I=1,3)
+     +       ,(FIRSTW(I),I=1,3)
+     +       ,(FSENSW(I),I=1,3)
+     +       , RDEPTH,SWDEPL,YSUSPN,ZMAX,ZOFFS,ZRESOL,ZNORM,ZAL,ZSCAL
+     +       ,DRIDEV,DRISIN,DRICOS
  12   FORMAT(' RDEC   .. CHAMBER WALL RADII .................. ',4E11.4/
-     #       ' PSIIN  .. ANGULAR INCREMENT OF FIRST WIRE ..... ',3E11.4/
-     #       ' RINCR  .. POTENTIAL WIRE SEPERATION ........... ',3E11.4/
-     #       ' FIRSTW .. RADII OF FIRST POTENTIAL WIRES ...... ',3E11.4/
-     #       ' FSENSW .. RADII OF FIRST SENSE WIRES .......... ',3E11.4/
-     #       ' RDEPTH .. DIFFERENCE OF TWO CHAMBER RADII ..... ', E11.4/
-     #       ' SWDEPL .. WIRE STAGGERING ..................... ', E11.4/
-     #       ' YSUSPN .. MAX. VERTICAL GRAVITY DISPLACEMENT .. ', E11.4/
-     #       ' ZMAX   .. SENSITIVE HALF LENGTH OF WIRES ...... ', E11.4/
-     #       ' ZOFFS  .. WIRE OFFSET ......................... ', E11.4/
-     #       ' ZRESOL .. RESOLUTION IN Z ..................... ', E11.4/
-     #       ' ZNORM  .. NORMALISATION IN Z .................. ', E11.4/
-     #       ' ZAL    .. WIRE LENGTH ......................... ', E11.4/
-     #       ' ZSCAL  ..                                       ', E11.4/
-     #       ' DRIDEV .. FOLLOWED BY SINE AND COSINE ......... ',3E11.4)
+     +       ' PSIIN  .. ANGULAR INCREMENT OF FIRST WIRE ..... ',3E11.4/
+     +       ' RINCR  .. POTENTIAL WIRE SEPERATION ........... ',3E11.4/
+     +       ' FIRSTW .. RADII OF FIRST POTENTIAL WIRES ...... ',3E11.4/
+     +       ' FSENSW .. RADII OF FIRST SENSE WIRES .......... ',3E11.4/
+     +       ' RDEPTH .. DIFFERENCE OF TWO CHAMBER RADII ..... ', E11.4/
+     +       ' SWDEPL .. WIRE STAGGERING ..................... ', E11.4/
+     +       ' YSUSPN .. MAX. VERTICAL GRAVITY DISPLACEMENT .. ', E11.4/
+     +       ' ZMAX   .. SENSITIVE HALF LENGTH OF WIRES ...... ', E11.4/
+     +       ' ZOFFS  .. WIRE OFFSET ......................... ', E11.4/
+     +       ' ZRESOL .. RESOLUTION IN Z ..................... ', E11.4/
+     +       ' ZNORM  .. NORMALISATION IN Z .................. ', E11.4/
+     +       ' ZAL    .. WIRE LENGTH ......................... ', E11.4/
+     +       ' ZSCAL  ..                                       ', E11.4/
+     +       ' DRIDEV .. FOLLOWED BY SINE AND COSINE ......... ',3E11.4)
 C
       PRINT13,((TIMDEL(J,I),J=1,2),I=1,3)
  13   FORMAT(' TIMDEL .. SIZE OF TIMING BINS (MMS) ........... ',6E11.4)

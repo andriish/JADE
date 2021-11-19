@@ -316,7 +316,7 @@ C
       DO  3203  I = 1,NDES
         CALL BSLT
         CALL BDLG
-        CALL BREAD(NDDINN,&3204,&3205)
+        CALL BREAD(NDDINN,*3204,*3205)
         IF( IDATA(IBLN('HEAD')) .LE. 0 ) GO TO 3206
 3207    ICREC = ICREC + 1
         GO TO 3203

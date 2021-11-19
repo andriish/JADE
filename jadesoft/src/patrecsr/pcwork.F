@@ -233,10 +233,10 @@ C
 C=====
       PRINT11,HPHL0,HPHL9,HLDHL
  11   FORMAT(
-     # 1X,46('-')/
-     # ' DUMP OF TREL HIT LABEL ARRAY FROM PATREC CWORK',
-     # ' .. HPHL0  =',I5,' HPHL9  =',I5,' HLDHL  =',I5/
-     # 1X,46('-'))
+     + 1X,46('-')/
+     + ' DUMP OF TREL HIT LABEL ARRAY FROM PATREC CWORK',
+     + ' .. HPHL0  =',I5,' HPHL9  =',I5,' HLDHL  =',I5/
+     + 1X,46('-'))
       I1 = HPHL0
       I2 = HPHL9
       PRINT12,(HWRK(I),I=I1,I2)
@@ -250,27 +250,27 @@ C
 C=====
       PRINT21
  21   FORMAT(
-     # 1X,40('-')/
-     # ' DUMP OF TRACK ELEMENTS FROM PATREC CWORK'/
-     # 1X,40('-'))
+     + 1X,40('-')/
+     + ' DUMP OF TRACK ELEMENTS FROM PATREC CWORK'/
+     + 1X,40('-'))
 C=====
       PRINT22,HPRO,HNTR,(HNTCEL(I),I=1,98)
  22   FORMAT(
-     #' HPRO =',I10,5X,'HNTR = TOTAL NO OF TRACK ELEMENTS =',I6/
-     #' HNTCEL =',31I4/9X,31I4/9X,31I4/9X,4I4)
+     +' HPRO =',I10,5X,'HNTR = TOTAL NO OF TRACK ELEMENTS =',I6/
+     +' HNTCEL =',31I4/9X,31I4/9X,31I4/9X,4I4)
 C=====
       PRINT23
  23   FORMAT(
-     #' TREL IPCL NRHT',
-     #'  NWR1    DS1    SL1 ',
-     #'  NWR2    DS2    SL2 ',
-     #'   LABEL   NTREL ICRO')
+     +' TREL IPCL NRHT',
+     +'  NWR1    DS1    SL1 ',
+     +'  NWR2    DS2    SL2 ',
+     +'   LABEL   NTREL ICRO')
       IMAX = HNTR
 C=====
       PRINT24,(I,IPCL(I),NRHT(I),NWR1(I),DS1(I),SL1(I),NWR2(I),
-     #DS2(I),SL2(I),LBL(I),NTREL(I),ICRO(I),I=1,IMAX)
+     +DS2(I),SL2(I),LBL(I),NTREL(I),ICRO(I),I=1,IMAX)
  24   FORMAT(1X,I3,1X, I4,1X, I4,1X, I5,1X, F7.1, F7.1, I6,1X,
-     # F7.1 , F7.1 , 3X,Z8, I5,1X, I3)
+     + F7.1 , F7.1 , 3X,Z8, I5,1X, I3)
 C=====
       PRINT29
  29   FORMAT(1X,20('-'),' END OF TRACK ELEMENT DUMP ',20('-'))
@@ -283,9 +283,9 @@ C
 C=====
       PRINT31
  31   FORMAT(
-     # 1X,42('-')/
-     # ' DUMP OF BACKTRACE RESULT FROM PATREC CWORK'/
-     # 1X,42('-'))
+     + 1X,42('-')/
+     + ' DUMP OF BACKTRACE RESULT FROM PATREC CWORK'/
+     + 1X,42('-'))
 C=====
       PRINT32,NTR
  32   FORMAT(' NTR = NUMBER OF TRACKS =',I4)
@@ -308,14 +308,14 @@ C=====
       IF (HLDHT.GT.0) NHIT = (HPHT9-HPHT0+1)/HLDHT
 C=====
       PRINT41,HPHT0,HPHT9,HLDHT,HPHL0,HPHL9,HLDHL
-     #       ,HPHT0A,HPHT9A,HLDHTA
-     #       ,HPHTLM,NHIT
+     +       ,HPHT0A,HPHT9A,HLDHTA
+     +       ,HPHTLM,NHIT
  41   FORMAT(
-     # 1X,30('-'), ' .. HPHT0  =',I5,' HPHT9  =',I5,' HLDHT  =',I3,
-     #             ' .. HPHL0  =',I5,' HPHL9  =',I5,' HLDHL  =',I5/
-     #  ' FXYZ HIT ARRAY IN PATREC CWORK',
-     #  ' .. HPHT0A =',I5,' HPHT9A =',I5,' HLDHTA =',I3/
-     # 1X,30('-'), ' .. HPHTLM =',I4,' TOTAL NUMBER OF HITS =',I4)
+     + 1X,30('-'), ' .. HPHT0  =',I5,' HPHT9  =',I5,' HLDHT  =',I3,
+     +             ' .. HPHL0  =',I5,' HPHL9  =',I5,' HLDHL  =',I5/
+     +  ' FXYZ HIT ARRAY IN PATREC CWORK',
+     +  ' .. HPHT0A =',I5,' HPHT9A =',I5,' HLDHTA =',I3/
+     + 1X,30('-'), ' .. HPHTLM =',I4,' TOTAL NUMBER OF HITS =',I4)
 C=====
       IF (HPHT0.LE.0) GOTO45
       IF (HLDHT.LE.0) GOTO45
@@ -324,13 +324,13 @@ C=====
 C=====
       PRINT42
  42   FORMAT(' LOCN'
-     #,   ' RING CELL LAYER  TREL'
-     #,   '  DATA  DRIFT   IAMPL  IAMPR'
-     #,   ' HPHL'
-     #,   '   BETA'
-     #,   '     X        Y        Z        R   '
-     #,   '  XY-CHI'
-     #,   '  XYF ZRF')
+     +,   ' RING CELL LAYER  TREL'
+     +,   '  DATA  DRIFT   IAMPL  IAMPR'
+     +,   ' HPHL'
+     +,   '   BETA'
+     +,   '     X        Y        Z        R   '
+     +,   '  XY-CHI'
+     +,   '  XYF ZRF')
 C=====
       I1 = HPHT0
       I2 = HPHT9
@@ -341,20 +341,20 @@ C=====
       IAR = HDATA(JJ+2)
       IDS = HDATA(JJ+3)
       PRINT44,I,
-     # IWRK(I+12),IWRK(I+9),IWRK(I),IWRK(I+8),
-     # IWRK(I+1),IDS,IAL,IAR,
-     # IWRK(I+2),WRK(I+11),WRK(I+3),WRK(I+4),
-     # WRK(I+5),WRK(I+6),WRK(I+13),IWRK(I+10),
-     # IWRK(I+7)
+     + IWRK(I+12),IWRK(I+9),IWRK(I),IWRK(I+8),
+     + IWRK(I+1),IDS,IAL,IAR,
+     + IWRK(I+2),WRK(I+11),WRK(I+3),WRK(I+4),
+     + WRK(I+5),WRK(I+6),WRK(I+13),IWRK(I+10),
+     + IWRK(I+7)
  43   CONTINUE
  44   FORMAT(I5
-     #,      I4 , I5 , I5 , I7
-     #,      I7,I7,I7,I7
-     #,      I6
-     #,      F7.3
-     #,      4(1X,F8.2)
-     #,      F8.3
-     #,      2I4)
+     +,      I4 , I5 , I5 , I7
+     +,      I7,I7,I7,I7
+     +,      I6
+     +,      F7.3
+     +,      4(1X,F8.2)
+     +,      F8.3
+     +,      2I4)
       GOTO48
 C=====
  45   PRINT46
@@ -373,52 +373,52 @@ C=====
       I = HPTR0
       PRINT51,IWRK(I),IWRK(I+1),IWRK(I+2) , HPTR0,HPTR9,HLDTR
  51   FORMAT(
-     # 1X,35('-')/
-     #  ' DUMP OF TRACK BANK FROM PATREC CWORK',
-     #  ' .. TRACK',I3,' PROGRAM =',I3,' DATE =',I9/
-     # 1X,35('-'),
-     # 2X,'HPTR0 =',I5,2X,'HPTR9 =',I5,2X,'HLDTR =',I4)
+     + 1X,35('-')/
+     +  ' DUMP OF TRACK BANK FROM PATREC CWORK',
+     +  ' .. TRACK',I3,' PROGRAM =',I3,' DATE =',I9/
+     + 1X,35('-'),
+     + 2X,'HPTR0 =',I5,2X,'HPTR9 =',I5,2X,'HLDTR =',I4)
 C=====
       PRINT52
 C      START POINT TYPE,X,Y,Z,DX,DY,DZ
-     #,IWRK(I+3),WRK(I+4),WRK(I+5),WRK(I+6),WRK(I+7),WRK(I+8),WRK(I+9)
+     +,IWRK(I+3),WRK(I+4),WRK(I+5),WRK(I+6),WRK(I+7),WRK(I+8),WRK(I+9)
 C      END   POINT TYPE,X,Y,Z,DX,DY,DZ
-     #,IWRK(I+10),WRK(I+11),WRK(I+12),WRK(I+13),WRK(I+14),WRK(I+15)
-     #           ,WRK(I+16)
+     +,IWRK(I+10),WRK(I+11),WRK(I+12),WRK(I+13),WRK(I+14),WRK(I+15)
+     +           ,WRK(I+16)
 C      FIT TYPE, FIT PARAMETERS, RMS AND NO. POINTS USED FOR X-Y PLANE
-     #,IWRK(I+17),WRK(I+18),WRK(I+19),WRK(I+20),WRK(I+21),WRK(I+22)
-     #,IWRK(I+23)
+     +,IWRK(I+17),WRK(I+18),WRK(I+19),WRK(I+20),WRK(I+21),WRK(I+22)
+     +,IWRK(I+23)
 C      TRACK CURVATURES FROM X-Y FIT
-     #,WRK(I+24),WRK(I+25),WRK(I+26),WRK(I+27)
+     +,WRK(I+24),WRK(I+25),WRK(I+26),WRK(I+27)
 C
  52   FORMAT(
-     #' FIRST POINT ON TRACK ... TYPE =',I3,
-     #' (X,Y,Z) = (',3E11.4,')',' (DX,DY,DZ) = (',3E11.4,')'/
+     +' FIRST POINT ON TRACK ... TYPE =',I3,
+     +' (X,Y,Z) = (',3E11.4,')',' (DX,DY,DZ) = (',3E11.4,')'/
 C    #
-     #' LAST  POINT ON TRACK ... TYPE =',I3,
-     #' (X,Y,Z) = (',3E11.4,')',' (DX,DY,DZ) = (',3E11.4,')'/
+     +' LAST  POINT ON TRACK ... TYPE =',I3,
+     +' (X,Y,Z) = (',3E11.4,')',' (DX,DY,DZ) = (',3E11.4,')'/
 C    #
-     #' XYFIT .. PROGRAM TYPE =',I3,' FITTED PARAMETERS = (',4E11.4,')',
-     #' RMS =',E11.4,' POINTS USED =',I4/
+     +' XYFIT .. PROGRAM TYPE =',I3,' FITTED PARAMETERS = (',4E11.4,')',
+     +' RMS =',E11.4,' POINTS USED =',I4/
 C    #
-     # 28X,'CURVATURE =(',E11.4,' +-',E11.4,')',
-     #'   CURVATURE AT START AND END POINTS = (',E11.4,',',E11.4,')')
+     + 28X,'CURVATURE =(',E11.4,' +-',E11.4,')',
+     +'   CURVATURE AT START AND END POINTS = (',E11.4,',',E11.4,')')
 C=====
       PRINT53,IWRK(I+28),WRK(I+29),WRK(I+30),WRK(I+31),IWRK(I+32)
  53   FORMAT(
-     #' ZRFIT .. PROGRAM TYPE =',I3,' FITTED PARAMETERS = (',2E12.4,')',
-     #' RMS =',E11.4,' POINTS USED =',I4)
+     +' ZRFIT .. PROGRAM TYPE =',I3,' FITTED PARAMETERS = (',2E12.4,')',
+     +' RMS =',E11.4,' POINTS USED =',I4)
 C=====
       PRINT54,IWRK(I+33),IWRK(I+34),IWRK(I+35),IWRK(I+36),IWRK(I+37),
-     #        IWRK(I+38)
+     +        IWRK(I+38)
  54   FORMAT(' CELLS CONTAINING HITS ON THE TRACK ARE',6I4)
 C=====
       PRINT55,IWRK(I+39),IWRK(I+40),IWRK(I+41),IWRK(I+42)
  55   FORMAT(' POINTERS TO THE CONNECTED :',
-     #'  1) LEAD GLASS CLUSTER =',I5,
-     #'  2) MUON HITS =',I5,
-     #'  3) TP TRACK BANK =',I5,
-     #'  4) TOF BANK =',I5)
+     +'  1) LEAD GLASS CLUSTER =',I5,
+     +'  2) MUON HITS =',I5,
+     +'  3) TP TRACK BANK =',I5,
+     +'  4) TOF BANK =',I5)
 C=====
       PRINT58,IWRK(I+47)
  58   FORMAT(' TRACK ERROR CODE BIT STRUCTURE =',Z4)

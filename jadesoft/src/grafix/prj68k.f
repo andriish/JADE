@@ -35,10 +35,10 @@ C                                           PRINT J68K HEAD
         WRITE(CLINE,9101)
  9101   FORMAT(' J68K HEAD  STATUS(HEX) LENGTH       FEP',
      *         '   GENERAL SCAN_DATA  RAW-DATA')
-        CALL J68KLI( XS, YS, DEL, SIZE, LINE, &8000 )
+        CALL J68KLI( XS, YS, DEL, SIZE, LINE, *8000 )
         WRITE(CLINE,9102) (HW(NPJ68K*2+I),I=1,HW(NPJ68K*2+4))
  9102   FORMAT((2I5,8X,Z4,1I8,4I10))
-        CALL J68KLI( XS, YS, DEL, SIZE, LINE, &8000 )
+        CALL J68KLI( XS, YS, DEL, SIZE, LINE, *8000 )
 C
 C                                           FEP SECTION
         NPFEP = HW(NPJ68K*2+5)
@@ -49,12 +49,12 @@ C                                           FEP SECTION
           WRITE(CLINE,9111) L0, L1
  9111     FORMAT('  FEP-SECTION:  PROCESSOR   STATUS(HEX)',
      *                         'TOTAL LENGTH=',I6,' WORDS/PROC=',I3)
-          CALL J68KLI( XS, YS, DEL, SIZE, LINE, &8000 )
+          CALL J68KLI( XS, YS, DEL, SIZE, LINE, *8000 )
           J = 2
   100     IF( J .LT. L0 ) THEN
             WRITE(CLINE,9112) (HW(NPFEP+J+I),I=1,L1)
  9112       FORMAT(20X,I4,10X,Z4)
-            CALL J68KLI( XS, YS, DEL, SIZE, LINE, &8000 )
+            CALL J68KLI( XS, YS, DEL, SIZE, LINE, *8000 )
             J = J + L1
             GO TO 100
           ENDIF
@@ -67,7 +67,7 @@ C                                           SCAN DATA SECTION
           NCRATE = HW(NPSCAN+1)
           WRITE(CLINE,9131) NCRATE
  9131     FORMAT('  SCAN-SECTION WITH DATA FOR ',I6,' DL300 CRATES')
-          CALL J68KLI( XS, YS, DEL, SIZE, LINE, &8000 )
+          CALL J68KLI( XS, YS, DEL, SIZE, LINE, *8000 )
           NPSCAN = NPSCAN + 1
 C
           DO 390 ICRATE=1,NCRATE
@@ -78,7 +78,7 @@ C
      *                      PRC2CL(IDL300)+2, L2
  9132       FORMAT('   LENGTH OF SCAN_DATA FOR DL300 CRATE',I3,
      *             ' (CELL ',I2,'-',I2,') IS ',I6,' HALF WORDS')
-            CALL J68KLI( XS, YS, DEL, SIZE, LINE, &8000 )
+            CALL J68KLI( XS, YS, DEL, SIZE, LINE, *8000 )
             IF( L2 .GT. 0 ) THEN
               NPSCAN = NPSCAN + 2
               LPT0 = 2
@@ -93,7 +93,7 @@ C
                   IAFAC = HW(NPSCAN+5)
                   IF( IWIRE .EQ. OLDWIR ) GO TO 370
                     WRITE(CLINE,9133)
-                    CALL J68KLI( XS, YS, DEL, SIZE, LINE, &8000 )
+                    CALL J68KLI( XS, YS, DEL, SIZE, LINE, *8000 )
  9133               FORMAT('    WIRE->ABS   T0 PEDESTALS AFAC',
      *                     '  PULSETRAIN (  L/ R )')
   370             OLDWIR = IWIRE
@@ -110,7 +110,7 @@ C
      *                                 I=1,MIN0(18,L3))
 *** PMF (end)
  9134             FORMAT(3X,6I5,18(I3,I3,'|'))
-                  CALL J68KLI( XS, YS, DEL, SIZE, LINE, &8000 )
+                  CALL J68KLI( XS, YS, DEL, SIZE, LINE, *8000 )
                   DO 375 K=18, L3-1, 18
 *** PMF 10/06/99
 ***                 WRITE(CLINE,9135)
@@ -121,7 +121,7 @@ C
      *                                   I=1,MIN0(L3-K,18))
 *** PMF (end)
  9135               FORMAT((33X,18(I3,I3,'|')))
-                    CALL J68KLI( XS, YS, DEL, SIZE, LINE, &8000 )
+                    CALL J68KLI( XS, YS, DEL, SIZE, LINE, *8000 )
   375             CONTINUE
                 ENDIF
                 NPSCAN = NPSCAN + L3

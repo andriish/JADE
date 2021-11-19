@@ -105,7 +105,7 @@ C                  AND THE SMEARED ONES.
 C
       IF(IPH .LE. 0 ) RETURN
       LENGTH = ( JHITS + 2 ) / 2
-      CALL BCRE( IND, 'HTSL', 8, LENGTH, &1500, IER )
+      CALL BCRE( IND, 'HTSL', 8, LENGTH, *1500, IER )
       CALL BSAW( 1, 'HTSL' )
       HDATA(IND*2 + 1) = JHITS
       CALL MVCL( HDATA, 4*IND + 2, H4VJH, 0, JHITS * 2 )

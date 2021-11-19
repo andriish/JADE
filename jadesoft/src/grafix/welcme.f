@@ -29,7 +29,7 @@ C
 C
       EQUIVALENCE  ( HNAM(1), HNAME(1) )
 C
-      DATA  HBLANK /'  '/
+      DATA  HBLANK /2H  /
 C
 C------------------  C O D E  -----------------------------------------
 C

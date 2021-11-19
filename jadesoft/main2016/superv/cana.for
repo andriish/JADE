@@ -1,6 +1,0 @@
-C This file is included by ana.F
-C PAW
-      INTEGER NWPAW,ICYCLE,HMEMOR
-      PARAMETER (NWPAW=5000000)
-      COMMON /PAWC/ HMEMOR(NWPAW)
-C

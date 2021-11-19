@@ -346,10 +346,10 @@ C
 *******************************************************************
       CHARACTER CD*(*)
       INTEGER IND
-      CHARACTER CDLIST*20(200)
+      CHARACTER*20 CDLIST(200)
       INTEGER MAX,I,ICODE
       LOGICAL HEXIST
-      CHARACTER CDLIS2*1(4000)
+      CHARACTER*1 CDLIS2(4000)
       EQUIVALENCE (CDLIS2,CDLIST(1))
       DATA CDLIS2 /4000*' '/, ICODE/1/
       SAVE CDLIST,ICODE

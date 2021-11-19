@@ -19,7 +19,7 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
-      LOGICAL*1 TEXT(1), ENDT, TEXT1(35) , BLANK
+      character*1 TEXT(1), ENDT, TEXT1(35) , BLANK
 C
       LOGICAL VALID , VTEST
 C

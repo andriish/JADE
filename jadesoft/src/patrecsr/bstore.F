@@ -90,7 +90,8 @@
 #include "cworkmx.for"
 #include "cjdrch.for"
       DIMENSION HTEMP(9)
-      DATA MSKCR1 /Z100/,MSKFIT/Z20000/,MSKAIT/ZFFFDFFFF/
+      INTEGER*8 MSKAIT
+      DATA MSKCR1 /Z'100'/,MSKFIT/Z'20000'/,MSKAIT/Z'FFFDFFFF'/
       MAMB=0
       IF(NRHT(KK).GE.IBKK(19).AND.NRHT(KX).GE.IBKK(19)
      & .AND.IBKK(20).NE.0) MAMB=1
@@ -259,7 +260,8 @@
       EQUIVALENCE (IBCK(1),LSTCL(1)),(IBCK(4),LFTCL(1))
       EQUIVALENCE (IBCK(7),NCELL(1)),(DBCK(1),TANDEL(1))
       DIMENSION HTEMP(9)
-      DATA MSKCR1 /Z100/,MSKFIT/Z20000/,MSKAIT/ZFFFDFFFF/
+      INTEGER*8 MSKAIT
+      DATA MSKCR1 /Z'100'/,MSKFIT/Z'20000'/,MSKAIT/Z'FFFDFFFF'/
       IIWW=IW+1
       IF(IIWW.GT.16) IIWW=16
       IF(IIWW.LT.1) IIWW=1
@@ -469,7 +471,7 @@
 #include "cworkmx.for"
 #include "cworkpr.for"
 #include "cpatlm.for"
-      DATA MSKLFT,MSKRT/Z400,Z800/
+      DATA MSKLFT,MSKRT/Z'400',Z'800'/
       LR2=0
       IPST=0
       I1=LAND(LBL(IKX),MSKLFT)

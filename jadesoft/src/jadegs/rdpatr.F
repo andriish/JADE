@@ -34,7 +34,7 @@ C
 C
 C------------------  C O D E  ------------------------------------------
 C
-      CALL BLOC( IPJ, 'PATR', 12, &8000 )
+      CALL BLOC( IPJ, 'PATR', 12, *8000 )
       NTR = IDATA(IPJ+2)
       IF( NTR .LE. 0 ) RETURN
 C                                           FIX UP FOR LONG PATR BANKS

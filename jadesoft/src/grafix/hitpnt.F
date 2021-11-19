@@ -20,8 +20,8 @@ C
 C
       DIMENSION HBUF(4)
 C
-      DATA HBLANK   /'  '/
-      DATA HMINUS   /'- '/
+      DATA HBLANK   /2H  /
+      DATA HMINUS   /2H- /
 C
 C-----------------  C O D E  -------------------------------------------
 C

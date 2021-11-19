@@ -219,7 +219,7 @@ C----------------------------------------------------------
       IF( IRLCOU .EQ. 0 ) LOGUNI = IWUNIT
       IF( IWUNIT.NE.LOGUNI ) GO TO 8101
         XMBYTE = 0.
-        CALL BLOC( NPBUF, '+BUF', IWUNIT, &8101, IER )
+        CALL BLOC( NPBUF, '+BUF', IWUNIT, *8101, IER )
           XMBYTE = 4.E-6*(IW(NPBUF+7) - IRLCOU )
           IRLCOU = IW(NPBUF+7)
  8101 CONTINUE

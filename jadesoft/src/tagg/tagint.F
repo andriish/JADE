@@ -93,7 +93,7 @@ C
 C   CALL TAGMRK TO CHOOSE 'MARK'
 C
 C
-      CALL TAGMRK(&100)
+      CALL TAGMRK(*100)
 C
 C
 C---                                     CREATE NEIGHBOUR LIST IF

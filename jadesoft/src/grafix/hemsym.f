@@ -60,10 +60,10 @@ C
      -            1124,-20480,
      -            -23552,
      -            1615,22366,23884,19283,4689,18762,21168/
-      DATA HLETS/'0','1','2','3','4','5','6','7','8','9',
-     -           'A','B','C','D','E','F','G','H','I','J',
-     -           'K','L','M','N','O','P','Q','R','S','T',
-     -           'U','V','W','X','Y','Z','+','-',' ','?'/
+      DATA HLETS/1H0,1H1,1H2,1H3,1H4,1H5,1H6,1H7,1H8,1H9,
+     -           1HA,1HB,1HC,1HD,1HE,1HF,1HG,1HH,1HI,1HJ,
+     -           1HK,1HL,1HM,1HN,1HO,1HP,1HQ,1HR,1HS,1HT,
+     -           1HU,1HV,1HW,1HX,1HY,1HZ,1H+,1H-,1H ,1H?/
       DATA HPTRS/1,6,9,14,19,22,27,34,36,45,
      -           52,55,62,67,71,75,78,84,88,92,
      -           95,99,101,104,107,112,116,122,127,134,
@@ -71,8 +71,40 @@ C
 C
 C     **** SET UP SCALES ETC ****
 C
+CAV
+      character*8 MY
+      character*1 AMYSTR(16)
+      character*8 MYL
+      REAL  ta
+      integer le
+C
+      AMYSTR='                '
+      
+      le=0
+      DO 500 I=1,KCNT
+      HJ=HBUF(I)
+      DO 100 K=1,40
+      IF(HLETS(K).EQ.HBUF(I)) then 
+      le=le+1
+      call UHTOC(HLETS(K),1,AMYSTR(le),1)
+      end if
+ 100  continue
+ 500  continue
+CAV
+      ta=tan(THETA)
+      call  igset('TANG',THETA)
+CAV#ifdef JEXTERNISCERNLIB      
+      call ITX(XPOS,YPOS,AMYSTR)
+CAV#endif
+CAV#ifdef JEXTERNISPICO      
+C      call ITXN(XPOS,YPOS,AMYSTR(1:le),le)
+CAV#endif
+      
+      return
+CAV      
       KLM=0
       SCAL=AGT/7.0
+      SCAL=AGT/2.0 !AV
       IXB=0
       C=COS(THETA)
       S=SIN(THETA)
@@ -86,6 +118,7 @@ C
    10 CONTINUE
       K=40
    12 IFLAG=0
+        call UHTOC(HLETS(K),1,MY,1)
       IP=HPTRS(K)
 C
 C     **** GET COORDINATES ****

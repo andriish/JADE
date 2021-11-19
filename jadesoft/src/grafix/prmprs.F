@@ -10,6 +10,7 @@ C
 C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
+      CHARACTER*2 HSY, HDUM
       LOGICAL TBIT
 C
 #include "cdata.for"

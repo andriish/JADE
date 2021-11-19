@@ -140,22 +140,22 @@ C        DECLARATION OF 'MEMORY' VARIABLES
 C-------------------------------------------
 C
           REAL*4 PIE/3.14159/,TWOPIE/6.28318/
-          INTEGER*4 BIT26/Z00000020/,BIT31N/ZFFFFFFFE/
-          INTEGER*4 MSKLBL/Z000000FE/
-          INTEGER*2 LAYBIT(16)/
-     #    Z0001 , Z0002 , Z0004 , Z0008 ,
-     #    Z0010 , Z0020 , Z0040 , Z0080 ,
-     #    Z0100 , Z0200 , Z0400 , Z0800 ,
-     #    Z1000 , Z2000 , Z4000 , Z8000 /
-          INTEGER*2 LAYMSK(16,2) /
-     #    ZFFFE , ZFFFC , ZFFF8 , ZFFF0 ,
-     #    ZFFE0 , ZFFC0 , ZFF80 , ZFF00 ,
-     #    ZFE00 , ZFC00 , ZF800 , ZF000 ,
-     #    ZE000 , ZC000 , Z8000 , Z0000 ,
-     #    Z0000 , Z0001 , Z0003 , Z0007 ,
-     #    Z000F , Z001F , Z003F , Z007F ,
-     #    Z00FF , Z01FF , Z03FF , Z07FF ,
-     #    Z0FFF , Z1FFF , Z3FFF , Z7FFF /
+          INTEGER*8 BIT26/Z'00000020'/,BIT31N/Z'FFFFFFFE'/
+          INTEGER*8 MSKLBL/Z'000000FE'/
+          INTEGER*8 LAYBIT(16)/
+     +    Z'0001' , Z'0002' , Z'0004' , Z'0008' ,
+     +    Z'0010' , Z'0020' , Z'0040' , Z'0080' ,
+     +    Z'0100' , Z'0200' , Z'0400' , Z'0800' ,
+     +    Z'1000' , Z'2000' , Z'4000' , Z'8000' /
+          INTEGER*8 LAYMSK(16,2) /
+     +    Z'FFFE' , Z'FFFC' , Z'FFF8' , Z'FFF0' ,
+     +    Z'FFE0' , Z'FFC0' , Z'FF80' , Z'FF00' ,
+     +    Z'FE00' , Z'FC00' , Z'F800' , Z'F000' ,
+     +    Z'E000' , Z'C000' , Z'8000' , Z'0000' ,
+     +    Z'0000' , Z'0001' , Z'0003' , Z'0007' ,
+     +    Z'000F' , Z'001F' , Z'003F' , Z'007F' ,
+     +    Z'00FF' , Z'01FF' , Z'03FF' , Z'07FF' ,
+     +    Z'0FFF' , Z'1FFF' , Z'3FFF' , Z'7FFF' /
           LOGICAL*1 PRINT
           NTRAK = HPWRK(30)
           NREFIT=0
@@ -271,7 +271,7 @@ C
 C#######################################################################
       IF(PRINT) PRINT991,NPUSED,CODE0,CODE2,RSTR,REND
  991  FORMAT(' PATROL CUTS..NPUSED =',I4,' CODE0/CODE2 =',2F4.1/
-     #       '           RSTR/REND =',2E11.4)
+     +       '           RSTR/REND =',2E11.4)
 C#######################################################################
 C
 C==============================================
@@ -369,7 +369,7 @@ C#######################################################################
           IS2 = ISHFTR(NH9-NH0,2) + 1
       IF (PRINT) PRINT2011,INCELL,WIRMSK(INCELL),IS1,IS2
  2011 FORMAT(' SEARCH OLD CELL',I3,' MASK = Z',Z4,' WIRES GOT =',I3,
-     #' HITS AVAILABLE =',I4)
+     +' HITS AVAILABLE =',I4)
 C#######################################################################
           IF(IS1.EQ.16)GOTO2100
 C         NH0=FIRST HIT, NH9 = LAST HIT
@@ -434,7 +434,7 @@ C######################################################################
       IF(INCELL.LT.MINCL(INRING)) INCELL= MAXCL(INRING)
       IF (PRINT) PRINT2111,IEND,INCELL,LAYER,NLMIDO,NWLIM
  2111 FORMAT('        END',I2,' = CELL',I3,' LAYER',I3,' NLMIDO =',I5,
-     #' NWLIM =',I3)
+     +' NWLIM =',I3)
 C######################################################################
           IF(NWLIM.LT.1.OR.NWLIM.GT.16)GOTO2195
 C
@@ -777,9 +777,9 @@ C         MASK OUT UNWANTED HITS
           IF(IPHT.LT.HPHT0)GOTO4080
 C######################################################################
       IF (PRINT) PRINT4071,IPHT,IWRK(IPHT+9),IWRK(IPHT),IWRK(IPHT+8)
-     # ,IWRK(IPHT+10)
+     + ,IWRK(IPHT+10)
  4071 FORMAT(' DELETE HIT..IPHT',I5,' CELL',I3,' LAYER',I3,' LRTREL',I5
-     #,' IERXYF',I3)
+     +,' IERXYF',I3)
 C######################################################################
           IF(IWRK(IPHT+10).NE.0)GOTO4070
           IF(WRK(IPHT+6).GT.REND)LAYEXT=LAYEXT-1
@@ -798,7 +798,7 @@ C######################################################################
           IWRK(IPHT+10)=2
 C######################################################################
       IF (PRINT) PRINT4071,IPHT,IWRK(IPHT+9),IWRK(IPHT),IWRK(IPHT+8)
-     # ,IWRK(IPHT+10)
+     + ,IWRK(IPHT+10)
 C######################################################################
           GOTO4091
  4100     HLDHT=-HLDHT
@@ -1161,7 +1161,7 @@ C######################################################################
       LL = ISIGN(LAYERJ,LRTREL)
       IF (PRINT) PRINT8701,INCELL,LL,BETA,RJETHT,CHIXYF,IERXYF,IPHST
  8701 FORMAT(' CELL',I3,' LAYER',I3,' BETA',F5.2,' R=',F6.1,
-     #' RES=',F7.2,I3,' ---ACCEPT---',I5)
+     +' RES=',F7.2,I3,' ---ACCEPT---',I5)
 C######################################################################
           IF(IERXYF.NE.0)GOTO8750
           IF(RJETHT.GT.REND.OR.RJETHT.LT.RSTR)GOTO8710
@@ -1183,7 +1183,7 @@ C######################################################################
       LL = ISIGN(LAYERJ,LRTREL)
       IF (PRINT) PRINT8751,INCELL,LL,BETA,RJETHT,CHIXYF,IERXYF
  8751 FORMAT(' CELL',I3,' LAYER',I3,' BETA',F5.2,' R=',F6.1,
-     #' RES=',F7.2,I3,' ---REJECT---')
+     +' RES=',F7.2,I3,' ---REJECT---')
  8755  CONTINUE
 C######################################################################
 *** PMF 15/10/99: new GOTO label introduced behind the 'END DO'-CONTINUE statement at label 2020

@@ -13,8 +13,8 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
-      REAL*8    DCHARS, DVIEW
-      LOGICAL*1 CVIEW(8), CBLANK, CHARS(80)
+      character*8    DCHARS, DVIEW
+      character*1 CVIEW(8), CBLANK, CHARS(80)
 C
 #include "cgraph.for"
 C

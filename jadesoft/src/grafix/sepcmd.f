@@ -15,7 +15,7 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
-      LOGICAL*1  CHARS(80), CSEMIC
+      character*1  CHARS(80), CSEMIC
 C
       DIMENSION  ISTAFL(80), IENDFL(80)
 C

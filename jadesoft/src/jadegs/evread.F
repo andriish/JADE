@@ -83,23 +83,27 @@ C
       IHEAD = IBLN('HEAD')
       IMTCO = IBLN('MTCO')
       IMUCO = IBLN('MUCO')
+            
 C                                            CADMIN FLAG
+CAV  THIS LINE IS NNEDED FOR THE REAL DATA BUR IS NOT IMPLEMENTED?    LBREAD(3) = .TRUE. 
+
       FLG100 = .FALSE.
       IF( IFLG .EQ. 100 ) FLG100 = .TRUE.
       IF( FLG100 ) GO TO 1
 C
 C                            MAIN READ STATEMENT.
 C
- 1000 CALL BSLT
+ 1000 CALL BSLT      
       CALL BDLG
       NRECS = NRECS + 1
-      CALL BREAD(NUNIT,&60,&70)
+      CALL BREAD(NUNIT,*60,*70)
       CALL USER(20)              ! PMF 07/07/99 added for additional checks
                                 !     14/06/00 set MC smearing veto in user routine
 C
 C                            DO WE HAVE A 'HEAD' BANK I.E. AN EVENT ?
 C                            IF NOT THEN SKIP NEXT SECTION
 C
+
    1  IF( IDATA(IHEAD) .LE. 0 ) GO TO 10
         IHD  = IDATA( IHEAD )
         IRUN = HDATA( IHD*2 + 10 )
@@ -189,7 +193,7 @@ C                            DO WE HAVE AN 'MTCO' BANK RECORD? IF SO
 C                            CHECK THAT THE LAST RECORD WAS NOT 'MTCO'
 C                            OR 'MUCO', THEN SET FLAGS AND PROCESS BANK.
 C
-  10  IF( IDATA(IMTCO) .LE. 0 ) GO TO 20
+  10    IF( IDATA(IMTCO) .LE. 0 ) GO TO 20
         IF( FLG100 .OR. LBREAD(3) .OR. NRECS .EQ. 1 ) GO TO 11
 C
           IF( LBREAD(1) .AND. .NOT. LBREAD(2) ) WRITE(JUSCRN,12) NRECS
@@ -214,6 +218,7 @@ C
   11    LBREAD(1) = .TRUE.
         LBREAD(2) = .FALSE.
         LBREAD(3) = .FALSE.
+
 C
 C                            PROCESS 'MTCO' BANK.
 C

@@ -6,7 +6,7 @@ C   14/10/82            MEMBER NAME  TESTWR   (S)           FORTRAN77
       DO 50 K=1,500
 C     CREATE HEAD
       DO 10 J=1,3
-      CALL BCRE(IND,'HEAD',J,20,&100,IER)
+      CALL BCRE(IND,'HEAD',J,20,*100,IER)
       DO 5 I=1,20
     5 IW(IND+I)=I
    10 CONTINUE
@@ -15,7 +15,7 @@ C     CREATE DATA
       DO 20 J=1,NJ
       NW=10+J
       IF(J.EQ.9) NW=2000
-      CALL BCRE(IND,'DATA',J,NW,&100,IER)
+      CALL BCRE(IND,'DATA',J,NW,*100,IER)
       DO 15 I=1,NW
    15 IW(IND+I)=I*100
    20 CONTINUE

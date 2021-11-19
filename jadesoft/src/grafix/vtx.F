@@ -235,20 +235,20 @@ C
       GOTO 100
 C
 C
-         ENTRY VTXS(J,SJ,XT,YT,ZT,DXT2,DYT2,DZT2,PHIT,DPHIT)
-C****    CALCULATE POINT XT,YT,ZT ON HELIX J FOR A GIVEN
-C****    PROJECTED ARC LENGTH SJ
-      RR = DBLE(T(J+2))
-      PHI = DBLE(SJ) / RR + DBLE(T(J+3))
-      PHIT = SNGL(PHI)
-      SPHI = DSIN(PHI)
-      CPHI = DCOS(PHI)
-      XT = SNGL(DBLE(T(J+5)) + RR*(SPHI-DBLE(T(J+21))))
-      YT = SNGL(DBLE(T(J+6)) - RR*(CPHI-DBLE(T(J+22))))
-      ZT = T(J+7) + SJ*T(J+23)
-      SSPACE = SJ
-C
-C *** CALCULATION OF RPHI-ERRORS
+c         ENTRY VTXS(J,SJ,XT,YT,ZT,DXT2,DYT2,DZT2,PHIT,DPHIT)
+cC****    CALCULATE POINT XT,YT,ZT ON HELIX J FOR A GIVEN
+cC****    PROJECTED ARC LENGTH SJ
+c      RR = DBLE(T(J+2))
+c      PHI = DBLE(SJ) / RR + DBLE(T(J+3))
+c      PHIT = SNGL(PHI)
+c      SPHI = DSIN(PHI)
+c      CPHI = DCOS(PHI)
+c      XT = SNGL(DBLE(T(J+5)) + RR*(SPHI-DBLE(T(J+21))))
+c      YT = SNGL(DBLE(T(J+6)) - RR*(CPHI-DBLE(T(J+22))))
+c      ZT = T(J+7) + SJ*T(J+23)
+c      SSPACE = SJ
+cC
+cC *** CALCULATION OF RPHI-ERRORS
 C
   100 CONTINUE
 C
@@ -730,7 +730,7 @@ C
 C                                                                       
       DIMENSION ICODE(7)                                                
 C                                                                       
-      DATA IBYTE / ZFF /                                                
+      DATA IBYTE / Z'FF' /                                                
 C                                                                       
       ICODE(1) = LAND( ISHFTR(I1,16), IBYTE ) ! PMF 09/11/99 SHFTR->ISHFTR 
       ICODE(2) = LAND( ISHFTR(I1, 8), IBYTE )                            

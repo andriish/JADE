@@ -18,8 +18,8 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
-      LOGICAL*1  CHARS, CQUEST
-      LOGICAL*1  CDEF
+      CHARACTER*1  CHARS, CQUEST
+      CHARACTER*1  CDEF
 C
       COMMON / CGRMAC / MACNR, MACSTA, MACDEP, MACPNT(2,10), CDEF(80,31)
 C

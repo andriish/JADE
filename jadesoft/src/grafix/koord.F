@@ -38,14 +38,14 @@ C
       EQUIVALENCE ( HDATSV(1), IDATSV(1) )
 C
       DATA KANAL / 48, 49, 50, 51, 52, 53, 54, 55, 56, 57 /
-      DATA HTX   / 'DS', 'N ' /
-      DATA HCELL / 'Ce', 'll' /
-      DATA HBPCH / 'BP', 'CH' /
-      DATA HVCVW / 'VC', 'VW' /
-      DATA HDIFF / 'di','ff','er','en','ci','at','ed',' p','ul',
-     &             'se','s ' /
-      DATA HZETM / ' -',' Z' /
-      DATA HZETP / ' +',' Z' /
+      DATA HTX   / 2HDS, 2HN  /
+      DATA HCELL / 2HCe, 2Hll /
+      DATA HBPCH / 2HBP, 2HCH /
+      DATA HVCVW / 2HVC, 2HVW /
+      DATA HDIFF / 2Hdi,2Hff,2Her,2Hen,2Hci,2Hat,2Hed,2H p,2Hul,
+     &             2Hse,2Hs  /
+      DATA HZETM / 2H -,2H Z /
+      DATA HZETP / 2H +,2H Z /
 C
 C-----------------  C O D E  -------------------------------------------
 C
@@ -233,38 +233,38 @@ C
 C
       RETURN
       END
-C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-C
-C-----------------------------------------------------------------------
-      SUBROUTINE INTADE( IN, IA, N )
-C-----------------------------------------------------------------------
-C
-C    AUTHOR:   R. RAMCKE     30/10/84 :  CONVERTS INTEGER INTO ADE CODE
-C
-C-----------------------------------------------------------------------
-C
-      DIMENSION IA(N)
-C
-C-----------------  C O D E  -------------------------------------------
-C
-      IZ = 10**(N-1)
-      K  = IN
-      DO 10 J = 1, N
-         IA(J) = K/IZ + 48
-         K     = K - (K/IZ)*IZ
-         IZ    = IZ/10
-   10 CONTINUE
-C
-      IF( N .EQ. 1) GO TO 30
-C                           MERGE ZEROES AT BEGIN
-      NEND = N - 1
-      DO 20 J = 1, NEND
-         IF( IA(J) .GT. 48 ) GO TO 30
-             IA(J) = 96
-   20 CONTINUE
-   30 CONTINUE
-      RETURN
-      END
+cC+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+cC
+cC-----------------------------------------------------------------------
+c      SUBROUTINE INTADE( IN, IA, N )
+cC-----------------------------------------------------------------------
+cC
+cC    AUTHOR:   R. RAMCKE     30/10/84 :  CONVERTS INTEGER INTO ADE CODE
+cC
+cC-----------------------------------------------------------------------
+cC
+c      DIMENSION IA(N)
+cC
+cC-----------------  C O D E  -------------------------------------------
+cC
+c      IZ = 10**(N-1)
+c      K  = IN
+c      DO 10 J = 1, N
+c         IA(J) = K/IZ + 48
+c         K     = K - (K/IZ)*IZ
+c         IZ    = IZ/10
+c   10 CONTINUE
+cC
+c      IF( N .EQ. 1) GO TO 30
+cC                           MERGE ZEROES AT BEGIN
+c      NEND = N - 1
+c      DO 20 J = 1, NEND
+c         IF( IA(J) .GT. 48 ) GO TO 30
+c             IA(J) = 96
+c   20 CONTINUE
+c   30 CONTINUE
+c      RETURN
+c      END
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 C
 C-----------------------------------------------------------------------

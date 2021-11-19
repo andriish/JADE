@@ -24,8 +24,8 @@ C
 C
 C------------------  C O D E  ------------------------------------------
 C
-      IF ( LFLAG(5) )       CALL TRKGMV(PV,R0,RR,P1,P2,&34,&1000)
-      IF ( .NOT. LFLAG(5) ) CALL TRKGAM(PV,R0,RR,P1,P2,&34,&1000)
+      IF ( LFLAG(5) )       CALL TRKGMV(PV,R0,RR,P1,P2,*34,*1000)
+      IF ( .NOT. LFLAG(5) ) CALL TRKGAM(PV,R0,RR,P1,P2,*34,*1000)
 C
 C                                           PHOTON CONVERTED, STORE ELEC
       TRCOFS = TRCOFS + SQRT(RR(1)**2 + RR(2)**2 + RR(3)**2)

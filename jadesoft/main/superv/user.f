@@ -307,7 +307,7 @@ C... Book control histograms
 C... Print out some parameters:
       WRITE(*,'(/,A,/,32(''-''))') 'USER: reconstruction parameters:'
       WRITE(*,'(A40,A)') 'Input BOS file is: '
-     >     ,CMCBOSF(1:LENOCC(CMCBOSF))
+     +     ,CMCBOSF(1:LENOCC(CMCBOSF))
       WRITE(*,'(A40,I8)') 'First event: ',IEVTF
       WRITE(*,'(A40,I8)') 'Last event: ',IEVTL
       WRITE(*,'(A40,$)') 'Perform ZSRFTV fit: ' 
@@ -327,7 +327,7 @@ C... Print out some parameters:
          IF( LEX(I) ) WRITE(*,'(T42,A)') CCALF(I)(1:LENOCC(CCALF(I)))
       ENDDO
       WRITE(*,'(A40,A,20I2)') 'Calibration flags: '
-     >     ,'/CMCCAL/ LBMC(1..17) =',(LBMC(I),I=1,17)
+     +     ,'/CMCCAL/ LBMC(1..17) =',(LBMC(I),I=1,17)
 C
       WRITE(*,FMT='(/,120(''=''))')
 C
@@ -365,7 +365,7 @@ C Save histograms
 C... Some info
       WRITE(*,'(/,A,/,22(''-''))') 'USER: I/O information:'
       WRITE(*,'(A35,A)') 'Input BOS file was: '
-     >     ,CMCBOSF(1:LENOCC(CMCBOSF))
+     +     ,CMCBOSF(1:LENOCC(CMCBOSF))
       WRITE(*,'(A35,I8)') 'First processed event was: ',IEVTF
       WRITE(*,'(A35,I8)') 'Last processed event was: ',IEVTF+NEVT-1
       WRITE(*,'(A35,$)') 'ZSRFTV fit performed: ' 
@@ -385,23 +385,23 @@ C... Some info
          IF( LEX(I) ) WRITE(*,'(T37,A)') CCALF(I)(1:LENOCC(CCALF(I)))
       ENDDO
       WRITE(*,'(A35,A)') 'Output BOS banks to: '
-     >     ,CSVBOSF(1:LENOCC(CSVBOSF))
+     +     ,CSVBOSF(1:LENOCC(CSVBOSF))
       IF( LHIST ) WRITE(*,'(A35,A)') 'Output histos to: '
-     >     ,CHISTF(1:LENOCC(CHISTF))
+     +     ,CHISTF(1:LENOCC(CHISTF))
       IF( LBANK ) THEN 
          WRITE(*,'(A35,A)') 
-     >     'Output readable bank contents to: '
-     >     ,CBANKF(1:LENOCC(CBANKF))
+     +     'Output readable bank contents to: '
+     +     ,CBANKF(1:LENOCC(CBANKF))
          WRITE(*,'(A35)') 'Printed BOS banks: '
          DO I=1,7
             WRITE(*,'(A31,I2,A1,2X,A)')
-     >           '-Level',I,':',CBANK(I)(1:LENOCC(CBANK(I)))
+     +           '-Level',I,':',CBANK(I)(1:LENOCC(CBANK(I)))
          ENDDO
       ENDIF
 C
       IF( NEVT.EQ. 0 ) WRITE(*,'(/,A)')
-     >     'USER: WARNING!!! Number of first event to be reconstructed'
-     >     //' exceeds number of events contained in the input file!'
+     +     'USER: WARNING!!! Number of first event to be reconstructed'
+     +     //' exceeds number of events contained in the input file!'
 C
       WRITE(*,FMT='(/,120(''=''))')
 C

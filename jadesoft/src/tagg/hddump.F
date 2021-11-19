@@ -7,7 +7,7 @@ C
        IMPLICIT INTEGER*2 (H)
 #include "cdata.for"
 C
-       CALL BLOC(IHEAD,'HEAD',0,&1000)
+       CALL BLOC(IHEAD,'HEAD',0,*1000)
        IHHEAD=IHEAD *2
        HEBEAM = HDATA(IHHEAD +29)
        NEXP=HDATA(IHHEAD+9)

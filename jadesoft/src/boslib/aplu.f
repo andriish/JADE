@@ -9,7 +9,7 @@ C
       INTEGER LRN/0/
       IRB=0
       IEV=0
-      CALL BLOC(IHD,'HEAD',0,&100)
+      CALL BLOC(IHD,'HEAD',0,*100)
       IRN=IW(IHD+1)
       IEV=IW(IHD+4)
       IF(IRN.EQ.LRN) GOTO 100

@@ -1,5 +1,0 @@
-+EXE.
-+USE,CKCMDS.
-+USE,CKKERN,CKUTIL.
-+PAM,17,T=A,T=C. ckern105.car
-+QUIT.

@@ -109,10 +109,10 @@ C
       DIMENSION NAME(18),LENG(18),MAXL(18)
 C
       DATA NBANKS /17/
-      DATA NAME/'MUCA','LGMA','TAGS','JTPL','JTAB',
-     1          'TOFC','LGST','DEDX','SPTG','RVTX',
-     2          'ZCAL','TAGF','IDJS','VTXC','VTXR',
-     3          'VTXB','VTXF','    ' /
+      DATA NAME/4HMUCA,4HLGMA,4HTAGS,4HJTPL,4HJTAB,
+     1          4HTOFC,4HLGST,4HDEDX,4HSPTG,4HRVTX,
+     2          4HZCAL,4HTAGF,4HIDJS,4HVTXC,4HVTXR,
+     3          4HVTXB,4HVTXF,4H     /
       DATA LENG /2,2,2,2,4,  4,2,2,2,4,  4,2,4,4,4,  4,4,0 /
       DATA MAXL/  4185,  2880,   192, 4608,  1344,
      1             546,   500,  1841,  193,     6,
@@ -310,9 +310,20 @@ C---
       ITIME(6)=HDATA(IHHEAD+8)
 C     IF(ICALO.EQ.1) PRINT 8756
 C8756 FORMAT(' XV ENLARGED BY .1')
+CAV
+C        ITIME(1)=1
+C        ITIME(2)=1
+C        ITIME(3)=1
+C        ITIME(4)=1
+C        ITIME(5)=1
+C        ITIME(6)=1986
+CAV
       IEVTIM=KTMCON(ITIME,NOW,LASTIM)
 C
 C                          CHECK IF EVENT TIME IN RANGE OF CONSTANTS
+      write(*,*) ITIME(1),ITIME(2),ITIME(3),ITIME(4),ITIME(5),ITIME(6) 
+      write(*,*) LSTIME(1) 
+      write(*,*) IEVTIME 
       IF(IEVTIM.LT.LSTIME(1)) GOTO 9001
 C
 C                          CHECK IF CURRENT CONSTANTS STILL VALID
@@ -331,7 +342,7 @@ C---
 C---  IN WHICH TIME INTERVAL ARE WE, I.E. WHICH STARTING VALUES
 C---  FILE IS APPLICABLE?
 C---
-      NINTER=1
+
       IF(NCALI.LT.2) GOTO 5
          DO 4 I=2,NCALI
             IF(LSTIME(I).GT.IEVTIM) GOTO 5
@@ -350,6 +361,7 @@ C---
 C     PRINT 2003, LUNIT
          REWIND LUNIT
          READ(LUNIT,ERR=320,END=321) NDUUM
+C         READ(LUNIT,ERR=320) NDUUM
          IREAD=1
     6 CONTINUE
 C---
@@ -360,8 +372,10 @@ CCCCC
 C PMF 16/11/98: Read the first word before begin of the record, i.e. the length NWORD
 C               of the record, go back in the record by one unit and then CALL EVREA1
 C               in order to read the record. Otherwise EVREA1 does not work correctly.
+C       REWIND LUNIT  
       IF(IREAD.EQ.1) THEN
          READ(LUNIT,ERR=320,END=321) NWORDS
+C         READ(LUNIT,ERR=320) NWORDS
          BACKSPACE (LUNIT)
       ENDIF
 CCCCC

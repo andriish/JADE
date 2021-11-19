@@ -25,8 +25,8 @@ C
       DIMENSION IDATUM(5)
       DIMENSION IPHT(7), HTEMP(246)
 C
-      DATA HYES / 'Y ' /
-      DATA HBLK / '  ' /
+      DATA HYES / 2HY  /
+      DATA HBLK / 2H   /
 C
 C
 C------------------  C O D E  ------------------------------------------

@@ -2479,7 +2479,8 @@ C...Scale up uniformly for Donnachie-Landshoff parametrization.
  
 C*********************************************************************
  
-      SUBROUTINE PYMAXI
+CAV      SUBROUTINE PYMAXI
+      SUBROUTINE PYMAXICAV
  
 C...Finds optimal set of coefficients for kinematical variable selection
 C...and the maximum of the part of the differential cross-section used
@@ -15787,7 +15788,7 @@ C...Multiply with structure functions.
  
 C*********************************************************************
  
-      SUBROUTINE PYSTFU(KF,X,Q2,XPQ)
+      SUBROUTINE PYSTFUAV(KF,X,Q2,XPQ)
  
 C...Gives electron, photon, pi+, neutron, proton and hyperon
 C...structure functions according to a few different parametrizations.

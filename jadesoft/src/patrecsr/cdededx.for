@@ -3,7 +3,8 @@ C         MACRO CDEDEDX  ---   LAST UPDATE: 07.04.87  L. SMOLIK
 C-----------------------------------------------------------------------
       INTEGER*2 HDATA
 C-----------
-      COMMON/CALIBR/JPOINT(1)
+CAV      COMMON/CALIBR/JPOINT(1)
+      COMMON/CALIBR/JPOINT(100)
       DIMENSION ACALIB(1)
       EQUIVALENCE(JPOINT(1),ACALIB(1))
 C-----------
@@ -127,7 +128,7 @@ C--FIELD DISTORTIONS
      *                  1.10,.18, 1.05,.08, 1.  ,.0 , 1.  ,.0  /
       DIMENSION IC(6),IHDT(16)
       LOGICAL TBIT
-      DATA MTRNO1/Z FE0000/, MTRNO2/Z FE/
+      DATA MTRNO1/Z'FE0000'/, MTRNO2/Z'FE'/
 C-----DATA SALF/.342/, CALF/.940/
       DIMENSION TMAX(2,3),TSLP(2,3),VDREL(20)
       DATA TMAX /71.,80.,143.,159.,110.,115./

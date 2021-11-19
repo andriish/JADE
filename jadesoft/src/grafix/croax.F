@@ -28,6 +28,7 @@ C
 C
       DIMENSION  ISGN(4,3),IPER(4,3),HTX(4)
 C
+      character*2 HTX
       DATA HTX /'X ','Y ','Z ','  '/
       DATA ISGN / 1,1,1,1,1,-1,1,-1,-1,1,1,1 /
       DATA IPER / 2,1,2,2,3,2,1,3,1,3,3,1 /
@@ -38,6 +39,7 @@ C------------------  C O D E  ------------------------------------------
 C
 C                            IF OPTION 48 IS ON, DRAW NO AXES
 C
+
       IF( DSPDTM(18) ) RETURN
 C
       IF( INDEX .LT. 0  .OR.  INDEX .EQ. 13  .OR.  INDEX .EQ. 15) RETURN
@@ -62,7 +64,8 @@ C
       FSCA = (XMAX-XMIN)*FSCA1/4096.
 170   CALL CHRSIZ(4)
       IF( INDEX .EQ. 20 ) GO TO 50
-      IF( INDEX .GT. 3  .AND.  INDEX .NE. 14 .AND.INDEX.NE.17) GO TO 10000005900
+      IF( INDEX .GT. 3  .AND.  INDEX .NE. 14 .AND.INDEX.NE.17) GO TO 100
+C      line? 00005900
 C
 C                            RFI-VIEWS
 C
@@ -92,7 +95,8 @@ C
       CALL DRAWR(-IS*FSCA*F3,-FSCA*F2)
       CALL MOVER(IS*(F3+1.4)*FSCA,FSCA*F2*.5)
       IS = IPER(IX,I)
-1     CALL EOUTST(2,HTX(IS))
+1     continue
+      CALL EOUTST(2,HTX(IS))
       RETURN
 C
       END

@@ -51,22 +51,22 @@ C
       EQUIVALENCE (HDATSV(1),IDATSV(1)),(DATE,HTM1(1)),(TIME,HTM2(1))
       EQUIVALENCE (HTX(1),HTX1(1)),(HTX(33),HTX2(1)),(HTX(75),HTX3(1))
 C
-      DATA HBLANK/'  '/,HMINUS/'- '/, MASK2/Z20000/, MASK4/Z40000/
-      DATA HTX1/'DS','N ','DA','TE','TI','ME','JA','DE','  ','DE','TE',
-     $'CT','OR','R-','FI',' S','EC','TI','ON','Z-','X ',' S','EC','TI',
-     $'ON','Z-','Y ',' S','EC','TI','ON','FO'/
-      DATA HTX2/'RW','AR','D ','DE','TE',
-     $'CT','OR','SH','OW','ER',' C','OU','NT','ER','S ','R-','FI',' P',
-     $'ER','SP','EC','TI','VE','MO','NT','E ','CA','RL','O ',
-     $'PR','OJ','EC','T ','MO','DE','RO','TA','TE',' M','OD','E ','  '/
-      DATA HTX3/'FW','-M','UO','N ','CO','UN','TE','RS','DE','DX','TO',
-     $ 'F ','FL','AS','H ',' A','DC',' Z','-C','HA','MB','ER','  ','RZ',
-     $ '-T','RI','GG','ER','VE','RT','EX',' R','EG','IO','N ','RF','I ',
-     $ 'VE','RT','EX',' R','EG','IO','N ','ZX','VE','RT','EX',' R','EG',
-     $ 'IO','N ','ZY','VE','RT','EX',' C','HA','MB','ER',' R','FI'/
-      DATA HTEXT /'I ','D ','H ','I ','T ','S ','E ','L ','G ','T ','O '
-     $,'T ','M ','U ','H ','I ','T ','S ','L ','G ','C ','Y ','L ','  ',
-     $ 'L ','G ','C ','A ','P ','S ','F ','W ','C ','A ','P ','S '/
+      DATA HBLANK/2H  /,HMINUS/2H- /, MASK2/Z'20000'/, MASK4/Z'40000'/
+      DATA HTX1/2HDS,2HN ,2HDA,2HTE,2HTI,2HME,2HJA,2HDE,2H  ,2HDE,2HTE,
+     $2HCT,2HOR,2HR-,2HFI,2H S,2HEC,2HTI,2HON,2HZ-,2HX ,2H S,2HEC,2HTI,
+     $2HON,2HZ-,2HY ,2H S,2HEC,2HTI,2HON,2HFO/
+      DATA HTX2/2HRW,2HAR,2HD ,2HDE,2HTE,
+     $2HCT,2HOR,2HSH,2HOW,2HER,2H C,2HOU,2HNT,2HER,2HS ,2HR-,2HFI,2H P,
+     $2HER,2HSP,2HEC,2HTI,2HVE,2HMO,2HNT,2HE ,2HCA,2HRL,2HO ,
+     $2HPR,2HOJ,2HEC,2HT ,2HMO,2HDE,2HRO,2HTA,2HTE,2H M,2HOD,2HE ,2H  /
+      DATA HTX3/2HFW,2H-M,2HUO,2HN ,2HCO,2HUN,2HTE,2HRS,2HDE,2HDX,2HTO,
+     $ 2HF ,2HFL,2HAS,2HH ,2H A,2HDC,2H Z,2H-C,2HHA,2HMB,2HER,2H  ,2HRZ,
+     $ 2H-T,2HRI,2HGG,2HER,2HVE,2HRT,2HEX,2H R,2HEG,2HIO,2HN ,2HRF,2HI ,
+     $ 2HVE,2HRT,2HEX,2H R,2HEG,2HIO,2HN ,2HZX,2HVE,2HRT,2HEX,2H R,2HEG,
+     $ 2HIO,2HN ,2HZY,2HVE,2HRT,2HEX,2H C,2HHA,2HMB,2HER,2H R,2HFI/
+      DATA HTEXT /2HI ,2HD ,2HH ,2HI ,2HT ,2HS ,2HE ,2HL ,2HG ,2HT ,2HO 
+     $,2HT ,2HM ,2HU ,2HH ,2HI ,2HT ,2HS ,2HL ,2HG ,2HC ,2HY ,2HL ,2H  ,
+     $ 2HL ,2HG ,2HC ,2HA ,2HP ,2HS ,2HF ,2HW ,2HC ,2HA ,2HP ,2HS /
 *** PMF 17/11/99: add variables needed for emulation of DESYLIB routine 'CORE'  
       CHARACTER cHMW*800
       EQUIVALENCE (cHMW,HMW(1))

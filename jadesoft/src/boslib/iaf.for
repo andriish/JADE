@@ -1,6 +1,6 @@
 C   07/06/96 606071848  MEMBER NAME  IAF      (S4)          FORTG1
       FUNCTION IAF(NB,IW)
-      INTEGER IL(2),IB/'    '/
+      INTEGER IL(2),IB/4H    /
       LOGICAL*1LL(8)
       EQUIVALENCE(IL(1),LL(1))
       DATA IL(2)/0/

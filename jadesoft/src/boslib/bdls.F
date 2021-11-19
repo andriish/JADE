@@ -5,7 +5,7 @@ C     BOS SUBPROGRAM =1.13=
       COMMON/BCS/IW(1)
 *** PMF      INTEGER IHELP(2)/'BNK '/
 *** PMF 07/05/99
-      INTEGER IHELP(2)/'BNK ','    '/
+      INTEGER IHELP(2)/4HBNK ,4H    /
 *** PMF (end)
 #include "star.for"
       IW(INAMV)=NAME
@@ -38,7 +38,7 @@ C     LOW PRIORITY
       GOTO 100
 C
       ENTRY BPRS(NAME,NR)
-      CALL BLOC(IND,NAME,NR,&100)
+      CALL BLOC(IND,NAME,NR,*100)
       ISAVE=IW(IND+1)
       IW(IND+1)=IND
       IHELP(2)=NA

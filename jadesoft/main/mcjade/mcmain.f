@@ -335,8 +335,8 @@ C Check words 1,7,8
          STOP
       ENDIF
 C I/O format info
-      WRITE(*,'(/,A,/,A,2I8,4F7.3,2I8)') 'ENDIAN:'
-     >     ,' Data record starts with:',N
+CAV      WRITE(*,'(/,A,/,A,2I8,4F7.3,2I8)') 'ENDIAN:'
+CAV     >     ,' Data record starts with:',N
       WRITE(*,'(A,$)') ' JADE data I/O format: '
       IF( ENDIAN ) THEN
          WRITE(*,'(A,$)') 'CPROD data and current platform with'

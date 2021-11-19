@@ -13,7 +13,7 @@ C        +4 . . VECTORS
 C
       INTEGER NHUN/100/
       REAL V(1)
-      CALL BLOC(IND,'STO*',N,&20)
+      CALL BLOC(IND,'STO*',N,*20)
    10 I=IW(IND+3)
       M=IW(IND+2)
       IF(I.GE.IW(IND)) GOTO 100
@@ -29,14 +29,14 @@ C
    20 CALL NOARG(M)
       M=M-1
       IF(M.GT .4) M=4
-      CALL BCRE(IND,'STO*',N,M*NHUN+3,&100,IER)
+      CALL BCRE(IND,'STO*',N,M*NHUN+3,*100,IER)
       IW(IND+1)=0
       IW(IND+2)=M
       IW(IND+3)=3
       GOTO 10
 C
       ENTRY USTOR(N,V,NDIM)
-      CALL BLOC(IND,'STO*',N,&50)
+      CALL BLOC(IND,'STO*',N,*50)
    30 I=IW(IND+3)
       IF(I.GE.IW(IND)) GOTO 100
       INDI=IND+I
@@ -47,7 +47,7 @@ C
       IW(IND+3)=IW(IND+3)+M
       GOTO 100
    50 M=NDIM
-      CALL BCRE(IND,'STO*',N,M*NHUN+3,&100,IER)
+      CALL BCRE(IND,'STO*',N,M*NHUN+3,*100,IER)
       IW(IND+1)=0
       IW(IND+2)=M
       IW(IND+3)=3

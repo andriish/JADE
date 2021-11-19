@@ -9,14 +9,14 @@
 #include "cjdrch.for"
 #include "cdsmax.for"
       DIMENSION HPBAK(16),HLYAR(16),HLBAR(16),DSPAR(16),RESAR(16)
-      DATA MKGDLN / Z107/
-      DATA MKDIVL / Z100/
-      DATA LBNOCN / Z1/
-      DATA LBKINK / Z2/
-      DATA LBWALL / Z4/
-      DATA LBWIRE / Z8/
-      DATA LBTREL /Z1000/
-      INTEGER LBLFRT(3) /Z10000,Z30000,Z20000/
+      DATA MKGDLN / Z'107'/
+      DATA MKDIVL / Z'100'/
+      DATA LBNOCN / Z'1'/
+      DATA LBKINK / Z'2'/
+      DATA LBWALL / Z'4'/
+      DATA LBWIRE / Z'8'/
+      DATA LBTREL /Z'1000'/
+      INTEGER LBLFRT(3) /Z'10000',Z'30000',Z'20000'/
       FPAR0(X) = (PAR10*X + PAR20)*X + PAR30
       FPAR (X) = (PAR1 *X + PAR2 )*X + PAR3
       MTRK = 0
@@ -406,8 +406,10 @@
       GOTO IZZZ04
 17005 CONTINUE
       ITER = 0
-      IF(DSPAR(IHIT0).LT.1.5 .AND. DSPAR(IHIT0+1).GT.5.) IHIT0 = IHIT0+100053900
-      IF(DSPAR(IHIT9).LT.1.5 .AND. DSPAR(IHIT9-1).GT.5.) IHIT9 = IHIT9-100054000
+      IF(DSPAR(IHIT0).LT.1.5 .AND. DSPAR(IHIT0+1).GT.5.) IHIT0 = IHIT0+1
+C      00053900
+      IF(DSPAR(IHIT9).LT.1.5 .AND. DSPAR(IHIT9-1).GT.5.) IHIT9 = IHIT9-1
+C      00054000
       IF(
      - NITER.GT.0
      -)THEN
@@ -662,10 +664,16 @@
       ENDIF
       ENDIF
       ENDIF
+        if (IHIT0.LE.0 .or. IHIT0.GT.16) then
+        IHIT0=1
+        endif
         ILAY0 = HLYAR(IHIT0)
         WR0   = ILAY0
         DS0   = FPAR(WR0)
         SLOP0 = WR0*PAR1*2. + PAR2
+        if (IHIT9.LE.0 .or. IHIT9.GT.16) then
+        IHIT9=IHIT0
+        endif 
         ILAY9 = HLYAR(IHIT9)
         WR9   = ILAY9
         DS9   = FPAR(WR9)

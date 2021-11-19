@@ -16,9 +16,9 @@ C---
       EQUIVALENCE (RE(1,1),IR(1,1))
 #include "cgraph.for"
 #include "cdata.for"
-      DATA HTYP /'  ','PR','OT','ON','  ','  ','KA','ON',
-     $           '  ','  ','PI','ON','EL','EC','TR','ON'/
-      DATA HBLANK /'  '/
+      DATA HTYP /2H  ,2HPR,2HOT,2HON,2H  ,2H  ,2HKA,2HON,
+     $           2H  ,2H  ,2HPI,2HON,2HEL,2HEC,2HTR,2HON/
+      DATA HBLANK /2H  /
 C----------------------------------------
       NN = ACMD
       IF(NN.EQ.-3) GO TO 2110
@@ -37,7 +37,7 @@ C----------------------------------------
 107   IR(J,I) = 0
 C---   CALL TOF PROGRAM HERE
       NRUN = HEAD(18)
-      CALL TOFINT(NRUN,IPATOF,IPPATR,&1000)
+      CALL TOFINT(NRUN,IPATOF,IPPATR,*1000)
       IF(NN.GE.0) GO TO 99
       IF(NN.EQ.-1) GO TO 91
 C SHOW DIAGRAM BETA VS MOMENTUM

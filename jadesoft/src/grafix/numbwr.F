@@ -12,7 +12,7 @@ C---
 #include "cgraph.for"
       DIMENSION HMW(10)
 #include "chsym.for"
-      DATA HBLANK /'  '/,HMINUS/'- '/
+      DATA HBLANK /2H  /,HMINUS/2H- /
 C---
       KCNT = 1
       IF(IOPT.GT.0.AND.IOPT.LE.36) GO TO 1

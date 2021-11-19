@@ -5,11 +5,11 @@
 #include "cjdrch.for"
 #include "cworkpr.for"
 #include "cworkeq.for"
-      DATA MKHTL1 /Z8400/, MKATR /Z100/, MKHTL2 /Z7FFF/
-      DATA  MKLRSV / Z800/
-      DATA  MKBDHT / Z600/
-      DATA MKLFTR,MKRTTR / Z400, Z800/
-      DATA LBZRCR / Z100/
+      DATA MKHTL1 /Z'8400'/, MKATR /Z'100'/, MKHTL2 /Z'7FFF'/
+      DATA  MKLRSV / Z'800'/
+      DATA  MKBDHT / Z'600'/
+      DATA MKLFTR,MKRTTR / Z'400', Z'800'/
+      DATA LBZRCR / Z'100'/
       NBYTE = IDATA(IPJHTL)*4 - 4
       CALL MVCL2(HWRK(HPHL0),0,IDATA(IPJHTL+2),0,NBYTE)!PMF 28/06/99 MVCL -> MVCL2
       HLDHL = IDATA(IPJHTL)*2 - 2

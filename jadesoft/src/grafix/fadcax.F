@@ -37,14 +37,14 @@ C
 C
       EQUIVALENCE ( HDATSV(1), IDATSV(1) )
 C
-      DATA KANAL / 48, 49, 50, 51, 52, 53, 54, 55, 56, 57 /
-      DATA HTX   / 'DS', 'N ' /
-      DATA HCELL / 'Ce', 'll' /
-      DATA HDIFF / 'di','ff','er','en','ci','at','ed',' p','ul',
-     &             'se','s ' /
-      DATA HLIN  / 'no','n ','li','ne','ar' /
-      DATA HZETM / ' -',' Z' /
-      DATA HZETP / ' +',' Z' /
+      DATA KANAL / 48, 49, 50, 51, 52, 53, 54, 55, 56, 57 /      
+      DATA HTX   / 2HDS, 2HN  /
+      DATA HCELL / 2HCe, 2Hll /
+      DATA HDIFF / 2Hdi,2Hff,2Her,2Hen,2Hci,2Hat,2Hed,2H p,2Hul,
+     &             2Hse,2Hs  /
+      DATA HLIN  / 2Hno,2Hn ,2Hli,2Hne,2Har /
+      DATA HZETM / 2H -,2H Z /
+      DATA HZETP / 2H +,2H Z /
 C
 C-----------------  C O D E  -------------------------------------------
 C

@@ -4,7 +4,7 @@ C   07/06/96 606071916  MEMBER NAME  ULIND    (S4)          FORTG1
       REAL RW(1)
       EQUIVALENCE (RW(1),IW(1))
       REAL Q(10),QQ(10)
-      CALL BLOC(IND,'LIN*',NA,&100)
+      CALL BLOC(IND,'LIN*',NA,*100)
       BN=32768.0*(Y-RW(IND+3))/(RW(IND+4)-RW(IND+3))
       IF(BN.LT.0.0) GOTO 100
       NY=BN
@@ -17,9 +17,9 @@ C   07/06/96 606071916  MEMBER NAME  ULIND    (S4)          FORTG1
       GOTO 100
 C
       ENTRY DLIND(NA,KAMAX,IEN,YL,YH,XL,XH)
-      CALL BLOC(IND,'LIN*',NA,&10)
+      CALL BLOC(IND,'LIN*',NA,*10)
       GOTO 100
-   10 CALL BCRE(IND,'LIN*',NA,6,&100,IER)
+   10 CALL BCRE(IND,'LIN*',NA,6,*100,IER)
       IW(IND+1)=KAMAX
       IW(IND+2)=IEN
       RW(IND+3)=YL
@@ -30,9 +30,9 @@ C
       GOTO 100
 C
       ENTRY PLIND(NA)
-      CALL BLOC(IND,'LIN*',NA,&100)
+      CALL BLOC(IND,'LIN*',NA,*100)
       IEN=IW(IND+2)
-      CALL BCRE(J,'++++',0,3*IEN,&100,IER)
+      CALL BCRE(J,'++++',0,3*IEN,*100,IER)
       IPR=0
       KAM=IW(IND+1)
       LA=0
@@ -41,9 +41,9 @@ C
       ENTRY QLIND(NA,KA,Q)
       DO 20 I=1,10
    20 Q(I)=0.0
-      CALL BLOC(IND,'LIN*',NA,&100)
+      CALL BLOC(IND,'LIN*',NA,*100)
       IEN=IW(IND+2)
-      CALL BCRE(J,'++++',0,3*IEN,&100,IER)
+      CALL BCRE(J,'++++',0,3*IEN,*100,IER)
       LA=KA
       IRT=1
    30 CALL QSSTO(NA,LA,IW(J+IEN+IEN+1),NQ,NENT)

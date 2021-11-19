@@ -20,13 +20,13 @@ C
 C
       COMMON / CGRAP2 / BCMD, DSPDTM(30)
 C
-      DIMENSION  ARMAS(4) , HLABEL(4)
+      DIMENSION  ARMAS(4) , PLABEL(4)
 C
       DATA ARMAS / 0.000511, 0.139567, 0.49367, 0.93828 /
 C
 C                            LOWER CASE 'E', BLANK, K, LOWER CASE P
 C
-      DATA HLABEL / 'e ', '  ', 'K ', 'p ' /
+      DATA PLABEL / 'e ', '  ', 'K ', 'p ' /
 C
 C------------------  C O D E  ------------------------------------------
 C
@@ -93,7 +93,7 @@ C
 C
         IF( IMS .EQ. 2 ) GO TO 5
           CALL MOVEA( XLABEL, YLABEL )
-          CALL EOUTST( 1, HLABEL(IMS) )
+          CALL EOUTST( 1, PLABEL(IMS) )
           GO TO 1
 C
   5     IF( LARGE ) XLABEL = XLABEL - 0.5

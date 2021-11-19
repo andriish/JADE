@@ -7,7 +7,7 @@ C   07/06/96 606071859  MEMBER NAME  PCOND    (S4)          FORTG1
       NN=0
       M=0
       CALL BPOS('CON*')
-   80 CALL BNXT(K,&98)
+   80 CALL BNXT(K,*98)
       IF(M.EQ.0) WRITE(6,101)
       M=1
       N=IW(K)

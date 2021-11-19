@@ -43,7 +43,9 @@ C-------------------------------------------------------------------C
 #include "cgraph.for"
       INTEGER*2 HDATA
 C-----------
-      COMMON/CALIBR/JPOINT(1)
+      LOGICAL JPOINT
+CAV      COMMON/CALIBR/JPOINT(1)
+      COMMON/CALIBR/JPOINT(100)
       DIMENSION ACALIB(1)
       EQUIVALENCE (JPOINT(1),ACALIB(1))
 C-----------
@@ -61,7 +63,7 @@ C
 #include "czsprm.for"
       DIMENSION IC(6)
       LOGICAL TBIT
-      DATA MTRNO1/Z FE0000/, MTRNO2/Z FE/
+      DATA MTRNO1/Z'FE0000'/, MTRNO2/Z'FE'/
       DATA ICALL/0/
 C------------------- 11.9.85
       MODE=MDE
@@ -96,7 +98,8 @@ C
 * 00000110 represents the logical value .FALSE. , in contrast
 * to what here is expected. Thus handle LWDEDX as INTEGER
 * and test if any of the bits is set.
-      IF( LWDEDX.NE.0 ) MODE = MODE - 8
+CAV FIXME LINUX
+      IF( LWDEDX) MODE = MODE - 8
       IF (MODE.LT.0 .OR. MODE.GT.4) GOTO 86
       GOTO 60
 C
@@ -137,7 +140,7 @@ C                                           HITS/WORD
         NHPW = 32/JHTQBT
         LJHTQ = (IDATA(IJHTL)-1+NHPW-1)/NHPW + 1
         CALL BCRE( NPJHTQ, 'JHTQ', IDATA(IJHTL-2),
-     *                             LJHTQ, &41, IERJHT )
+     *                             LJHTQ, *41, IERJHT )
         CALL BSAW( 1, 'JHTQ' )
         IDATA(NPJHTQ+1) = JHTQBT
 C                                           CREATION OF BANK MAY HAVE

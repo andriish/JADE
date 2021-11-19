@@ -5,17 +5,17 @@ C   07/06/96 606071916  MEMBER NAME  UEMPF    (S4)          FORTG1
       EQUIVALENCE (RW(1),IW(1))
       REAL Q(10)
       EXTERNAL LBN
-      CALL BLOC(IND,'EMP*',NA,&100)
+      CALL BLOC(IND,'EMP*',NA,*100)
       LB=LLBN(IND+2,X)
       CALL UMEAN(NA,LB,Y)
       GOTO 100
 C
       ENTRY DEMPF(NA,NX)
-      CALL BLOC(IND,'EMP*',NA,&2)
+      CALL BLOC(IND,'EMP*',NA,*2)
       GOTO 100
-    2 CALL BLOC(J,'$BIN',NX,&100)
+    2 CALL BLOC(J,'$BIN',NX,*100)
       NJ=IW(J)+2
-      CALL BCRE(IND,'EMP*',NA,NJ,&100,IER)
+      CALL BCRE(IND,'EMP*',NA,NJ,*100,IER)
       IW(IND+1)=NX
       CALL BSTR(IND+1,IW(J),NJ-1)
       CALL VLBN(NX,1,XL,XH,NB)
@@ -23,7 +23,7 @@ C
       GOTO 100
 C
       ENTRY PEMPF(NA)
-      CALL BLOC(IND,'EMP*',NA,&100)
+      CALL BLOC(IND,'EMP*',NA,*100)
       NXX=IW(IND+1)
       WRITE(6,101) NA
       CALL PMEAN(NA)
@@ -38,7 +38,7 @@ C
       XQ=0.5*(XL+XH)
       YQ=Q(3)
       IF(I.NE.1) GOTO 5
-      CALL BCRE(IND,'$FUN',NA,0,&10,IER)
+      CALL BCRE(IND,'$FUN',NA,0,*10,IER)
     5 CALL BCHM(IND,2,JER)
       IF(IER+JER.NE.0) GOTO 10
       RW(IND+2*I-1)=YQ

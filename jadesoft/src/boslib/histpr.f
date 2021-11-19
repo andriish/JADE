@@ -14,8 +14,8 @@ C
       REAL*8 RPR(11)
       REAL*4 SP(11)
       COMMON/CCONVT/JM,PX(32,10)
-      INTEGER PX,BLANK/'    '/
-      LOGICAL*1 LX(128,10),XCH/'X'/
+      INTEGER PX,BLANK/4H    /
+      LOGICAL*1 LX(128,10),XCH/1HX/
       EQUIVALENCE (LX(1,1),PX(1,1))
       XM=0.0
       NN=MIN0(100,N)

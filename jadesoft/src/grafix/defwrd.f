@@ -15,7 +15,7 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
-      LOGICAL*1  CDICTY, CSTRNG(20), CSTOP
+      CHARACTER*1  CDICTY, CSTRNG(20), CSTOP
 C
       COMMON / CGRAP3 / IDEFWP, CDICTY(700)
 C
