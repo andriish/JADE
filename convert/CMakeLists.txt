@@ -11,7 +11,7 @@ find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
 message(STATUS "LAPACK libraries        : ${LAPACK_LIBRARIES_DIR}")
 ########################################################################
-find_package(HepMC3  REQUIRED HINTS /u/andriish/Z/share/HepMC3/cmake/) #The later is to test JADE with NAG on Cobra
+find_package(HepMC3  REQUIRED HINTS /usr/local/Cellar/hepmc2/3.2.5_1/share/HepMC3/cmake) #The later is to test JADE with NAG on Cobra
 message(STATUS "HEPMC3 libraries        : ${HEPMC3_LIBRARIES} ${HEPMC3_ROOTIO_LIBRARIES}")
 ########################################################################
 include(JADE_ROOT_setup)
@@ -41,7 +41,8 @@ add_executable(convert_mc_JADE.exe
         )
 target_compile_definitions( convert_mc_JADE.exe PUBLIC HEPMCCONVERT_EXTENSION_JADE  )
 target_include_directories(convert_mc_JADE.exe PUBLIC ${HEPMC3_INCLUDE_DIR})
-target_link_libraries(convert_mc_JADE.exe ${HEPMC3_LIB} ${HEPMC3_SEARCH_LIB}  ${LAPACK_LIBRARIES})
+target_link_libraries(convert_mc_JADE.exe ${HEPMC3_LIB} ${HEPMC3_LIBRARIES} ${HEPMC3_SEARCH_LIB}  ${LAPACK_LIBRARIES})
+set_target_properties(convert_mc_JADE.exe PROPERTIES LINKER_LANGUAGE Fortran) 
 add_dependencies( convert_mc_JADE.exe cmdline  )
 ########################################################################
 # installs 

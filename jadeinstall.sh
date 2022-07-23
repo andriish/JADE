@@ -52,7 +52,7 @@ toolchain=GNU
 if test -z "$tmptoolchain"; then
  tmptoolchain="GNU"
 fi
-if  [ "$tmptoolchain" != "GNU" ] && [ "$tmptoolchain" !=  "Intel" ] && [ "$tmptoolchain" !=  "XL" ] && [ "$tmptoolchain" !=  "NAG" ] && [ "$tmptoolchain" !=  "PGI" ]&& [ "$tmptoolchain" !=  "SUN" ]; then
+if  [ "$tmptoolchain" != "GNU" ] && [ "$tmptoolchain" != "GNU-11" ] && [ "$tmptoolchain" !=  "Intel" ] && [ "$tmptoolchain" !=  "XL" ] && [ "$tmptoolchain" !=  "NAG" ] && [ "$tmptoolchain" !=  "PGI" ]&& [ "$tmptoolchain" !=  "SUN" ]; then
  echo "Unknown toolchain "$tmptoolchain" using GNU instead."
  echo "Possible values for the toolchain are Intel, GNU, and XL"
 else 
@@ -112,40 +112,35 @@ if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "Intel" ]; then
  export FC=ifort
 fi
 ##This is for GNU/Clang on MacOSX
-if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU" ]; then
- export CC=clang
- export CXX=clang++
- which gfortran-10
- if [ "$?" = "0" ]; then 
-   export FC=gfortran-10
- else
-   export FC=gfortran
- fi
+if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-11" ]; then
+ export CC=gcc-11
+ export CXX=g++-11
+ export FC=gfortran-11
 fi
 ########################################################################
-mkdir -p build/picocernlib
-cd build/picocernlib
-rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../picocernlib -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP
-make -f Makefile clean
-make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
-make install
-cd ../..
+#mkdir -p build/picocernlib
+#cd build/picocernlib
+#rm -rf outputs CMakeFiles CMakeCache.txt
+#$CMAKE -H../../picocernlib -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP
+#make -f Makefile clean
+#make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
+#make install
+#cd ../..
 ########################################################################
 mkdir -p build/jadesoft
 cd build/jadesoft
-rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../jadesoft -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP  -DJADE_USE_CERNLIB:BOOL=OFF
-make -f Makefile clean
+#rm -rf outputs CMakeFiles CMakeCache.txt
+$CMAKE -H../../jadesoft -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP  -DJADE_USE_CERNLIB:BOOL=ON
+#make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
 cd ../..
 ########################################################################
 mkdir -p build/convert
 cd build/convert
-rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../convert -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP 
-make -f Makefile clean
+#rm -rf outputs CMakeFiles CMakeCache.txt
+$CMAKE -H../../convert -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=clang++  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP 
+#make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
 cd ../..
@@ -153,7 +148,7 @@ cd ../..
 mkdir -p build/jtuple
 cd build/jtuple
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../jtuple -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP -DJADE_USE_CERNLIB:BOOL=OFF
+$CMAKE -H../../jtuple -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP -DJADE_USE_CERNLIB:BOOL=ON
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
@@ -162,7 +157,7 @@ cd ../..
 mkdir -p build/fptobos
 cd build/fptobos
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../fptobos -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP -DJADE_USE_CERNLIB:BOOL=OFF
+$CMAKE -H../../fptobos -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP -DJADE_USE_CERNLIB:BOOL=ON
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
