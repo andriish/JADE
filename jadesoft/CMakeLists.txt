@@ -1,56 +1,50 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
 PROJECT(JADESOFT Fortran CXX C)
-SET(VERSION 2020.11)
+SET(VERSION 2022.07)
 include("GNUInstallDirs")
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
+########################################################################
 option( JADE_OLD_MC  "Compile old MC executables" ON)
 option( JADE_FPE  "Trap floating point exceptions" OFF)
-option(JADE_USE_CERNLIB "Attempt to use CERNLIB instead of buildin code (picocernlib)"     ON)
+option( JADE_USE_CERNLIB "Attempt to use CERNLIB instead of buildin code (picocernlib)"     ON)
 ########################################################################
 include(JADE_compiler_setup)
 ########################################################################
-  find_package(BLAS REQUIRED)
-  find_package(LAPACK REQUIRED)
-#  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-#     set(JEXTERN_GRAPH_LIBRARIES )
-#  else()
-    find_package(X11  REQUIRED)
-    set(JEXTERN_GRAPH_LIBRARIES ${X11_LIBRARIES})
-#  endif()
-message(STATUS "LAPACK libraries        : ${LAPACK_LIBRARIES_DIR}")
+find_package(BLAS REQUIRED)
+message(STATUS "JADE: BLAS libraries        : ${BLAS_LIBRARIES}")
+########################################################################
+find_package(LAPACK REQUIRED)
+message(STATUS "JADE: LAPACK libraries        : ${LAPACK_LIBRARIES}")
+########################################################################
+find_package(X11  REQUIRED)
+message(STATUS "JADE: X11 libraries        : ${X11_LIBRARIES}")
 ########################################################################
 find_package(HepMC3 REQUIRED  HINTS /usr/local/Cellar/hepmc2/3.2.5_1/share/HepMC3/cmake)
-message(STATUS "HEPMC3 libraries        : ${HEPMC3_LIBRARIES} ${HEPMC3_ROOTIO_LIBRARIES}")
+message(STATUS "JADE: HEPMC3 libraries        : ${HEPMC3_LIBRARIES} ${HEPMC3_ROOTIO_LIBRARIES}")
 ########################################################################
 include(JADE_ROOT_setup)
 ########################################################################
-
-
 if (JADE_USE_CERNLIB)
-find_package(CERNLIB  REQUIRED HINTS /Volumes/Work/INSTALL/share/cernlib/cmake)
-
-set(Motif_DIR /usr/local/Cellar/openmotif/2.3.8_1)
-find_package(Motif REQUIRED)
-message(STATUS "MOTIF_LIBRARIES=${MOTIF_LIBRARIES}")
-#  find_library (LIBGRAFLIB NAMES libgraflib.a HINTS /usr/lib64/cernlib/2006/lib/ /usr/lib64/cernlib/2006/lib/)
-#  find_library (LIBMATHLIB NAMES libmathlib.a HINTS /usr/lib64/cernlib/2006/lib/ /usr/lib64/cernlib/2006/lib/)
-#  find_library (LIBPACKLIB NAMES libpacklib.a HINTS /usr/lib64/cernlib/2006/lib/ /usr/lib64/cernlib/2006/lib/)
-#  find_library (LIBKERNLIB NAMES libkernlib.a HINTS /usr/lib64/cernlib/2006/lib/ /usr/lib64/cernlib/2006/lib/)
-message(STATUS "CERNLIB_PACKLIB=${CERNLIB_PACKLIB}")
-message(STATUS "CERNLIB_PACKLIB_STATIC=${CERNLIB_PACKLIB_STATIC}")
+  find_package(CERNLIB  REQUIRED HINTS /Volumes/Work/INSTALL/share/cernlib/cmake)
+  message(STATUS "JADE: CERNLIB_PACKLIB=${CERNLIB_PACKLIB}")
+  message(STATUS "JADE: CERNLIB_PACKLIB_STATIC=${CERNLIB_PACKLIB_STATIC}")
   set(PICOCERNLIB "${MOTIF_LIBRARIES};${CERNLIB_PACKLIB_STATIC};${CERNLIB_KERNLIB_STATIC};${CERNLIB_MATHLIB_STATIC};${CERNLIB_GRAFLIB_STATIC};${CERNLIB_GRAFX11_STATIC}")
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(Motif_DIR /usr/local/Cellar/openmotif/2.3.8_1)
+  endif()
+  find_package(Motif REQUIRED)
+  message(STATUS "JADE: MOTIF_LIBRARIES=${MOTIF_LIBRARIES}")
 else()
   find_library(LIBPICOKERNLIB REQUIRED NAMES libpicokernlib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
   find_library(LIBPICOGRAFLIB REQUIRED NAMES libpicograflib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
   set(PICOCERNLIB ${LIBPICOKERNLIB} ${LIBPICOGRAFLIB} ${ROOT_LIBRARIES})
 endif()
 set(JEXTERN_LIBRARIES  ${PICOCERNLIB} )
-message(STATUS "JEXTERN_LIBRARIES    : ${JEXTERN_LIBRARIES}")
+message(STATUS "JADE: JEXTERN_LIBRARIES    : ${JEXTERN_LIBRARIES}")
 set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
-message(STATUS "JEXTERN libraries       : ${JEXTERN_LIBRARIES}")
-message(STATUS "JEXTERN_GRAPH libraries : ${JEXTERN_GRAPH_LIBRARIES}")
+message(STATUS "JADE: JEXTERN libraries       : ${JEXTERN_LIBRARIES}")
 ########################################################################
 
 SET(MCJADEEXE    mcjade)
@@ -663,10 +657,11 @@ ADD_EXECUTABLE(${JADEZEXE} ${JADEZ_src})
 
 #JADEZROOT
 if (NOT JADE_USE_CERNLIB)
-SET(JADEZROOT_src ${SRCJADEZ}/gphmain2.F  ${SRCJADEZ}/xuser.F  ${SRCJADEZ}/gphmain.cxx)
-ADD_EXECUTABLE(${JADEZROOTEXE} ${JADEZROOT_src})
-target_include_directories(${JADEZROOTEXE} PUBLIC ${ROOT_INCLUDE_DIRS})
+  SET(JADEZROOT_src ${SRCJADEZ}/gphmain2.F  ${SRCJADEZ}/xuser.F  ${SRCJADEZ}/gphmain.cxx)
+  ADD_EXECUTABLE(${JADEZROOTEXE} ${JADEZROOT_src})
+  target_include_directories(${JADEZROOTEXE} PUBLIC ${ROOT_INCLUDE_DIRS})
 endif()
+
 #MCJADE
 SET(MCJADE_src ${SRCMCJADE}/mcjade.f ${SRCMCJADE}/mcmain.f  ${SRCMCJADE}/mcrand.f  ${SRCMCJADE}/mcuser.f ${SRCSUPERV}/showb.f)
 ADD_EXECUTABLE(${MCJADEEXE} ${MCJADE_src})
@@ -681,10 +676,10 @@ ADD_EXECUTABLE(${ZE4VEXE} ${ZE4V_src})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   TARGET_LINK_LIBRARIES(${JADEZEXE}   ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
-    ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
+    ${JEXTERN_LIBRARIES} ${X11_LIBRARIES} )
   if (NOT JADE_USE_CERNLIB)
   TARGET_LINK_LIBRARIES(${JADEZROOTEXE}   ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
-    ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} )
+    ${JEXTERN_LIBRARIES} ${X11_LIBRARIES} )
   endif()
   TARGET_LINK_LIBRARIES(${MCJADEEXE}    ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
     ${JEXTERN_LIBRARIES}  )
@@ -696,10 +691,10 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     ${JEXTERN_LIBRARIES} )
 else()
   TARGET_LINK_LIBRARIES(${JADEZEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
-    ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} -Wl,--end-group)
+    ${JEXTERN_LIBRARIES} ${X11_LIBRARIES} -Wl,--end-group)
   if (NOT JADE_USE_CERNLIB)
   TARGET_LINK_LIBRARIES(${JADEZROOTEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
-    ${JEXTERN_LIBRARIES} ${JEXTERN_GRAPH_LIBRARIES} -Wl,--end-group)
+    ${JEXTERN_LIBRARIES} ${X11_LIBRARIES} -Wl,--end-group)
   endif()
   TARGET_LINK_LIBRARIES(${MCJADEEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} 
     ${WERTEX} ${PATRECSR} 

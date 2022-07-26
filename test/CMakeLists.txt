@@ -21,7 +21,7 @@ macro( jade_fortran_test testname gnuenv  intelenv nagenv)
   endif()
 endmacro( jade_fortran_test )
 
-find_package(HepMC3  REQUIRED HINTS /u/andriish/Z/share/HepMC3/cmake/) #The later is to test JADE with NAG on Cobra
+find_package(HepMC3  REQUIRED HINTS /usr/local/Cellar/hepmc2/3.2.5_1/share/HepMC3/cmake) #The later is to test JADE with NAG on Cobra
 find_package(Pythia8 8.220)
 ENABLE_TESTING()
 
