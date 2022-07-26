@@ -5,12 +5,22 @@ include("GNUInstallDirs")
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 ########################################################################
-option( JADE_OLD_MC  "Compile old MC executables" ON)
-option( JADE_FPE  "Trap floating point exceptions" OFF)
-option( JADE_USE_CERNLIB "Attempt to use CERNLIB instead of buildin code (picocernlib)"     ON)
+option(JADE_OLD_MC                     "Compile old MC executables" ON)
+option(JADE_FPE                        "Trap floating point exceptions" OFF)
+option(JADE_USE_CERNLIB                "Attempt to use CERNLIB instead of buildin code (picocernlib)"     ON)
+option(JADE_FORCE_32                   "Force build of 32 bit libraries." OFF)
+if (JADE_FORCE_32)
+  list(PREPEND CMAKE_SYSTEM_LIBRARY_PATH "/usr/lib")
+  message(STATUS "${CMAKE_SYSTEM_LIBRARY_PATH}")
+  set( FIND_LIBRARY_USE_LIB32_PATHS  ON)
+  set( FIND_LIBRARY_USE_LIB64_PATHS  OFF)
+  set(CMAKE_SIZEOF_VOID_P 4)
+  #set (CMAKE_EXE_LINKER_FLAGS  "-m32 ${CMAKE_EXE_LINKER_FLAGS}")
+endif()
 ########################################################################
 include(JADE_compiler_setup)
 ########################################################################
+#set(BLA_VENDOR Generic)
 find_package(BLAS REQUIRED)
 message(STATUS "JADE: BLAS libraries        : ${BLAS_LIBRARIES}")
 ########################################################################
@@ -19,11 +29,6 @@ message(STATUS "JADE: LAPACK libraries        : ${LAPACK_LIBRARIES}")
 ########################################################################
 find_package(X11  REQUIRED)
 message(STATUS "JADE: X11 libraries        : ${X11_LIBRARIES}")
-########################################################################
-find_package(HepMC3 REQUIRED  HINTS /usr/local/Cellar/hepmc2/3.2.5_1/share/HepMC3/cmake)
-message(STATUS "JADE: HEPMC3 libraries        : ${HEPMC3_LIBRARIES} ${HEPMC3_ROOTIO_LIBRARIES}")
-########################################################################
-include(JADE_ROOT_setup)
 ########################################################################
 if (JADE_USE_CERNLIB)
   find_package(CERNLIB  REQUIRED HINTS /Volumes/Work/INSTALL/share/cernlib/cmake)
@@ -36,6 +41,7 @@ if (JADE_USE_CERNLIB)
   find_package(Motif REQUIRED)
   message(STATUS "JADE: MOTIF_LIBRARIES=${MOTIF_LIBRARIES}")
 else()
+  include(JADE_ROOT_setup)
   find_library(LIBPICOKERNLIB REQUIRED NAMES libpicokernlib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
   find_library(LIBPICOGRAFLIB REQUIRED NAMES libpicograflib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
   set(PICOCERNLIB ${LIBPICOKERNLIB} ${LIBPICOGRAFLIB} ${ROOT_LIBRARIES})
@@ -289,7 +295,9 @@ ${SRCGRAFIX}/grblock.F
 )
 ADD_LIBRARY(${GRAFIX} STATIC ${GRAFIX_src})
 SET(INTERFACE_src
-         ${SRCINTERFACE}/hfix.f ${SRCINTERFACE}/biby.f ${SRCINTERFACE}/dlib.f ${SRCINTERFACE}/igwlcm.F
+         ${SRCINTERFACE}/hfix.f 
+         ${SRCINTERFACE}/biby.f 
+         ${SRCINTERFACE}/dlib.f ${SRCINTERFACE}/igwlcm.F
          ${SRCINTERFACE}/ips.f ${SRCINTERFACE}/plot10.F   ${SRCINTERFACE}/plot2016.F 
          #${SRCINTERFACE}/ranmar.f 
          ${SRCINTERFACE}/setcol.F

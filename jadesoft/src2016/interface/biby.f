@@ -273,6 +273,7 @@ C
 C
       RETURN
       END
+C#ifdef REQUIRES_ISHFTL
 ************************************************
       INTEGER FUNCTION ISHFTL(IW,K)
       IMPLICIT NONE
@@ -298,6 +299,8 @@ C      K=MOD(K,64)
 C
       RETURN
       END
+C#endif
+#ifdef REQUIRES_ISHFTR
 ************************************************
       INTEGER FUNCTION ISHFTR(IW,K)
       IMPLICIT NONE
@@ -323,6 +326,7 @@ C      K=MOD(K,64)
 C
       RETURN
       END
+#endif
 ************************************************
       SUBROUTINE MVB(A,NA,B,NB,M)
       IMPLICIT NONE
