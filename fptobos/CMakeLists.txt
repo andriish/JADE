@@ -11,13 +11,13 @@ if (JADE_FORCE_32)
   set( FIND_LIBRARY_USE_LIB32_PATHS  ON)
   set( FIND_LIBRARY_USE_LIB64_PATHS  OFF)
   set(CMAKE_SIZEOF_VOID_P 4)
-  #set (CMAKE_EXE_LINKER_FLAGS  "-m32 ${CMAKE_EXE_LINKER_FLAGS}")
+  set(LIB_SUFFIX )
 endif()
 ########################################################################
 include(JADE_compiler_setup)
 ########################################################################
-  find_package(BLAS REQUIRED)
-  find_package(LAPACK REQUIRED)
+find_package(BLAS REQUIRED)
+find_package(LAPACK REQUIRED)
 ########################################################################
 if (JADE_USE_CERNLIB)
   find_package(CERNLIB  REQUIRED HINTS /Volumes/Work/INSTALL/share/cernlib/cmake)
@@ -39,18 +39,13 @@ set(JEXTERN_LIBRARIES  ${PICOCERNLIB} )
 set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
 ########################################################################
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-     set(JEXTERN_GRAPH_LIBRARIES -lc++)
-  else()
-    find_package(X11  REQUIRED)
-    set(JEXTERN_GRAPH_LIBRARIES ${X11_LIBRARIES})
-  endif()
+find_package(X11  REQUIRED)
+set(JEXTERN_GRAPH_LIBRARIES ${X11_LIBRARIES})
 message(STATUS "JEXTERN libraries       : ${JEXTERN_LIBRARIES}")
 message(STATUS "JEXTERN_GRAPH libraries : ${JEXTERN_GRAPH_LIBRARIES}")
 ########################################################################
 SET(FPTOBOSEXE fptobos)
 SET(UNPJADEXE unpjad)
-
 # Define the library name
 FIND_PATH(JADELIB_LIBRARY_DIR NAMES libinterface.a libjadegs.a libboslib.a libzlib.a PATHS
   ${JADELIB_ROOT_DIR}/lib
@@ -69,8 +64,6 @@ foreach(_cpt ${jadelibs})
     list(APPEND JADE_LIBRARIES ${JADE_${_cpt}_LIBRARY})
   endif()
 endforeach()
-  
-
 # Define some directories
 SET(SRC ${CMAKE_SOURCE_DIR}/src)
 SET(LIB ${CMAKE_SOURCE_DIR}/lib)
@@ -139,5 +132,4 @@ endif()
 ########################################################################
 INSTALL(TARGETS ${FPTOBOSEXE}  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 INSTALL(TARGETS ${UNPJADEXE}  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-SET(CMAKE_Fortran_MODULE_DIRECTORY ${LIB})
 ########################################################################

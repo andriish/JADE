@@ -3,19 +3,19 @@
       character*80 FILEN
       INTEGER U, I, L, IERR, O
       write(*,*)U, FILEN(1:L)
-      if (O.eQ. 0) then
+      if (O .EQ. 0) then
       OPEN (U, FILE=FILEN(1:L), STATUS='REPLACE',form='unformatted')
       end if
-      if (O.eQ. 1) then
+      if (O .EQ. 1) then
       OPEN (U, FILE=FILEN(1:L), STATUS='REPLACE',form='formatted')
       end if
 
-      if (O.eQ. 2) then
+      if (O .EQ. 2) then
       OPEN (U, FILE=FILEN(1:L), CONVERT='LITTLE_ENDIAN', 
      +STATUS='REPLACE',form='unformatted')
       end if
 
-      if (O.eQ. 3) then
+      if (O .EQ. 3) then
       OPEN (U, FILE=FILEN(1:L), CONVERT='BIG_ENDIAN', 
      +STATUS='REPLACE',form='unformatted')
       end if
@@ -68,13 +68,10 @@
      *        PSTRT(3,300)
       COMMON/CHCPRD/ CP(500),CF(300)
 
-      
-      
-      
       A=LOC(CP)
       B=LOC(CF)
       LOCCPROD=LOC(NEV)
-      
+
       end
 
 
@@ -487,5 +484,3 @@ CDECK  ID>, WRCPRD.
  990  CONTINUE
 
       END
-
-

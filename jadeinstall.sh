@@ -121,7 +121,7 @@ fi
 #mkdir -p build/picocernlib
 #cd build/picocernlib
 #rm -rf outputs CMakeFiles CMakeCache.txt
-#$CMAKE -H../../picocernlib -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP
+#$CMAKE -H../../picocernlib -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain
 #make -f Makefile clean
 #make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 #make install
@@ -130,7 +130,7 @@ fi
 mkdir -p build/jadesoft
 cd build/jadesoft
 #rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../jadesoft -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP   -DJADE_USE_CERNLIB:BOOL=ON  -DCERNLIB_DIR=/home/andriish/X/share/cernlib/cmake -DJADE_FORCE_32:BOOL=ON
+$CMAKE -H../../jadesoft -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain   -DJADE_USE_CERNLIB:BOOL=ON  -DCERNLIB_DIR=/home/andriish/X/share/cernlib/cmake -DJADE_FORCE_32:BOOL=ON
 #make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
@@ -139,7 +139,7 @@ cd ../..
 mkdir -p build/convert
 cd build/convert
 #rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../convert -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP 
+$CMAKE -H../../convert -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain 
 #make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
@@ -148,7 +148,7 @@ cd ../..
 mkdir -p build/jtuple
 cd build/jtuple
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../jtuple -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP  -DJADE_USE_CERNLIB:BOOL=ON  -DCERNLIB_DIR=/home/andriish/X/share/cernlib/cmake -DJADE_FORCE_32:BOOL=ON 
+$CMAKE -H../../jtuple -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain  -DJADE_USE_CERNLIB:BOOL=ON  -DCERNLIB_DIR=/home/andriish/X/share/cernlib/cmake -DJADE_FORCE_32:BOOL=ON 
 #make -f Makefile clean
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
@@ -158,7 +158,7 @@ cd ../..
 mkdir -p build/fptobos
 cd build/fptobos
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../fptobos -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP  -DJADE_USE_CERNLIB:BOOL=ON  -DCERNLIB_DIR=/home/andriish/X/share/cernlib/cmake -DJADE_FORCE_32:BOOL=ON
+$CMAKE -H../../fptobos -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain  -DJADE_USE_CERNLIB:BOOL=ON  -DCERNLIB_DIR=/home/andriish/X/share/cernlib/cmake -DJADE_FORCE_32:BOOL=ON
 #make -f Makefile clean
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }

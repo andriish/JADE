@@ -15,12 +15,11 @@ if (JADE_FORCE_32)
   set( FIND_LIBRARY_USE_LIB32_PATHS  ON)
   set( FIND_LIBRARY_USE_LIB64_PATHS  OFF)
   set(CMAKE_SIZEOF_VOID_P 4)
-  #set (CMAKE_EXE_LINKER_FLAGS  "-m32 ${CMAKE_EXE_LINKER_FLAGS}")
+  set(LIB_SUFFIX )
 endif()
 ########################################################################
 include(JADE_compiler_setup)
 ########################################################################
-#set(BLA_VENDOR Generic)
 find_package(BLAS REQUIRED)
 message(STATUS "JADE: BLAS libraries        : ${BLAS_LIBRARIES}")
 ########################################################################
@@ -52,7 +51,6 @@ set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
 message(STATUS "JADE: JEXTERN libraries       : ${JEXTERN_LIBRARIES}")
 ########################################################################
-
 SET(MCJADEEXE    mcjade)
 SET(SUPERVEXE    superv)
 SET(JADEZEXE     jadez)
@@ -60,7 +58,7 @@ SET(JADEZROOTEXE jadezroot)
 SET(ZE4VEXE      ze4v)
 
 # Define the library name
-SET(BOSLIB boslib)
+SET(BOSLIB          boslib)
 SET(GRAFIX          grafix)
 SET(INTERFACE       interface)
 SET(JADEGS          jadegs)
@@ -82,7 +80,20 @@ SET(SRCMAIN ${CMAKE_SOURCE_DIR}/main2016)
 SET(LIB ${CMAKE_SOURCE_DIR}/lib)
 SET(BIN ${CMAKE_SOURCE_DIR}/bin)
 
-include_directories( ${SRC}/boslib ${SRC}/grafix ${SRC}/interface ${SRC}/jadegs ${SRC}/jademus ${SRC}/jadesr ${SRC}/jmc ${SRC}/patrecsr ${SRC}/source ${SRC}/tagg  ${SRC}/toflib ${SRC}/vertex ${SRC}/wertex ${SRC}/zlib  )
+include_directories( ${SRC}/boslib 
+                     ${SRC}/grafix 
+                     ${SRC}/interface 
+                     ${SRC}/jadegs 
+                     ${SRC}/jademus 
+                     ${SRC}/jadesr 
+                     ${SRC}/jmc 
+                     ${SRC}/patrecsr 
+                     ${SRC}/source 
+                     ${SRC}/tagg  
+                     ${SRC}/toflib 
+                     ${SRC}/vertex 
+                     ${SRC}/wertex 
+                     ${SRC}/zlib  )
 
 SET(SRCMCJADE ${SRCMAIN}/mcjade)
 SET(SRCSUPERV ${SRCMAIN}/superv)
@@ -102,582 +113,190 @@ SET(SRCTOFLIB         ${SRC}/toflib)
 SET(SRCVERTEX         ${SRC}/vertex)
 SET(SRCWERTEX         ${SRC}/wertex)
 SET(SRCZLIB         ${SRC}/zlib)
-# Have the .mod files placed in the lib folder
-SET(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${LIB})
-#Workaround for gfortran bug
-if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
- file(MAKE_DIRECTORY ${LIB} )
-endif()
-
-if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
-  file(GLOB myfortag ${SRCTAGG}/*.for)
-  set_property(SOURCE ${myfortag} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
-endif()
-
-
+########################################################################
 SET(BOSLIB_src
-         ${SRCBOSLIB}/asrd.f ${SRCBOSLIB}/bchl.F ${SRCBOSLIB}/bchm.F ${SRCBOSLIB}/bcre.F ${SRCBOSLIB}/bdar.F ${SRCBOSLIB}/bdlg.F
-         ${SRCBOSLIB}/bdlm.F ${SRCBOSLIB}/bdls.F ${SRCBOSLIB}/bdmp.F ${SRCBOSLIB}/bfmt.for ${SRCBOSLIB}/bfrd.for
-         ${SRCBOSLIB}/bgac.for ${SRCBOSLIB}/bgar.F ${SRCBOSLIB}/binlda.F ${SRCBOSLIB}/binp.F ${SRCBOSLIB}/bint.F
-         ${SRCBOSLIB}/bloada.F ${SRCBOSLIB}/blocda.F ${SRCBOSLIB}/bloc.F ${SRCBOSLIB}/bmlt.F
-         ${SRCBOSLIB}/bnxt.F ${SRCBOSLIB}/boutp.F ${SRCBOSLIB}/bpasda.F ${SRCBOSLIB}/bpos.F
-         ${SRCBOSLIB}/brds.F ${SRCBOSLIB}/breadc.for ${SRCBOSLIB}/bread.for ${SRCBOSLIB}/brnm.F
-         ${SRCBOSLIB}/bsaw.F ${SRCBOSLIB}/bseq.F ${SRCBOSLIB}/bsls.F ${SRCBOSLIB}/bsta.F
-         ${SRCBOSLIB}/bwrite.for ${SRCBOSLIB}/bwrs.F ${SRCBOSLIB}/cchl.F ${SRCBOSLIB}/ccor.for
-         ${SRCBOSLIB}/ccre.F ${SRCBOSLIB}/cloc.F ${SRCBOSLIB}/cnxt.F ${SRCBOSLIB}/cread.for
-         ${SRCBOSLIB}/dada.F ${SRCBOSLIB}/defst.for ${SRCBOSLIB}/histpr.f ${SRCBOSLIB}/iaf.for
-         ${SRCBOSLIB}/ibln.F ${SRCBOSLIB}/indar.F ${SRCBOSLIB}/itoda.for ${SRCBOSLIB}/msgpr.for
-         ${SRCBOSLIB}/pall.f ${SRCBOSLIB}/pcond.for ${SRCBOSLIB}/pcorr.for ${SRCBOSLIB}/phist.for
-         ${SRCBOSLIB}/poda.F ${SRCBOSLIB}/pstor.for ${SRCBOSLIB}/ptabl.for ${SRCBOSLIB}/ptext1.f
-         ${SRCBOSLIB}/pvert.for ${SRCBOSLIB}/rdda.F ${SRCBOSLIB}/readhl.for
-         ${SRCBOSLIB}/sort4.for ${SRCBOSLIB}/ucorr.for ${SRCBOSLIB}/uhist.for ${SRCBOSLIB}/uwp.for
-         ${SRCBOSLIB}/vall.for  ${SRCBOSLIB}/vecsub.f
-         
-       #  ${SRCBOSLIB}/rdvar.for 
+         asrd.f bchl.F bchm.F bcre.F bdar.F bdlg.F bdlm.F bdls.F bdmp.F bfmt.for bfrd.for
+         bgac.for bgar.F binlda.F binp.F bint.F bloada.F blocda.F bloc.F bmlt.F
+         bnxt.F boutp.F bpasda.F bpos.F brds.F breadc.for bread.for brnm.F
+         bsaw.F bseq.F bsls.F bsta.F bwrite.for bwrs.F cchl.F ccor.for
+         ccre.F cloc.F cnxt.F cread.for dada.F defst.for histpr.f iaf.for
+         ibln.F indar.F itoda.for msgpr.for pall.f pcond.for pcorr.for phist.for
+         poda.F pstor.for ptabl.for ptext1.f pvert.for rdda.F readhl.for
+         sort4.for ucorr.for uhist.for uwp.for vall.for  vecsub.f
+       #  rdvar.for 
 )
-
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
   file(GLOB MyFiles ${SRCBOSLIB}/*.for)
   set_property(SOURCE ${MyFiles} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
 endif()
-   
-
-
+list(TRANSFORM BOSLIB_src PREPEND "${SRCBOSLIB}/")
 ADD_LIBRARY(${BOSLIB} STATIC ${BOSLIB_src})
-SET(GRAFIX_src
-${SRCGRAFIX}/axshow.F ${SRCGRAFIX}/bankls.F ${SRCGRAFIX}/bankpr.F ${SRCGRAFIX}/barsec.f
-${SRCGRAFIX}/blnumb.F ${SRCGRAFIX}/blshow.F ${SRCGRAFIX}/calloc.F ${SRCGRAFIX}/capmrk.F
-${SRCGRAFIX}/cdst.F ${SRCGRAFIX}/cirdis.F ${SRCGRAFIX}/clrcon.f ${SRCGRAFIX}/coment.f
-${SRCGRAFIX}/comwrd.F ${SRCGRAFIX}/convrt.f ${SRCGRAFIX}/credit.F ${SRCGRAFIX}/cricro.f
-${SRCGRAFIX}/croax.F ${SRCGRAFIX}/ctdist.F ${SRCGRAFIX}/decide.f ${SRCGRAFIX}/dedxds.F
-${SRCGRAFIX}/dedxv1.F ${SRCGRAFIX}/dedxvw.F ${SRCGRAFIX}/defcmd.F ${SRCGRAFIX}/defmac.f
-${SRCGRAFIX}/defwrd.f ${SRCGRAFIX}/delmac.f ${SRCGRAFIX}/diaghn.f ${SRCGRAFIX}/diagin.f
-${SRCGRAFIX}/disaxi.f ${SRCGRAFIX}/disply.F ${SRCGRAFIX}/dispvc.F ${SRCGRAFIX}/dispzc.F
-${SRCGRAFIX}/dnum.f ${SRCGRAFIX}/dracap.f ${SRCGRAFIX}/dramov.f ${SRCGRAFIX}/drawbp.F
-${SRCGRAFIX}/drawer.F ${SRCGRAFIX}/drawfd.F ${SRCGRAFIX}/drawid.F ${SRCGRAFIX}/drawlg.F
-${SRCGRAFIX}/drawmu.f ${SRCGRAFIX}/drawpi.f ${SRCGRAFIX}/drawvc.F ${SRCGRAFIX}/drawzc.F
-${SRCGRAFIX}/drftim.f ${SRCGRAFIX}/drhatc.F ${SRCGRAFIX}/drvcrd.F ${SRCGRAFIX}/drwhit.F
-${SRCGRAFIX}/dsfadc.F ${SRCGRAFIX}/dsvac.F ${SRCGRAFIX}/dthcv1.f ${SRCGRAFIX}/ecapcy.F
-${SRCGRAFIX}/ecap.F ${SRCGRAFIX}/ecaps.F ${SRCGRAFIX}/edimac.f ${SRCGRAFIX}/edvp.F
-${SRCGRAFIX}/efmass.F ${SRCGRAFIX}/ellips.f ${SRCGRAFIX}/endmes.F ${SRCGRAFIX}/evdisp.F
-${SRCGRAFIX}/evtax.F
-${SRCGRAFIX}/expmac.f
-${SRCGRAFIX}/fadcax.F
-${SRCGRAFIX}/faddrw.f
-${SRCGRAFIX}/fampds.F
-${SRCGRAFIX}/fampft.F
-${SRCGRAFIX}/ficoor.F
-${SRCGRAFIX}/ficoov.F
-${SRCGRAFIX}/finabr.f
-${SRCGRAFIX}/fincmd.f
-${SRCGRAFIX}/finwrd.f
-${SRCGRAFIX}/ftdlho.F
-${SRCGRAFIX}/fw83.F
-${SRCGRAFIX}/fwc83.F
-${SRCGRAFIX}/fwcap.F
-${SRCGRAFIX}/fwchev.F
-${SRCGRAFIX}/fwdisp.F
-${SRCGRAFIX}/fwmucn.F
-${SRCGRAFIX}/fwmuht.F
-${SRCGRAFIX}/fwnew.F
-${SRCGRAFIX}/fyrint.f
-${SRCGRAFIX}/gamdis.F
-${SRCGRAFIX}/gmtext.F
-${SRCGRAFIX}/gvtxft.F
-${SRCGRAFIX}/heldis.F
-${SRCGRAFIX}/helpli.f
-${SRCGRAFIX}/helpus.f
-${SRCGRAFIX}/hemsym.f
-${SRCGRAFIX}/hitdsp.F
-${SRCGRAFIX}/hitmrk.F
-${SRCGRAFIX}/hitpnt.F
-${SRCGRAFIX}/hitscl.f
-${SRCGRAFIX}/hlpmac.f
-${SRCGRAFIX}/hodrfi.F
-${SRCGRAFIX}/idfun.f
-${SRCGRAFIX}/j68kds.F
-${SRCGRAFIX}/jadarg.f
-${SRCGRAFIX}/jadcmd.f
-${SRCGRAFIX}/jadisp.F
-${SRCGRAFIX}/joys.F
-${SRCGRAFIX}/komman.F
-${SRCGRAFIX}/koord.F
-${SRCGRAFIX}/lgclst.F
-${SRCGRAFIX}/lindis.F
-${SRCGRAFIX}/locmac.f
-${SRCGRAFIX}/mcgjet.f
-${SRCGRAFIX}/menu.f
-${SRCGRAFIX}/more.F
-${SRCGRAFIX}/muldsp.F
-${SRCGRAFIX}/mur2ds.F
-${SRCGRAFIX}/n50sds.F
-${SRCGRAFIX}/newcal.F
-${SRCGRAFIX}/newcap.F
-${SRCGRAFIX}/news.f
-${SRCGRAFIX}/notice.f
-${SRCGRAFIX}/numbwr.F
-${SRCGRAFIX}/pardis.F
-${SRCGRAFIX}/pbgcyl.F
-${SRCGRAFIX}/pbgrfi.F
-${SRCGRAFIX}/pbgrz.F
-${SRCGRAFIX}/pbgsum.F
-${SRCGRAFIX}/phnumb.F
-${SRCGRAFIX}/pick.F
-${SRCGRAFIX}/plygon.f
-${SRCGRAFIX}/pratof.F
-${SRCGRAFIX}/predit.F
-${SRCGRAFIX}/prj68k.f
-${SRCGRAFIX}/prmprs.F
-${SRCGRAFIX}/prn50s.F
-${SRCGRAFIX}/profil.f
-${SRCGRAFIX}/projec.F
-${SRCGRAFIX}/projvw.F
-${SRCGRAFIX}/prompt.f
-${SRCGRAFIX}/prtpev.F
-${SRCGRAFIX}/prtptr.F
-${SRCGRAFIX}/prtpvx.F
-${SRCGRAFIX}/przvtx.F
-${SRCGRAFIX}/qplots.F
-${SRCGRAFIX}/ralloc.F
-${SRCGRAFIX}/realnm.f
-${SRCGRAFIX}/rectan.f
-${SRCGRAFIX}/renmac.f
-${SRCGRAFIX}/resmac.f
-${SRCGRAFIX}/retten.F
-${SRCGRAFIX}/rsdisp.F
-${SRCGRAFIX}/rutrck.F
-${SRCGRAFIX}/rzdraw.F
-${SRCGRAFIX}/rzhits.F
-${SRCGRAFIX}/rzroll.F
-${SRCGRAFIX}/rztrck.F
-${SRCGRAFIX}/saege.F
-${SRCGRAFIX}/scannr.F
-${SRCGRAFIX}/sepcmd.f
-${SRCGRAFIX}/setcmd.f
-${SRCGRAFIX}/setdef.F
-${SRCGRAFIX}/setscl.F
-${SRCGRAFIX}/setupg.F
-${SRCGRAFIX}/spare.f
-${SRCGRAFIX}/spthak.F
-${SRCGRAFIX}/stplst.F
-${SRCGRAFIX}/tbgdis.F
-${SRCGRAFIX}/ternum.f
-${SRCGRAFIX}/tofds.F
-${SRCGRAFIX}/tonum.f
-${SRCGRAFIX}/tr3dsp.F
-${SRCGRAFIX}/trig2.F
-${SRCGRAFIX}/trkhit.F
-${SRCGRAFIX}/trkrol.F
-${SRCGRAFIX}/trn4v.F
-${SRCGRAFIX}/trnumb.F
-${SRCGRAFIX}/trpvtx.F
-${SRCGRAFIX}/trtext.F
-${SRCGRAFIX}/truth.F
-${SRCGRAFIX}/vcdo.F
-${SRCGRAFIX}/vrxcir.F
-${SRCGRAFIX}/vtx.F
-${SRCGRAFIX}/vtx.F
-${SRCGRAFIX}/vxdisp.F
-${SRCGRAFIX}/walloc.F
-${SRCGRAFIX}/welcme.f
-${SRCGRAFIX}/xcalcor.F
-${SRCGRAFIX}/xsafchk.F
-${SRCGRAFIX}/xtofvw.F
-${SRCGRAFIX}/xxxyyy.F
-${SRCGRAFIX}/xytag.F
-${SRCGRAFIX}/yamada.F
-${SRCGRAFIX}/zfitds.F
-${SRCGRAFIX}/zfit.F
-${SRCGRAFIX}/zinter.F
-${SRCGRAFIX}/ztrgvw.F
-${SRCGRAFIX}/grblock.F
-
+########################################################################
+SET(GRAFIX_src axshow.F  bankls.F bankpr.F barsec.f blnumb.F blshow.F calloc.F capmrk.F cdst.F   cirdis.F  
+               clrcon.f  coment.f comwrd.F convrt.f credit.F cricro.f croax.F  ctdist.F decide.f dedxds.F 
+               dedxv1.F  dedxvw.F defcmd.F defmac.f defwrd.f delmac.f diaghn.f diagin.f disaxi.f disply.F  
+               dispvc.F  dispzc.F dnum.f   dracap.f dramov.f drawbp.F drawer.F drawfd.F drawid.F drawlg.F 
+               drawmu.f  drawpi.f drawvc.F drawzc.F drftim.f drhatc.F drvcrd.F drwhit.F dsfadc.F dsvac.F 
+               dthcv1.f  ecapcy.F ecap.F   ecaps.F  edimac.f edvp.F   efmass.F ellips.f endmes.F evdisp.F 
+               evtax.F   expmac.f fadcax.F faddrw.f fampds.F fampft.F ficoor.F ficoov.F finabr.f fincmd.f 
+               finwrd.f  ftdlho.F fw83.F   fwc83.F  fwcap.F  fwchev.F fwdisp.F fwmucn.F fwmuht.F fwnew.F fyrint.f
+               gamdis.F  gmtext.F gvtxft.F heldis.F helpli.f helpus.f hemsym.f hitdsp.F hitmrk.F hitpnt.F 
+               hitscl.f  hlpmac.f hodrfi.F idfun.f  j68kds.F jadarg.f jadcmd.f jadisp.F joys.F   komman.F 
+               koord.F   lgclst.F lindis.F locmac.f mcgjet.f menu.f   more.F   muldsp.F mur2ds.F n50sds.F 
+               newcal.F  newcap.F news.f   notice.f numbwr.F pardis.F pbgcyl.F pbgrfi.F pbgrz.F  pbgsum.F
+               phnumb.F  pick.F   plygon.f pratof.F predit.F prj68k.f prmprs.F prn50s.F profil.f projec.F
+               projvw.F  prompt.f prtpev.F prtptr.F prtpvx.F przvtx.F qplots.F ralloc.F realnm.f rectan.f
+               renmac.f  resmac.f retten.F rsdisp.F rutrck.F rzdraw.F rzhits.F rzroll.F rztrck.F saege.F 
+               scannr.F  sepcmd.f setcmd.f setdef.F setscl.F setupg.F spare.f  spthak.F stplst.F tbgdis.F 
+               ternum.f  tofds.F  tonum.f  tr3dsp.F trig2.F  trkhit.F trkrol.F trn4v.F  trnumb.F trpvtx.F 
+               trtext.F  truth.F  vcdo.F   vrxcir.F vtx.F    vtx.F    vxdisp.F walloc.F welcme.f xcalcor.F xsafchk.F 
+               xtofvw.F  xxxyyy.F xytag.F  yamada.F zfitds.F zfit.F   zinter.F ztrgvw.F grblock.F
 )
+list(TRANSFORM GRAFIX_src PREPEND "${SRCGRAFIX}/")
 ADD_LIBRARY(${GRAFIX} STATIC ${GRAFIX_src})
+########################################################################
 SET(INTERFACE_src
-         ${SRCINTERFACE}/hfix.f 
-         ${SRCINTERFACE}/biby.f 
-         ${SRCINTERFACE}/dlib.f ${SRCINTERFACE}/igwlcm.F
-         ${SRCINTERFACE}/ips.f ${SRCINTERFACE}/plot10.F   ${SRCINTERFACE}/plot2016.F 
-         #${SRCINTERFACE}/ranmar.f 
-         ${SRCINTERFACE}/setcol.F
+         hfix.f biby.f  dlib.f igwlcm.F ips.f plot10.F plot2016.F 
+         #ranmar.f 
+         setcol.F
 )
+list(TRANSFORM INTERFACE_src PREPEND "${SRCINTERFACE}/")
 ADD_LIBRARY(${INTERFACE} STATIC ${INTERFACE_src})
+########################################################################
 SET(JADEGS_src
-${SRCJADEGS}/akop.F
-${SRCJADEGS}/alphan.F
-${SRCJADEGS}/amps2z.F
-${SRCJADEGS}/change.F
-${SRCJADEGS}/cl2prc.f
-${SRCJADEGS}/cnewid.F
-${SRCJADEGS}/dedxbk.F
-${SRCJADEGS}/dedxbn.F
-${SRCJADEGS}/distxy.F
-${SRCJADEGS}/drpipe.F
-${SRCJADEGS}/drtrck.F
-${SRCJADEGS}/dserr.f
-${SRCJADEGS}/dxmcsp.f
-${SRCJADEGS}/dxmcss.f
-${SRCJADEGS}/ebeam.F
-${SRCJADEGS}/eigen.f
-${SRCJADEGS}/ergtot.F
-${SRCJADEGS}/errmom.F
-${SRCJADEGS}/errprt.F
-${SRCJADEGS}/evbkpr.F
-${SRCJADEGS}/evrea1.f
-${SRCJADEGS}/evread.F
-${SRCJADEGS}/evwrit9.F
-${SRCJADEGS}/exjhtl.F
-${SRCJADEGS}/fampco.F
-${SRCJADEGS}/getds.f
-${SRCJADEGS}/getint.f
-${SRCJADEGS}/hprs.f
-${SRCJADEGS}/idattm.f
-${SRCJADEGS}/izt2rn.f
-${SRCJADEGS}/jadebd.F
-${SRCJADEGS}/jegain.f
-${SRCJADEGS}/jetcal.F
-${SRCJADEGS}/jfetch.F
-${SRCJADEGS}/jftnew.F
-${SRCJADEGS}/jrecal.F
-${SRCJADEGS}/kalibr.f
-${SRCJADEGS}/klread.F
-${SRCJADEGS}/ktmcon.F
-${SRCJADEGS}/ldatyp.f
-${SRCJADEGS}/linkds.f
-${SRCJADEGS}/locfld.f
-${SRCJADEGS}/loc.f
-${SRCJADEGS}/mchtrb.F
-${SRCJADEGS}/mctr4v.F
-${SRCJADEGS}/mctrcb.F
-${SRCJADEGS}/messag.F
-${SRCJADEGS}/mofrci.f
-${SRCJADEGS}/momenp.F
-${SRCJADEGS}/moment.F
-${SRCJADEGS}/momgam.F
-${SRCJADEGS}/n50sco.F
-${SRCJADEGS}/numfun.f
-${SRCJADEGS}/nvert.f
-${SRCJADEGS}/opunit.F
-${SRCJADEGS}/parmin.f
-${SRCJADEGS}/pragai.f
-${SRCJADEGS}/prstat.F
-${SRCJADEGS}/rbpipe.F
-${SRCJADEGS}/rdalgn.F
-${SRCJADEGS}/rddate.F
-${SRCJADEGS}/rdddcl.f
-${SRCJADEGS}/rddoub.f
-${SRCJADEGS}/rddouv.F
-${SRCJADEGS}/rdhead.f
-${SRCJADEGS}/rdiefv.F
-${SRCJADEGS}/rdinef.f
-${SRCJADEGS}/rdmerg.f
-${SRCJADEGS}/rdmodn.F
-${SRCJADEGS}/rdmodv.F
-${SRCJADEGS}/rdmrgv.f
-${SRCJADEGS}/rdmtco9.F
-${SRCJADEGS}/rdpatr.F
-${SRCJADEGS}/rdpoin.f
-${SRCJADEGS}/rdpoiv.f
-${SRCJADEGS}/rdrdmh.f
-${SRCJADEGS}/rdreso.F
-${SRCJADEGS}/rdresv.F
-${SRCJADEGS}/rdrnhv.F
-${SRCJADEGS}/rdtrg1.f
-${SRCJADEGS}/rdtrg2.f
-${SRCJADEGS}/rdtrig.F
-${SRCJADEGS}/runfix.F
-${SRCJADEGS}/safchk.f
-${SRCJADEGS}/shell9.F
-${SRCJADEGS}/sminvd.f
-${SRCJADEGS}/sphrcy.f
-${SRCJADEGS}/spinnr.f
-${SRCJADEGS}/sqtval.F
-${SRCJADEGS}/superv.F
-${SRCJADEGS}/symin.f
-${SRCJADEGS}/thrunb.F
-${SRCJADEGS}/thrust.F
-${SRCJADEGS}/tofbk.f
-${SRCJADEGS}/track.F
-${SRCJADEGS}/treltr.F
-${SRCJADEGS}/vertex.f
-${SRCJADEGS}/vrtpos.f
-${SRCJADEGS}/vtm.f
-${SRCJADEGS}/vtxaft.f
-${SRCJADEGS}/vtxbnk.F
-${SRCJADEGS}/vtxee.f
-${SRCJADEGS}/vtxini.f
-${SRCJADEGS}/vtxpnt.f
-${SRCJADEGS}/vtxpre.F
-${SRCJADEGS}/vtxsrc.f
-${SRCJADEGS}/xbpipe.F
-${SRCJADEGS}/xyblk.F
-${SRCJADEGS}/zcass.f
-${SRCJADEGS}/zcdata.f
-${SRCJADEGS}/zcftnw.F
-${SRCJADEGS}/zchcal.f
-${SRCJADEGS}/zcoor.f
-${SRCJADEGS}/zextra.f
-${SRCJADEGS}/zsfit.F
-${SRCJADEGS}/zsline.F
-${SRCJADEGS}/zspdbk.f
-${SRCJADEGS}/zspur.F
-${SRCJADEGS}/zsrft1.F
-${SRCJADEGS}/zsrftv.F
-${SRCJADEGS}/zsxy.F
-${SRCJADEGS}/zvertf.F
-#NOTE, The old version from PMF contains a bug:  zrecal and zbug symbols are taken from zebra
-${SRCJADEGS}/zrecal.F
-${SRCJADEGS}/zbug.f
+akop.F alphan.F amps2z.F change.F cl2prc.f cnewid.F dedxbk.F dedxbn.F distxy.F drpipe.F drtrck.F 
+dserr.f dxmcsp.f dxmcss.f ebeam.F eigen.f ergtot.F errmom.F errprt.F evbkpr.F evrea1.f evread.F 
+evwrit9.F exjhtl.F fampco.F getds.f getint.f hprs.f idattm.f izt2rn.f jadebd.F jegain.f jetcal.F 
+jfetch.F jftnew.F jrecal.F kalibr.f klread.F ktmcon.F ldatyp.f linkds.f locfld.f loc.f mchtrb.F 
+mctr4v.F mctrcb.F messag.F mofrci.f momenp.F moment.F momgam.F n50sco.F numfun.f nvert.f opunit.F 
+parmin.f pragai.f prstat.F rbpipe.F rdalgn.F rddate.F rdddcl.f rddoub.f rddouv.F rdhead.f rdiefv.F 
+rdinef.f rdmerg.f rdmodn.F rdmodv.F rdmrgv.f rdmtco9.F rdpatr.F rdpoin.f rdpoiv.f rdrdmh.f rdreso.F 
+rdresv.F rdrnhv.F rdtrg1.f rdtrg2.f rdtrig.F runfix.F safchk.f shell9.F sminvd.f sphrcy.f spinnr.f 
+sqtval.F superv.F symin.f thrunb.F thrust.F tofbk.f track.F treltr.F vertex.f vrtpos.f vtm.f vtxaft.f 
+vtxbnk.F vtxee.f vtxini.f vtxpnt.f vtxpre.F vtxsrc.f xbpipe.F xyblk.F zcass.f zcdata.f zcftnw.F zchcal.f 
+zcoor.f zextra.f zsfit.F zsline.F zspdbk.f zspur.F zsrft1.F zsrftv.F zsxy.F zvertf.F
+#NOTE, The old version from PMF contains a bug:  zrecal and zbug symbols are taken from zebra 
+zrecal.F zbug.f
 )
-
-
+list(TRANSFORM JADEGS_src PREPEND "${SRCJADEGS}/")
 ADD_LIBRARY(${JADEGS} STATIC ${JADEGS_src})
+########################################################################
 SET(JADEMUS_src
-${SRCJADEMUS}/mu2pul.f
-${SRCJADEMUS}/muanab.F
-${SRCJADEMUS}/muanac.F
-${SRCJADEMUS}/muanaf.F
-${SRCJADEMUS}/muana.f
-${SRCJADEMUS}/mucon.F
-${SRCJADEMUS}/muconw.F
-${SRCJADEMUS}/mucoor.F
-${SRCJADEMUS}/mucuts.F
-${SRCJADEMUS}/mudchk.F
-${SRCJADEMUS}/mudump.F
-${SRCJADEMUS}/muendp.F
-${SRCJADEMUS}/muerry.f
-${SRCJADEMUS}/mufflb.F
-${SRCJADEMUS}/muffle.F
-${SRCJADEMUS}/mufflr.F
-${SRCJADEMUS}/muffls.F
-${SRCJADEMUS}/mufflt.F
-${SRCJADEMUS}/mufflx.F
-${SRCJADEMUS}/muffly.F
-${SRCJADEMUS}/mufflz.F
-${SRCJADEMUS}/mufini.F
-${SRCJADEMUS}/mufmat.F
-${SRCJADEMUS}/mufsta.F
-${SRCJADEMUS}/muhdsp.F
-${SRCJADEMUS}/muhit.F
-${SRCJADEMUS}/muhits.F
-
-${SRCJADEMUS}/muloch.F
-${SRCJADEMUS}/mumess.f
-${SRCJADEMUS}/muons.F
-${SRCJADEMUS}/mupic.F
-${SRCJADEMUS}/muregm.f
-${SRCJADEMUS}/mureg.F
-${SRCJADEMUS}/muregs.f
-${SRCJADEMUS}/muregy.F
-${SRCJADEMUS}/musafe.f
-${SRCJADEMUS}/muwire.F
-${SRCJADEMUS}/tanthm.F
-${SRCJADEMUS}/xymud.F
+ mu2pul.f muanab.F muanac.F muanaf.F muana.f  mucon.F  muconw.F mucoor.F mucuts.F 
+ mudchk.F mudump.F muendp.F muerry.f mufflb.F muffle.F mufflr.F muffls.F mufflt.F 
+ mufflx.F muffly.F mufflz.F mufini.F mufmat.F mufsta.F muhdsp.F muhit.F  muhits.F
+ muloch.F mumess.f muons.F  mupic.F  muregm.f mureg.F  muregs.f muregy.F musafe.f 
+ muwire.F tanthm.F xymud.F
 )
+list(TRANSFORM JADEMUS_src PREPEND "${SRCJADEMUS}/")
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "PGI")
   LIST(APPEND JADEMUS_src ${SRCJADEMUS}/muininohash.F)
 else()
   LIST(APPEND JADEMUS_src ${SRCJADEMUS}/muini.F)
 endif()
-
 ADD_LIBRARY(${JADEMUS} STATIC ${JADEMUS_src})
-#SET(JADESR_src
-#)
-#ADD_LIBRARY(${JADESRLIB} jadesr ${JADESR_src})
-
-SET(JMC_src
-${SRCJMC}/actof.f
-${SRCJMC}/brvect.F
-${SRCJMC}/datemc.f
-${SRCJMC}/eepair.f
-${SRCJMC}/endclg.f
-${SRCJMC}/errmsg.F
-${SRCJMC}/evtini.f
-${SRCJMC}/fcrang.f
-${SRCJMC}/hdecls.f
-${SRCJMC}/inifwd.f
-${SRCJMC}/inttof.f
-${SRCJMC}/jchamb.f
-${SRCJMC}/jdtime.f
-${SRCJMC}/jeloss.f
-${SRCJMC}/jftest.f
-${SRCJMC}/jgetev.f
-${SRCJMC}/jgetvc.f
-${SRCJMC}/jhitin.f
-${SRCJMC}/jinit.f
-${SRCJMC}/jipatr.f
-${SRCJMC}/jmulsc.f
-${SRCJMC}/jprabs.f
-${SRCJMC}/jprfre.f
-${SRCJMC}/jprthi.f
-${SRCJMC}/jprtlo.f
-${SRCJMC}/jrchck.f
-${SRCJMC}/jring.f
-${SRCJMC}/jspoin.f
-${SRCJMC}/jstep.f
-${SRCJMC}/jstore.f
-${SRCJMC}/jtrapz.f
-${SRCJMC}/jtrkgm.f
-${SRCJMC}/jtrntr.f
-${SRCJMC}/jvdtim.f
-${SRCJMC}/jvtxch.f
-${SRCJMC}/limint.F
-${SRCJMC}/mchist.f
-${SRCJMC}/mcnews.f
-${SRCJMC}/mctagb.f
-${SRCJMC}/mctagc.f
-${SRCJMC}/mctage.f
-${SRCJMC}/mctagf.f
-${SRCJMC}/mctagi.F
-${SRCJMC}/mctagm.F
-${SRCJMC}/mctagr.F
-${SRCJMC}/mctags.F
-${SRCJMC}/mcvali.F
-${SRCJMC}/mcverr.f
-${SRCJMC}/mcvsum.f
-${SRCJMC}/muconm.f
-${SRCJMC}/muordr.f
-${SRCJMC}/murtne.f
-${SRCJMC}/ordlg.f
-${SRCJMC}/pikmuf.f
-${SRCJMC}/plligd.f
-${SRCJMC}/radiat.f
-${SRCJMC}/rncont.f
-${SRCJMC}/rnexp0.f
-${SRCJMC}/rngau.f
-${SRCJMC}/rtmi.f
-${SRCJMC}/setbpc.f
-${SRCJMC}/settof.f
-${SRCJMC}/showr.f
-${SRCJMC}/stalgn.f
-${SRCJMC}/statag.F
-${SRCJMC}/statbp.f
-${SRCJMC}/sthead.f
-${SRCJMC}/stlatc.f
-${SRCJMC}/stpall.F
-${SRCJMC}/stvect.F
-${SRCJMC}/svect1.f
-${SRCJMC}/tags2h.F
-${SRCJMC}/tags2h.F
-${SRCJMC}/tofmak.f
-${SRCJMC}/trcdet.f
-${SRCJMC}/trcdtv.f
-${SRCJMC}/trcoil.f
-${SRCJMC}/trkadc.f
-${SRCJMC}/trkgam.f
-${SRCJMC}/trkgmv.f
-${SRCJMC}/trlgl.f
-${SRCJMC}/trlgs6.F
-${SRCJMC}/trlgsh.F
-${SRCJMC}/wegas.f
-${SRCJMC}/wrtmcb.f
+########################################################################
+SET(JMC_src 
+actof.f  brvect.F datemc.f eepair.f endclg.f errmsg.F evtini.f fcrang.f 
+hdecls.f inifwd.f inttof.f jchamb.f jdtime.f jeloss.f jftest.f jgetev.f jgetvc.f 
+jhitin.f jinit.f  jipatr.f jmulsc.f jprabs.f jprfre.f jprthi.f jprtlo.f jrchck.f 
+jring.f  jspoin.f jstep.f  jstore.f jtrapz.f jtrkgm.f jtrntr.f jvdtim.f jvtxch.f 
+limint.F mchist.f mcnews.f mctagb.f mctagc.f mctage.f mctagf.f mctagi.F mctagm.F 
+mctagr.F mctags.F mcvali.F mcverr.f mcvsum.f muconm.f muordr.f murtne.f ordlg.f 
+pikmuf.f plligd.f radiat.f rncont.f rnexp0.f rngau.f  rtmi.f   setbpc.f settof.f 
+showr.f  stalgn.f statag.F statbp.f sthead.f stlatc.f stpall.F stvect.F svect1.f 
+tags2h.F tags2h.F tofmak.f trcdet.f trcdtv.f trcoil.f trkadc.f trkgam.f trkgmv.f 
+trlgl.f  trlgs6.F trlgsh.F wegas.f  wrtmcb.f
 )
+list(TRANSFORM JMC_src PREPEND "${SRCJMC}/")
 ADD_LIBRARY(${JMC} STATIC ${JMC_src})
+########################################################################
 SET(PATRECSR_src
-         ${SRCPATRECSR}/adpatr.F ${SRCPATRECSR}/backtr.F ${SRCPATRECSR}/bakfit.F ${SRCPATRECSR}/bakpak.F ${SRCPATRECSR}/bside.F
-         ${SRCPATRECSR}/bstore.F ${SRCPATRECSR}/crtrel.F ${SRCPATRECSR}/deadcl.f ${SRCPATRECSR}/errorm.F
-         ${SRCPATRECSR}/flinel.F ${SRCPATRECSR}/ftrkel.F ${SRCPATRECSR}/fxyz.F ${SRCPATRECSR}/inpatc.F
-         ${SRCPATRECSR}/inpatr.F ${SRCPATRECSR}/kntrel.F ${SRCPATRECSR}/patrc1.F ${SRCPATRECSR}/patrec.F
-         ${SRCPATRECSR}/patrol.F ${SRCPATRECSR}/pcwork.F ${SRCPATRECSR}/prhtar.F ${SRCPATRECSR}/rincon.F
-         ${SRCPATRECSR}/rstbtr.F ${SRCPATRECSR}/srtrel.F ${SRCPATRECSR}/trlord.F ${SRCPATRECSR}/xyfit.F
-         ${SRCPATRECSR}/zrfit.F
+         adpatr.F backtr.F bakfit.F bakpak.F bside.F bstore.F crtrel.F deadcl.f errorm.F
+         flinel.F ftrkel.F fxyz.F inpatc.F inpatr.F kntrel.F patrc1.F patrec.F
+         patrol.F pcwork.F prhtar.F rincon.F rstbtr.F srtrel.F trlord.F xyfit.F
+         zrfit.F
 )
+list(TRANSFORM PATRECSR_src PREPEND "${SRCPATRECSR}/")
 ADD_LIBRARY(${PATRECSR} STATIC ${PATRECSR_src})
+########################################################################
 SET(SOURCE_src
-         ${SRCSOURCE}/angbar.f ${SRCSOURCE}/bbcorr.F ${SRCSOURCE}/bbleak.F ${SRCSOURCE}/brlgn6.f
-         ${SRCSOURCE}/brlgn.F ${SRCSOURCE}/calcor.F ${SRCSOURCE}/elgobs.f ${SRCSOURCE}/encorr.F
-         ${SRCSOURCE}/englos.f ${SRCSOURCE}/enlosg.f ${SRCSOURCE}/ilctrc.f ${SRCSOURCE}/intolg.F
-         ${SRCSOURCE}/lganal9.F ${SRCSOURCE}/lgavde.f ${SRCSOURCE}/lgavdp.f ${SRCSOURCE}/lgbadc.F
-         ${SRCSOURCE}/lgbfil.F ${SRCSOURCE}/lgbhit.f ${SRCSOURCE}/lgbtdc.F ${SRCSOURCE}/lgcalb.F
-         ${SRCSOURCE}/lgcctl.F ${SRCSOURCE}/lgcdir9.F ${SRCSOURCE}/lgchc2.F ${SRCSOURCE}/lgclpb9.F
-         ${SRCSOURCE}/lgclpc.F ${SRCSOURCE}/lgclus.F ${SRCSOURCE}/lgcrn2.f ${SRCSOURCE}/lgcrnr.f
-         ${SRCSOURCE}/lgdcpy.F ${SRCSOURCE}/lgdead.f ${SRCSOURCE}/lgecor9.F ${SRCSOURCE}/lgeerr.f
-         ${SRCSOURCE}/lgefil.F ${SRCSOURCE}/lgehit.f ${SRCSOURCE}/lgeign.F ${SRCSOURCE}/lgerse.F
-         ${SRCSOURCE}/lgesmr.f ${SRCSOURCE}/lginit.f ${SRCSOURCE}/lgmesg.F ${SRCSOURCE}/lgnbls.f
-         ${SRCSOURCE}/lgnmec.f ${SRCSOURCE}/lgrein.F ${SRCSOURCE}/lgsrth.F ${SRCSOURCE}/lgsubc.f
-         ${SRCSOURCE}/lgthcr.f ${SRCSOURCE}/lkcorr.F ${SRCSOURCE}/posend.f ${SRCSOURCE}/shmax.f
-         ${SRCSOURCE}/thcofa.F ${SRCSOURCE}/thcorr.F ${SRCSOURCE}/tpcnst.F
+         angbar.f bbcorr.F bbleak.F brlgn6.f brlgn.F calcor.F elgobs.f encorr.F
+         englos.f enlosg.f ilctrc.f intolg.F lganal9.F lgavde.f lgavdp.f lgbadc.F
+         lgbfil.F lgbhit.f lgbtdc.F lgcalb.F lgcctl.F lgcdir9.F lgchc2.F lgclpb9.F
+         lgclpc.F lgclus.F lgcrn2.f lgcrnr.f lgdcpy.F lgdead.f lgecor9.F lgeerr.f
+         lgefil.F lgehit.f lgeign.F lgerse.F lgesmr.f lginit.f lgmesg.F lgnbls.f
+         lgnmec.f lgrein.F lgsrth.F lgsubc.f lgthcr.f lkcorr.F posend.f shmax.f
+         thcofa.F thcorr.F tpcnst.F
 )
+list(TRANSFORM SOURCE_src PREPEND "${SRCSOURCE}/")
 ADD_LIBRARY(${SOURCE} STATIC ${SOURCE_src})
+########################################################################
 SET(TAGG_src
-         ${SRCTAGG}/amctag.f ${SRCTAGG}/anatag.F ${SRCTAGG}/conver.f ${SRCTAGG}/ggcctl.f
-         ${SRCTAGG}/ggclpc.f ${SRCTAGG}/ggclus.f ${SRCTAGG}/ggfac2.f ${SRCTAGG}/ggresq.f
-         ${SRCTAGG}/ggsort.f ${SRCTAGG}/ggsrth.f ${SRCTAGG}/gscrub.f ${SRCTAGG}/lumons.f
-         ${SRCTAGG}/rcoord.f ${SRCTAGG}/repack.f ${SRCTAGG}/sort.f ${SRCTAGG}/tagadc.F
-         ${SRCTAGG}/tagan.F ${SRCTAGG}/tagchk.F ${SRCTAGG}/tagcls.F ${SRCTAGG}/tagcol.F
-         ${SRCTAGG}/tagdir.f ${SRCTAGG}/tagfit.F ${SRCTAGG}/tagfty.f ${SRCTAGG}/taggtp.F
-         ${SRCTAGG}/tagh2s.F ${SRCTAGG}/tagint.F ${SRCTAGG}/tagkal.F ${SRCTAGG}/tagmrk.F
-         ${SRCTAGG}/tagneb.F ${SRCTAGG}/tagpd1.F ${SRCTAGG}/tagpd2.F ${SRCTAGG}/tagped.F
-         ${SRCTAGG}/tagphi.f ${SRCTAGG}/tagpos.F ${SRCTAGG}/tagps1.F ${SRCTAGG}/tagps2.f
-         ${SRCTAGG}/tagraw.F ${SRCTAGG}/tagrty.f ${SRCTAGG}/tags2h.F ${SRCTAGG}/tagsr1.F
-         ${SRCTAGG}/tagsr2.F ${SRCTAGG}/tagsto.for ${SRCTAGG}/tagsum.F ${SRCTAGG}/tracks.f
-         ${SRCTAGG}/umcpak.f
+         amctag.f anatag.F conver.f ggcctl.f ggclpc.f ggclus.f ggfac2.f ggresq.f
+         ggsort.f ggsrth.f gscrub.f lumons.f rcoord.f repack.f sort.f tagadc.F
+         tagan.F tagchk.F tagcls.F tagcol.F tagdir.f tagfit.F tagfty.f taggtp.F
+         tagh2s.F tagint.F tagkal.F tagmrk.F tagneb.F tagpd1.F tagpd2.F tagped.F
+         tagphi.f tagpos.F tagps1.F tagps2.f tagraw.F tagrty.f tags2h.F tagsr1.F
+         tagsr2.F tagsto.for tagsum.F tracks.f umcpak.f
 )
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
   file(GLOB myfortag ${SRCTAGG}/*.for)
   set_property(SOURCE ${myfortag} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
 endif()
-      
+list(TRANSFORM TAGG_src PREPEND "${SRCTAGG}/")
 ADD_LIBRARY(${TAGG} STATIC ${TAGG_src})
+########################################################################
 SET(TOFLIB_src
-         ${SRCTOFLIB}/agrpr.f ${SRCTOFLIB}/atfugr.f ${SRCTOFLIB}/atofrw.f ${SRCTOFLIB}/atofun.F
-         ${SRCTOFLIB}/cmass.f ${SRCTOFLIB}/corcst.f ${SRCTOFLIB}/mocard.F ${SRCTOFLIB}/rd0880.F
-         ${SRCTOFLIB}/tfarnw.F ${SRCTOFLIB}/tfctd1.F ${SRCTOFLIB}/tfstor.f ${SRCTOFLIB}/tofar2.F
-         ${SRCTOFLIB}/tofard.F ${SRCTOFLIB}/tofbra.f ${SRCTOFLIB}/tofcl2.f ${SRCTOFLIB}/tofclc.F
-         ${SRCTOFLIB}/tofcor.f ${SRCTOFLIB}/tofin2.F ${SRCTOFLIB}/tofint.F ${SRCTOFLIB}/tofma2.f
-         ${SRCTOFLIB}/tofmas.F ${SRCTOFLIB}/tofsm2.f ${SRCTOFLIB}/tofsm3.F ${SRCTOFLIB}/tofsmp.F
+         agrpr.f atfugr.f atofrw.f atofun.F cmass.f corcst.f mocard.F rd0880.F
+         tfarnw.F tfctd1.F tfstor.f tofar2.F tofard.F tofbra.f tofcl2.f tofclc.F
+         tofcor.f tofin2.F tofint.F tofma2.f tofmas.F tofsm2.f tofsm3.F tofsmp.F
 )
+list(TRANSFORM TOFLIB_src PREPEND "${SRCTOFLIB}/")
 ADD_LIBRARY(${TOFLIB} STATIC ${TOFLIB_src})
+########################################################################
 SET(VERTEX_src
-         ${SRCVERTEX}/vertex.f ${SRCVERTEX}/vtxaft.f ${SRCVERTEX}/vtxbnk.F ${SRCVERTEX}/vtxee.f
-         ${SRCVERTEX}/vtxini.f ${SRCVERTEX}/vtxpnt.f ${SRCVERTEX}/vtxpre.F ${SRCVERTEX}/vtxsrc.f
+         vertex.f vtxaft.f vtxbnk.F vtxee.f vtxini.f vtxpnt.f vtxpre.F vtxsrc.f
 )
+list(TRANSFORM VERTEX_src PREPEND "${SRCVERTEX}/")
 ADD_LIBRARY(${VERTEX} STATIC ${VERTEX_src})
+########################################################################
 SET(WERTEX_src
-         ${SRCWERTEX}/parkor.F ${SRCWERTEX}/wertex.f ${SRCWERTEX}/wtxaft.f ${SRCWERTEX}/wtxbnk.F
-         ${SRCWERTEX}/wtxcrv.f ${SRCWERTEX}/wtxee.f ${SRCWERTEX}/wtxeer.F ${SRCWERTEX}/wtxerr.f
-         ${SRCWERTEX}/wtxini.f ${SRCWERTEX}/wtxpnt.f ${SRCWERTEX}/wtxpre.F ${SRCWERTEX}/wtxsrc.f
-         ${SRCWERTEX}/xfwid.F ${SRCWERTEX}/xfwvxc.F
+         parkor.F wertex.f wtxaft.f wtxbnk.F wtxcrv.f wtxee.f wtxeer.F wtxerr.f
+         wtxini.f wtxpnt.f wtxpre.F wtxsrc.f xfwid.F xfwvxc.F
 )
+list(TRANSFORM WERTEX_src PREPEND "${SRCWERTEX}/")
 ADD_LIBRARY(${WERTEX} STATIC ${WERTEX_src})
+########################################################################
 SET(ZLIB_src
-         ${SRCZLIB}/chien52.F ${SRCZLIB}/chien5.F ${SRCZLIB}/crdoca.f ${SRCZLIB}/dxmcgn.f
-         ${SRCZLIB}/ealgcl.F ${SRCZLIB}/eamcde.f ${SRCZLIB}/eaunin.f ${SRCZLIB}/eazero.f
-         ${SRCZLIB}/ekand.f ${SRCZLIB}/expect.F ${SRCZLIB}/fehler.f ${SRCZLIB}/irnevt.f
-         ${SRCZLIB}/jobfin.f ${SRCZLIB}/prallb.f ${SRCZLIB}/prlist.f ${SRCZLIB}/prsinb.f
-         ${SRCZLIB}/prtoci.f ${SRCZLIB}/shado9.F ${SRCZLIB}/shwcpr.f ${SRCZLIB}/trkbl9.F
-         ${SRCZLIB}/trkbse.F ${SRCZLIB}/ze4vdp.f ${SRCZLIB}/ze4vea.f ${SRCZLIB}/ze4vet2.f
-         ${SRCZLIB}/ze4vet.f ${SRCZLIB}/ze4vet.f ${SRCZLIB}/ze4vmc.f ${SRCZLIB}/ze4vpk.for
-         ${SRCZLIB}/ze4vtp.f ${SRCZLIB}/ze4vun.f ${SRCZLIB}/ze4vvx.F ${SRCZLIB}/zmcredu.f
-         ${SRCZLIB}/zsphrcy.f ${SRCZLIB}/zspthak.f
+     chien52.F chien5.F crdoca.f dxmcgn.f ealgcl.F eamcde.f eaunin.f eazero.f
+     ekand.f expect.F fehler.f irnevt.f jobfin.f prallb.f prlist.f prsinb.f
+     prtoci.f shado9.F shwcpr.f trkbl9.F trkbse.F ze4vdp.f ze4vea.f ze4vet2.f
+     ze4vet.f ze4vet.f ze4vmc.f ze4vpk.for ze4vtp.f ze4vun.f ze4vvx.F zmcredu.f
+     zsphrcy.f zspthak.f
 )
+list(TRANSFORM ZLIB_src PREPEND "${SRCZLIB}/")
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
   file(GLOB myforzlib ${SRCZLIB}/*.for)
   set_property(SOURCE ${myforzlib} PROPERTY COMPILE_FLAGS -qsuffix=f=for)
 endif()
-      
 ADD_LIBRARY(${ZLIB} STATIC ${ZLIB_src})
-
+########################################################################
 #JADEZ
 SET(JADEZ_src ${SRCJADEZ}/gphmain.F  ${SRCJADEZ}/xuser.F)
 ADD_EXECUTABLE(${JADEZEXE} ${JADEZ_src})
-
 #JADEZROOT
 if (NOT JADE_USE_CERNLIB)
   SET(JADEZROOT_src ${SRCJADEZ}/gphmain2.F  ${SRCJADEZ}/xuser.F  ${SRCJADEZ}/gphmain.cxx)
   ADD_EXECUTABLE(${JADEZROOTEXE} ${JADEZROOT_src})
   target_include_directories(${JADEZROOTEXE} PUBLIC ${ROOT_INCLUDE_DIRS})
 endif()
-
 #MCJADE
 SET(MCJADE_src ${SRCMCJADE}/mcjade.f ${SRCMCJADE}/mcmain.f  ${SRCMCJADE}/mcrand.f  ${SRCMCJADE}/mcuser.f ${SRCSUPERV}/showb.f)
 ADD_EXECUTABLE(${MCJADEEXE} ${MCJADE_src})
-
 #SUPERV
 SET(SUPERV_src ${SRCSUPERV}/ana.F    ${SRCSUPERV}/jdmain.f  ${SRCSUPERV}/showb.f  ${SRCSUPERV}/user.f ${SRCMCJADE}/mcrand.f)
 ADD_EXECUTABLE(${SUPERVEXE} ${SUPERV_src})
-
 #ZE4V
 SET(ZE4V_src ${SRCZE4V}/ze4vjb.f ${SRCMCJADE}/mcrand.f ${SRCSUPERV}/showb.f )
 ADD_EXECUTABLE(${ZE4VEXE} ${ZE4V_src})
@@ -833,20 +452,10 @@ TARGET_LINK_LIBRARIES(py57    PRIVATE
 endif()
 ########################################################################
 
-
-
-########################################################################
-
-INSTALL(TARGETS ${MCJADEEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-INSTALL(TARGETS ${SUPERVEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-INSTALL(TARGETS ${JADEZEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-  if (NOT JADE_USE_CERNLIB)
-INSTALL(TARGETS ${JADEZROOTEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+INSTALL(TARGETS ${MCJADEEXE}  ${SUPERVEXE}  ${ZE4VEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+if (NOT JADE_USE_CERNLIB)
+  INSTALL(TARGETS ${JADEZROOTEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
-INSTALL(TARGETS ${ZE4VEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
 INSTALL( TARGETS ${BOSLIB} 
          ${GRAFIX} 
          ${INTERFACE} 
