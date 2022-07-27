@@ -4,7 +4,7 @@ C     BOS SUBPROGRAM =1.16=
 #include "acs.for"
       COMMON/BCS/IW(1)
 #include "ccs.for"
-      INTEGER TEXT(4)/'IW()','LFDI','LFDK','NLST'/
+      INTEGER TEXT(4)/4HIW(),4HLFDI,4HLFDK,4HNLST/
       REAL*8 TEXTB(10)
    10 WRITE(6,101) ICOND
       WRITE(6,102)
@@ -12,10 +12,10 @@ C     BOS SUBPROGRAM =1.16=
       CALL UWP(IUND,1,10)
 C     PRINTOUT OF TRACEBACK
 *xxx 09.01.98      M=ITRACE(TEXTB,10)
-       	TEXTB(1) = 'PEDR'
-       	TEXTB(2) = 'ANTO'
-       	TEXTB(3) = 'MOVI'
-       	TEXTB(4) = 'FERN'
+       	TEXTB(1) = 4HPEDR
+       	TEXTB(2) = 4HANTO
+       	TEXTB(3) = 4HMOVI
+       	TEXTB(4) = 4HFERN
      	M=20
 *xxx
       WRITE(6,105) (TEXTB(J),J=1,M)

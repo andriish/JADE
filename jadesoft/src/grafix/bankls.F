@@ -31,7 +31,7 @@ C
      +                  PHI,XXX,YYY,SSS,IPP,IHO,IVE,
      +                  HSIGN,HDUM,NTRRES,IW52
 C
-      DATA  LNAME/'LGCL'/, HMINUS/'- '/
+      DATA  LNAME/4HLGCL/, HMINUS/2H- /
 *** PMF 17/11/99: add variable needed for emulation of DESYLIB routine 'CORE'  
       CHARACTER cHWORK*80
       EQUIVALENCE (cHWORK,HWORK(1))
