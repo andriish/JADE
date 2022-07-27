@@ -122,11 +122,27 @@ if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU" ]; then
    export FC=gfortran
  fi
 fi
+tmpbits=$( echo "$*" | egrep -- '--\<bits\>' | cut -f2 -d=)
+bits=64
+if test -z "$tmpbits"; then
+ tmpbits=$tmpbits
+fi
+if  [ "$tmpbits" != "32" ] && [ "$tmpbits" != "64" ] ; then
+ echo "Unknown bits "$tmpbits" using 64 instead."
+ echo "Possible values for the bits are 32 and 64"
+else 
+ bits=$tmpbits
+fi
+if  [ "$tmpbits" == "32" ] 
+  e_arguments="-DJADE_FORCE_32=ON"
+else
+  e_arguments=""
+fi
 ########################################################################
 mkdir -p build/test
 cd build/test
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../test -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC  -DJADEPREFIX=$TOP$toolchain -DJADE_FORCE_32=ON
+$CMAKE -H../../test -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC  -DJADEPREFIX=$TOP$toolchain$bits  $e_arguments
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 $CTEST -H../../test -B.

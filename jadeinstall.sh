@@ -59,6 +59,18 @@ else
  toolchain=$tmptoolchain
 fi
 echo "Used toolchain="$toolchain
+
+tmpbits=$( echo "$*" | egrep -- '--\<bits\>' | cut -f2 -d=)
+bits=64
+if test -z "$tmpbits"; then
+ tmpbits=$tmpbits
+fi
+if  [ "$tmpbits" != "32" ] && [ "$tmpbits" != "64" ] ; then
+ echo "Unknown bits "$tmpbits" using 64 instead."
+ echo "Possible values for the bits are 32 and 64"
+else 
+ bits=$tmpbits
+fi
 ##This is for Intel on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "Intel" ]; then
  .  /opt/intel/oneapi/setvars.sh
@@ -117,6 +129,12 @@ if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-11" ]; then
  export CXX=g++-11
  export FC=gfortran-11
 fi
+arguments="-DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain$bits "
+if  [ "$tmpbits" == "32" ] 
+  e_arguments="-DJADE_USE_CERNLIB:BOOL=ON  -DCERNLIB_DIR=/home/andriish/X32/share/cernlib/cmake -DJADE_FORCE_32:BOOL=ON"
+else
+  e_arguments="-DJADE_USE_CERNLIB:BOOL=ON  -DCERNLIB_DIR=/home/andriish/X64/share/cernlib/cmake"
+fi
 ########################################################################
 #mkdir -p build/picocernlib
 #cd build/picocernlib
@@ -130,7 +148,7 @@ fi
 mkdir -p build/jadesoft
 cd build/jadesoft
 #rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../jadesoft -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain   -DJADE_USE_CERNLIB:BOOL=ON  -DCERNLIB_DIR=/home/andriish/X/share/cernlib/cmake -DJADE_FORCE_32:BOOL=ON
+$CMAKE -H../../jadesoft -B.  $arguments $e_arguments
 #make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
@@ -139,7 +157,7 @@ cd ../..
 mkdir -p build/convert
 cd build/convert
 #rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../convert -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain 
+$CMAKE -H../../convert -B. $arguments
 #make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
@@ -148,7 +166,7 @@ cd ../..
 mkdir -p build/jtuple
 cd build/jtuple
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../jtuple -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain  -DJADE_USE_CERNLIB:BOOL=ON  -DCERNLIB_DIR=/home/andriish/X/share/cernlib/cmake -DJADE_FORCE_32:BOOL=ON 
+$CMAKE -H../../jtuple -B.  $arguments $e_arguments
 #make -f Makefile clean
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
@@ -158,7 +176,7 @@ cd ../..
 mkdir -p build/fptobos
 cd build/fptobos
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../fptobos -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain  -DJADE_USE_CERNLIB:BOOL=ON  -DCERNLIB_DIR=/home/andriish/X/share/cernlib/cmake -DJADE_FORCE_32:BOOL=ON
+$CMAKE -H../../fptobos -B. $arguments $e_arguments
 #make -f Makefile clean
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
