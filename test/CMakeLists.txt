@@ -40,10 +40,23 @@ add_test(NAME FPTOBOS_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAK
 jade_fortran_test(FPTOBOS_1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " ") 
 set_property( TEST FPTOBOS_1 PROPERTY  DEPENDS FPTOBOS_1_CLEANUP)
 
-#add_test(NAME SUPERV_DATA1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/supervfile006.card  ${JADEPREFIX}/bin/superv ) 
-#set_property( TEST SUPERV_DATA1 PROPERTY  DEPENDS FPTOBOS_1) 
-#jade_fortran_test(SUPERV_DATA1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " ") 
+add_test(NAME SUPERV_DATA1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/supervfile006.card  ${JADEPREFIX}/bin/superv ) 
+set_property( TEST SUPERV_DATA1 PROPERTY  DEPENDS FPTOBOS_1) 
+jade_fortran_test(SUPERV_DATA1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " ") 
 #NOTE: superv.stat needs a random number generator seeds. Otherwise it will use the same each time
+
+add_test(NAME ZE4V_DATA1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/ze4vfile006.card  ${JADEPREFIX}/bin/ze4v)
+set_property( TEST ZE4V_DATA1 PROPERTY  DEPENDS SUPERV_DATA1) 
+jade_fortran_test(ZE4V_DATA1 "GFORTRAN_CONVERT_UNIT=big_endian" "F_UFMTENDIAN=big" " ") 
+
+add_test(NAME JZREAD_DATA1 COMMAND  sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/jzreadfile006.card  ${JADEPREFIX}/bin/jzread )
+set_property( TEST JZREAD_DATA1 PROPERTY  DEPENDS ZE4V_DATA1) 
+jade_fortran_test(JZREAD_DATA1 PROPERTY ENVIRONMENT "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " ") 
+
+add_test(NAME JTJOB_DATA1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/jtjobfile006.card  ${JADEPREFIX}/bin/jtjob)
+set_property( TEST JTJOB_DATA1 PROPERTY  DEPENDS JZREAD_DATA1) 
+jade_fortran_test(JTJOB_DATA1 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22" "F_UFMTENDIAN=big:2,22" "FORT_CONVERT2=big_ieee FORT_CONVERT22=big_ieee") 
+
 
 
 if(NOT PYTHIA8_FOUND)

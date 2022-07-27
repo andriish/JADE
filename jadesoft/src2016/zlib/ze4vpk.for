@@ -110,7 +110,9 @@ C                                      INIT ERROR MESSAGES
       CALL FEHLTX( 19,'CORR. ECL < 0 (NO CL. IN LGANAL)')
 C                                   CHECK IF MONTE CARLO
       IRUN = IRNEVT(DUMMY)
-      MC = HRUN(1).LT.100
+CAV     MC = HRUN(1).LT.100
+      MC = HRUN(1).LT.10
+      write(*,*)' OURRUN= ',HRUN(1),MC
 C                                   CALC LENGTH OF BANK
       LZEHD = LZHD + LCUT + LMCH
 C                                   CREATE NEW BANK
@@ -208,7 +210,8 @@ C
       ENDIF
 C
 C                                      IF NOT MC LMC = 0
-      MC = HRUN(1).LT.100
+CAV      MC = HRUN(1).LT.100
+      MC = HRUN(1).LT.10
       IF( MC ) THEN
         LMC = 1 + NPRONM*4
       ELSE
