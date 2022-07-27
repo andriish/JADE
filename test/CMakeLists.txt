@@ -7,7 +7,16 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 ########################################################################
 include(JADE_compiler_setup)
 ########################################################################
-include(JADE_ROOT_setup)
+#include(JADE_ROOT_setup)
+option(JADE_FORCE_32                   "Force build of 32 bit libraries." OFF)
+if (JADE_FORCE_32)
+  list(PREPEND CMAKE_SYSTEM_LIBRARY_PATH "/usr/lib")
+  message(STATUS "${CMAKE_SYSTEM_LIBRARY_PATH}")
+  set( FIND_LIBRARY_USE_LIB32_PATHS  ON)
+  set( FIND_LIBRARY_USE_LIB64_PATHS  OFF)
+  set(CMAKE_SIZEOF_VOID_P 4)
+  #set (CMAKE_EXE_LINKER_FLAGS  "-m32 ${CMAKE_EXE_LINKER_FLAGS}")
+endif()
 ########################################################################
 macro( jade_fortran_test testname gnuenv  intelenv nagenv)
   if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "GNU")
@@ -21,8 +30,11 @@ macro( jade_fortran_test testname gnuenv  intelenv nagenv)
   endif()
 endmacro( jade_fortran_test )
 
+if (NOT JADE_FORCE_32)
 find_package(HepMC3  REQUIRED HINTS /usr/local/Cellar/hepmc2/3.2.5_1/share/HepMC3/cmake) #The later is to test JADE with NAG on Cobra
+
 find_package(Pythia8 8.220)
+endif()
 ENABLE_TESTING()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/wrapper.sh.in      ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh)
