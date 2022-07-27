@@ -40,7 +40,8 @@ C
      *             BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
      *             XHOL1,XHOL2,YHOL1,YHOL2
       DIMENSION PV(10),R0(3),R(3),P1(10),P2(10)
-      REAL ME/0.5E-03/
+      REAL ME
+      DATA ME/0.5E-03/
       DATA PMIN / .005 /
       LOGICAL * 1 LFLAG
       COMMON/CFLAG/LFLAG(10)

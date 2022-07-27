@@ -38,7 +38,8 @@ C
       COMMON /TODAY/ HDATE(6)
 C
       DATA TWOPI/6.28319/
-      REAL RADL/25.4/
+      REAL RADL
+      DATA RADL/25.4/
       DIMENSION R(3),PV(10)
       DIMENSION R0(3)
 C

@@ -7,7 +7,8 @@ C     (ENERGIES IN GEV)
 C
       DIMENSION PGAM(4),P(2,3),TH(2),PHI(2) ,P1(10),P2(10),
      *          PN1(3),PN2(3)
-      REAL ME/.511E-03/ , PI/3.14159/
+      REAL ME , PI
+      DATA ME/.511E-03/ , PI/3.14159/
 C
       IF(PGAM(4).LE.0) RETURN 1
 C

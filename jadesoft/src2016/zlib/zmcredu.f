@@ -21,10 +21,12 @@ C
       DATA IEFIX / 0 /
 C
       DIMENSION P1(3), P2(3), JLONG(2)
-      REAL*4 R(3) / 3*0. /
+      REAL*4 R(3) 
+      DATA R/ 3*0. /
 C
       DIMENSION PCENTI(20)
-      INTEGER NREJ(20) / 20*0 /
+      INTEGER NREJ(20) 
+      DATA NREJ/ 20*0 /
       DATA NCALL / 0 /, NACC / 0 /
       DATA IHIST / 0 /
 C

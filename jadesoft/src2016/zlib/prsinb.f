@@ -12,9 +12,10 @@ C-----------------------------------------------------------
 C
       PARAMETER (NNAMES=4)
       CHARACTER*4 NAME, LISTNM(NNAMES)
-     *        / 'VECT', 'PALL', 'ZE4V', 'DEDX'/
+      DATA      LISTNM  / 'VECT', 'PALL', 'ZE4V', 'DEDX'/
 C
-      CHARACTER*1 MUQUA(0:3) / ' ','A','B','C'/
+      CHARACTER*1 MUQUA(0:3) 
+      DATA MUQUA / ' ','A','B','C'/
 C
       CALL CLOC( NPNAME, NAME, NR )
       IF( NPNAME.GT.0 ) THEN

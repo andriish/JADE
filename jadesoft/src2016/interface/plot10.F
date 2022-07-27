@@ -556,7 +556,8 @@ C
 #include "cplot10.for"
 #include "cpltcol.for"
 *
-      INTEGER I,IT(2)/1,5/
+      INTEGER I,IT(2)
+      DATA IT/1,5/
 *
 Code:
 C - Clear window
@@ -794,7 +795,8 @@ C
       INTEGER NBYTES,TARGET,IBYTE,I
       DIMENSION SOURCE(*),TARGET(136)
       INTEGER*2 HTYP(2)
-      INTEGER ITYP/1/
+      INTEGER ITYP
+      DATA ITYP/1/
       EQUIVALENCE (HTYP(1),ITYP)
 Code:
 CAV 
@@ -940,7 +942,8 @@ C
 *
       CHARACTER CFMT*9,C*1
       INTEGER LEN,NCH,I,L
-      LOGICAL FIRST /.TRUE./
+      LOGICAL FIRST 
+      DATA FIRST/.TRUE./
       SAVE ISV,FIRST
 Code:
       DO I=1,NCHAR
@@ -1077,7 +1080,8 @@ C
      +     ,HSTR(INT(ABS(NSTR)/4)+1)
 *
       INTEGER*2 HTYP(2)
-      INTEGER ITYP/1/
+      INTEGER ITYP
+      DATA ITYP/1/
       EQUIVALENCE (HTYP(1),ITYP)
 Code:
 C - Check if initialization was done
@@ -1244,8 +1248,11 @@ C
 *
 #include "cplot10.for"
 *
-      INTEGER IC/1/,LRECL/1024/,ISTAT,ICYCLE
-      CHARACTER CIC*3/'001'/
+      INTEGER IC,LRECL,ISTAT,ICYCLE
+      DATA IC/1/,LRECL/1024/
+
+      CHARACTER CIC*3
+      DATA CIC/'001'/
       SAVE IC,CIC
 Code:
 C - Close current PostScript file
@@ -1634,7 +1641,8 @@ C
 *
       CHARACTER FNAM*(*)
       REAL XSIZ,YSIZ
-      LOGICAL FIRST/.TRUE./
+      LOGICAL FIRST
+      DATA FIRST/.TRUE./
       CHARACTER*200 FNAM0,F
       REAL XSIZ0,YSIZ0,X,Y
       SAVE FNAM0,XSIZ0,YSIZ0
@@ -1698,7 +1706,8 @@ C
 *     Converts ASCII character set into the integer representation 
 *     'ADE format' (1...127).
 *
-      INTEGER A(N),F,I,N,J,K
+      INTEGER N
+      INTEGER A(N),F,I,J,K
 Code:
       F=10**(N-1)
       K=I

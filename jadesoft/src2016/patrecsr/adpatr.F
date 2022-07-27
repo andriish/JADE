@@ -9,7 +9,8 @@ C-----------------------------------------------------------
       COMMON /BCS/ HW(1)
       INTEGER IW(1)
       EQUIVALENCE (IW(1),HW(1))
-      INTEGER IPHEAD / 0 /
+      INTEGER IPHEAD 
+      DATA IPHEAD / 0 /
 C
       IF( IPHEAD .LE. 0 ) IPHEAD = IBLN('HEAD')
       NPHEAD = IW(IPHEAD)

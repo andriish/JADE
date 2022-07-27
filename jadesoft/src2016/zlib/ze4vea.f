@@ -12,7 +12,8 @@ C
       DIMENSION HW(1),RW(1)
       EQUIVALENCE (HW(1),IW(1),RW(1))
       INTEGER LADD(-1:2)
-      LOGICAL FIRST /.TRUE./
+      LOGICAL FIRST 
+      DATA FIRST /.TRUE./
 C
       IF( FIRST ) THEN
         FIRST = .FALSE.

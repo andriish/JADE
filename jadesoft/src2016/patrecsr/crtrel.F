@@ -10,7 +10,8 @@
      ,         , (IERRCD,IDWRK(4)),(NTRKEL,IDWRK(5))
      ,         , (ITR   ,IDWRK(7)),(ITRNG ,IDWRK(8))
       DATA MKATR / Z'FF01'/
-      INTEGER  MKLRHT(3) / Z'800', Z'0', Z'900'/
+      INTEGER  MKLRHT(3) 
+      DATA  MKLRHT / Z'800', Z'0', Z'900'/
       IF(
      - HNTR.GE.200
      -)THEN

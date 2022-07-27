@@ -556,15 +556,18 @@ C...             Revise calls to LUDBRB
       COMMON/HPEVT/NEVHP,NHP,ISTHP(NMXHP),IDHP(NMXHP),
      & JMOHP(2,NMXHP),JDAHP(2,NMXHP),PHP(5,NMXHP),VHP(4,NMXHP)
       SAVE  /HPEVT/
-      LOGICAL FIRST /.TRUE./
-      LOGICAL LTTAU /.FALSE./
+      LOGICAL FIRST 
+      DATA FIRST /.TRUE./
+      LOGICAL LTTAU 
+      DATA LTTAU /.FALSE./
       REAL DUM, TPOL, WT
       REAL POL(4), PDUM(4)
       INTEGER IPTAU, IMTAU, IDUM
       DOUBLE PRECISION DBETAU(3), DBETPAR(3)
       EXTERNAL RLU
       SAVE LTTAU
- 
+      
+      REAL POLNULL(4)
 C***********************************************************************
 C...Starting values for pointers and momenta
 C     KTO = 1 TAU+, =2 for TAU-
@@ -717,7 +720,7 @@ C
       IF( FIRST )THEN
        FIRST = .FALSE.
        CALL INITDK
-       CALL DEXAY(-1)
+       CALL DEXAY(-1,POLNULL)
       ENDIF
       CALL DEXAY(KTO,POL)
       NNEW = NSAV + NHP
@@ -8636,7 +8639,8 @@ C...Purpose: to administrate the fragmentation and decay chain.
       DIMENSION PS(2,6)
       LOGICAL QERR 
 CCC      LOGICAL QDEBUG /.FALSE./
-      LOGICAL QDEBUG /.TRUE./
+      LOGICAL QDEBUG 
+      DATA QDEBUG /.TRUE./
  
 C...Initialize and reset.
       MSTU(24)=0

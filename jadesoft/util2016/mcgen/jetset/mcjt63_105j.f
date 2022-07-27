@@ -1606,7 +1606,8 @@ C                                  Introduce flavour dependent histograming (KFL
       REAL VP(*),VH(*)
 *- stuff needed for writing out into tab file
       CHARACTER CFMT*20
-      LOGICAL FIRST /.TRUE./
+      LOGICAL FIRST 
+      DATA FIRST /.TRUE./
       SAVE CFMT,FIRST
 C  Stuff for FFREAD:
       INTEGER NAMLEN,NBYTEW,NWONAM

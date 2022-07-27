@@ -16,7 +16,8 @@
       DATA LBWALL / Z'4'/
       DATA LBWIRE / Z'8'/
       DATA LBTREL /Z'1000'/
-      INTEGER LBLFRT(3) /Z'10000',Z'30000',Z'20000'/
+      INTEGER LBLFRT(3) 
+      DATA LBLFRT /Z'10000',Z'30000',Z'20000'/
       FPAR0(X) = (PAR10*X + PAR20)*X + PAR30
       FPAR (X) = (PAR1 *X + PAR2 )*X + PAR3
       MTRK = 0

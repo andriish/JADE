@@ -20,7 +20,8 @@ C----------------------------------------------------------
       EQUIVALENCE (HW(1),IW(1),RW(1)), (HR(1),IR)
 C                                           FIRST RUNS CORRESPONDING TO
 C                                           K.AMBRUS PERIODS
-      INTEGER IRUN(39) /
+      INTEGER IRUN(39) 
+       DATA IRUN/
      *   400, 2600, 3730, 6000, 6850, 7170, 7592, 7840, 8120, 8375,
      *  8850, 9188, 9464,10000,10391,10578,10761,11021,11331,11634,
      * 12004,12341,13088,14605,15690,16803,17989,19068,21123,21705,
@@ -28,7 +29,8 @@ C                                           K.AMBRUS PERIODS
 C                                           CORRESPONDING TIMES
 C                                           THE FIRST PERIODS HAVE NOT
 C                                           BEEN CORRELATED YET
-      INTEGER ITIM(39) /
+      INTEGER ITIM(39) 
+      DATA ITIM /
      *  97816480,  97816480,  97816480,  97816480,  97816480,  97816480,
      *  97816480,  97816480,  97816480,  97816480,  97816480,  97816480,
      *  97816480,  97816480,  99482653, 100603789, 101329523, 105019795,
@@ -36,9 +38,12 @@ C                                           BEEN CORRELATED YET
      * 159725022, 171437703, 177893401, 194822761, 202803459, 206147941,
      * 210908637, 213476746, 214678727, 225055662, 230412916, 233447245,
      * 236008290, 239739240, 241204057/
-      INTEGER NOW / 0 /, INITL / 0 /, ITIME(6)
-      INTEGER NRUN / 25000 /
-      LOGICAL FIRST / .TRUE. /
+      INTEGER NOW , INITL , ITIME(6)
+      DATA NOW / 0 /, INITL / 0 /
+      INTEGER NRUN 
+      DATA NRUN / 25000 /
+      LOGICAL FIRST 
+      DATA FIRST / .TRUE. /
 C
       IF( FIRST ) THEN
         FIRST = .FALSE.

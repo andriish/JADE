@@ -139,15 +139,20 @@ C-------------------------------------------
 C        DECLARATION OF 'MEMORY' VARIABLES
 C-------------------------------------------
 C
-          REAL*4 PIE/3.14159/,TWOPIE/6.28318/
-          INTEGER*8 BIT26/Z'00000020'/,BIT31N/Z'FFFFFFFE'/
-          INTEGER*8 MSKLBL/Z'000000FE'/
-          INTEGER*8 LAYBIT(16)/
+          REAL*4 PIE,TWOPIE
+          DATA PIE/3.14159/,TWOPIE/6.28318/
+          INTEGER*8 BIT26,BIT31N
+          DATA BIT26/Z'00000020'/,BIT31N/Z'FFFFFFFE'/
+          INTEGER*8 MSKLBL
+          DATA MSKLBL/Z'000000FE'/
+          INTEGER*8 LAYBIT(16)
+          DATA LAYBIT /
      +    Z'0001' , Z'0002' , Z'0004' , Z'0008' ,
      +    Z'0010' , Z'0020' , Z'0040' , Z'0080' ,
      +    Z'0100' , Z'0200' , Z'0400' , Z'0800' ,
      +    Z'1000' , Z'2000' , Z'4000' , Z'8000' /
-          INTEGER*8 LAYMSK(16,2) /
+          INTEGER*8 LAYMSK(16,2) 
+          DATA LAYMSK /
      +    Z'FFFE' , Z'FFFC' , Z'FFF8' , Z'FFF0' ,
      +    Z'FFE0' , Z'FFC0' , Z'FF80' , Z'FF00' ,
      +    Z'FE00' , Z'FC00' , Z'F800' , Z'F000' ,

@@ -13,7 +13,8 @@
       DATA MKTREL / Z'3000'/
       DATA MKLBTC / Z'FFF'/
       DATA MKLFTR / Z'30000'/, MKRGHT / Z'20000'/
-      INTEGER  MKLRHT(3) / Z'800', Z'0', Z'900'/
+      INTEGER  MKLRHT(3) 
+      DATA  MKLRHT / Z'800', Z'0', Z'900'/
       DATA LBZRCR / Z'100'/
       DATA NANF /0/
       IF(NANF.EQ.0) IQPATR= IBLN('PATR')
