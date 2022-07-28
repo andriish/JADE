@@ -39,7 +39,7 @@ C
       COMMON / CWORK1 / R,FI,R1,FI1,X1,Y1,R2,FI2,X2,Y2,ZET,X3,Y3,X4,Y4,
      +                  KZAMP,HWORK(400),XLTR(200),YLTR(200),XLST(100),
      +                  YLST(100),HKTRAR(100),HKTRS(100)
-      COMMON / CJTRIG / PI,TWOPI
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
       COMMON / CJCELL / NCELL(3),NWIRES(3)
 C
 #include "cworkpr.for"

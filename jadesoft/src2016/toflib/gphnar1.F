@@ -5,7 +5,9 @@ C---   SUMMER 1982 VERSION
 C---
       REAL*8 DATE,TIME,DDN
       INTEGER*4 BINTIM
-      COMMON/CBSTR/MODE
+CAV      COMMON/CBSTR/MODE
+CAV   Assuring the same size
+      COMMON/CBSTR/MODE,MAXRL,SAFEOF
 #include "cgraph.for"
 C----------------------------------------------------------------------
 C             MACRO CDATA .... BOS COMMON.

@@ -211,7 +211,7 @@ C
      &               IGR)
 C --- SUBROUTINE TO DRAW BOX AND WRITE DETAILS
 C
-      COMMON /CJTRIG/ PI,TWOPI
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
       DIMENSION IDATAL(11),FB(10),DPRT(10)
 *** PMF 17/11/99: add variables needed for emulation of DESYLIB routine 'CORE'  
       CHARACTER cFB*40
@@ -706,7 +706,10 @@ C
       DIMENSION R(3), P(3), PRM(5)
 
       COMMON / BCS / RW(1)
-      COMMON / CGEO1 / BKGAUS
+CAV      COMMON / CGEO1 / BKGAUS
+CAV   Add foo symbols to make compiller happy
+      COMMON / CGEO1 / BKGAUS, AVFOO(65)
+
 C                                                FETCH TRACK PARAMETERS
       CALL KIPRCR( IND, ITYPE, CAP, RM, PHIM, SIG )
       DZDR = RW( IND + 30 )
@@ -751,7 +754,10 @@ C *---------------------------------------------------------
 C
       DIMENSION R(3), P(3), PRM(5)
 
-      COMMON / CGEO1 / BKGAUS
+CAV      COMMON / CGEO1 / BKGAUS
+CAV   Add foo symbols to make compiller happy
+      COMMON / CGEO1 / BKGAUS, AVFOO(65)
+
       BK = BKGAUS*.3E-4
 C                                          RADIUS , CENTER OF CIRCLE
       PRAD = SQRT(P(1)**2+P(2)**2)

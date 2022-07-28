@@ -568,7 +568,8 @@ C  Loop over list, get particle names and set stable:
       DO IP=1,NSTBL
         IF ( IDSTBL(IP).EQ.0 ) GO TO 10
         CALL LUNAME(IDSTBL(IP),CHAU)
-        CNAMS(IP)= CHAU
+CAV  Maybe CHAU should be character*8
+        CNAMS(IP)= CHAU(1:8)
         MDCY(LUCOMP(IDSTBL(IP)),1)= 0
       ENDDO
 C

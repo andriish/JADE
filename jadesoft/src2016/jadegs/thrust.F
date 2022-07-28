@@ -203,7 +203,7 @@
       GOTO IZZZ04
       END
       SUBROUTINE BALANC( P, NTOT, PSUM )
-      DIMENSION P(1)
+      DIMENSION P(*)
       PSUM1 = 0.
       PSUM2 = 0.
       PSUM3 = 0.

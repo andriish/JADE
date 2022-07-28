@@ -15,6 +15,8 @@ C*       COMMON CWORK1 MUST BE FILLED PROPERLY                  *
 C*                                                              *
 C*       ENTRY: VTXS                                            *
 C****************************************************************
+CAV   CVTX2 common block comes with INTEGER*2 (H) elsewhere
+      IMPLICIT INTEGER*2 (H)
 C PMF 03.11.98 
       LOGICAL TBIT
 C%MACRO MVERTEX1
@@ -30,6 +32,7 @@ C     MACRO FOR VERTEX-FIT ROUTINES ( AXIS AND STATISTICS )
       COMMON /CVTX2/ MODE,TAXIS(12),SVR,HVTXST(120)
 C
       DIMENSION IVTXST(1)
+      
 C
 C
       REAL*8 XM,YM,RR,PHI,SPHI,CPHI,SR

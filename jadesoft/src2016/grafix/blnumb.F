@@ -27,7 +27,7 @@ C
 #include "cwktag.for"
 C
       COMMON / CHEADR / HEAD(108)
-      COMMON / CJTRIG / PI,TWOPI,PIHALF
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
 C
 C                        NPBPED REFERS TO 1979-80 TAGGING APPARATUS
 C

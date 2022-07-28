@@ -334,8 +334,12 @@ C
 C-----------------------------------------------------------------------
       IMPLICIT INTEGER*2 (H)
 C
-      COMMON /CMULOC/ ALLDEV(12,2),ALLABS(12),REGDEV(30),REGDCE(50),
-     +                REGZE(50),LOCHRS(60),ABLOCH(60)
+CAV      COMMON /CMULOC/ ALLDEV(12,2),ALLABS(12),REGDEV(30),REGDCE(50),
+CAV     +                REGZE(50),LOCHRS(60),ABLOCH(60)
+CAV     This is a bug, I assume
+      COMMON /CMULOC/ ALLDEV(12,2),ALLABS(12),REGDEV(30),REGDCE(60),
+     +                REGZE(60),LOCHRS(60),ABLOCH(60)
+
 C
       ESTDEV = SLOPE * (ABSDCE - ABSORB) + DEVIAT
 C

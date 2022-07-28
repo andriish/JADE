@@ -19,7 +19,7 @@ C
 #include "cjdrch.for"
 #include "cgraph.for"
 C
-      COMMON / CJTRIG / PI, TWOPI
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
       COMMON / CJCELL / NCELL(3), NWIRES(3)
 C
       DIMENSION  RAD(5),IPOINT(5),HCHAR(5),HWORD(2)

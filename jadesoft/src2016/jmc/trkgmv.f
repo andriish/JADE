@@ -50,7 +50,9 @@ C
      *                  XRJETC,
      *                  RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
      *                  BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     *                  XHOL1,XHOL2,YHOL1,YHOL2
+     +                  XHOL1,XHOL2,YHOL1,YHOL2,BLFI
+CAV     +                  XHOL1,XHOL2,YHOL1,YHOL2
+CAV  Same size required
 C
       COMMON / CGEOV  / RPIPV, DRPIPV, XRLPIV, RVXC, DRVXC, XRLVXC,
      *                  ZVXCM, DZVCM, XRZVCM, ZVXCP, DZVCP, XRZVCP,

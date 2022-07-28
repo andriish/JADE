@@ -22,7 +22,7 @@ C
 C
 #include "mvccal.for"
 C
-      COMMON / CJTRIG / PI,TWOPI
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
       COMMON / CHEADR / HEAD(108)
       COMMON / CHATCH / IHAT
 C

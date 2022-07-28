@@ -31,7 +31,11 @@ C
 C-----------------------------------------------------------------------
 C
 C
-      COMMON/CADMIN/IEVTP,NREC,NRWRIT,NRERR
+CAV      COMMON/ CADMIN /IEVTP,NREC,NRWRIT,NRERR
+CAV   To assure all symbols have same size
+#include "cadmin.for"
+CAV
+
       COMMON/CHEADR/HEAD(20)
 C
 #include "calibr.for"

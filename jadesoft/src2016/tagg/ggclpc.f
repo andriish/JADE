@@ -16,8 +16,14 @@ C
       IMPLICIT INTEGER*4 (G), INTEGER*2 (H)
       LOGICAL LSWTCH, LACOL
 C
+CAV      COMMON /CGGDMS/ X0,ZECAP(4),ZECAPX(4),THECPX(2),
+CAV     1                ECXLST(46), ECYLST(46)
+CAV Assuring the same size
       COMMON /CGGDMS/ X0,ZECAP(4),ZECAPX(4),THECPX(2),
-     1                ECXLST(46), ECYLST(46)
+     1                ECXLST(46), ECYLST(46),
+     2                XANL(8),XANU(8),YANL(8),YANU(8),
+     3                XBNL(8),XBNU(8),YBNL(8),YBNU(8)
+
       COMMON /CGGPRM/ ITHADC,MAXCLS,CLBCNS
 C
       COMMON /CALICO/ FAKTOR(191)

@@ -2,7 +2,11 @@
       IMPLICIT INTEGER*2 (H)
       LOGICAL TBIT
       COMMON/CHEADR/HEAD(17),HRUN,HEV
-      COMMON/CADMIN/IEVTP,NREC,NRWRIT,NRERR
+CAV      COMMON/ CADMIN /IEVTP,NREC,NRWRIT,NRERR
+CAV   To assure all symbols have same size
+#include "cadmin.for"
+CAV
+
 #include "cdata.for"
 #include "ccycp.for"
 #include "cjdrch.for"

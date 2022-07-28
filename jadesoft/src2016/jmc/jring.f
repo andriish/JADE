@@ -97,7 +97,9 @@ C
      *                  XRJETC,
      *                  RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
      *                  BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     *                  XHOL1,XHOL2,YHOL1,YHOL2
+     *                  XHOL1,XHOL2,YHOL1,YHOL2,BLFI
+CAV     *             XHOL1,XHOL2,YHOL1,YHOL2
+CAV  Same size required
 C
       COMMON / CJXDAT / XSLOPE, YSLOPE, XL(3), XH(3), R3P, RD3P,
      *                  S, S2,

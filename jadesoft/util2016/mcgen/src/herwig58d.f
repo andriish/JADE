@@ -28,8 +28,8 @@ CDECK  ID>, H58DDRIV.
 *. 19-Feb-96  Add dummy call to HWUFNE            S. Bentvelsen 
 *. 14-Apr-96  ICALL=0: Parton shower not saved    S. Bentvelsen  
 *. 17-Apr-96  Major change of routine:
-*.	       get rid of the HERWIG ISR
-*.	       no hadron decay: will be done in JETSET
+*.            get rid of the HERWIG ISR
+*.            no hadron decay: will be done in JETSET
 *.********************************************************************
 C          ****COMMON BLOCK FILE FOR HERWIG VERSION 5.8D****
 C ALTERATIONS:DOUBLED NQEV
@@ -354,7 +354,9 @@ CDECK  ID>, HWSTBL.
       IF (HSTABL) THEN
          DO 120  IP = 1,NESTBL
              CALL LUNAME (IDSTBL (IP),CHAU)
-             CNAMS (IP) = CHAU
+CAV             CNAMS (IP) = CHAU
+CAV It is hard to say if the CNAMS should be CHARACTER*16
+             CNAMS (IP) = CHAU(1:8)
              MDCY (LUCOMP (IDSTBL (IP)),1) = 0
  120     CONTINUE
          WRITE (6,FMT='(80(''+'')/'' HWSTBL:''/'' The following '',
@@ -31744,7 +31746,7 @@ C...Add inhomogeneous terms (3 flavours!).
         CALL PYSTIG(-3,X,Q2,AK0**2,ALAM,XPGA)
         DO 130 KFL=-5,5
         XPANO(KFL)=XPGA(KFL)
-  130   CONTINUE	
+  130   CONTINUE
 
 C...Add Bethe-Heitler terms for charm and bottom.
         RC=4.*PMC**2/Q2

@@ -23,7 +23,7 @@ C
 #include "cgeo1.for"
 C
       COMMON / CWORK2 / HWORK(80)
-      COMMON / CJTRIG / PI,TWOPI
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
 C
       DATA VELH /.2998E-4/
       DATA INAME /4HBK17/

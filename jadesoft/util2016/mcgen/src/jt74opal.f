@@ -717,7 +717,9 @@ C
       IF( FIRST )THEN
        FIRST = .FALSE.
        CALL INITDK
-       CALL DEXAY(-1)
+CAV       CALL DEXAY(-1)
+CAV    Added an argument
+       CALL DEXAY(-1, 0)
       ENDIF
       CALL DEXAY(KTO,POL)
       NNEW = NSAV + NHP

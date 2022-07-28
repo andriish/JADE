@@ -50,13 +50,20 @@ C
      +                  XRJETC,
      +                  RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
      +                  BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     +                  XHOL1,XHOL2,YHOL1,YHOL2
-C
+     *                  XHOL1,XHOL2,YHOL1,YHOL2,BLFI
+CAV     +                  XHOL1,XHOL2,YHOL1,YHOL2
+CAV Same size required in the line above
       COMMON / CJVCEL / MCELL,
      +                  MWIRE
+CAV      COMMON / CJVTXC / RVEC, ANG1, ANG2, DISTPW, FIRSTP, DISTW1,
+CAV     +                  ANGL, COSLOR, SINLOR,
+CAV     +                  ZRESV, ZMAXV, ZOFFV, ZNAMP, ZALV, TIMEV
+CAV Assure same size 
       COMMON / CJVTXC / RVEC, ANG1, ANG2, DISTPW, FIRSTP, DISTW1,
      +                  ANGL, COSLOR, SINLOR,
      +                  ZRESV, ZMAXV, ZOFFV, ZNAMP, ZALV, TIMEV
+     + , AVFOO(96)
+
       COMMON / CGEOV  / RPIPV, DRPIPV, XRLPIV, RVXC, DRVXC, XRLVXC,
      +                  ZVXCM, DZVCM, XRZVCM, ZVXCP, DZVCP, XRZVCP,
      +                  XRVTXC

@@ -40,7 +40,9 @@ CCCC  COMMON / CGEO1  / GEO(65)
       COMMON / BCS    / IW(1)
 C                VERTEX CHAMBER
       COMMON / CGEOV  / GEOV(13)
-      COMMON / CJVTXC / VXCC(15)
+CAV      COMMON / CJVTXC / VXCC(15)
+CAV Assure same size 
+      COMMON / CJVTXC / VXCC(15), AVFOO(96)
       COMMON / CSTORE / MHITS, IPV, HSTORE(2000)
 C
       LOGICAL*1 LFLAG

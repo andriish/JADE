@@ -68,7 +68,15 @@ public:
     bool failed();
     void write_event(const GenEvent &evt);
     void close();
+private:
+    std::map<int,std::string> fPDGID_to_JADE_name;
+    void fill_names() {
+      /* Expand me! */
+      fPDGID_to_JADE_name[-11]="E-              ";
+      fPDGID_to_JADE_name[ 11]="E+              ";
+      fPDGID_to_JADE_name[ 22]="g               ";
 
+    } 
 };
 }
 #endif

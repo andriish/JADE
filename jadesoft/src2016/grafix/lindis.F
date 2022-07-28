@@ -23,7 +23,7 @@ C
 #include "cdata.for"
 C
       COMMON / CGRAP2 / BCMD,DSPDTM(30)
-      COMMON / CJTRIG / PI,TWOPI
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
 C
       DATA DUM1 /0./
 C

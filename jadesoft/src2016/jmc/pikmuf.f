@@ -12,7 +12,9 @@ C
      *             XRJETC,
      *             RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
      *             BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     *             XHOL1,XHOL2,YHOL1,YHOL2
+     *             XHOL1,XHOL2,YHOL1,YHOL2,BLFI
+CAV     *             XHOL1,XHOL2,YHOL1,YHOL2
+CAV  Same size required
       REAL MPI/0.1396/,MK/0.4937/,MMU/0.1057/
       REAL CTPI/7804./,CTK/3709./
       REAL NCH

@@ -31,7 +31,7 @@ C
 C     READ ERRORS ARE NOT RETURNED, PROGRAM STOPS AFTER 10 READ ERRORS.
 C
 C     THREE EVENT TYPES ARE DISTINGUISHED, CHARACTERIZED BY VARIABLE
-C     IEVTP IN COMMON /CADMIN/ :
+C     IEVTP IN COMMON / CADMIN / :
 C
 C               IEVTP = 0           REAL DATA
 C               IEVTP = 1           UNSMEARED MONTE CARLO DATA
@@ -57,7 +57,7 @@ C
 #include "cgraph.for"
 #include "cdata.for"
 C
-C                            NFLAGS(5) IN /CADMIN/ COUNTS RECORDS READ
+C                            NFLAGS(5) IN / CADMIN / COUNTS RECORDS READ
 C                            NFLAGS(8) SET WHEN CONSTANTS HAVE BEEN READ
 C
       EQUIVALENCE (NRECS , NFLAGS(5) )

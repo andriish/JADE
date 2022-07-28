@@ -61,7 +61,15 @@ fi
 echo "Used toolchain="$toolchain
 
 tmpbits=$( echo "$*" | egrep -- '--\<bits\>' | cut -f2 -d=)
+if [ "$(uname)" == "Darwin" ]; then
 bits=64
+else
+if [ "$(uname -m)" == "i686" ]; then
+bits=32
+else
+bits=64
+fi
+fi
 if test -z "$tmpbits"; then
  tmpbits=$tmpbits
 fi
@@ -130,7 +138,7 @@ if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-11" ]; then
  export FC=gfortran-11
 fi
 arguments="-DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain$bits "
-if  [ "$tmpbits" == "32" ] 
+if  [ "$tmpbits" == "32" ]; then
   e_arguments="-DJADE_USE_CERNLIB:BOOL=ON  -DCERNLIB_DIR=/home/andriish/X32/share/cernlib/cmake -DJADE_FORCE_32:BOOL=ON"
 else
   e_arguments="-DJADE_USE_CERNLIB:BOOL=ON  -DCERNLIB_DIR=/home/andriish/X64/share/cernlib/cmake"

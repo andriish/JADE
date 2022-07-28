@@ -168,7 +168,7 @@ C                                           05/07/82
 C
 #include "cgeo1.for"
 C
-      COMMON /CJTRIG/ PI,TWOPI
+      COMMON /CJTRIG/ PI,TWOPI,PIHALF,PI3HAF
       DIMENSION MAP(6,6)
 C
       DATA ICALL/0/

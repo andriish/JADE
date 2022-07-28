@@ -258,8 +258,10 @@ C     NG: 0 for normal termination, otherwiese for special termination
 C
       IMPLICIT NONE
 C
+#ifdef REQUIRES_MOD
       INTEGER MOD
       INTRINSIC MOD
+#endif
 C
       INTEGER ND,NE,NF,NG,NUM
       COMMON /SLATE/ ND,NE,NF,NG,NUM(2)

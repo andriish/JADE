@@ -27,10 +27,26 @@ C
 #include "cgraph.for"
 #include "cgeo1.for"
 C
-      COMMON / CJIONI / POTBEA, ZAROBE
-     *                 ,POTTRI, ZAROTR
-     *                 ,POTIVE, ZAROIV
-     *                 ,POTRH0, ZAROR0
+CAV      Make symbols of same size
+CAV      COMMON / CJIONI / POTBEA, ZAROBE
+CAV     *                 ,POTTRI, ZAROTR
+CAV     *                 ,POTIVE, ZAROIV
+CAV     *                 ,POTRH0, ZAROR0
+      COMMON / CJIONI / POTBEA, ZAROBE,
+     *                  POTTRI, ZAROTR,
+     *                  POTIVE, ZAROIV,
+     *                  POTRH0, ZAROR0,
+     *                  POTJET, ZAROJE,
+     *                  POTRH1, ZAROR1,
+     *                  POTRH2, ZAROR2,
+     *                  POTRH3, ZAROR3,
+     *                  POTOVE, ZAROOV,
+     *                  POTTOF, ZAROTO,
+     *                  POTVES, ZARVES,
+     *                  POTZJL, ZAROJL,
+     *                  POTZJR, ZAROJR
+
+
       COMMON / CVX    / NNPATR
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #include "mvertex0.for"

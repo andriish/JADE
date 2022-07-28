@@ -6,7 +6,11 @@
 #include "cworkeq.for"
 #include "cworkpr.for"
       COMMON/CHEADR/HEAD(17),HRUN,HEV
-      COMMON/CADMIN/IEVTP,NREC,NRWRIT,NRERR
+CAV      COMMON/ CADMIN /IEVTP,NREC,NRWRIT,NRERR
+CAV   To assure all symbols have same size
+#include "cadmin.for"
+CAV
+
        DIMENSION HTEMP(9),MAXC(3),HREP(10)
        EQUIVALENCE (RMSLI1,XBKK(33)),(IDLIM,IYBKK(10))
        EQUIVALENCE (JJPR,IXBKK(38))

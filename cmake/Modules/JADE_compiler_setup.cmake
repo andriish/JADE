@@ -16,7 +16,12 @@ if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
                              "-fno-automatic" 
                              "-fno-align-commons"
                              "-Wall"
+                             "-Wno-unused-variable"
+                             "-Wno-unused-label"
+                             "-Wno-unused-dummy-argument"
+                             "-Wno-conversion"
                              )
+  add_definitions(-DREQUIRES_OR -DREQUIRES_AND)
   if (JADE_FPE)
     list(APPEND Fortran_FLAGS_TO_CHECK "-ffpe-trap=invalid,zero,overflow ")
   endif()
@@ -51,7 +56,7 @@ message(STATUS "Fortran compiler flags  : ${CMAKE_Fortran_FLAGS}")
 #Setup C compiller
 include(CheckCCompilerFlag)
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
-   set(C_FLAGS_TO_CHECK_TO_CHECK  "-Wno-implicit-function-declaration" "-Wno-implicit-int" "-Wno-return-type" )
+   set(C_FLAGS_TO_CHECK_TO_CHECK  "-g" "-O1" "-Wno-implicit-function-declaration" "-Wno-implicit-int" "-Wno-return-type" "-Wall" "-Wno-cpp"  "-Wno-sign-compare")
 endif()
 if (${CMAKE_C_COMPILER_ID}  MATCHES "Clang")
   set(CMAKE_C_FLAGS_TO_CHECK "-g" "-O1" "-Wno-conditional-uninitialized" "-Wno-incompatible-library-redeclaration")
@@ -86,7 +91,7 @@ message(STATUS "C compiler flags      : ${CMAKE_C_FLAGS}")
 #Setup C++ compiller
 include(CheckCXXCompilerFlag)
 if (${CMAKE_CXX_COMPILER_ID}  MATCHES "GNU")
-  set(CXX_FLAGS_TO_CHECK "-std=c++11" "-std=c++1y" "-Wno-implicit-int" )
+  set(CXX_FLAGS_TO_CHECK "-g " "-O1" "-std=c++1y" "-Wall"  "-Wno-cpp" )
 endif()
 if (${CMAKE_CXX_COMPILER_ID}  MATCHES "Clang")
   set(CMAKE_CXX_FLAGS_TO_CHECK "-g " "-O1"  "-Wno-conditional-uninitialized" "-Wno-incompatible-library-redeclaration" "-Wno-implicit-function-declaration" "-Wno-implicit-int" "-Wno-return-type")

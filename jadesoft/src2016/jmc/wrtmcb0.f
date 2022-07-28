@@ -23,7 +23,9 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER * 2 (H)
 C
-      COMMON / CGEO1  / GEO(65)
+CAV      COMMON / CGEO1  / GEO(65)
+CAV   Symbol should be of size 66
+      COMMON / CGEO1  / GEO(66)
       COMMON / CJDRCH / DRCH(34)
       COMMON / CTOF   / IATDC(94)
       COMMON / C4VHIT / H4VHTR(400), H4VHIT(4000)

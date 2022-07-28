@@ -19,7 +19,9 @@ C
 #include "cgraph.for"
 #include "ciouni.for"
 C
-      COMMON / CBSTR  / MODE,MAXRL
+CAV      COMMON / CBSTR  / MODE,MAXRL
+CAV   Assuring the same size
+      COMMON/CBSTR/MODE,MAXRL,SAFEOF      
       COMMON / CSVCW1 / NDDSVE,NRWR
       COMMON / CWALLK / IOUTSV(11)
       DIMENSION IDATAL(11),HVOLSR(4)

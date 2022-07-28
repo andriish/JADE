@@ -47,7 +47,9 @@ C
      *                  XRJETC,
      *                  RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
      *                  BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     *                  XHOL1,XHOL2,YHOL1,YHOL2
+     *                  XHOL1,XHOL2,YHOL1,YHOL2,BLFI
+CAV     *                  XHOL1,XHOL2,YHOL1,YHOL2
+CAV  Same size required
 C
       DIMENSION PV(10),R0(5),RR(5)
       DIMENSION PVSAVE(10),R0SAVE(3)

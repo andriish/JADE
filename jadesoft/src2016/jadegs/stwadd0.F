@@ -3,7 +3,9 @@ C   27/08/79 C9082901   MEMBER NAME  STWADD   (JADENS)      FORTRAN
       IMPLICIT INTEGER*2 (H)
 #include "cgraph.for"
 #include "cdata.for"
-      COMMON/CBSTR/MODE
+CAV      COMMON/CBSTR/MODE
+CAV   Assuring the same size
+      COMMON/CBSTR/MODE,MAXRL,SAFEOF      
       CALL BREAD(IUNIT,*1000,*1000)
       CALL CLOC(IND,'+BUF',IUNIT)
       IF(IND.GT.0) GO TO 3

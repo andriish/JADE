@@ -8,7 +8,11 @@
 #include "cutsr1.for"
       COMMON /CTLIM/ ISECLF
       COMMON /CHEADR/ HEAD(108)
-      COMMON /CADMIN/ IEVTP,NRREAD,NRWRIT
+CAV      COMMON / CADMIN / IEVTP,NRREAD,NRWRIT
+CAV   To assure all symbols have same size
+#include "cadmin.for"
+CAV
+
       COMMON/CALIBR/JPOINT(100),
      +HMUCAL(8370),HLGMAI(5760),HTAGSY(384),HJPULS(9216),
      +DELTA0(96,2),DELTA1(96,2),DELTA2(96,2),DELTA5(96,2),DELTA6(96,2)

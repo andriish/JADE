@@ -28,7 +28,7 @@ C
 C
 #include "cgraph.for"
 #include "cgeo1.for"
-      COMMON / CJTRIG / PI,TWOPI
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
 C
 C------------------  C O D E  ------------------------------------------
 C
@@ -84,7 +84,7 @@ C
 C THIS IS A ROUTINE USED IN PLUTO PATREC. IT FINDS THE SHORTEST ARC
 C     BETWEEN TWO ANGLES.
 C
-      COMMON/CJTRIG/ PI,TWOPI
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
 C
       ARCMIN=A
       IF (ABS(A).LE.PI) GOTO 2
@@ -92,11 +92,11 @@ C
     2 RETURN
       END
       DOUBLE PRECISION FUNCTION DRCMIN(AA)
-      COMMON/CJTRIG/ PI,ZWEIPI
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
       REAL*8 AA
       DRCMIN=AA
       IF (DABS(AA).LE.PI) GOTO 3
-      ARGUM = AA + 2.*ZWEIPI + PI
-      DRCMIN=AMOD (ARGUM,ZWEIPI)-PI
+      ARGUM = AA + 2.*TWOPI + PI
+      DRCMIN=AMOD (ARGUM,TWOPI)-PI
     3 RETURN
       END
