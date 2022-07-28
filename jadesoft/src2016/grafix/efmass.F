@@ -51,6 +51,8 @@ CAV     *                 ,POTRH0, ZAROR0
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #include "mvertex0.for"
 #include "mvertex1.for"
+CAV  The CVTX2 block is used with IMPLICIT INTEGER*2 (H)
+      INTEGER*2 HVTXST
 #include "mvertex2.for"
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 C

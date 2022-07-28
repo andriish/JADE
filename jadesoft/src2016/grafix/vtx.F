@@ -131,6 +131,8 @@ C
 C     RVX,RVY,RVDX,RVDY : RPHI-POSTION AND -ERROR OF RUNVERTEX          
 C     XUNIT,YUNIT,ZUNIT : TAU FLIGHT DIRECTION                          
 C                                                                       
+CAV  The CVTX2 block is used with IMPLICIT INTEGER*2 (H)
+      IMPLICIT INTEGER*2 (H)
 #include "mvertex2.for"
 C                                                                       
 C     ERROR**2 IN PHI   : DPHI2 = ( 3 DEGREE ) **2           21.05.86   
@@ -185,6 +187,8 @@ C*                                                              *
 C*       ENTRY: VTXS                                            *
 C****************************************************************
 #include "mvertex1.for"
+CAV  The CVTX2 block is used with IMPLICIT INTEGER*2 (H)
+      INTEGER*2 HVTXST
 #include "mvertex2.for"
 C
       REAL*8 XM,YM,RR,PHI,SPHI,CPHI,SR
@@ -1054,6 +1058,8 @@ C
 C
 C
       SUBROUTINE DXYZ2( J, ST, DXY2, DZ2 )
+CAV  The CVTX2 block is used with IMPLICIT INTEGER*2 (H)
+      INTEGER*2 HVTXST
 C
 #include "mvertex0.for"
 #include "mvertex1.for"
@@ -1145,6 +1151,8 @@ C
       FUNCTION CHI2( N, X ,Y, Z, GRX, GRY, GRZ )
 
 #include "mvertex1.for"
+CAV  The CVTX2 block is used with IMPLICIT INTEGER*2 (H)
+      INTEGER*2 HVTXST
 #include "mvertex2.for"
 C
       LOGICAL TBIT    ! PMF 09/11/99
