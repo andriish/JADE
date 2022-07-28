@@ -519,7 +519,9 @@ CDECK  ID>, HWCONV.
       COMMON/HEPEVT/NEVHEP,NHEP,ISTHEP(NMXHEP),IDHEP(NMXHEP),                   
      &JMOHEP(2,NMXHEP),JDAHEP(2,NMXHEP),PHEP(5,NMXHEP),VHEP(4,NMXHEP)           
       INTEGER  NEVHEP,NHEP,ISTHEP,IDHEP,JMOHEP,JDAHEP                           
-      REAL  PHEP,VHEP                                                           
+CAV   This was suspicious!
+CAV      REAL  PHEP,VHEP                                                           
+      DOUBLE PRECISION  PHEP,VHEP                                                           
       SAVE /HEPEVT/                                                             
       INTEGER  NLUPDM,NPLBUF                                                    
       PARAMETER  (NLUPDM=4000,NPLBUF=5)                                         
