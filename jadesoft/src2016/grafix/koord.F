@@ -233,38 +233,38 @@ C
 C
       RETURN
       END
-cC+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-cC
-cC-----------------------------------------------------------------------
-c      SUBROUTINE INTADE( IN, IA, N )
-cC-----------------------------------------------------------------------
-cC
-cC    AUTHOR:   R. RAMCKE     30/10/84 :  CONVERTS INTEGER INTO ADE CODE
-cC
-cC-----------------------------------------------------------------------
-cC
-c      DIMENSION IA(N)
-cC
-cC-----------------  C O D E  -------------------------------------------
-cC
-c      IZ = 10**(N-1)
-c      K  = IN
-c      DO 10 J = 1, N
-c         IA(J) = K/IZ + 48
-c         K     = K - (K/IZ)*IZ
-c         IZ    = IZ/10
-c   10 CONTINUE
-cC
-c      IF( N .EQ. 1) GO TO 30
-cC                           MERGE ZEROES AT BEGIN
-c      NEND = N - 1
-c      DO 20 J = 1, NEND
-c         IF( IA(J) .GT. 48 ) GO TO 30
-c             IA(J) = 96
-c   20 CONTINUE
-c   30 CONTINUE
-c      RETURN
-c      END
+C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C
+C-----------------------------------------------------------------------
+C      SUBROUTINE INTADE( IN, IA, N )
+C-----------------------------------------------------------------------
+C
+C    AUTHOR:   R. RAMCKE     30/10/84 :  CONVERTS INTEGER INTO ADE CODE
+C
+C-----------------------------------------------------------------------
+C
+C      DIMENSION IA(N)
+C
+C-----------------  C O D E  -------------------------------------------
+C
+C      IZ = 10**(N-1)
+C      K  = IN
+C      DO 10 J = 1, N
+C         IA(J) = K/IZ + 48
+C         K     = K - (K/IZ)*IZ
+C         IZ    = IZ/10
+C   10 CONTINUE
+C
+C      IF( N .EQ. 1) GO TO 30
+C                           MERGE ZEROES AT BEGIN
+C      NEND = N - 1
+C      DO 20 J = 1, NEND
+C         IF( IA(J) .GT. 48 ) GO TO 30
+C             IA(J) = 96
+C   20 CONTINUE
+C   30 CONTINUE
+C      RETURN
+C      END
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 C
 C-----------------------------------------------------------------------

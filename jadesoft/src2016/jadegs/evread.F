@@ -37,7 +37,7 @@ C
 C     READ ERRORS ARE NOT RETURNED, PROGRAM STOPS AFTER 10 READ ERRORS.
 C
 C     THREE EVENT TYPES ARE DISTINGUISHED, CHARACTERIZED BY VARIABLE
-C     IEVTP IN COMMON / CADMIN / :
+C     IEVTP IN COMMON /CADMIN/ :
 C
 C               IEVTP = 0           REAL DATA
 C               IEVTP = 1           UNSMEARED MONTE CARLO DATA
@@ -63,7 +63,7 @@ C
 #include "cgraph.for"
 #include "cdata.for"
 C
-C                            NFLAGS(5) IN / CADMIN / COUNTS RECORDS READ
+C                            NFLAGS(5) IN /CADMIN/ COUNTS RECORDS READ
 C                            NFLAGS(8) SET WHEN CONSTANTS HAVE BEEN READ
 C
       EQUIVALENCE (NRECS , NFLAGS(5) )
@@ -83,17 +83,15 @@ C
       IHEAD = IBLN('HEAD')
       IMTCO = IBLN('MTCO')
       IMUCO = IBLN('MUCO')
-            
 C                                            CADMIN FLAG
 CAV  THIS LINE IS NNEDED FOR THE REAL DATA BUR IS NOT IMPLEMENTED?    LBREAD(3) = .TRUE. 
-
       FLG100 = .FALSE.
       IF( IFLG .EQ. 100 ) FLG100 = .TRUE.
       IF( FLG100 ) GO TO 1
 C
 C                            MAIN READ STATEMENT.
 C
- 1000 CALL BSLT      
+ 1000 CALL BSLT
       CALL BDLG
       NRECS = NRECS + 1
       CALL BREAD(NUNIT,*60,*70)
@@ -103,7 +101,6 @@ C
 C                            DO WE HAVE A 'HEAD' BANK I.E. AN EVENT ?
 C                            IF NOT THEN SKIP NEXT SECTION
 C
-
    1  IF( IDATA(IHEAD) .LE. 0 ) GO TO 10
         IHD  = IDATA( IHEAD )
         IRUN = HDATA( IHD*2 + 10 )
@@ -218,7 +215,6 @@ C
   11    LBREAD(1) = .TRUE.
         LBREAD(2) = .FALSE.
         LBREAD(3) = .FALSE.
-
 C
 C                            PROCESS 'MTCO' BANK.
 C

@@ -20,7 +20,7 @@ C
 CAV      00001900
      +               ,IMW(200)
 C
-      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
+      COMMON /CJTRIG/ PI,TWOPI,PIHALF,PI3HALF
 C
 C-----------------  C O D E  -------------------------------------------
 C

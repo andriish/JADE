@@ -23,7 +23,6 @@ CAV Assuring the same size
      1                ECXLST(46), ECYLST(46),
      2                XANL(8),XANU(8),YANL(8),YANU(8),
      3                XBNL(8),XBNU(8),YBNL(8),YBNU(8)
-
       COMMON /CGGPRM/ ITHADC,MAXCLS,CLBCNS
 C
       COMMON /CALICO/ FAKTOR(191)

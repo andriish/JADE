@@ -6,7 +6,7 @@ C
      1     FMTI/8H    I12,/,FMTA/8H  8X,A4,/,FMT1/8H        /,
      2     FMT2/8H(11X,   /
       INTEGER NEQ/0/,LIM(2,8)
-      LOGICAL*1 LFMT(96),LL(8),LAST/1H)/
+      CHARACTER*1 LFMT(96),LL(8),LAST/1H)/
       DATA FMT(1)/8H(1X,I5, /,FMT(2)/8H' -',I3,/
       DATA LIM/75,80,91,97,107,111,123,136,
      1     193,201,209,217,226,233,240,249/

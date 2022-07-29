@@ -18,7 +18,6 @@ CAV      COMMON / CADMIN / IEVTP,NRREAD,NRWRIT,NRERR,LBREAD(4),IFLG,IERCAL
 CAV   To assure all symbols have same size
 #include "cadmin.for"
 CAV
-
 #include "cdata.for"
 #include "cgraph.for"
       DIMENSION JETZT(5),ITIME(6),NDPM(12),INTDPM(12)
@@ -41,9 +40,7 @@ C---
 C---
 C---     VERIFY VALIDITY OF INPUT DATA "ITIME".
 C---
-
 CAV      write(*,*)'IT->', ITIME(1),ITIME(2),ITIME(3),ITIME(4),ITIME(5),ITIME(6)
-
       IF(ITIME(6).LT.1979) GO TO 3
       IF(ITIME(6).GT.2999) GO TO 3
       IF(ITIME(5).LT.   1) GO TO 3

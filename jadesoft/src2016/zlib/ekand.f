@@ -280,6 +280,7 @@ C  RETURN VALUES FOR NON CUT VARIABLES
       INTEGER ONE / 1 /
 C
       DO 103 IB1=1,32
+CAV Arithmetic if?
         IF( LAND(KA,iSHFTL(ONE,32-IB1)) .NE. 0 ) THEN
           JHBIT(IB1) = 1
         ELSE

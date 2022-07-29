@@ -1,7 +1,6 @@
 C   15/02/84 605031743  MEMBER NAME  DRAWPI   (S)           FORTRAN
 C
 C-----------------------------------------------------------------------
-CAV. Let use get it back      SUBROUTINE DRAWPI_OLD( XPOS , YPOS )
       SUBROUTINE DRAWPI( XPOS , YPOS )
 C-----------------------------------------------------------------------
 C

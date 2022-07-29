@@ -35,6 +35,7 @@ C
     4 NTRY = NTRY+1
       IF(NTRY.GT.20) GO TO 21
       DEP = SM/SQRT(1.0+R2/(ZAV1+DEPO)**2)
+CAV Avoid division
       IF(ABS(DEP-DEPO).LE.0.01*DEP) GO TO 3
       DEPO = DEP
       GO TO 4

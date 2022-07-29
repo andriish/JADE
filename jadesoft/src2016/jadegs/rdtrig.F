@@ -238,7 +238,6 @@ C
 C                                           ****************************
 C                                           *  1981 TRIGGER CONDITIONS *
 C                                           ****************************
-        
  1300 IF( IYEAR .GT. 81 ) GO TO 1400
 C
 C  MIN. TRACK NUMBER IN TOF + TOTAL LG ENERGY TRIGGER

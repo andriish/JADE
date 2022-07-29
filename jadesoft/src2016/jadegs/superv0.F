@@ -191,7 +191,7 @@ C
       ITLIM = 0
 C
 C                            IUNIT IS BLOCKDATA SET TO 2. IF GRAPHICS,
-C                            USE RUN TIME LUN STORED IN / CADMIN /.
+C                            USE RUN TIME LUN STORED IN /CADMIN/.
 C                            THIS VALUE MAY BE CHANGED DURING SESSION.
 C
       IF( NDDINN .NE. 0 ) IUNIT = NDDINN

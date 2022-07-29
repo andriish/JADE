@@ -49,11 +49,11 @@ C
       IF( NAME(1) .NE. NANAC(1) ) GO TO 20
       IF( NAME(2) .EQ. NANAC(2)  .AND.  NAME(3) .EQ. NANAC(3) ) GO TO 5
       IF( NAME(2) .EQ. NCOOR(2)  .AND.  NAME(3) .EQ. NCOOR(3) ) GO TO 10
-CAV FIXME      00020000
+CAV      00020000
       IF( NAME(2) .EQ. NANAF(2)  .AND.  NAME(3) .EQ. NANAF(3) ) GO TO 15
-character      00020400
+CAV      00020400
       IF( NAME(2) .EQ. NCUTS(2)  .AND.  NAME(3) .EQ. NCUTS(3) ) GO TO 18
-character      00020800
+CAV      00020800
       GO TO 20
 C
 C                            CALL FROM MUANAC :

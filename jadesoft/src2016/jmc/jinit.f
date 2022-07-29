@@ -63,7 +63,6 @@ CAV Assure same size
      +                  ANGL, COSLOR, SINLOR,
      +                  ZRESV, ZMAXV, ZOFFV, ZNAMP, ZALV, TIMEV
      + , AVFOO(96)
-
       COMMON / CGEOV  / RPIPV, DRPIPV, XRLPIV, RVXC, DRVXC, XRLVXC,
      +                  ZVXCM, DZVCM, XRZVCM, ZVXCP, DZVCP, XRZVCP,
      +                  XRVTXC

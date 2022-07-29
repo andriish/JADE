@@ -1,7 +1,6 @@
 C   15/02/84 605031744  MEMBER NAME  DRAWMU   (S)           FORTRAN
 C
 C-----------------------------------------------------------------------
-CAV. Let use get it back      SUBROUTINE DRAWMU_OLD( XPOS , YPOS )
       SUBROUTINE DRAWMU( XPOS , YPOS )
 C-----------------------------------------------------------------------
 C

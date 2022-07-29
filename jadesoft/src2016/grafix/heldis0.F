@@ -11,7 +11,7 @@ C---
       IMPLICIT INTEGER*2 (H)
 #include "cgraph.for"
 #include "cgeo1.for"
-      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
+      COMMON /CJTRIG/ PI,TWOPI,PIHALF,PI3HALF
       DATA DUM1 /0./
 C---
       RAD = 1./ABS(CURV)

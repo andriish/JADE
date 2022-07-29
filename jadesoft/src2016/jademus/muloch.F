@@ -253,7 +253,7 @@ C                            THEN INTERPOLATION BETWEEN THE HITS IS NOT
 C                            POSSIBLE. USE EXTRAPOLATION.
 C
           IF(HRORI(LVREGH(M)).EQ.1.AND.HRORI(LVREGH(M+1)).EQ.3) GO TO 35
-CAV FIXME          00025500
+CAV          00025500
 C
 C                            --->   INTERPOLATE TO CHECK 'LET-OFF'  <---
 C

@@ -561,7 +561,7 @@ C   IS NO NEED TO DO THE WEDGE TESTS.
                 WEDGE2=CT+CUTT
                 IF(WEDGE1.LT.TEDGE1  .AND.  WEDGE2.GT.TEDGE1)GO TO 2205
                  IF(WEDGE1.LT.TEDGE2  .AND.  WEDGE2.GT.TEDGE2)GO TO 2205
-C AV FIXME                 00056000
+CAV                 00056000
                    GO TO 2210
  2205           FOUNDL=.TRUE.
                 FOUND1=.TRUE.
