@@ -165,7 +165,7 @@ cd ../..
 mkdir -p build/convert
 cd build/convert
 #rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../convert -B. $arguments
+$CMAKE -H../../convert -B. $arguments $e_arguments
 #make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
 make install
