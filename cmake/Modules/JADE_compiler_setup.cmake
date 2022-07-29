@@ -91,7 +91,7 @@ message(STATUS "C compiler flags      : ${CMAKE_C_FLAGS}")
 #Setup C++ compiller
 include(CheckCXXCompilerFlag)
 if (${CMAKE_CXX_COMPILER_ID}  MATCHES "GNU")
-  set(CXX_FLAGS_TO_CHECK "-g " "-O1" "-std=c++1y" "-Wall"  "-Wno-cpp" )
+  set(CXX_FLAGS_TO_CHECK "-g " "-O1" "-std=c++1y" "-Wall"  "-Wno-cpp" "-Wno-sign-compare" )
 endif()
 if (${CMAKE_CXX_COMPILER_ID}  MATCHES "Clang")
   set(CMAKE_CXX_FLAGS_TO_CHECK "-g " "-O1"  "-Wno-conditional-uninitialized" "-Wno-incompatible-library-redeclaration" "-Wno-implicit-function-declaration" "-Wno-implicit-int" "-Wno-return-type")
