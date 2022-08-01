@@ -133,7 +133,13 @@ C----   FILL RESULTS
         CLSPRP(12,N)=EW(2)/EW(1)
         CLSPRP(13,N)=EW(1)+EW(2)
         CLSPRP(14,N)=EV
+CAV        CLSPRP(15,N)=0.001*CLSPRP(15,N)/WSUM
+CAV We try to protect from NANs
+        IF ( WSUM .NE. 0.0)  THEN
         CLSPRP(15,N)=0.001*CLSPRP(15,N)/WSUM
+        ELSE
+        CLSPRP(15,N)=0
+        ENDIF
 C
 C----   ENERGY SUM
         IF(IPART) 10,1,20

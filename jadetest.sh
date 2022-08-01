@@ -153,5 +153,5 @@ rm -rf outputs CMakeFiles CMakeCache.txt
 $CMAKE -H../../test -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC  -DJADEPREFIX=$TOP$toolchain$bits  $e_arguments
 make -f Makefile clean
 make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
-$CTEST -H../../test -B.  --timeout 60
+$CTEST -H../../test -B.  --timeout 180
 cd ../..
