@@ -30,7 +30,8 @@ C
      *                  SWDEPL,
      *                  YSUSPN,
      *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
-     *                  DRIDEV,DRICOS,DRISIN
+CAV     *                  DRIDEV,DRICOS,DRISIN
+     *                  DRIDEV,DRICOS,DRISIN,AVFOO(611)
 C
       COMMON / CBINMC / BINMC(6)
 C

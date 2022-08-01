@@ -66,7 +66,8 @@ C
      *                  SWDEPL,
      *                  YSUSPN,
      *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
-     *                  DRIDEV,DRICOS,DRISIN
+     *                  DRIDEV,DRICOS,DRISIN,BVFOO(611)           
+CAV     *                  DRIDEV,DRICOS,DRISIN
 C
       COMMON / CJIONI / POTBEA, ZAROBE,
      *                  POTTRI, ZAROTR,

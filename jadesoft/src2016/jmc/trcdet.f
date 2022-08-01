@@ -59,16 +59,17 @@ C
       COMMON / CWORK  / NHITS, INEXT, HLIST(1600)
       COMMON / CWSET  / NHALL, ISTART, HPCELL(98), HITAR(16000)
 C
-      COMMON / CJDRCH / RDEC(4),
-     *                  PSIIN(3),
-     *                  RINCR(3),
-     *                  FIRSTW(3),
-     *                  FSENSW(3),
-     *                  RDEPTH,
-     *                  SWDEPL,
-     *                  YSUSPN,
-     *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
-     *                  DRIDEV,DRICOS,DRISIN
+CAV      COMMON / CJDRCH / RDEC(4),
+CAV     *                  PSIIN(3),
+CAV     *                  RINCR(3),
+CAV     *                  FIRSTW(3),
+CAV     *                  FSENSW(3),
+CAV     *                  RDEPTH,
+CAV     *                  SWDEPL,
+CAV     *                  YSUSPN,
+CAV     *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
+CAV     *                  DRIDEV,DRICOS,DRISIN
+#include "cjdrch.for"
 C
       COMMON / CJIONI / POTBEA, ZAROBE,
      *                  POTTRI, ZAROTR,

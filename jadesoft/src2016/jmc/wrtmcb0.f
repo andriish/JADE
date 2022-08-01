@@ -27,6 +27,8 @@ CAV      COMMON / CGEO1  / GEO(65)
 CAV   Symbol should be of size 66
       COMMON / CGEO1  / GEO(66)
       COMMON / CJDRCH / DRCH(34)
+CAV
+     + ,AVFOO(611)            
       COMMON / CTOF   / IATDC(94)
       COMMON / C4VHIT / H4VHTR(400), H4VHIT(4000)
       COMMON / CWSET  / NHALL, ISTART, HPCELL(98), HITAR(16000)

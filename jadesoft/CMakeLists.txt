@@ -156,7 +156,8 @@ list(TRANSFORM GRAFIX_src PREPEND "${SRCGRAFIX}/")
 ADD_LIBRARY(${GRAFIX} STATIC ${GRAFIX_src})
 ########################################################################
 SET(INTERFACE_src
-         hfix.f biby.f  dlib.f igwlcm.F ips.f plot10.F plot2016.F 
+         hfix.f biby.f  dlib.f igwlcm.F ips.f plot10.F 
+         #plot2016.F 
          #ranmar.f 
          setcol.F
 )

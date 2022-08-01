@@ -105,6 +105,8 @@ C
      +                  PEDES, TZERO(3),
      +                  DRIROT(96,2), SINDRI(96,2), COSDRI(96,2),
      +                  DRIVEL(96,2)
+CAV
+     + ,AVFOO(31) 
 C
 C                                          VERTEX CHAMBER
 C

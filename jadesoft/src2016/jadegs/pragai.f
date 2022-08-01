@@ -47,6 +47,8 @@ C
      +                  PEDES, TZERO(3),
      +                  DRIROT(96,2), SINDRI(96,2), COSDRI(96,2),
      +                  DRIVEL(96,2)
+CAV
+     + ,AVFOO(31)
 C
       COMMON /XJDRCH/ JPRAGC(38)
       DIMENSION KPRAGC(38),XPRAGC(38),YPRAGC(38)

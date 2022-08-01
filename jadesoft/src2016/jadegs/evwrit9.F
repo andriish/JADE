@@ -31,7 +31,8 @@ C
 #include "cgraph.for"
 C
       COMMON / CGEO1  / GEO(66)
-      COMMON / CJDRCH / DRCH(34)
+CAV      COMMON / CJDRCH / DRCH(34)
+      COMMON / CJDRCH / DRCH(34),BVFOO(611)
 C
 C                                          VERTEX CHAMBER
       COMMON / CVCEX  / LVTXC

@@ -38,6 +38,8 @@ C
      *                  YSUSPN,
      *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
      *                  DRIDEV,DRICOS,DRISIN
+CAV
+     + ,AVFOO(611)           
 C
       DIMENSION R(5), P(7)
 C

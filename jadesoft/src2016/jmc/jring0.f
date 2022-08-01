@@ -67,6 +67,8 @@ C
      *                  YSUSPN,
      *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
      *                  DRIDEV,DRICOS,DRISIN
+CAV
+     + ,AVFOO(611)           
       COMMON / CJIONI / POTBEA, ZAROBE,
      *                  POTTRI, ZAROTR,
      *                  POTIVE, ZAROIV,

@@ -44,6 +44,8 @@ CAV   To assure all symbols have same size
 #include "cadmin.for"
 CAV
       COMMON / CJDRCH / DRCH(34)
+CAV
+     + ,AVFOO(611)
       COMMON / CBIN   / TIME(6),ZOF,ZRS,ZL,ZSC,EPSI(3),DOUB(3),IRN(3),
      +                BINDL8(6),RJITT, DLRSLN(3)
 C
