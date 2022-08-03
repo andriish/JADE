@@ -134,7 +134,7 @@ fi
 ##This is for GNU/Clang on MacOSX
 if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-11" ]; then
  export CC=gcc-11
- export CXX=g++-11
+ export CXX=clang++
  export FC=gfortran-11
 fi
 arguments="-DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain$bits "

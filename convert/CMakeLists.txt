@@ -15,6 +15,7 @@ find_package(HepMC3  REQUIRED HINTS /usr/local/Cellar/hepmc2/3.2.5_1/share/HepMC
 message(STATUS "HEPMC3 libraries        : ${HEPMC3_LIBRARIES} ${HEPMC3_ROOTIO_LIBRARIES}")
 ########################################################################
 include(JADE_ROOT_setup)
+set(CMAKE_POSITION_INDEPENDENT_CODE FALSE)
 ########################################################################
 find_program(GENGETOPT gengetopt)
 if( NOT GENGETOPT )
@@ -43,6 +44,10 @@ target_compile_definitions( convert_mc_JADE.exe PUBLIC HEPMCCONVERT_EXTENSION_JA
 target_include_directories(convert_mc_JADE.exe PUBLIC ${HEPMC3_INCLUDE_DIR})
 target_link_libraries(convert_mc_JADE.exe ${HEPMC3_LIB} ${HEPMC3_LIBRARIES} ${HEPMC3_SEARCH_LIB}  ${LAPACK_LIBRARIES})
 set_target_properties(convert_mc_JADE.exe PROPERTIES LINKER_LANGUAGE Fortran) 
+set_property(TARGET convert_mc_JADE.exe PROPERTY CXX_STANDARD 11)
+if (APPLE)
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -v ")
+endif()
 add_dependencies( convert_mc_JADE.exe cmdline  )
 ########################################################################
 # installs 

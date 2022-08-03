@@ -89,6 +89,12 @@ message(STATUS "C compiler            : ${CMAKE_C_COMPILER_ID}")
 message(STATUS "C compiler flags      : ${CMAKE_C_FLAGS}")
 ########################################################################
 #Setup C++ compiller
+if (NOT JADE_CXX_STANDARD)
+  set(JADE_CXX_STANDARD 14)
+endif()
+set(CMAKE_CXX_STANDARD ${JADE_CXX_STANDARD})
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 include(CheckCXXCompilerFlag)
 if (${CMAKE_CXX_COMPILER_ID}  MATCHES "GNU")
   set(CXX_FLAGS_TO_CHECK "-g " "-O1" "-std=c++1y" "-Wall"  "-Wno-cpp" "-Wno-sign-compare" )
@@ -130,5 +136,7 @@ endif()
 message(STATUS "C++ compiler            : ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "C++ compiler flags      : ${CMAKE_CXX_FLAGS}")
 ########################################################################
+#set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -no-pie ")
 message(STATUS "EXE linker flags        : ${CMAKE_EXE_LINKER_FLAGS}")
 ########################################################################
+

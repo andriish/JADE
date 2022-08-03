@@ -15,11 +15,14 @@ if (JADE_FORCE_32)
 endif()
 ########################################################################
 include(JADE_compiler_setup)
+set(CMAKE_POSITION_INDEPENDENT_CODE FALSE)
 ########################################################################
 find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
 ########################################################################
 if (JADE_USE_CERNLIB)
+ set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgfortran -L/usr/local/opt/gcc/lib/gcc/11/libquadmath.a ")
+
   find_package(CERNLIB  REQUIRED HINTS /Volumes/Work/INSTALL/share/cernlib/cmake)
   message(STATUS "JADE: CERNLIB_PACKLIB=${CERNLIB_PACKLIB}")
   message(STATUS "JADE: CERNLIB_PACKLIB_STATIC=${CERNLIB_PACKLIB_STATIC}")
@@ -69,6 +72,11 @@ SET(SRC ${CMAKE_SOURCE_DIR}/src)
 SET(LIB ${CMAKE_SOURCE_DIR}/lib)
 SET(BIN ${CMAKE_SOURCE_DIR}/bin)
 include_directories( ${SRC} )
+
+
+if (APPLE)
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -v ")
+endif()
 
 SET(FPTOBOS_src ${SRC}/fptobos.f 
 ${SRC}/unpjad.f 

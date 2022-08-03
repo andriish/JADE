@@ -19,6 +19,7 @@ if (JADE_FORCE_32)
 endif()
 ########################################################################
 include(JADE_compiler_setup)
+ set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 ########################################################################
 find_package(BLAS REQUIRED)
 message(STATUS "JADE: BLAS libraries        : ${BLAS_LIBRARIES}")
@@ -28,9 +29,12 @@ message(STATUS "JADE: LAPACK libraries        : ${LAPACK_LIBRARIES}")
 ########################################################################
 find_package(X11  REQUIRED)
 message(STATUS "JADE: X11 libraries        : ${X11_LIBRARIES}")
+message(STATUS "JADE: X11_xcb_LIB libraries        : ${X11_xcb_LIB}")
 ########################################################################
 if (JADE_USE_CERNLIB)
-  find_package(CERNLIB  REQUIRED HINTS /Volumes/Work/INSTALL/share/cernlib/cmake)
+  set(CMAKE_POSITION_INDEPENDENT_CODE FALSE)
+  set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgfortran -L/usr/local/opt/gcc/lib/gcc/11/libquadmath.a ")
+  find_package(CERNLIB  REQUIRED)
   message(STATUS "JADE: CERNLIB_PACKLIB=${CERNLIB_PACKLIB}")
   message(STATUS "JADE: CERNLIB_PACKLIB_STATIC=${CERNLIB_PACKLIB_STATIC}")
   set(PICOCERNLIB "${MOTIF_LIBRARIES};${CERNLIB_PACKLIB_STATIC};${CERNLIB_KERNLIB_STATIC};${CERNLIB_MATHLIB_STATIC};${CERNLIB_GRAFLIB_STATIC};${CERNLIB_GRAFX11_STATIC}")
@@ -304,7 +308,7 @@ ADD_EXECUTABLE(${ZE4VEXE} ${ZE4V_src})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   TARGET_LINK_LIBRARIES(${JADEZEXE}   ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
-    ${JEXTERN_LIBRARIES} ${X11_LIBRARIES} )
+    ${JEXTERN_LIBRARIES} ${X11_LIBRARIES} ${X11_xcb_LIB} ${X11_Xau_LIB} ${X11_Xdmcp_LIB})
   if (NOT JADE_USE_CERNLIB)
   TARGET_LINK_LIBRARIES(${JADEZROOTEXE}   ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} ${X11_LIBRARIES} )

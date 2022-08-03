@@ -56,7 +56,7 @@ toolchain=GNU
 if test -z "$tmptoolchain"; then
  tmptoolchain="GNU"
 fi
-if  [ "$tmptoolchain" != "GNU" ] && [ "$tmptoolchain" !=  "Intel" ] && [ "$tmptoolchain" != "NAG" ] && [ "$tmptoolchain" !=  "XL" ] && [ "$tmptoolchain" !=  "PGI" ] && [ "$tmptoolchain" !=  "SUN" ]; then
+if  [ "$tmptoolchain" != "GNU" ] && [ "$tmptoolchain" != "GNU-11" ] && [ "$tmptoolchain" !=  "Intel" ] && [ "$tmptoolchain" != "NAG" ] && [ "$tmptoolchain" !=  "XL" ] && [ "$tmptoolchain" !=  "PGI" ] && [ "$tmptoolchain" !=  "SUN" ]; then
  echo "Unknown toolchain "$tmptoolchain" using GNU instead."
  echo "Possible values for the toolchain are Intel, GNU, and XL"
 else 
@@ -113,14 +113,10 @@ if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "Intel" ]; then
  export FC=ifort
 fi
 ##This is for GNU/Clang on MacOSX
-if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU" ]; then
- export CC=clang
+if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-11" ]; then
+ export CC=gcc-11
  export CXX=clang++
- if [ "$?" = "0" ]; then 
-   export FC=gfortran-10
- else
-   export FC=gfortran
- fi
+ export FC=gfortran-11
 fi
 tmpbits=$( echo "$*" | egrep -- '--\<bits\>' | cut -f2 -d=)
 if [ "$(uname)" == "Darwin" ]; then
