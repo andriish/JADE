@@ -39,9 +39,9 @@ fi
 tmpprefix=$( echo "$*" | egrep -- '--\<prefix\>' | cut -f2 -d=)
 if test -n "$tmpprefix"; then
  if [ "$(uname)" == "Darwin" ]; then
- export TOP=$(greadlink -f $tmp)
+   export TOP=$(greadlink -f $tmp)
  else
- export TOP=$(readlink -f $tmp)
+   export TOP=$(readlink -f $tmp)
  fi
 else
  export TOP=$(pwd)/installed
@@ -53,89 +53,89 @@ if test -z "$tmptoolchain"; then
  tmptoolchain="GNU"
 fi
 if  [ "$tmptoolchain" != "GNU" ] && [ "$tmptoolchain" != "GNU-11" ] && [ "$tmptoolchain" !=  "Intel" ] && [ "$tmptoolchain" !=  "XL" ] && [ "$tmptoolchain" !=  "NAG" ] && [ "$tmptoolchain" !=  "PGI" ]&& [ "$tmptoolchain" !=  "SUN" ]; then
- echo "Unknown toolchain "$tmptoolchain" using GNU instead."
- echo "Possible values for the toolchain are Intel, GNU, and XL"
+  echo "Unknown toolchain "$tmptoolchain" using GNU instead."
+  echo "Possible values for the toolchain are Intel, GNU, and XL"
 else 
- toolchain=$tmptoolchain
+  toolchain=$tmptoolchain
 fi
 echo "Used toolchain="$toolchain
 
 tmpbits=$( echo "$*" | egrep -- '--\<bits\>' | cut -f2 -d=)
 if [ "$(uname)" == "Darwin" ]; then
-bits=64
+  bits=64
 else
-if [ "$(uname -m)" == "i686" ]; then
-bits=32
-else
-bits=64
-fi
+  if [ "$(uname -m)" == "i686" ]; then
+    bits=32
+  else
+    bits=64
+  fi
 fi
 if test -z "$tmpbits"; then
- tmpbits=$tmpbits
+  tmpbits=$tmpbits
 fi
 if  [ "$tmpbits" != "32" ] && [ "$tmpbits" != "64" ] ; then
- echo "Unknown bits "$tmpbits" using 64 instead."
- echo "Possible values for the bits are 32 and 64"
+  echo "Unknown bits "$tmpbits" using 64 instead."
+  echo "Possible values for the bits are 32 and 64"
 else 
- bits=$tmpbits
+  bits=$tmpbits
 fi
 ##This is for Intel on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "Intel" ]; then
- .  /opt/intel/oneapi/setvars.sh
- export CC=icc
- export CXX=icpc
- export FC=ifort
+  . /opt/intel/oneapi/setvars.sh
+  export CC=icc
+  export CXX=icpc
+  export FC=ifort
 fi
 ##This is for GNU on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "GNU" ]; then
- export CC=gcc
- export CXX=g++
- export FC=gfortran
+  export CC=gcc
+  export CXX=g++
+  export FC=gfortran
 fi
 ##This is for XL on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "XL" ]; then
- export CC=xlc
- export CXX=xlC
- export FC=xlf
+  export CC=xlc
+  export CXX=xlC
+  export FC=xlf
 fi
 ##This is for NAG on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "NAG" ]; then
- export NAG_KUSARI_FILE=/opt/NAG/licence.lic
- export PATH=/opt/NAG/bin:$PATH
- export LD_LIBRARY_PATH=/opt/NAG/lib/NAG_Fortran:$LD_LIBRARY_PATH
- export CC=gcc
- export CXX=g++
- export FC=nagfor
+  export NAG_KUSARI_FILE=/opt/NAG/licence.lic
+  export PATH=/opt/NAG/bin:$PATH
+  export LD_LIBRARY_PATH=/opt/NAG/lib/NAG_Fortran:$LD_LIBRARY_PATH
+  export CC=gcc
+  export CXX=g++
+  export FC=nagfor
 fi
 ##This is for PGI on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "PGI" ]; then
- module use  /opt/nvidia/hpc_sdk/modulefiles/nvhpc/
- module load 20.9
- export CC=pgcc
- export CXX=pgc++
- export FC=pgf77
+  module use  /opt/nvidia/hpc_sdk/modulefiles/nvhpc/
+  module load 20.9
+  export CC=pgcc
+  export CXX=pgc++
+  export FC=pgf77
 fi
 ##This is for SUN on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "SUN" ]; then
- export PATH=/opt/oracle/developerstudio12.6/bin:$PATH
- export LD_LIBRARY_PATH=/opt/oracle/developerstudio12.6/lib:$LD_LIBRARY_PATH
- export CC=suncc
- export CXX=sunCC
- export FC=sunf77
+  export PATH=/opt/oracle/developerstudio12.6/bin:$PATH
+  export LD_LIBRARY_PATH=/opt/oracle/developerstudio12.6/lib:$LD_LIBRARY_PATH
+  export CC=suncc
+  export CXX=sunCC
+  export FC=sunf77
 fi
 
 ##This is for Intel on MacOSX
 if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "Intel" ]; then
- .  /opt/intel/oneapi/setvars.sh
- export CC=icc
- export CXX=icpc
- export FC=ifort
+  .  /opt/intel/oneapi/setvars.sh
+  export CC=icc
+  export CXX=icpc
+  export FC=ifort
 fi
 ##This is for GNU/Clang on MacOSX
 if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-11" ]; then
- export CC=gcc-11
- export CXX=clang++
- export FC=gfortran-11
+  export CC=gcc-11
+  export CXX=clang++
+  export FC=gfortran-11
 fi
 arguments="-DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain$bits "
 if  [ "$tmpbits" == "32" ]; then
