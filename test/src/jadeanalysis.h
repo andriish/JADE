@@ -230,18 +230,18 @@ public :
     UChar_t         Istrt[501];   //[Ntrk2]
     Char_t          Ichgh[2004];   //[Ntrkh]
     /*@}*/
-    
+
     //JADE
-   UInt_t          Ino;
-   UInt_t          Inttr;
-   UInt_t          Iltr;
-   UInt_t          Itauct;
-   UInt_t          Imcred;
-   UInt_t          Njdcut[2];
-   Float_t         Eb;
-   Float_t         Ee[2];
-   Float_t         Zvert;    
-   //JADE
+    UInt_t          Ino;
+    UInt_t          Inttr;
+    UInt_t          Iltr;
+    UInt_t          Itauct;
+    UInt_t          Imcred;
+    UInt_t          Njdcut[2];
+    Float_t         Eb;
+    Float_t         Ee[2];
+    Float_t         Zvert;
+    //JADE
 
     Int_t           event_number;                            ///< Event number in generated MC, HepMC trees only
     Int_t           momentum_unit;                           ///< HepMC units GEV/MEV, HepMC trees only
@@ -444,15 +444,15 @@ public :
     TBranch        *b_Vderr3bt;   //!
     TBranch        *b_Ievtyp;   //!
 //JADE->
-   TBranch        *b_Ino;   //!
-   TBranch        *b_Inttr;   //!
-   TBranch        *b_Iltr;   //!
-   TBranch        *b_Itauct;   //!
-   TBranch        *b_Imcred;   //!
-   TBranch        *b_Njdcut;   //!
-   TBranch        *b_Eb;   //!
-   TBranch        *b_Ee;   //!
-   TBranch        *b_Zvert;   //!
+    TBranch        *b_Ino;   //!
+    TBranch        *b_Inttr;   //!
+    TBranch        *b_Iltr;   //!
+    TBranch        *b_Itauct;   //!
+    TBranch        *b_Imcred;   //!
+    TBranch        *b_Njdcut;   //!
+    TBranch        *b_Eb;   //!
+    TBranch        *b_Ee;   //!
+    TBranch        *b_Zvert;   //!
 ///<-JADE
     TBranch        *b_Inonr;   //!
     TBranch        *b_Pisr;   //!
@@ -741,17 +741,29 @@ public :
         b_Ichgh=0;
     }
     virtual ~jadeanalysis() { }
-    virtual Int_t   Version() const { return 2; }
+    virtual Int_t   Version() const {
+        return 2;
+    }
     virtual void    Begin(TTree *tree);
     virtual void    SlaveBegin(TTree *tree);
     virtual void    Init(TTree *tree);
     virtual Bool_t  Notify();
     virtual Bool_t  Process(Long64_t entry);
-    virtual Int_t   GetEntry(Long64_t entry, Int_t getall = 0) { return fChain ? fChain->GetTree()->GetEntry(entry, getall) : 0; }
-    virtual void    SetOption(const char *option) { fOption = option; }
-    virtual void    SetObject(TObject *obj) { fObject = obj; }
-    virtual void    SetInputList(TList *input) { fInput = input; }
-    virtual TList  *GetOutputList() const { return fOutput; }
+    virtual Int_t   GetEntry(Long64_t entry, Int_t getall = 0) {
+        return fChain ? fChain->GetTree()->GetEntry(entry, getall) : 0;
+    }
+    virtual void    SetOption(const char *option) {
+        fOption = option;
+    }
+    virtual void    SetObject(TObject *obj) {
+        fObject = obj;
+    }
+    virtual void    SetInputList(TList *input) {
+        fInput = input;
+    }
+    virtual TList  *GetOutputList() const {
+        return fOutput;
+    }
     virtual void    SlaveTerminate();
     virtual void    Terminate();
 
@@ -776,214 +788,214 @@ void jadeanalysis::Init(TTree *tree)
     fChain = tree;
     fChain->SetMakeClass(1);
 
-   fChain->SetBranchAddress("Irun", &Irun, &b_Irun);
-   fChain->SetBranchAddress("Ievnt", &Ievnt, &b_Ievnt);
-   fChain->SetBranchAddress("Itkmh", &Itkmh, &b_Itkmh);
-   fChain->SetBranchAddress("Igpmh", &Igpmh, &b_Igpmh);
-   fChain->SetBranchAddress("Isist", &Isist, &b_Isist);
-   fChain->SetBranchAddress("Icvst", &Icvst, &b_Icvst);
-   fChain->SetBranchAddress("Icjst", &Icjst, &b_Icjst);
-   fChain->SetBranchAddress("Iczst", &Iczst, &b_Iczst);
-   fChain->SetBranchAddress("Iebst", &Iebst, &b_Iebst);
-   fChain->SetBranchAddress("Ieest", &Ieest, &b_Ieest);
-   fChain->SetBranchAddress("Istg1", &Istg1, &b_Istg1);
-   fChain->SetBranchAddress("Ntkd02", &Ntkd02, &b_Ntkd02);
-   fChain->SetBranchAddress("Ebeam", &Ebeam, &b_Ebeam);
-   fChain->SetBranchAddress("Pgce", Pgce, &b_Pgce);
-   fChain->SetBranchAddress("Tvectc", Tvectc, &b_Tvectc);
-   fChain->SetBranchAddress("Ino", &Ino, &b_Ino);
-   fChain->SetBranchAddress("Inttr", &Inttr, &b_Inttr);
-   fChain->SetBranchAddress("Iltr", &Iltr, &b_Iltr);
-   fChain->SetBranchAddress("Itauct", &Itauct, &b_Itauct);
-   fChain->SetBranchAddress("Imcred", &Imcred, &b_Imcred);
-   fChain->SetBranchAddress("Njdcut", Njdcut, &b_Njdcut);
-   fChain->SetBranchAddress("Eb", &Eb, &b_Eb);
-   fChain->SetBranchAddress("Ee", Ee, &b_Ee);
-   fChain->SetBranchAddress("Zvert", &Zvert, &b_Zvert);
-   fChain->SetBranchAddress("Tdtc", &Tdtc, &b_Tdtc);
-   fChain->SetBranchAddress("Tmadtc", &Tmadtc, &b_Tmadtc);
-   fChain->SetBranchAddress("Tmidtc", &Tmidtc, &b_Tmidtc);
-   fChain->SetBranchAddress("Mhdtc", &Mhdtc, &b_Mhdtc);
-   fChain->SetBranchAddress("Mldtc", &Mldtc, &b_Mldtc);
-   fChain->SetBranchAddress("Btdtc", &Btdtc, &b_Btdtc);
-   fChain->SetBranchAddress("Bwdtc", &Bwdtc, &b_Bwdtc);
-   fChain->SetBranchAddress("Cpdtc", &Cpdtc, &b_Cpdtc);
-   fChain->SetBranchAddress("Dpdtc", &Dpdtc, &b_Dpdtc);
-   fChain->SetBranchAddress("Sdtc", &Sdtc, &b_Sdtc);
-   fChain->SetBranchAddress("Adtc", &Adtc, &b_Adtc);
-   fChain->SetBranchAddress("Acpdtc", &Acpdtc, &b_Acpdtc);
-   fChain->SetBranchAddress("Tdt", &Tdt, &b_Tdt);
-   fChain->SetBranchAddress("Tmadt", &Tmadt, &b_Tmadt);
-   fChain->SetBranchAddress("Tmidt", &Tmidt, &b_Tmidt);
-   fChain->SetBranchAddress("Mhdt", &Mhdt, &b_Mhdt);
-   fChain->SetBranchAddress("Mldt", &Mldt, &b_Mldt);
-   fChain->SetBranchAddress("Btdt", &Btdt, &b_Btdt);
-   fChain->SetBranchAddress("Bwdt", &Bwdt, &b_Bwdt);
-   fChain->SetBranchAddress("Cpdt", &Cpdt, &b_Cpdt);
-   fChain->SetBranchAddress("Dpdt", &Dpdt, &b_Dpdt);
-   fChain->SetBranchAddress("Sdt", &Sdt, &b_Sdt);
-   fChain->SetBranchAddress("Adt", &Adt, &b_Adt);
-   fChain->SetBranchAddress("Acpdt", &Acpdt, &b_Acpdt);
-   fChain->SetBranchAddress("Tdc", &Tdc, &b_Tdc);
-   fChain->SetBranchAddress("Tmadc", &Tmadc, &b_Tmadc);
-   fChain->SetBranchAddress("Tmidc", &Tmidc, &b_Tmidc);
-   fChain->SetBranchAddress("Mhdc", &Mhdc, &b_Mhdc);
-   fChain->SetBranchAddress("Mldc", &Mldc, &b_Mldc);
-   fChain->SetBranchAddress("Btdc", &Btdc, &b_Btdc);
-   fChain->SetBranchAddress("Bwdc", &Bwdc, &b_Bwdc);
-   fChain->SetBranchAddress("Cpdc", &Cpdc, &b_Cpdc);
-   fChain->SetBranchAddress("Dpdc", &Dpdc, &b_Dpdc);
-   fChain->SetBranchAddress("Sdc", &Sdc, &b_Sdc);
-   fChain->SetBranchAddress("Adc", &Adc, &b_Adc);
-   fChain->SetBranchAddress("Acpdc", &Acpdc, &b_Acpdc);
-   fChain->SetBranchAddress("Tdmt", &Tdmt, &b_Tdmt);
-   fChain->SetBranchAddress("Tmadmt", &Tmadmt, &b_Tmadmt);
-   fChain->SetBranchAddress("Tmidmt", &Tmidmt, &b_Tmidmt);
-   fChain->SetBranchAddress("Mhdmt", &Mhdmt, &b_Mhdmt);
-   fChain->SetBranchAddress("Mldmt", &Mldmt, &b_Mldmt);
-   fChain->SetBranchAddress("Btdmt", &Btdmt, &b_Btdmt);
-   fChain->SetBranchAddress("Bwdmt", &Bwdmt, &b_Bwdmt);
-   fChain->SetBranchAddress("Cpdmt", &Cpdmt, &b_Cpdmt);
-   fChain->SetBranchAddress("Dpdmt", &Dpdmt, &b_Dpdmt);
-   fChain->SetBranchAddress("Sdmt", &Sdmt, &b_Sdmt);
-   fChain->SetBranchAddress("Admt", &Admt, &b_Admt);
-   fChain->SetBranchAddress("Acpdmt", &Acpdmt, &b_Acpdmt);
-   fChain->SetBranchAddress("Nxjdtc", &Nxjdtc, &b_Nxjdtc);
-   fChain->SetBranchAddress("Nxjdt", &Nxjdt, &b_Nxjdt);
-   fChain->SetBranchAddress("Nxjdc", &Nxjdc, &b_Nxjdc);
-   fChain->SetBranchAddress("Nxjdmt", &Nxjdmt, &b_Nxjdmt);
-   fChain->SetBranchAddress("Nxjetc", &Nxjetc, &b_Nxjetc);
-   fChain->SetBranchAddress("Nxjet", &Nxjet, &b_Nxjet);
-   fChain->SetBranchAddress("Nxjec", &Nxjec, &b_Nxjec);
-   fChain->SetBranchAddress("Nxjemt", &Nxjemt, &b_Nxjemt);
-   fChain->SetBranchAddress("Nxjctc", &Nxjctc, &b_Nxjctc);
-   fChain->SetBranchAddress("Nxjct", &Nxjct, &b_Nxjct);
-   fChain->SetBranchAddress("Nxjcc", &Nxjcc, &b_Nxjcc);
-   fChain->SetBranchAddress("Nxjcmt", &Nxjcmt, &b_Nxjcmt);
-   fChain->SetBranchAddress("Yddtc", Yddtc, &b_Yddtc);
-   fChain->SetBranchAddress("Yedtc", Yedtc, &b_Yedtc);
-   fChain->SetBranchAddress("Ycdtc", Ycdtc, &b_Ycdtc);
-   fChain->SetBranchAddress("Njcedtc", Njcedtc, &b_Njcedtc);
-   fChain->SetBranchAddress("Njcrdtc", Njcrdtc, &b_Njcrdtc);
-   fChain->SetBranchAddress("Yddt", Yddt, &b_Yddt);
-   fChain->SetBranchAddress("Yedt", Yedt, &b_Yedt);
-   fChain->SetBranchAddress("Ycdt", Ycdt, &b_Ycdt);
-   fChain->SetBranchAddress("Njcedt", Njcedt, &b_Njcedt);
-   fChain->SetBranchAddress("Njcrdt", Njcrdt, &b_Njcrdt);
-   fChain->SetBranchAddress("Yddc", Yddc, &b_Yddc);
-   fChain->SetBranchAddress("Yedc", Yedc, &b_Yedc);
-   fChain->SetBranchAddress("Ycdc", Ycdc, &b_Ycdc);
-   fChain->SetBranchAddress("Njcedc", Njcedc, &b_Njcedc);
-   fChain->SetBranchAddress("Njcrdc", Njcrdc, &b_Njcrdc);
-   fChain->SetBranchAddress("Yddmt", Yddmt, &b_Yddmt);
-   fChain->SetBranchAddress("Yedmt", Yedmt, &b_Yedmt);
-   fChain->SetBranchAddress("Ycdmt", Ycdmt, &b_Ycdmt);
-   fChain->SetBranchAddress("Njcedmt", Njcedmt, &b_Njcedmt);
-   fChain->SetBranchAddress("Njcrdmt", Njcrdmt, &b_Njcrdmt);
-   fChain->SetBranchAddress("Ntrk", &Ntrk, &b_Ntrk);
-   fChain->SetBranchAddress("Id02", Id02, &b_Id02);
-   fChain->SetBranchAddress("Dedx", Dedx, &b_Dedx);
-   fChain->SetBranchAddress("Dded", Dded, &b_Dded);
-   fChain->SetBranchAddress("Nhde", Nhde, &b_Nhde);
-   fChain->SetBranchAddress("Dp", Dp, &b_Dp);
-   fChain->SetBranchAddress("Ptrk", Ptrk, &b_Ptrk);
-   fChain->SetBranchAddress("Ichg", Ichg, &b_Ichg);
-   fChain->SetBranchAddress("Nhcj", Nhcj, &b_Nhcj);
-   fChain->SetBranchAddress("Z0", Z0, &b_Z0);
-   fChain->SetBranchAddress("D0", D0, &b_D0);
-   fChain->SetBranchAddress("Nmttrk", &Nmttrk, &b_Nmttrk);
-   fChain->SetBranchAddress("Imttrk", Imttrk, &b_Imttrk);
-   fChain->SetBranchAddress("Mtscft", Mtscft, &b_Mtscft);
-   fChain->SetBranchAddress("Nclus", &Nclus, &b_Nclus);
-   fChain->SetBranchAddress("Nmtcls", &Nmtcls, &b_Nmtcls);
-   fChain->SetBranchAddress("Imtcls", Imtcls, &b_Imtcls);
-   fChain->SetBranchAddress("Nmtkil", &Nmtkil, &b_Nmtkil);
-   fChain->SetBranchAddress("Imtkil", Imtkil, &b_Imtkil);
-   fChain->SetBranchAddress("Pclus", Pclus, &b_Pclus);
-   fChain->SetBranchAddress("Mtscfc", Mtscfc, &b_Mtscfc);
-   fChain->SetBranchAddress("Ievtyp", &Ievtyp, &b_Ievtyp);
-   fChain->SetBranchAddress("Inonr", &Inonr, &b_Inonr);
-   fChain->SetBranchAddress("Pisr", Pisr, &b_Pisr);
-   fChain->SetBranchAddress("Nprimf", &Nprimf, &b_Nprimf);
-   fChain->SetBranchAddress("Iferid", Iferid, &b_Iferid);
-   fChain->SetBranchAddress("Primf", Primf, &b_Primf);
-   fChain->SetBranchAddress("Tp", &Tp, &b_Tp);
-   fChain->SetBranchAddress("Tmap", &Tmap, &b_Tmap);
-   fChain->SetBranchAddress("Tmip", &Tmip, &b_Tmip);
-   fChain->SetBranchAddress("Mhp", &Mhp, &b_Mhp);
-   fChain->SetBranchAddress("Mlp", &Mlp, &b_Mlp);
-   fChain->SetBranchAddress("Btp", &Btp, &b_Btp);
-   fChain->SetBranchAddress("Bwp", &Bwp, &b_Bwp);
-   fChain->SetBranchAddress("Cpp", &Cpp, &b_Cpp);
-   fChain->SetBranchAddress("Dpp", &Dpp, &b_Dpp);
-   fChain->SetBranchAddress("Sp", &Sp, &b_Sp);
-   fChain->SetBranchAddress("Ap", &Ap, &b_Ap);
-   fChain->SetBranchAddress("Acpp", &Acpp, &b_Acpp);
-   fChain->SetBranchAddress("Th", &Th, &b_Th);
-   fChain->SetBranchAddress("Tmah", &Tmah, &b_Tmah);
-   fChain->SetBranchAddress("Tmih", &Tmih, &b_Tmih);
-   fChain->SetBranchAddress("Mhh", &Mhh, &b_Mhh);
-   fChain->SetBranchAddress("Mlh", &Mlh, &b_Mlh);
-   fChain->SetBranchAddress("Bth", &Bth, &b_Bth);
-   fChain->SetBranchAddress("Bwh", &Bwh, &b_Bwh);
-   fChain->SetBranchAddress("Cph", &Cph, &b_Cph);
-   fChain->SetBranchAddress("Dph", &Dph, &b_Dph);
-   fChain->SetBranchAddress("Sh", &Sh, &b_Sh);
-   fChain->SetBranchAddress("Ah", &Ah, &b_Ah);
-   fChain->SetBranchAddress("Acph", &Acph, &b_Acph);
-   fChain->SetBranchAddress("Nxjdp", &Nxjdp, &b_Nxjdp);
-   fChain->SetBranchAddress("Nxjdh", &Nxjdh, &b_Nxjdh);
-   fChain->SetBranchAddress("Nxjep", &Nxjep, &b_Nxjep);
-   fChain->SetBranchAddress("Nxjeh", &Nxjeh, &b_Nxjeh);
-   fChain->SetBranchAddress("Nxjcp", &Nxjcp, &b_Nxjcp);
-   fChain->SetBranchAddress("Nxjch", &Nxjch, &b_Nxjch);
-   fChain->SetBranchAddress("Ydp", Ydp, &b_Ydp);
-   fChain->SetBranchAddress("Yep", Yep, &b_Yep);
-   fChain->SetBranchAddress("Ycp", Ycp, &b_Ycp);
-   fChain->SetBranchAddress("Njcep", Njcep, &b_Njcep);
-   fChain->SetBranchAddress("Njcrp", Njcrp, &b_Njcrp);
-   fChain->SetBranchAddress("Ydh", Ydh, &b_Ydh);
-   fChain->SetBranchAddress("Yeh", Yeh, &b_Yeh);
-   fChain->SetBranchAddress("Ych", Ych, &b_Ych);
-   fChain->SetBranchAddress("Njceh", Njceh, &b_Njceh);
-   fChain->SetBranchAddress("Njcrh", Njcrh, &b_Njcrh);
-   fChain->SetBranchAddress("Ntrkp", &Ntrkp, &b_Ntrkp);
-   fChain->SetBranchAddress("Ilucp", Ilucp, &b_Ilucp);
-   fChain->SetBranchAddress("Ptrkp", Ptrkp, &b_Ptrkp);
-   fChain->SetBranchAddress("Ntrkh", &Ntrkh, &b_Ntrkh);
-   fChain->SetBranchAddress("Ntrk2", &Ntrk2, &b_Ntrk2);
-   fChain->SetBranchAddress("Ptrkh", Ptrkh, &b_Ptrkh);
-   fChain->SetBranchAddress("Iluch", Iluch, &b_Iluch);
-   fChain->SetBranchAddress("Iluc", Iluc, &b_Iluc);
-   fChain->SetBranchAddress("Istrt", Istrt, &b_Istrt);
-   fChain->SetBranchAddress("Ichgh", Ichgh, &b_Ichgh);
-/*
-    fChain->SetBranchAddress("event_number", &event_number, &b_hepmc3_event_event_number);
-    fChain->SetBranchAddress("momentum_unit", &momentum_unit, &b_hepmc3_event_momentum_unit);
-    fChain->SetBranchAddress("length_unit", &length_unit, &b_hepmc3_event_length_unit);
-    fChain->SetBranchAddress("particles", &particles_, &b_hepmc3_event_particles_);
-    fChain->SetBranchAddress("particles.pid", particles_pid, &b_particles_pid);
-    fChain->SetBranchAddress("particles.status", particles_status, &b_particles_status);
-    fChain->SetBranchAddress("particles.is_mass_set", particles_is_mass_set, &b_particles_is_mass_set);
-    fChain->SetBranchAddress("particles.mass", particles_mass, &b_particles_mass);
-    fChain->SetBranchAddress("particles.momentum.m_v1", particles_momentum_m_v1, &b_particles_momentum_m_v1);
-    fChain->SetBranchAddress("particles.momentum.m_v2", particles_momentum_m_v2, &b_particles_momentum_m_v2);
-    fChain->SetBranchAddress("particles.momentum.m_v3", particles_momentum_m_v3, &b_particles_momentum_m_v3);
-    fChain->SetBranchAddress("particles.momentum.m_v4", particles_momentum_m_v4, &b_particles_momentum_m_v4);
-    fChain->SetBranchAddress("vertices", &vertices_, &b_hepmc3_event_vertices_);
-    fChain->SetBranchAddress("vertices.position.m_v1", vertices_position_m_v1, &b_vertices_position_m_v1);
-    fChain->SetBranchAddress("vertices.position.m_v2", vertices_position_m_v2, &b_vertices_position_m_v2);
-    fChain->SetBranchAddress("vertices.position.m_v3", vertices_position_m_v3, &b_vertices_position_m_v3);
-    fChain->SetBranchAddress("vertices.position.m_v4", vertices_position_m_v4, &b_vertices_position_m_v4);
-    fChain->SetBranchAddress("links1", &links1, &b_hepmc3_event_links1);
-    fChain->SetBranchAddress("links2", &links2, &b_hepmc3_event_links2);
-    fChain->SetBranchAddress("attribute_id", &attribute_id, &b_hepmc3_event_attribute_id);
-    fChain->SetBranchAddress("attribute_name", &attribute_name, &b_hepmc3_event_attribute_name);
-    fChain->SetBranchAddress("attribute_string", &attribute_string, &b_hepmc3_event_attribute_string);
+    fChain->SetBranchAddress("Irun", &Irun, &b_Irun);
+    fChain->SetBranchAddress("Ievnt", &Ievnt, &b_Ievnt);
+    fChain->SetBranchAddress("Itkmh", &Itkmh, &b_Itkmh);
+    fChain->SetBranchAddress("Igpmh", &Igpmh, &b_Igpmh);
+    fChain->SetBranchAddress("Isist", &Isist, &b_Isist);
+    fChain->SetBranchAddress("Icvst", &Icvst, &b_Icvst);
+    fChain->SetBranchAddress("Icjst", &Icjst, &b_Icjst);
+    fChain->SetBranchAddress("Iczst", &Iczst, &b_Iczst);
+    fChain->SetBranchAddress("Iebst", &Iebst, &b_Iebst);
+    fChain->SetBranchAddress("Ieest", &Ieest, &b_Ieest);
+    fChain->SetBranchAddress("Istg1", &Istg1, &b_Istg1);
+    fChain->SetBranchAddress("Ntkd02", &Ntkd02, &b_Ntkd02);
+    fChain->SetBranchAddress("Ebeam", &Ebeam, &b_Ebeam);
+    fChain->SetBranchAddress("Pgce", Pgce, &b_Pgce);
+    fChain->SetBranchAddress("Tvectc", Tvectc, &b_Tvectc);
+    fChain->SetBranchAddress("Ino", &Ino, &b_Ino);
+    fChain->SetBranchAddress("Inttr", &Inttr, &b_Inttr);
+    fChain->SetBranchAddress("Iltr", &Iltr, &b_Iltr);
+    fChain->SetBranchAddress("Itauct", &Itauct, &b_Itauct);
+    fChain->SetBranchAddress("Imcred", &Imcred, &b_Imcred);
+    fChain->SetBranchAddress("Njdcut", Njdcut, &b_Njdcut);
+    fChain->SetBranchAddress("Eb", &Eb, &b_Eb);
+    fChain->SetBranchAddress("Ee", Ee, &b_Ee);
+    fChain->SetBranchAddress("Zvert", &Zvert, &b_Zvert);
+    fChain->SetBranchAddress("Tdtc", &Tdtc, &b_Tdtc);
+    fChain->SetBranchAddress("Tmadtc", &Tmadtc, &b_Tmadtc);
+    fChain->SetBranchAddress("Tmidtc", &Tmidtc, &b_Tmidtc);
+    fChain->SetBranchAddress("Mhdtc", &Mhdtc, &b_Mhdtc);
+    fChain->SetBranchAddress("Mldtc", &Mldtc, &b_Mldtc);
+    fChain->SetBranchAddress("Btdtc", &Btdtc, &b_Btdtc);
+    fChain->SetBranchAddress("Bwdtc", &Bwdtc, &b_Bwdtc);
+    fChain->SetBranchAddress("Cpdtc", &Cpdtc, &b_Cpdtc);
+    fChain->SetBranchAddress("Dpdtc", &Dpdtc, &b_Dpdtc);
+    fChain->SetBranchAddress("Sdtc", &Sdtc, &b_Sdtc);
+    fChain->SetBranchAddress("Adtc", &Adtc, &b_Adtc);
+    fChain->SetBranchAddress("Acpdtc", &Acpdtc, &b_Acpdtc);
+    fChain->SetBranchAddress("Tdt", &Tdt, &b_Tdt);
+    fChain->SetBranchAddress("Tmadt", &Tmadt, &b_Tmadt);
+    fChain->SetBranchAddress("Tmidt", &Tmidt, &b_Tmidt);
+    fChain->SetBranchAddress("Mhdt", &Mhdt, &b_Mhdt);
+    fChain->SetBranchAddress("Mldt", &Mldt, &b_Mldt);
+    fChain->SetBranchAddress("Btdt", &Btdt, &b_Btdt);
+    fChain->SetBranchAddress("Bwdt", &Bwdt, &b_Bwdt);
+    fChain->SetBranchAddress("Cpdt", &Cpdt, &b_Cpdt);
+    fChain->SetBranchAddress("Dpdt", &Dpdt, &b_Dpdt);
+    fChain->SetBranchAddress("Sdt", &Sdt, &b_Sdt);
+    fChain->SetBranchAddress("Adt", &Adt, &b_Adt);
+    fChain->SetBranchAddress("Acpdt", &Acpdt, &b_Acpdt);
+    fChain->SetBranchAddress("Tdc", &Tdc, &b_Tdc);
+    fChain->SetBranchAddress("Tmadc", &Tmadc, &b_Tmadc);
+    fChain->SetBranchAddress("Tmidc", &Tmidc, &b_Tmidc);
+    fChain->SetBranchAddress("Mhdc", &Mhdc, &b_Mhdc);
+    fChain->SetBranchAddress("Mldc", &Mldc, &b_Mldc);
+    fChain->SetBranchAddress("Btdc", &Btdc, &b_Btdc);
+    fChain->SetBranchAddress("Bwdc", &Bwdc, &b_Bwdc);
+    fChain->SetBranchAddress("Cpdc", &Cpdc, &b_Cpdc);
+    fChain->SetBranchAddress("Dpdc", &Dpdc, &b_Dpdc);
+    fChain->SetBranchAddress("Sdc", &Sdc, &b_Sdc);
+    fChain->SetBranchAddress("Adc", &Adc, &b_Adc);
+    fChain->SetBranchAddress("Acpdc", &Acpdc, &b_Acpdc);
+    fChain->SetBranchAddress("Tdmt", &Tdmt, &b_Tdmt);
+    fChain->SetBranchAddress("Tmadmt", &Tmadmt, &b_Tmadmt);
+    fChain->SetBranchAddress("Tmidmt", &Tmidmt, &b_Tmidmt);
+    fChain->SetBranchAddress("Mhdmt", &Mhdmt, &b_Mhdmt);
+    fChain->SetBranchAddress("Mldmt", &Mldmt, &b_Mldmt);
+    fChain->SetBranchAddress("Btdmt", &Btdmt, &b_Btdmt);
+    fChain->SetBranchAddress("Bwdmt", &Bwdmt, &b_Bwdmt);
+    fChain->SetBranchAddress("Cpdmt", &Cpdmt, &b_Cpdmt);
+    fChain->SetBranchAddress("Dpdmt", &Dpdmt, &b_Dpdmt);
+    fChain->SetBranchAddress("Sdmt", &Sdmt, &b_Sdmt);
+    fChain->SetBranchAddress("Admt", &Admt, &b_Admt);
+    fChain->SetBranchAddress("Acpdmt", &Acpdmt, &b_Acpdmt);
+    fChain->SetBranchAddress("Nxjdtc", &Nxjdtc, &b_Nxjdtc);
+    fChain->SetBranchAddress("Nxjdt", &Nxjdt, &b_Nxjdt);
+    fChain->SetBranchAddress("Nxjdc", &Nxjdc, &b_Nxjdc);
+    fChain->SetBranchAddress("Nxjdmt", &Nxjdmt, &b_Nxjdmt);
+    fChain->SetBranchAddress("Nxjetc", &Nxjetc, &b_Nxjetc);
+    fChain->SetBranchAddress("Nxjet", &Nxjet, &b_Nxjet);
+    fChain->SetBranchAddress("Nxjec", &Nxjec, &b_Nxjec);
+    fChain->SetBranchAddress("Nxjemt", &Nxjemt, &b_Nxjemt);
+    fChain->SetBranchAddress("Nxjctc", &Nxjctc, &b_Nxjctc);
+    fChain->SetBranchAddress("Nxjct", &Nxjct, &b_Nxjct);
+    fChain->SetBranchAddress("Nxjcc", &Nxjcc, &b_Nxjcc);
+    fChain->SetBranchAddress("Nxjcmt", &Nxjcmt, &b_Nxjcmt);
+    fChain->SetBranchAddress("Yddtc", Yddtc, &b_Yddtc);
+    fChain->SetBranchAddress("Yedtc", Yedtc, &b_Yedtc);
+    fChain->SetBranchAddress("Ycdtc", Ycdtc, &b_Ycdtc);
+    fChain->SetBranchAddress("Njcedtc", Njcedtc, &b_Njcedtc);
+    fChain->SetBranchAddress("Njcrdtc", Njcrdtc, &b_Njcrdtc);
+    fChain->SetBranchAddress("Yddt", Yddt, &b_Yddt);
+    fChain->SetBranchAddress("Yedt", Yedt, &b_Yedt);
+    fChain->SetBranchAddress("Ycdt", Ycdt, &b_Ycdt);
+    fChain->SetBranchAddress("Njcedt", Njcedt, &b_Njcedt);
+    fChain->SetBranchAddress("Njcrdt", Njcrdt, &b_Njcrdt);
+    fChain->SetBranchAddress("Yddc", Yddc, &b_Yddc);
+    fChain->SetBranchAddress("Yedc", Yedc, &b_Yedc);
+    fChain->SetBranchAddress("Ycdc", Ycdc, &b_Ycdc);
+    fChain->SetBranchAddress("Njcedc", Njcedc, &b_Njcedc);
+    fChain->SetBranchAddress("Njcrdc", Njcrdc, &b_Njcrdc);
+    fChain->SetBranchAddress("Yddmt", Yddmt, &b_Yddmt);
+    fChain->SetBranchAddress("Yedmt", Yedmt, &b_Yedmt);
+    fChain->SetBranchAddress("Ycdmt", Ycdmt, &b_Ycdmt);
+    fChain->SetBranchAddress("Njcedmt", Njcedmt, &b_Njcedmt);
+    fChain->SetBranchAddress("Njcrdmt", Njcrdmt, &b_Njcrdmt);
+    fChain->SetBranchAddress("Ntrk", &Ntrk, &b_Ntrk);
+    fChain->SetBranchAddress("Id02", Id02, &b_Id02);
+    fChain->SetBranchAddress("Dedx", Dedx, &b_Dedx);
+    fChain->SetBranchAddress("Dded", Dded, &b_Dded);
+    fChain->SetBranchAddress("Nhde", Nhde, &b_Nhde);
+    fChain->SetBranchAddress("Dp", Dp, &b_Dp);
+    fChain->SetBranchAddress("Ptrk", Ptrk, &b_Ptrk);
+    fChain->SetBranchAddress("Ichg", Ichg, &b_Ichg);
+    fChain->SetBranchAddress("Nhcj", Nhcj, &b_Nhcj);
+    fChain->SetBranchAddress("Z0", Z0, &b_Z0);
+    fChain->SetBranchAddress("D0", D0, &b_D0);
+    fChain->SetBranchAddress("Nmttrk", &Nmttrk, &b_Nmttrk);
+    fChain->SetBranchAddress("Imttrk", Imttrk, &b_Imttrk);
+    fChain->SetBranchAddress("Mtscft", Mtscft, &b_Mtscft);
+    fChain->SetBranchAddress("Nclus", &Nclus, &b_Nclus);
+    fChain->SetBranchAddress("Nmtcls", &Nmtcls, &b_Nmtcls);
+    fChain->SetBranchAddress("Imtcls", Imtcls, &b_Imtcls);
+    fChain->SetBranchAddress("Nmtkil", &Nmtkil, &b_Nmtkil);
+    fChain->SetBranchAddress("Imtkil", Imtkil, &b_Imtkil);
+    fChain->SetBranchAddress("Pclus", Pclus, &b_Pclus);
+    fChain->SetBranchAddress("Mtscfc", Mtscfc, &b_Mtscfc);
+    fChain->SetBranchAddress("Ievtyp", &Ievtyp, &b_Ievtyp);
+    fChain->SetBranchAddress("Inonr", &Inonr, &b_Inonr);
+    fChain->SetBranchAddress("Pisr", Pisr, &b_Pisr);
+    fChain->SetBranchAddress("Nprimf", &Nprimf, &b_Nprimf);
+    fChain->SetBranchAddress("Iferid", Iferid, &b_Iferid);
+    fChain->SetBranchAddress("Primf", Primf, &b_Primf);
+    fChain->SetBranchAddress("Tp", &Tp, &b_Tp);
+    fChain->SetBranchAddress("Tmap", &Tmap, &b_Tmap);
+    fChain->SetBranchAddress("Tmip", &Tmip, &b_Tmip);
+    fChain->SetBranchAddress("Mhp", &Mhp, &b_Mhp);
+    fChain->SetBranchAddress("Mlp", &Mlp, &b_Mlp);
+    fChain->SetBranchAddress("Btp", &Btp, &b_Btp);
+    fChain->SetBranchAddress("Bwp", &Bwp, &b_Bwp);
+    fChain->SetBranchAddress("Cpp", &Cpp, &b_Cpp);
+    fChain->SetBranchAddress("Dpp", &Dpp, &b_Dpp);
+    fChain->SetBranchAddress("Sp", &Sp, &b_Sp);
+    fChain->SetBranchAddress("Ap", &Ap, &b_Ap);
+    fChain->SetBranchAddress("Acpp", &Acpp, &b_Acpp);
+    fChain->SetBranchAddress("Th", &Th, &b_Th);
+    fChain->SetBranchAddress("Tmah", &Tmah, &b_Tmah);
+    fChain->SetBranchAddress("Tmih", &Tmih, &b_Tmih);
+    fChain->SetBranchAddress("Mhh", &Mhh, &b_Mhh);
+    fChain->SetBranchAddress("Mlh", &Mlh, &b_Mlh);
+    fChain->SetBranchAddress("Bth", &Bth, &b_Bth);
+    fChain->SetBranchAddress("Bwh", &Bwh, &b_Bwh);
+    fChain->SetBranchAddress("Cph", &Cph, &b_Cph);
+    fChain->SetBranchAddress("Dph", &Dph, &b_Dph);
+    fChain->SetBranchAddress("Sh", &Sh, &b_Sh);
+    fChain->SetBranchAddress("Ah", &Ah, &b_Ah);
+    fChain->SetBranchAddress("Acph", &Acph, &b_Acph);
+    fChain->SetBranchAddress("Nxjdp", &Nxjdp, &b_Nxjdp);
+    fChain->SetBranchAddress("Nxjdh", &Nxjdh, &b_Nxjdh);
+    fChain->SetBranchAddress("Nxjep", &Nxjep, &b_Nxjep);
+    fChain->SetBranchAddress("Nxjeh", &Nxjeh, &b_Nxjeh);
+    fChain->SetBranchAddress("Nxjcp", &Nxjcp, &b_Nxjcp);
+    fChain->SetBranchAddress("Nxjch", &Nxjch, &b_Nxjch);
+    fChain->SetBranchAddress("Ydp", Ydp, &b_Ydp);
+    fChain->SetBranchAddress("Yep", Yep, &b_Yep);
+    fChain->SetBranchAddress("Ycp", Ycp, &b_Ycp);
+    fChain->SetBranchAddress("Njcep", Njcep, &b_Njcep);
+    fChain->SetBranchAddress("Njcrp", Njcrp, &b_Njcrp);
+    fChain->SetBranchAddress("Ydh", Ydh, &b_Ydh);
+    fChain->SetBranchAddress("Yeh", Yeh, &b_Yeh);
+    fChain->SetBranchAddress("Ych", Ych, &b_Ych);
+    fChain->SetBranchAddress("Njceh", Njceh, &b_Njceh);
+    fChain->SetBranchAddress("Njcrh", Njcrh, &b_Njcrh);
+    fChain->SetBranchAddress("Ntrkp", &Ntrkp, &b_Ntrkp);
+    fChain->SetBranchAddress("Ilucp", Ilucp, &b_Ilucp);
+    fChain->SetBranchAddress("Ptrkp", Ptrkp, &b_Ptrkp);
+    fChain->SetBranchAddress("Ntrkh", &Ntrkh, &b_Ntrkh);
+    fChain->SetBranchAddress("Ntrk2", &Ntrk2, &b_Ntrk2);
+    fChain->SetBranchAddress("Ptrkh", Ptrkh, &b_Ptrkh);
+    fChain->SetBranchAddress("Iluch", Iluch, &b_Iluch);
+    fChain->SetBranchAddress("Iluc", Iluc, &b_Iluc);
+    fChain->SetBranchAddress("Istrt", Istrt, &b_Istrt);
+    fChain->SetBranchAddress("Ichgh", Ichgh, &b_Ichgh);
+    /*
+        fChain->SetBranchAddress("event_number", &event_number, &b_hepmc3_event_event_number);
+        fChain->SetBranchAddress("momentum_unit", &momentum_unit, &b_hepmc3_event_momentum_unit);
+        fChain->SetBranchAddress("length_unit", &length_unit, &b_hepmc3_event_length_unit);
+        fChain->SetBranchAddress("particles", &particles_, &b_hepmc3_event_particles_);
+        fChain->SetBranchAddress("particles.pid", particles_pid, &b_particles_pid);
+        fChain->SetBranchAddress("particles.status", particles_status, &b_particles_status);
+        fChain->SetBranchAddress("particles.is_mass_set", particles_is_mass_set, &b_particles_is_mass_set);
+        fChain->SetBranchAddress("particles.mass", particles_mass, &b_particles_mass);
+        fChain->SetBranchAddress("particles.momentum.m_v1", particles_momentum_m_v1, &b_particles_momentum_m_v1);
+        fChain->SetBranchAddress("particles.momentum.m_v2", particles_momentum_m_v2, &b_particles_momentum_m_v2);
+        fChain->SetBranchAddress("particles.momentum.m_v3", particles_momentum_m_v3, &b_particles_momentum_m_v3);
+        fChain->SetBranchAddress("particles.momentum.m_v4", particles_momentum_m_v4, &b_particles_momentum_m_v4);
+        fChain->SetBranchAddress("vertices", &vertices_, &b_hepmc3_event_vertices_);
+        fChain->SetBranchAddress("vertices.position.m_v1", vertices_position_m_v1, &b_vertices_position_m_v1);
+        fChain->SetBranchAddress("vertices.position.m_v2", vertices_position_m_v2, &b_vertices_position_m_v2);
+        fChain->SetBranchAddress("vertices.position.m_v3", vertices_position_m_v3, &b_vertices_position_m_v3);
+        fChain->SetBranchAddress("vertices.position.m_v4", vertices_position_m_v4, &b_vertices_position_m_v4);
+        fChain->SetBranchAddress("links1", &links1, &b_hepmc3_event_links1);
+        fChain->SetBranchAddress("links2", &links2, &b_hepmc3_event_links2);
+        fChain->SetBranchAddress("attribute_id", &attribute_id, &b_hepmc3_event_attribute_id);
+        fChain->SetBranchAddress("attribute_name", &attribute_name, &b_hepmc3_event_attribute_name);
+        fChain->SetBranchAddress("attribute_string", &attribute_string, &b_hepmc3_event_attribute_string);
 
 
-    fChain->SetBranchAddress("weights", &weights, &b_hepmc3_event_weights);
-*/
+        fChain->SetBranchAddress("weights", &weights, &b_hepmc3_event_weights);
+    */
 //}
 }
 #endif // #ifdef jadeanalysis_cxx

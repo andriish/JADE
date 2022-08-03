@@ -137,12 +137,13 @@ if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-11" ]; then
  export CXX=clang++
  export FC=gfortran-11
 fi
-arguments="-DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain$bits "
+arguments="-DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain$bits "
 if  [ "$tmpbits" == "32" ]; then
-  e_arguments="-DJADE_USE_CERNLIB:BOOL=ON  -DCERNLIB_DIR=/home/andriish/X32/share/cernlib/cmake -DJADE_FORCE_32:BOOL=ON"
+  bit_arguments="-DJADE_FORCE_32:BOOL=ON"
 else
-  e_arguments="-DJADE_USE_CERNLIB:BOOL=ON  -DCERNLIB_DIR=/home/andriish/X64/share/cernlib/cmake"
+  bit_arguments=" "
 fi
+jade_arguments=" -DJADESOFT_DIR=$TOP$toolchain$bits/share/JADESOFT/cmake "
 ########################################################################
 #mkdir -p build/picocernlib
 #cd build/picocernlib
@@ -155,38 +156,29 @@ fi
 ########################################################################
 mkdir -p build/jadesoft
 cd build/jadesoft
-#rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../jadesoft -B.  $arguments $e_arguments
-#make -f Makefile clean
-make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
-make install
+$CMAKE -H../../jadesoft -B.  $arguments $bit_arguments
+$CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
+$CMAKE --install .
 cd ../..
 ########################################################################
 mkdir -p build/convert
 cd build/convert
-#rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../convert -B. $arguments $e_arguments
-#make -f Makefile clean
-make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
-make install
+$CMAKE -H../../convert -B. $arguments $bit_arguments   -DCMAKE_CXX_COMPILER=$CXX 
+$CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
+$CMAKE --install .
 cd ../..
 ########################################################################
 mkdir -p build/jtuple
 cd build/jtuple
-rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../jtuple -B.  $arguments $e_arguments
-#make -f Makefile clean
-make -f Makefile clean
-make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
-make install
+$CMAKE -H../../jtuple -B.  $arguments $bit_arguments  $jade_arguments
+$CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
+$CMAKE --install .
 cd ../..
 ########################################################################
 mkdir -p build/fptobos
 cd build/fptobos
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../fptobos -B. $arguments $e_arguments
-#make -f Makefile clean
-make -f Makefile clean
-make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
-make install
+$CMAKE -H../../fptobos -B. $arguments $bit_arguments  $jade_arguments
+$CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
+$CMAKE --install .
 cd ../..

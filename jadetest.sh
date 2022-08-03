@@ -137,17 +137,13 @@ if  [ "$tmpbits" != "32" ] && [ "$tmpbits" != "64" ] ; then
 else 
  bits=$tmpbits
 fi
-if  [ "$tmpbits" == "32" ]; then
-  e_arguments="-DJADE_FORCE_32=ON"
-else
-  e_arguments=""
-fi
+
 ########################################################################
 mkdir -p build/test
 cd build/test
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../test -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC  -DJADEPREFIX=$TOP$toolchain$bits  $e_arguments
-make -f Makefile clean
-make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
+$CMAKE -H../../test -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC  -DJADESOFT_DIR=$TOP$toolchain$bits/share/JADESOFT/cmake
+$CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
+$CMAKE --install .
 $CTEST -H../../test -B.  --timeout 180
 cd ../..

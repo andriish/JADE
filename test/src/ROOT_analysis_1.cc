@@ -2,12 +2,16 @@
 #include <string>
 #define jadeanalysis_cxx
 #include "jadeanalysis.h"
-void    jadeanalysis::Begin(TTree *tree){}
-void    jadeanalysis::SlaveBegin(TTree *tree){}
-Bool_t  jadeanalysis::Notify(){}
-Bool_t  jadeanalysis::Process(Long64_t entry){}
-void    jadeanalysis::SlaveTerminate(){}
-void    jadeanalysis::Terminate(){}
+void    jadeanalysis::Begin(TTree *tree) {}
+void    jadeanalysis::SlaveBegin(TTree *tree) {}
+Bool_t  jadeanalysis::Notify() {
+    return true;
+}
+Bool_t  jadeanalysis::Process(Long64_t entry) {
+    return true;
+}
+void    jadeanalysis::SlaveTerminate() {}
+void    jadeanalysis::Terminate() {}
 #include "TCanvas.h"
 #include "TH1D.h"
 int main(int argc, char **argv) {
@@ -22,14 +26,14 @@ int main(int argc, char **argv) {
     jadeanalysis*  myAnalysis =  new jadeanalysis();
     myAnalysis->fChain = input;
     myAnalysis->Init(input);
-    for (int gentry=0;gentry<myAnalysis->fChain->GetEntries();gentry++)
+    for (int gentry=0; gentry<myAnalysis->fChain->GetEntries(); gentry++)
     {
-       int entry=myAnalysis->fChain->LoadTree(gentry);
-       myAnalysis->fChain->GetEntry(entry);
-       outputHisto->Fill(myAnalysis->Tdtc);
+        int entry=myAnalysis->fChain->LoadTree(gentry);
+        myAnalysis->fChain->GetEntry(entry);
+        outputHisto->Fill(myAnalysis->Tdtc);
     }
-     outputCanvas->cd();
-     outputHisto->Draw();
-     outputCanvas->SaveAs( (std::string(argv[2])+".pdf").c_str());
-return 0;
+    outputCanvas->cd();
+    outputHisto->Draw();
+    outputCanvas->SaveAs( (std::string(argv[2])+".pdf").c_str());
+    return 0;
 }

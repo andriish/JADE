@@ -1,8 +1,12 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
-PROJECT(JADESOFT Fortran CXX C)
-SET(VERSION 2022.07)
+PROJECT(JADESOFT Fortran C)
+set(VERSION 2022.07)
+set(JADESOFT_VERSION_MAJOR 2022)
+set(JADESOFT_VERSION_MINOR 07)
+set(JADESOFT_VERSION_PATCH 1)
+set(PROJECT_VERSION ${JADESOFT_VERSION_MAJOR}.${JADESOFT_VERSION_MINOR}.${JADESOFT_VERSION_PATCH})
 include("GNUInstallDirs")
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 ########################################################################
 option(JADE_OLD_MC                     "Compile old MC executables" ON)
@@ -19,30 +23,30 @@ if (JADE_FORCE_32)
 endif()
 ########################################################################
 include(JADE_compiler_setup)
- set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+set(CMAKE_POSITION_INDEPENDENT_CODE FALSE)
 ########################################################################
 find_package(BLAS REQUIRED)
-message(STATUS "JADE: BLAS libraries        : ${BLAS_LIBRARIES}")
-########################################################################
+message(STATUS "JADE: BLAS_LIBRARIES=${BLAS_LIBRARIES}")
 find_package(LAPACK REQUIRED)
-message(STATUS "JADE: LAPACK libraries        : ${LAPACK_LIBRARIES}")
+message(STATUS "JADE: LAPACK_LIBRARIES=${LAPACK_LIBRARIES}")
 ########################################################################
 find_package(X11  REQUIRED)
-message(STATUS "JADE: X11 libraries        : ${X11_LIBRARIES}")
-message(STATUS "JADE: X11_xcb_LIB libraries        : ${X11_xcb_LIB}")
+message(STATUS "JADE: X11_LIBRARIES=${X11_LIBRARIES}")
+message(STATUS "JADE: X11_xcb_LIB=${X11_xcb_LIB}")
+message(STATUS "JADE: X11_Xau_LIB=${X11_Xau_LIB}")
+message(STATUS "JADE: X11_Xdmcp_LIB=${X11_Xdmcp_LIB}")
 ########################################################################
 if (JADE_USE_CERNLIB)
-  set(CMAKE_POSITION_INDEPENDENT_CODE FALSE)
-  set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgfortran -L/usr/local/opt/gcc/lib/gcc/11/libquadmath.a ")
   find_package(CERNLIB  REQUIRED)
-  message(STATUS "JADE: CERNLIB_PACKLIB=${CERNLIB_PACKLIB}")
+  message(STATUS "JADE: CERNLIB_KERNLIB_STATIC=${CERNLIB_KERNLIB_STATIC}")
   message(STATUS "JADE: CERNLIB_PACKLIB_STATIC=${CERNLIB_PACKLIB_STATIC}")
-  set(PICOCERNLIB "${MOTIF_LIBRARIES};${CERNLIB_PACKLIB_STATIC};${CERNLIB_KERNLIB_STATIC};${CERNLIB_MATHLIB_STATIC};${CERNLIB_GRAFLIB_STATIC};${CERNLIB_GRAFX11_STATIC}")
+  message(STATUS "JADE: CERNLIB_MATHLIB_STATIC=${CERNLIB_MATHLIB_STATIC}")
   if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(Motif_DIR /usr/local/Cellar/openmotif/2.3.8_1)
   endif()
   find_package(Motif REQUIRED)
   message(STATUS "JADE: MOTIF_LIBRARIES=${MOTIF_LIBRARIES}")
+  set(PICOCERNLIB "${MOTIF_LIBRARIES};${CERNLIB_PACKLIB_STATIC};${CERNLIB_KERNLIB_STATIC};${CERNLIB_MATHLIB_STATIC};${CERNLIB_GRAFLIB_STATIC};${CERNLIB_GRAFX11_STATIC}")
 else()
   include(JADE_ROOT_setup)
   find_library(LIBPICOKERNLIB REQUIRED NAMES libpicokernlib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
@@ -51,38 +55,35 @@ else()
 endif()
 set(JEXTERN_LIBRARIES  ${PICOCERNLIB} )
 message(STATUS "JADE: JEXTERN_LIBRARIES    : ${JEXTERN_LIBRARIES}")
-set(CMAKE_CXX_FLAGS     "${CMAKE_CXX_FLAGS}     -DJEXTERNISPICO")
-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DJEXTERNISPICO")
-message(STATUS "JADE: JEXTERN libraries       : ${JEXTERN_LIBRARIES}")
 ########################################################################
-SET(MCJADEEXE    mcjade)
-SET(SUPERVEXE    superv)
-SET(JADEZEXE     jadez)
-SET(JADEZROOTEXE jadezroot)
-SET(ZE4VEXE      ze4v)
+set(MCJADEEXE    mcjade)
+set(SUPERVEXE    superv)
+set(JADEZEXE     jadez)
+set(JADEZROOTEXE jadezroot)
+set(ZE4VEXE      ze4v)
 
 # Define the library name
-SET(BOSLIB          boslib)
-SET(GRAFIX          grafix)
-SET(INTERFACE       interface)
-SET(JADEGS          jadegs)
-SET(JADEMUS         jademus)
-#SET(JADESR         jadesr)
-SET(JMC             jmc)
-SET(PATRECSR        patrecsr)
-SET(SOURCE          source)
-SET(TAGG            tagg)
-SET(TOFLIB          toflib)
-SET(VERTEX          vertex)
-SET(WERTEX          wertex)
-SET(ZLIB            zlib)
+set(BOSLIB          boslib)
+set(GRAFIX          grafix)
+set(INTERFACE       interface)
+set(JADEGS          jadegs)
+set(JADEMUS         jademus)
+#set(JADESR         jadesr)
+set(JMC             jmc)
+set(PATRECSR        patrecsr)
+set(SOURCE          source)
+set(TAGG            tagg)
+set(TOFLIB          toflib)
+set(VERTEX          vertex)
+set(WERTEX          wertex)
+set(ZLIB            zlib)
 
 # Define some directories
-SET(SRC ${CMAKE_SOURCE_DIR}/src2016)
-SET(UTIL ${CMAKE_SOURCE_DIR}/util2016)
-SET(SRCMAIN ${CMAKE_SOURCE_DIR}/main2016)
-SET(LIB ${CMAKE_SOURCE_DIR}/lib)
-SET(BIN ${CMAKE_SOURCE_DIR}/bin)
+set(SRC ${CMAKE_SOURCE_DIR}/src2016)
+set(UTIL ${CMAKE_SOURCE_DIR}/util2016)
+set(SRCMAIN ${CMAKE_SOURCE_DIR}/main2016)
+set(LIB ${CMAKE_SOURCE_DIR}/lib)
+set(BIN ${CMAKE_SOURCE_DIR}/bin)
 
 include_directories( ${SRC}/boslib 
                      ${SRC}/grafix 
@@ -99,26 +100,26 @@ include_directories( ${SRC}/boslib
                      ${SRC}/wertex 
                      ${SRC}/zlib  )
 
-SET(SRCMCJADE ${SRCMAIN}/mcjade)
-SET(SRCSUPERV ${SRCMAIN}/superv)
-SET(SRCJADEZ ${SRCMAIN}/jadez)
-SET(SRCZE4V ${SRCMAIN}/ze4v)
+set(SRCMCJADE ${SRCMAIN}/mcjade)
+set(SRCSUPERV ${SRCMAIN}/superv)
+set(SRCJADEZ ${SRCMAIN}/jadez)
+set(SRCZE4V ${SRCMAIN}/ze4v)
 
-SET(SRCBOSLIB ${SRC}/boslib)
-SET(SRCGRAFIX          ${SRC}/grafix)
-SET(SRCINTERFACE         ${SRC}/interface)
-SET(SRCJADEGS         ${SRC}/jadegs)
-SET(SRCJADEMUS         ${SRC}/jademus)
-SET(SRCJMC         ${SRC}/jmc)
-SET(SRCPATRECSR         ${SRC}/patrecsr)
-SET(SRCSOURCE         ${SRC}/source)
-SET(SRCTAGG         ${SRC}/tagg)
-SET(SRCTOFLIB         ${SRC}/toflib)
-SET(SRCVERTEX         ${SRC}/vertex)
-SET(SRCWERTEX         ${SRC}/wertex)
-SET(SRCZLIB         ${SRC}/zlib)
+set(SRCBOSLIB ${SRC}/boslib)
+set(SRCGRAFIX          ${SRC}/grafix)
+set(SRCINTERFACE         ${SRC}/interface)
+set(SRCJADEGS         ${SRC}/jadegs)
+set(SRCJADEMUS         ${SRC}/jademus)
+set(SRCJMC         ${SRC}/jmc)
+set(SRCPATRECSR         ${SRC}/patrecsr)
+set(SRCSOURCE         ${SRC}/source)
+set(SRCTAGG         ${SRC}/tagg)
+set(SRCTOFLIB         ${SRC}/toflib)
+set(SRCVERTEX         ${SRC}/vertex)
+set(SRCWERTEX         ${SRC}/wertex)
+set(SRCZLIB         ${SRC}/zlib)
 ########################################################################
-SET(BOSLIB_src
+set(BOSLIB_src
          asrd.f bchl.F bchm.F bcre.F bdar.F bdlg.F bdlm.F bdls.F bdmp.F bfmt.for bfrd.for
          bgac.for bgar.F binlda.F binp.F bint.F bloada.F blocda.F bloc.F bmlt.F
          bnxt.F boutp.F bpasda.F bpos.F brds.F breadc.for bread.for brnm.F
@@ -136,7 +137,7 @@ endif()
 list(TRANSFORM BOSLIB_src PREPEND "${SRCBOSLIB}/")
 ADD_LIBRARY(${BOSLIB} STATIC ${BOSLIB_src})
 ########################################################################
-SET(GRAFIX_src axshow.F  bankls.F bankpr.F barsec.f blnumb.F blshow.F calloc.F capmrk.F cdst.F   cirdis.F  
+set(GRAFIX_src axshow.F  bankls.F bankpr.F barsec.f blnumb.F blshow.F calloc.F capmrk.F cdst.F   cirdis.F  
                clrcon.f  coment.f comwrd.F convrt.f credit.F cricro.f croax.F  ctdist.F decide.f dedxds.F 
                dedxv1.F  dedxvw.F defcmd.F defmac.f defwrd.f delmac.f diaghn.f diagin.f disaxi.f disply.F  
                dispvc.F  dispzc.F dnum.f   dracap.f dramov.f drawbp.F drawer.F drawfd.F drawid.F drawlg.F 
@@ -159,7 +160,7 @@ SET(GRAFIX_src axshow.F  bankls.F bankpr.F barsec.f blnumb.F blshow.F calloc.F c
 list(TRANSFORM GRAFIX_src PREPEND "${SRCGRAFIX}/")
 ADD_LIBRARY(${GRAFIX} STATIC ${GRAFIX_src})
 ########################################################################
-SET(INTERFACE_src
+set(INTERFACE_src
          hfix.f biby.f  dlib.f igwlcm.F ips.f plot10.F 
          #plot2016.F 
          #ranmar.f 
@@ -168,7 +169,7 @@ SET(INTERFACE_src
 list(TRANSFORM INTERFACE_src PREPEND "${SRCINTERFACE}/")
 ADD_LIBRARY(${INTERFACE} STATIC ${INTERFACE_src})
 ########################################################################
-SET(JADEGS_src
+set(JADEGS_src
 akop.F alphan.F amps2z.F change.F cl2prc.f cnewid.F dedxbk.F dedxbn.F distxy.F drpipe.F drtrck.F 
 dserr.f dxmcsp.f dxmcss.f ebeam.F eigen.f ergtot.F errmom.F errprt.F evbkpr.F evrea1.f evread.F 
 evwrit9.F exjhtl.F fampco.F getds.f getint.f hprs.f idattm.f izt2rn.f jadebd.F jegain.f jetcal.F 
@@ -186,7 +187,7 @@ zrecal.F zbug.f
 list(TRANSFORM JADEGS_src PREPEND "${SRCJADEGS}/")
 ADD_LIBRARY(${JADEGS} STATIC ${JADEGS_src})
 ########################################################################
-SET(JADEMUS_src
+set(JADEMUS_src
  mu2pul.f muanab.F muanac.F muanaf.F muana.f  mucon.F  muconw.F mucoor.F mucuts.F 
  mudchk.F mudump.F muendp.F muerry.f mufflb.F muffle.F mufflr.F muffls.F mufflt.F 
  mufflx.F muffly.F mufflz.F mufini.F mufmat.F mufsta.F muhdsp.F muhit.F  muhits.F
@@ -201,7 +202,7 @@ else()
 endif()
 ADD_LIBRARY(${JADEMUS} STATIC ${JADEMUS_src})
 ########################################################################
-SET(JMC_src 
+set(JMC_src 
 actof.f  brvect.F datemc.f eepair.f endclg.f errmsg.F evtini.f fcrang.f 
 hdecls.f inifwd.f inttof.f jchamb.f jdtime.f jeloss.f jftest.f jgetev.f jgetvc.f 
 jhitin.f jinit.f  jipatr.f jmulsc.f jprabs.f jprfre.f jprthi.f jprtlo.f jrchck.f 
@@ -216,7 +217,7 @@ trlgl.f  trlgs6.F trlgsh.F wegas.f  wrtmcb.f
 list(TRANSFORM JMC_src PREPEND "${SRCJMC}/")
 ADD_LIBRARY(${JMC} STATIC ${JMC_src})
 ########################################################################
-SET(PATRECSR_src
+set(PATRECSR_src
          adpatr.F backtr.F bakfit.F bakpak.F bside.F bstore.F crtrel.F deadcl.f errorm.F
          flinel.F ftrkel.F fxyz.F inpatc.F inpatr.F kntrel.F patrc1.F patrec.F
          patrol.F pcwork.F prhtar.F rincon.F rstbtr.F srtrel.F trlord.F xyfit.F
@@ -225,7 +226,7 @@ SET(PATRECSR_src
 list(TRANSFORM PATRECSR_src PREPEND "${SRCPATRECSR}/")
 ADD_LIBRARY(${PATRECSR} STATIC ${PATRECSR_src})
 ########################################################################
-SET(SOURCE_src
+set(SOURCE_src
          angbar.f bbcorr.F bbleak.F brlgn6.f brlgn.F calcor.F elgobs.f encorr.F
          englos.f enlosg.f ilctrc.f intolg.F lganal9.F lgavde.f lgavdp.f lgbadc.F
          lgbfil.F lgbhit.f lgbtdc.F lgcalb.F lgcctl.F lgcdir9.F lgchc2.F lgclpb9.F
@@ -237,7 +238,7 @@ SET(SOURCE_src
 list(TRANSFORM SOURCE_src PREPEND "${SRCSOURCE}/")
 ADD_LIBRARY(${SOURCE} STATIC ${SOURCE_src})
 ########################################################################
-SET(TAGG_src
+set(TAGG_src
          amctag.f anatag.F conver.f ggcctl.f ggclpc.f ggclus.f ggfac2.f ggresq.f
          ggsort.f ggsrth.f gscrub.f lumons.f rcoord.f repack.f sort.f tagadc.F
          tagan.F tagchk.F tagcls.F tagcol.F tagdir.f tagfit.F tagfty.f taggtp.F
@@ -252,7 +253,7 @@ endif()
 list(TRANSFORM TAGG_src PREPEND "${SRCTAGG}/")
 ADD_LIBRARY(${TAGG} STATIC ${TAGG_src})
 ########################################################################
-SET(TOFLIB_src
+set(TOFLIB_src
          agrpr.f atfugr.f atofrw.f atofun.F cmass.f corcst.f mocard.F rd0880.F
          tfarnw.F tfctd1.F tfstor.f tofar2.F tofard.F tofbra.f tofcl2.f tofclc.F
          tofcor.f tofin2.F tofint.F tofma2.f tofmas.F tofsm2.f tofsm3.F tofsmp.F
@@ -260,20 +261,20 @@ SET(TOFLIB_src
 list(TRANSFORM TOFLIB_src PREPEND "${SRCTOFLIB}/")
 ADD_LIBRARY(${TOFLIB} STATIC ${TOFLIB_src})
 ########################################################################
-SET(VERTEX_src
+set(VERTEX_src
          vertex.f vtxaft.f vtxbnk.F vtxee.f vtxini.f vtxpnt.f vtxpre.F vtxsrc.f
 )
 list(TRANSFORM VERTEX_src PREPEND "${SRCVERTEX}/")
 ADD_LIBRARY(${VERTEX} STATIC ${VERTEX_src})
 ########################################################################
-SET(WERTEX_src
+set(WERTEX_src
          parkor.F wertex.f wtxaft.f wtxbnk.F wtxcrv.f wtxee.f wtxeer.F wtxerr.f
          wtxini.f wtxpnt.f wtxpre.F wtxsrc.f xfwid.F xfwvxc.F
 )
 list(TRANSFORM WERTEX_src PREPEND "${SRCWERTEX}/")
 ADD_LIBRARY(${WERTEX} STATIC ${WERTEX_src})
 ########################################################################
-SET(ZLIB_src
+set(ZLIB_src
      chien52.F chien5.F crdoca.f dxmcgn.f ealgcl.F eamcde.f eaunin.f eazero.f
      ekand.f expect.F fehler.f irnevt.f jobfin.f prallb.f prlist.f prsinb.f
      prtoci.f shado9.F shwcpr.f trkbl9.F trkbse.F ze4vdp.f ze4vea.f ze4vet2.f
@@ -288,74 +289,74 @@ endif()
 ADD_LIBRARY(${ZLIB} STATIC ${ZLIB_src})
 ########################################################################
 #JADEZ
-SET(JADEZ_src ${SRCJADEZ}/gphmain.F  ${SRCJADEZ}/xuser.F)
-ADD_EXECUTABLE(${JADEZEXE} ${JADEZ_src})
+set(JADEZ_src ${SRCJADEZ}/gphmain.F  ${SRCJADEZ}/xuser.F)
+add_executable(${JADEZEXE} ${JADEZ_src})
 #JADEZROOT
 if (NOT JADE_USE_CERNLIB)
-  SET(JADEZROOT_src ${SRCJADEZ}/gphmain2.F  ${SRCJADEZ}/xuser.F  ${SRCJADEZ}/gphmain.cxx)
-  ADD_EXECUTABLE(${JADEZROOTEXE} ${JADEZROOT_src})
+  set(JADEZROOT_src ${SRCJADEZ}/gphmain2.F  ${SRCJADEZ}/xuser.F  ${SRCJADEZ}/gphmain.cxx)
+  add_executable(${JADEZROOTEXE} ${JADEZROOT_src})
   target_include_directories(${JADEZROOTEXE} PUBLIC ${ROOT_INCLUDE_DIRS})
 endif()
 #MCJADE
-SET(MCJADE_src ${SRCMCJADE}/mcjade.f ${SRCMCJADE}/mcmain.f  ${SRCMCJADE}/mcrand.f  ${SRCMCJADE}/mcuser.f ${SRCSUPERV}/showb.f)
-ADD_EXECUTABLE(${MCJADEEXE} ${MCJADE_src})
+set(MCJADE_src ${SRCMCJADE}/mcjade.f ${SRCMCJADE}/mcmain.f  ${SRCMCJADE}/mcrand.f  ${SRCMCJADE}/mcuser.f ${SRCSUPERV}/showb.f)
+add_executable(${MCJADEEXE} ${MCJADE_src})
 #SUPERV
-SET(SUPERV_src ${SRCSUPERV}/ana.F    ${SRCSUPERV}/jdmain.f  ${SRCSUPERV}/showb.f  ${SRCSUPERV}/user.f ${SRCMCJADE}/mcrand.f)
-ADD_EXECUTABLE(${SUPERVEXE} ${SUPERV_src})
+set(SUPERV_src ${SRCSUPERV}/ana.F    ${SRCSUPERV}/jdmain.f  ${SRCSUPERV}/showb.f  ${SRCSUPERV}/user.f ${SRCMCJADE}/mcrand.f)
+add_executable(${SUPERVEXE} ${SUPERV_src})
 #ZE4V
-SET(ZE4V_src ${SRCZE4V}/ze4vjb.f ${SRCMCJADE}/mcrand.f ${SRCSUPERV}/showb.f )
-ADD_EXECUTABLE(${ZE4VEXE} ${ZE4V_src})
+set(ZE4V_src ${SRCZE4V}/ze4vjb.f ${SRCMCJADE}/mcrand.f ${SRCSUPERV}/showb.f )
+add_executable(${ZE4VEXE} ${ZE4V_src})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  TARGET_LINK_LIBRARIES(${JADEZEXE}   ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  target_link_libraries(${JADEZEXE}   ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} ${X11_LIBRARIES} ${X11_xcb_LIB} ${X11_Xau_LIB} ${X11_Xdmcp_LIB})
   if (NOT JADE_USE_CERNLIB)
-  TARGET_LINK_LIBRARIES(${JADEZROOTEXE}   ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  target_link_libraries(${JADEZROOTEXE}   ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} ${X11_LIBRARIES} )
   endif()
-  TARGET_LINK_LIBRARIES(${MCJADEEXE}    ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
+  target_link_libraries(${MCJADEEXE}    ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
     ${JEXTERN_LIBRARIES}  )
 
-  TARGET_LINK_LIBRARIES(${SUPERVEXE}    ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  target_link_libraries(${SUPERVEXE}    ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES}   )
 
-  TARGET_LINK_LIBRARIES(${ZE4VEXE}    ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  target_link_libraries(${ZE4VEXE}    ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} )
 else()
-  TARGET_LINK_LIBRARIES(${JADEZEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  target_link_libraries(${JADEZEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} ${X11_LIBRARIES} -Wl,--end-group)
   if (NOT JADE_USE_CERNLIB)
-  TARGET_LINK_LIBRARIES(${JADEZROOTEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  target_link_libraries(${JADEZROOTEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} ${X11_LIBRARIES} -Wl,--end-group)
   endif()
-  TARGET_LINK_LIBRARIES(${MCJADEEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} 
+  target_link_libraries(${MCJADEEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} 
     ${WERTEX} ${PATRECSR} 
     ${JEXTERN_LIBRARIES}  -Wl,--end-group)
 
-  TARGET_LINK_LIBRARIES(${SUPERVEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  target_link_libraries(${SUPERVEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES}   -Wl,--end-group)
 
-  TARGET_LINK_LIBRARIES(${ZE4VEXE} -Wl,--start-group ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
+  target_link_libraries(${ZE4VEXE} -Wl,--start-group ${ZLIB} ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} -Wl,--end-group)
 endif()
 
 ########################################################################
 
-SET(RCONVEXE  rconv)
-SET(CONVEXE   conv)
-ADD_EXECUTABLE(${CONVEXE} ${UTIL}/ccal/conv.f)
-TARGET_LINK_LIBRARIES(${CONVEXE}  ${JEXTERN_LIBRARIES})
+set(RCONVEXE  rconv)
+set(CONVEXE   conv)
+add_executable(${CONVEXE} ${UTIL}/ccal/conv.f)
+target_link_libraries(${CONVEXE}  ${JEXTERN_LIBRARIES})
 
-ADD_EXECUTABLE(${RCONVEXE} ${UTIL}/ccal/rconv.f)
-TARGET_LINK_LIBRARIES(${RCONVEXE}  ${JEXTERN_LIBRARIES})
+add_executable(${RCONVEXE} ${UTIL}/ccal/rconv.f)
+target_link_libraries(${RCONVEXE}  ${JEXTERN_LIBRARIES})
 
 INSTALL(TARGETS ${CONVEXE} ${RCONVEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 
-SET(ZREADEXE      zread)
-ADD_EXECUTABLE(${ZREADEXE} ${UTIL}/zread/zread.f)
+set(ZREADEXE      zread)
+add_executable(${ZREADEXE} ${UTIL}/zread/zread.f)
 INSTALL(TARGETS ${ZREADEXE}  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-TARGET_LINK_LIBRARIES(${ZREADEXE}  ${JEXTERN_LIBRARIES})
+target_link_libraries(${ZREADEXE}  ${JEXTERN_LIBRARIES})
 
 #####################################################################
 
@@ -373,8 +374,8 @@ if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
   target_compile_options(coj623d  PRIVATE -fdefault-real-8 -fdefault-double-8)
 endif()
 
-ADD_EXECUTABLE(ar48p   ${UTIL}/mcgen/ariadne/mcar48p_105j.f  ${UTIL}/mcgen/src/pymaxi.f)
-TARGET_LINK_LIBRARIES(ar48p  PRIVATE 
+add_executable(ar48p   ${UTIL}/mcgen/ariadne/mcar48p_105j.f  ${UTIL}/mcgen/src/pymaxi.f)
+target_link_libraries(ar48p  PRIVATE 
                        jt74opal 
                        mc105j
                        pythia5722
@@ -384,8 +385,8 @@ TARGET_LINK_LIBRARIES(ar48p  PRIVATE
                        ${JEXTERN_LIBRARIES}  ${BLAS_LIBRARIES}  ${LAPACK_lapack_LIBRARY} 
                        )
 
-ADD_EXECUTABLE(cj623   ${UTIL}/mcgen/cojets/mccj623_105j.f ${UTIL}/mcgen/src/pystfu.f)
-TARGET_LINK_LIBRARIES(cj623   PRIVATE  
+add_executable(cj623   ${UTIL}/mcgen/cojets/mccj623_105j.f ${UTIL}/mcgen/src/pystfu.f)
+target_link_libraries(cj623   PRIVATE  
                        mc105j 
                        pythia5722 
                        coj623d   
@@ -395,8 +396,8 @@ TARGET_LINK_LIBRARIES(cj623   PRIVATE
                        ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}  ${LAPACK_lapack_LIBRARY} 
                        )
 
-ADD_EXECUTABLE(hw59   ${UTIL}/mcgen/herwig/mchw59_105j.f )
-TARGET_LINK_LIBRARIES(hw59    PRIVATE                       
+add_executable(hw59   ${UTIL}/mcgen/herwig/mchw59_105j.f )
+target_link_libraries(hw59    PRIVATE                       
                        mc105j 
                        herwig59 
                        ckern105   
@@ -405,8 +406,8 @@ TARGET_LINK_LIBRARIES(hw59    PRIVATE
                        ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}  ${LAPACK_lapack_LIBRARY} 
                        )
 
-ADD_EXECUTABLE(hw58d   ${UTIL}/mcgen/herwig/mchw58d_105j.f )
-TARGET_LINK_LIBRARIES(hw58d   PRIVATE                        
+add_executable(hw58d   ${UTIL}/mcgen/herwig/mchw58d_105j.f )
+target_link_libraries(hw58d   PRIVATE                        
                        mc105j 
                        herwig58d  
                        ckern105   
@@ -416,8 +417,8 @@ TARGET_LINK_LIBRARIES(hw58d   PRIVATE
                        ) 
 
 
-ADD_EXECUTABLE(jt63   ${UTIL}/mcgen/jetset/mcjt63_105j.f ${UTIL}/mcgen/src/lugive.f)
-TARGET_LINK_LIBRARIES(jt63   PRIVATE                    
+add_executable(jt63   ${UTIL}/mcgen/jetset/mcjt63_105j.f ${UTIL}/mcgen/src/lugive.f)
+target_link_libraries(jt63   PRIVATE                    
                        mc105j 
                        jt63jade   
                        ckern105   
@@ -425,8 +426,8 @@ TARGET_LINK_LIBRARIES(jt63   PRIVATE
                        ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}  ${LAPACK_lapack_LIBRARY} 
                        )
 
-ADD_EXECUTABLE(jt74   ${UTIL}/mcgen/jetset/mcjt74_105j.f )
-TARGET_LINK_LIBRARIES(jt74    PRIVATE                 
+add_executable(jt74   ${UTIL}/mcgen/jetset/mcjt74_105j.f )
+target_link_libraries(jt74    PRIVATE                 
                        mc105j  
                        ckern105   
                        jt74opal   
@@ -434,8 +435,8 @@ TARGET_LINK_LIBRARIES(jt74    PRIVATE
                        ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_lapack_LIBRARY} 
                        )
 
-ADD_EXECUTABLE(lepton   ${UTIL}/mcgen/lepton/lepton.f )
-TARGET_LINK_LIBRARIES(lepton    PRIVATE                
+add_executable(lepton   ${UTIL}/mcgen/lepton/lepton.f )
+target_link_libraries(lepton    PRIVATE                
                        mc105j 
                        ckern105  
                        jt63jade  
@@ -444,8 +445,8 @@ TARGET_LINK_LIBRARIES(lepton    PRIVATE
                        ${INTERFACE} #ranmar
                        )
                        
-ADD_EXECUTABLE(py57   ${UTIL}/mcgen/pythia/mcpy57_105j.f ${UTIL}/mcgen/src/pymaxi.f ${UTIL}/mcgen/src/pystfu.f)
-TARGET_LINK_LIBRARIES(py57    PRIVATE                
+add_executable(py57   ${UTIL}/mcgen/pythia/mcpy57_105j.f ${UTIL}/mcgen/src/pymaxi.f ${UTIL}/mcgen/src/pystfu.f)
+target_link_libraries(py57    PRIVATE                
                        mc105j 
                        ckern105  
                        pythia5722
@@ -477,3 +478,34 @@ INSTALL( TARGETS ${BOSLIB}
          ${ZLIB} 
          ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT library )
 ########################################################################
+
+
+include(CMakePackageConfigHelpers)
+
+set(CONFIG_INSTALL_DIR ${CMAKE_INSTALL_DATADIR}/JADESOFT/cmake)
+
+configure_package_config_file(../cmake/Templates/JADESOFTConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/cmake/JADESOFTConfig.cmake
+                              INSTALL_DESTINATION ${CONFIG_INSTALL_DIR}
+                              PATH_VARS 
+                              CMAKE_INSTALL_BINDIR 
+                              CMAKE_INSTALL_LIBDIR 
+                              CMAKE_INSTALL_DATADIR)
+            
+write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/cmake/JADESOFTConfig-version.cmake COMPATIBILITY SameMajorVersion VERSION ${PROJECT_VERSION})
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/JADESOFTConfig.cmake
+              ${CMAKE_CURRENT_BINARY_DIR}/cmake/JADESOFTConfig-version.cmake
+              DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT devel)
+
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cal/aupdat1 
+              ${CMAKE_CURRENT_SOURCE_DIR}/cal/aupdat1.b 
+              ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat0 
+              ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat0.b 
+              ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat1 
+              ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat1.b  DESTINATION ${CMAKE_INSTALL_DATADIR}/JADESOFT/cal )
+
+
+
+
+
