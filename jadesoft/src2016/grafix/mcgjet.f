@@ -89,7 +89,14 @@ C         -- /CRUST/ AXIS(3),ATRST --  CALCULATED USING A BALANCED SET
 C         -- /CRUST/ AXIS(3),ATRST --  OF VECTORS .
 C
 C --------------------------------------------------------------
-      COMMON /CWORK/ PAR(3,4),PP(4,100),INUM,JWT,ICONF
+CAV      COMMON /CWORK/ PAR(3,4),PP(4,100),INUM,JWT,ICONF
+CAV Require same size
+      COMMON /CWORK/ PAR(3,4),PP(4,100),INUM,JWT,ICONF,POLD(3,4),TOLD,
+     $ TR(4),MJET,IKONF,PMOD(100),YY(3),AXIS(3),ATRST,
+     $ IJ(4),PTH(3,100,4),IPJ(100,4),INDX(100,4),THJ,THRUJ(3),
+     $ TEMP(3,4),TPTH(3,100,4),ITPJ(100,4),ITJ(4),
+     $ ANG(4),COMP(4),TREM(4),T(3)
+C
       COMMON /WT/ IWT
 C     COMMON /MARKET/ PAR(3,4)
 C     COMMON /SENSE/ PP(4,100),INUM
@@ -219,9 +226,12 @@ C   THE /CYYY/ COMMON CONTAINS THE EVENT PLANE NORMAL AS SUPPLIED BY
 C                THE USER
 C
 C     COMMON /CYYY/ YY(3)
+CAV Require same size
       COMMON /CWORK/ PAR(3,4),PP(4,100),INUM,JWT,ICONF,POLD(3,4),TOLD,
      $ TR(4),MJET,IKONF,PMOD(100),YY(3),AXIS(3),ATRST,
-     $ IJ(4),PTH(3,100,4),IPJ(100,4)
+     $ IJ(4),PTH(3,100,4),IPJ(100,4),INDX(100,4),THJ,THRUJ(3),
+     $ TEMP(3,4),TPTH(3,100,4),ITPJ(100,4),ITJ(4),
+     $ ANG(4),COMP(4),TREM(4),T(3)
 C
 C
 C ---------------------------------------------------------------------
@@ -476,11 +486,12 @@ C   ARRAY THRUJ AND THE VALUE OF THE GENERALIZED TRIPLICITY FOR
 C   THIS ONE JET AS COMPUTED IN THE SUBROUTINE SUMTHR .
 C
 C     COMMON /CJRUST/ THJ,THRUJ(3)
+CAV
       COMMON /CWORK/ PAR(3,4),PP(4,100),INUM,JWT,ICONF,POLD(3,4),TOLD,
      $ TR(4),MJET,IKONF,PMOD(100),YY(3),AXIS(3),ATRST,
      $ IJ(4),PTH(3,100,4),IPJ(100,4),INDX(100,4),THJ,THRUJ(3),
      $ TEMP(3,4),TPTH(3,100,4),ITPJ(100,4),ITJ(4),
-     $ ANG(4),COMP(4),TREM(4)
+     $ ANG(4),COMP(4),TREM(4),T(3)
 C
       DIMENSION IPP(4,100)
       EQUIVALENCE(PP(1,1),IPP(1,1))
@@ -657,11 +668,12 @@ C     REVERSING THE AXES OF THE PREVIOUS CONFIGURATION
 C
 C  ----------------------------------------------------------------
 C
+CAV require same size
       COMMON /CWORK/ PAR(3,4),PP(4,100),INUM,JWT,ICONF,POLD(3,4),TOLD,
      $ TR(4),MJET,IKONF,PMOD(100),YY(3),AXIS(3),ATRST,
      $ IJ(4),PTH(3,100,4),IPJ(100,4),INDX(100,4),THJ,THRUJ(3),
      $ TEMP(3,4),TPTH(3,100,4),ITPJ(100,4),ITJ(4),
-     $ ANG(4),COMP(4),TREM(4)
+     $ ANG(4),COMP(4),TREM(4),T(3)
 C     COMMON /OLD/ POLD(3,4)
 C     COMMON /MARKET/ PAR(3,4)
 C
@@ -768,8 +780,12 @@ C         RECONSTRUCTED AXIS K
 C
 C ------------------------------------------------------------------
 C
+CAV require same size
       COMMON /CWORK/ PAR(3,4),PP(4,100),INUM,JWT,ICONF,POLD(3,4),TOLD,
-     $ TR(4),MJET,IKONF,PMOD(100),YY(3)
+     $ TR(4),MJET,IKONF,PMOD(100),YY(3),AXIS(3),ATRST,
+     $ IJ(4),PTH(3,100,4),IPJ(100,4),INDX(100,4),THJ,THRUJ(3),
+     $ FOOTEMP(3,4),TPTH(3,100,4),ITPJ(100,4),ITJ(4),
+     $ ANG(4),COMP(4),TREM(4),T(3)
 C     COMMON /OLD/ POLD(3,4)
 C     COMMON /MARKET/ PAR(3,4)
 C     COMMON /CYYY/ YY(3)

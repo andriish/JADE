@@ -132,7 +132,8 @@ C BOS
       INTEGER IW
       REAL RW
       INTEGER*2 HW
-      COMMON / BCS / IW(1)
+CAV      COMMON / BCS / IW(1)
+      COMMON / BCS / IW(40000)
       DIMENSION RW(1), HW(1)
       EQUIVALENCE (HW(1), RW(1), IW(1))
       INTEGER IBLN

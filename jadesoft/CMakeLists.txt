@@ -136,6 +136,9 @@ if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "XL")
 endif()
 list(TRANSFORM BOSLIB_src PREPEND "${SRCBOSLIB}/")
 ADD_LIBRARY(${BOSLIB} STATIC ${BOSLIB_src})
+if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "GNU")
+ target_compile_options(${BOSLIB} PRIVATE -Wno-surprising)
+endif()
 ########################################################################
 set(GRAFIX_src axshow.F  bankls.F bankpr.F barsec.f blnumb.F blshow.F calloc.F capmrk.F cdst.F   cirdis.F  
                clrcon.f  coment.f comwrd.F convrt.f credit.F cricro.f croax.F  ctdist.F decide.f dedxds.F 
@@ -168,6 +171,10 @@ set(INTERFACE_src
 )
 list(TRANSFORM INTERFACE_src PREPEND "${SRCINTERFACE}/")
 ADD_LIBRARY(${INTERFACE} STATIC ${INTERFACE_src})
+if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "GNU")
+ target_compile_options(${INTERFACE} PRIVATE -Wno-intrinsic-shadow)
+endif()
+
 ########################################################################
 set(JADEGS_src
 akop.F alphan.F amps2z.F change.F cl2prc.f cnewid.F dedxbk.F dedxbn.F distxy.F drpipe.F drtrck.F 
@@ -366,9 +373,14 @@ set( MCLIBS    ariadne408 coj623d herwig58d herwig59 jt63jade jt74opal pythia572
 foreach ( ml ${MCLIBS} )  
  ADD_LIBRARY(${ml} STATIC ${UTIL}/mcgen/src/${ml}.f)
 endforeach (  ml ${MCLIBS} )
-
 ADD_LIBRARY(mc105j STATIC                        ${UTIL}/mcgen/mc/mc105j.f  )
-  
+
+if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "GNU")
+ target_compile_options(jt74opal PRIVATE -Wno-integer-division)
+ target_compile_options(jt63jade PRIVATE -Wno-integer-division)
+ target_compile_options(pythia5722 PRIVATE -Wno-integer-division)
+endif()
+
 
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
   target_compile_options(coj623d  PRIVATE -fdefault-real-8 -fdefault-double-8)

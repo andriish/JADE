@@ -328,6 +328,8 @@ C
      &  RMIN1,RMIN2,RMINL,  ZMIN,ZMINL,
      &  SUMPT,SUMPTL,       SUMP,SUMPL,    SUMLX,SUMLY,SUMLZ,
      &  PTMAX,PMAX,         ACOP
+     & ,EH(36),DPRT(10)
+CAV  Require same size of the block
 C
        DIMENSION ITRACK(600),PS(3,2),PSA(3),PSB(3)
        EQUIVALENCE (PSA(1),PS(1,1)),(PSB(1),PS(1,2))
@@ -524,6 +526,8 @@ C
      &  RMIN1,RMIN2,RMINL,  ZMIN,ZMINL,
      &  SUMPT,SUMPTL,       SUMP,SUMPL,    SUMLX,SUMLY,SUMLZ,
      &  PTMAX,PMAX,         ACOP
+     & ,EH(36),DPRT(10)
+CAV  Require same size of the block     
       DIMENSION ITRACK(600),NHIT(50)
       EQUIVALENCE (RTRACK(1),ITRACK(1))
 C
@@ -705,7 +709,8 @@ C *---------------------------------------------------------
 C
       DIMENSION R(3), P(3), PRM(5)
 
-      COMMON / BCS / RW(1)
+CAV      COMMON / BCS / RW(1)
+      COMMON / BCS / RW(40000)
 CAV      COMMON / CGEO1 / BKGAUS
 CAV   Add foo symbols to make compiller happy
       COMMON / CGEO1 / BKGAUS, AVFOO(65)
@@ -781,7 +786,8 @@ C            = 1  CURVATURE AT FIRST POINT
 C            = 2  CURVATURE AT LAST POINT
 C-----------------------------------------------------------
 C
-      COMMON / BCS / IW(1)
+CAV      COMMON / BCS / IW(1)
+      COMMON / BCS / IW(40000)
       DIMENSION RW(1)
       EQUIVALENCE ( IW(1),RW(1))
 C
@@ -825,7 +831,10 @@ C
      &  RMIN1,RMIN2,RMINL,  ZMIN,ZMINL,
      &  SUMPT,SUMPTL,       SUMP,SUMPL,    SUMLX,SUMLY,SUMLZ,
      &  PTMAX,PMAX,         ACOP,
-     &  DPRT(10)
+     &  EH(36),DPRT(10)
+CAV     &  DPRT(10)
+CAV I put here     & ,EH(36),DPRT(10)
+CAV  to require same size of the block 
 #include "cgraph.for"
       DIMENSION ITRACK(600)
       EQUIVALENCE (ITRACK(1),RTRACK(1))

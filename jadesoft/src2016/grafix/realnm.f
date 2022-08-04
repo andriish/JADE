@@ -7,7 +7,10 @@ C--                                   LATEST CHANGE 06.09.81, (J.OLSSON)
 C--
       IMPLICIT INTEGER*2 (H)
       DIMENSION HNUMB(10),HWORD(2)
-      COMMON/CWORK1/HWORK(40),HINN(80)
+CAV      COMMON/CWORK1/HWORK(40),HINN(80)
+CAV   Let us inclrease the size
+CAV but it must be a BUG
+      COMMON/CWORK1/HWORK(40),HINN(140)
       EQUIVALENCE(HWORD(1),IWORD)
       DATA HBLANK/2H  /,HPOINT/2H ./,HMINUS/2H -/
       DATA HNUMB/2H 0,2H 1,2H 2,2H 3,2H 4,2H 5,2H 6,2H 7,2H 8,2H 9/
