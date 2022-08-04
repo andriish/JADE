@@ -69,6 +69,7 @@ set(INTERFACE       interface)
 set(JADEGS          jadegs)
 set(JADEMUS         jademus)
 #set(JADESR         jadesr)
+set(JADE56             jade56)
 set(JMC             jmc)
 set(PATRECSR        patrecsr)
 set(SOURCE          source)
@@ -139,6 +140,65 @@ ADD_LIBRARY(${BOSLIB} STATIC ${BOSLIB_src})
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "GNU")
  target_compile_options(${BOSLIB} PRIVATE -Wno-surprising)
 endif()
+
+
+
+########################################################################
+set(JADE56_src 
+amscat.f    bound2.f    cerfunh.f   convef.f    enels.f     fnpecr6.f   
+#initja.f
+#   jeosum3.f
+     lgcr56y.f   
+lgecorzt.f  lscctl40.f  mcin56mx.f  mctagmge.f  npecero.f   ptcprt.f    shmax.f     trkgmv.f
+avabs5.f    bound.f     cergnr6.f   curfit5.f   ff.f        functn.f    intshw9.f  
+#jeosum4.f  
+lgecorwt.f  
+lgmc560.f   lscctl.f    mcin56my.f  mctagmpl.f  npecr6.f    ranazi.f    statagpl.f  usunigam.f
+avabs6.f    boundj.f    cernkv55.f  dendel.f    fnpecer8.f  geantdum.f  intshw.f   
+#lgclvar.f
+  lgecorx.f   
+lgmc56.f    lscctlnl.f  
+#mcjade.f
+    mctagrpl.f  pairc1.f    sekbn1.f    sthead.f    wrtmcb.f
+bhabha.f    brems1.f    cernkv66.f  enelel.f    fnpecer9.f  guout.f     iprdiv.f   
+#lgclwar.f  
+lgecory.f   
+lgst56.f    m0ller.f    
+#mcjadege.f  
+newdir.f    pairc2.f    setect.f    tjock.f
+bk7abs.f    brems2.f    cernkv67.f  enelmx.f    fnpecer.f   gustep.f    
+#jeosum1.f  
+#lgclxar.f  
+lgecoryt.f  
+lscctl0.f   
+#mass2g.f    
+#mcjadepl.f  
+npecer5.f   parset.f    setscv.f    tjocki.f
+bondec.f    brvect.f    compt.f     enelpo.f    fnpecero.f  inital.f    
+#jeosum2.f
+  lgcr56.f   lgecorz.f   
+lscctl20.f  mcin56.f    mctagepl.f  npecer.f    parst2.f    sf5fun.f    trkgam.f
+)
+list(TRANSFORM JADE56_src PREPEND "${CMAKE_SOURCE_DIR}/src2016/jade56/")
+ADD_LIBRARY(${JADE56} STATIC ${JADE56_src})
+
+########################################################################
+
+
+########################################################################
+set(JADESR_src 
+addon.F     cutsr1.for  evconv1.F   evt2.f    kaladdfx.f  kalrev.f  lgbrps.F  lgct82.F  lgkosm.F  reshuf.f   tagf82.f   trgchk.F   usr1ana.F   usreptil.F
+breadkw.f   dbasedum.f  evconv.F    evt.f     kalcop.f    korder.f  lgcctk.F  lgcut.F   lgnbck.f  stat820.F  tagflg.F   uscopy.F   usred82.F   xxtest.f
+bwritekw.f  difflb.f    evfoldkw.F  gbook.f   kalib.f     lganak.F  lgclbk.F  lgdcpk.F  mewt3.F   stat82.F   trck82.F   userspi.F  usreduc1.F  zvtrck.F
+copylb.F    distri.f    evpk.f      kaladd.f  kalm1s.f    lgbrcs.F  lgclsk.F  lgeigk.f  r1mode.F  supvlb.F   trck82x.F  userx.F    usrepat.F
+)
+list(TRANSFORM JADESR_src PREPEND "${CMAKE_SOURCE_DIR}/src2016/jadesr/")
+ADD_LIBRARY(${JADESR} STATIC ${JADESR_src})
+
+########################################################################
+
+
+
 ########################################################################
 set(GRAFIX_src axshow.F  bankls.F bankpr.F barsec.f blnumb.F blshow.F calloc.F capmrk.F cdst.F   cirdis.F  
                clrcon.f  coment.f comwrd.F convrt.f credit.F cricro.f croax.F  ctdist.F decide.f dedxds.F 

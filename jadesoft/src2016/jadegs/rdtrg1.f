@@ -23,6 +23,9 @@ C
 C
       COMMON / CWORK / HBP(24), HTOF(42), IRES(8), NLGBR(42), NLGQ(8),
      *                 NTAG(2)     
+     *, IAVFOO(90)
+CAV Size is 2*66+4*60 = 372, elsewhere 732
+
 C
 C MASK IS BLOCK DATA SET IN RDTRIG
       COMMON /CMASK/ MASK(16),MASK4,MASK3,MASK2,MASK1,HKRE(3,8)
