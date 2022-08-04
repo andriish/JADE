@@ -68,7 +68,7 @@ set(GRAFIX          grafix)
 set(INTERFACE       interface)
 set(JADEGS          jadegs)
 set(JADEMUS         jademus)
-#set(JADESR         jadesr)
+set(JADESR         jadesr)
 set(JADE56             jade56)
 set(JMC             jmc)
 set(PATRECSR        patrecsr)
@@ -187,10 +187,17 @@ ADD_LIBRARY(${JADE56} STATIC ${JADE56_src})
 
 ########################################################################
 set(JADESR_src 
-addon.F     cutsr1.for  evconv1.F   evt2.f    kaladdfx.f  kalrev.f  lgbrps.F  lgct82.F  lgkosm.F  reshuf.f   tagf82.f   trgchk.F   usr1ana.F   usreptil.F
-breadkw.f   dbasedum.f  evconv.F    evt.f     kalcop.f    korder.f  lgcctk.F  lgcut.F   lgnbck.f  stat820.F  tagflg.F   uscopy.F   usred82.F   xxtest.f
-bwritekw.f  difflb.f    evfoldkw.F  gbook.f   kalib.f     lganak.F  lgclbk.F  lgdcpk.F  mewt3.F   stat82.F   trck82.F   userspi.F  usreduc1.F  zvtrck.F
-copylb.F    distri.f    evpk.f      kaladd.f  kalm1s.f    lgbrcs.F  lgclsk.F  lgeigk.f  r1mode.F  supvlb.F   trck82x.F  userx.F    usrepat.F
+addon.F     
+#cutsr1.for 
+ evconv1.F   evt2.f    kaladdfx.f  kalrev.f  lgbrps.F  lgct82.F  lgkosm.F  reshuf.f   tagf82.f   trgchk.F   usr1ana.F   usreptil.F
+breadkw.f   dbasedum.f  evconv.F    evt.f     kalcop.f    korder.f  lgcctk.F  lgcut.F   lgnbck.f  stat820.F  tagflg.F   uscopy.F   
+#usred82.F   
+xxtest.f
+bwritekw.f  difflb.f    evfoldkw.F  gbook.f   kalib.f     lganak.F  lgclbk.F  lgdcpk.F  mewt3.F   stat82.F   trck82.F   userspi.F  
+#usreduc1.F
+  zvtrck.F
+copylb.F    distri.f    evpk.f      kaladd.f  kalm1s.f    lgbrcs.F  lgclsk.F  lgeigk.f  r1mode.F  supvlb.F   trck82x.F  #userx.F
+    usrepat.F
 )
 list(TRANSFORM JADESR_src PREPEND "${CMAKE_SOURCE_DIR}/src2016/jadesr/")
 ADD_LIBRARY(${JADESR} STATIC ${JADESR_src})

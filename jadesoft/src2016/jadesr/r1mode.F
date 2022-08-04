@@ -6,7 +6,7 @@ C GFP -- SEPTEMBER 1981
 C---------------------------------
       LOGICAL*1 DSN(52),TAPEON
 #include "cutsr1.for"
-      REAL*8 WORD8,ORDERS(2)/'STARTRUN','NOTRUNS '/
+      REAL*8 WORD8,ORDERS(2)/8HSTARTRUN,8HNOTRUNS /
 C-------------------
 C PRINT PROGRAM NAME
 C-------------------

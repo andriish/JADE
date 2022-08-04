@@ -33,7 +33,7 @@ C
 C
       COMMON /CLGMSB/ MSGVAL
 C
-      DATA NMLGCL/'LGCL'/,  LGANVR/1/,  MESS/0/
+      DATA NMLGCL/4HLGCL/,  LGANVR/1/,  MESS/0/
 C
 C                                   MESSAGE
       DATA NCALL /0/
