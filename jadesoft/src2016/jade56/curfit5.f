@@ -61,7 +61,7 @@ C***********************************************************************
 C
 C
       REAL * 8 ARRAY(10,10),FLAMDA
-      REAL X(1),Y(1),SIGMAY(1),A(1),DELTAA(1),SIGMAA(1),
+      REAL X(1),Y(1),SIGMAY(1),A(1),DELTAA(1),SIGMAA(*),
      ,     YFIT(1), WEIGHT(300),ALPHA(15,15),BETA(15),DERIV(15),B(15)
       REAL YFITSA(300),ASAVE(10),ASISA(10)
 C      NPTS <= 300

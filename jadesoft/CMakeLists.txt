@@ -584,7 +584,3 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cal/aupdat1
               ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat1 
               ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat1.b  DESTINATION ${CMAKE_INSTALL_DATADIR}/JADESOFT/cal )
 
-
-
-
-
