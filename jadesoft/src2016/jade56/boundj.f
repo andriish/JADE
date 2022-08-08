@@ -12,6 +12,8 @@ C
 C
       DIMENSION PA0(3,3)
 C
+CAV To init the variable
+      BOUND=0.0
       X=PA0(1,2)
       IF(X.GE.0.) GO TO 1
       BOUND=-1.

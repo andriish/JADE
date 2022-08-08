@@ -15,7 +15,8 @@ C                            LAST MOD    10/09/87       P.HILL,J.OLSSON
 C-----------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
-      DIMENSION ITAG(1), HP(4), IHP(2) ,HMARK(2) ,IMARK(1)
+CAV      DIMENSION ITAG(1), HP(4), IHP(2) ,HMARK(2) ,IMARK(1)
+      DIMENSION ITAG(*), HP(4), IHP(2) ,HMARK(2) ,IMARK(1)
       EQUIVALENCE ( HP(1), IHP(1) )
       EQUIVALENCE ( HMARK(1), IMARK(1) )
       DIMENSION HELP(2)

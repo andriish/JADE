@@ -23,6 +23,7 @@ C
 C----------------------------------------------------------------------
 C
       COMMON /BCS/ IDATA(33000)
+CAV      DIMENSION HDATA(10),IPNT(50),ADATA(1)
       DIMENSION HDATA(10),IPNT(50),ADATA(1)
       EQUIVALENCE (HDATA(1),IDATA(1),ADATA(1)),(IPNT(1),IDATA(55))
       EQUIVALENCE (NWORD,IPNT(50))

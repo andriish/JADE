@@ -124,8 +124,11 @@ C PMF 03.11.98
         EC2  = 0.
         ETOT = 0.
       ELSE
-        PRINT 2008, HRUN,HEV,(SUM12(I1),I1=1,24)
-     ,            , ETOT,EBAR,EC1,EC2,E7MIN, ELGLM
+CAV        PRINT 2008, HRUN,HEV,(SUM12(I1),I1=1,24)
+CAV            , ETOT,EBAR,EC1,EC2,E7MIN, ELGLM
+        PRINT 2008, HRUN,HEV,(SUM12(I1),I1=1,12),(SUMWRD2(I1),I1=1,12)
+     +       , ETOT,EBAR,EC1,EC2,E7MIN, ELGLM
+
       ENDIF
       LBCSM = 0
       IF(
