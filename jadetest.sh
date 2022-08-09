@@ -146,4 +146,5 @@ $CMAKE -H../../test -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX 
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install .
 $CTEST -H../../test -B.  --timeout 180
+$CTEST -H../../test -B.  --timeout 180 --rerun-failed
 cd ../..
