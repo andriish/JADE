@@ -1,3 +1,6 @@
-This directory contains codes for the ``fptobos`` utility that should convert the 
-archived JADE data tapes in the ``FPACK`` format into the ``BOS`` format readable by the 
-JADE software.
+This directory contains codes for 
+ -  the ``fptobos`` utility that should convert the  archived JADE data tapes 
+    in the ``FPACK`` format into the ``BOS`` format readable by the 
+    JADE software.
+-  the ``unpjad`` utility that unpacks the  archived JADE data tapes 
+    in the ``FPACK`` format.
