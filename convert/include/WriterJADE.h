@@ -74,8 +74,8 @@ private:
       /* Expand me! */
       fPDGID_to_JADE_name[ -11]="E-              ";
       fPDGID_to_JADE_name[  11]="E+              ";
-      fPDGID_to_JADE_name[  22]="g               ";
-      fPDGID_to_JADE_name[  21]="GAMMA           ";
+      fPDGID_to_JADE_name[  22]="GAMMA           ";
+      fPDGID_to_JADE_name[  21]="g               ";
       fPDGID_to_JADE_name[ -13]="MU-             ";
       fPDGID_to_JADE_name[  13]="MU+             ";
       fPDGID_to_JADE_name[ -15]="TAU-            ";
@@ -83,23 +83,12 @@ private:
       fPDGID_to_JADE_name[ 211]="PI+             ";
       fPDGID_to_JADE_name[-211]="PI-             ";
       fPDGID_to_JADE_name[ 111]="PI0             ";
-/*
-C...LUDAT4, CONTAINING CHARACTER STRINGS
-      DATA CHAG/' ','HA','LA','TA','BA','CA','SA','DA','UA','G','U','D',
-     &'S','C','B','T','L','H','SPEC','QRA','QBRA','JET','B--','B-','B',
-     &'B+',' ','-','0','+','++','1','0','*',' ','DFBV','JQ','IQ',
-     &' ',' ','STAB','UNST',8*' '/
-      DATA CHAF/'GAMM','Z0','W','HIGG','GA/Z',' ','E','NUE','MU',
-     &'NUMU','TAU','NUTA','CHI','NUCH','PHAS',' ','PI',2*'K',2*'D','F',
-     &'PI0','ETA','ETA''','ETAC','RHO',2*'K*',2*'D*','F*','RHO0',
-     &'OMEG','PHI','JPSI','K0S','K0L',2*' ','P','N',3*'SIG',2*'XI',
-     &3*'SIC','CSU1','CSD1','CSS1','CCU1','CCD1','CCS1','LAM','LAMC',
-     &'CSU0','CSD0',4*'DELT',3*'SIG*',2*'XI*','OME*',3*'SIC*','CSU*',
-     &'CSD*','CSS*','CCU*','CCD*','CCS*','CCC*',2*' ','ETAB','ETAT',
-     &'ETAL','ETAH','UPSI','PHIT','PHIL','PHIH','R','HIGG','Z''0',
-     &7*' '/
-*/
+
+      
+
+
     } 
+ std::vector< ConstGenParticlePtr>  GetPartons(const GenEvent &evt);
 };
 }
 #endif

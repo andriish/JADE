@@ -41,7 +41,7 @@ configure_file(${JADESOFT_CAL_DIR}/bupdat1.b    ${CMAKE_CURRENT_BINARY_DIR}/bupd
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006    ${CMAKE_CURRENT_BINARY_DIR}/jadetapes/JAD073/file006 COPYONLY)
 
 
-add_custom_target(NAME FPTOBOS_DATA_1_CLEANUP COMMAND rm -f ${CMAKE_CURRENT_BINARY_DIR}/file006.bos)
+add_TEST(NAME FPTOBOS_DATA_1_CLEANUP COMMAND rm -f ${CMAKE_CURRENT_BINARY_DIR}/file006.bos)
 
 add_test(NAME FPTOBOS_DATA_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/fptobos1.card  ${JADESOFT_BIN_DIR}/fptobos)
 jade_fortran_test(FPTOBOS_DATA_1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " ") 
@@ -63,6 +63,9 @@ jade_fortran_test(JZREAD_DATA_1 PROPERTY ENVIRONMENT "GFORTRAN_CONVERT_UNIT=nati
 add_test(NAME JTJOB_DATA_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/jtjobfile006.card  ${JADESOFT_BIN_DIR}/jtjob)
 set_property( TEST JTJOB_DATA_1 PROPERTY  DEPENDS JZREAD_DATA_1) 
 jade_fortran_test(JTJOB_DATA_1 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22" "F_UFMTENDIAN=big:2,22" "FORT_CONVERT2=big_ieee FORT_CONVERT22=big_ieee") 
+
+
+
 
 find_program(H2ROOT NAMES h2root)
 find_package(ROOT COMPONENTS Core RIO Tree)
@@ -110,7 +113,7 @@ else()
   jade_fortran_test(MCJADE_MC_1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " " )
 
   add_test(NAME SUPERV_MC_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/superv1.card  ${JADESOFT_BIN_DIR}/superv ) 
-  set_property( TEST SUPERV_MC_1 PROPERTY  DEPENDS CPROD_BOS_MC_1) 
+  set_property( TEST SUPERV_MC_1 PROPERTY  DEPENDS HEPMC3_TO_CPROD_MC_1) 
   jade_fortran_test(SUPERV_MC_1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " " ) 
   #NOTE: superv.stat needs a random number generator seeds. Otherwise it will use the same each time
    
@@ -126,13 +129,59 @@ else()
   set_property( TEST JTJOB_MC_1 PROPERTY  DEPENDS JZREAD_MC_1) 
   jade_fortran_test(JTJOB_MC_1 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22" "F_UFMTENDIAN=big:2,22" "FORT_CONVERT2=big_ieee FORT_CONVERT22=big_ieee") 
 
+
+
+  add_test(NAME PY57_MC_1_CLEANUP COMMAND rm -f ${CMAKE_CURRENT_BINARY_DIR}/py57.cprod ${CMAKE_CURRENT_BINARY_DIR}/py57.hist  ${CMAKE_CURRENT_BINARY_DIR}/mcrnset.dat  ${CMAKE_CURRENT_BINARY_DIR}/mcrncnt.dat)
+
+  add_test(NAME PY57_MC_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/py57.card  ${JADESOFT_BIN_DIR}/py57)
+  set_property(TEST PY57_MC_1 PROPERTY  DEPENDS PY57_MC_1_CLEANUP) 
+  jade_fortran_test(PY57_MC_1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " ") 
+
+  add_test(NAME MCJADE_MC_2 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/mcjade2.card  ${JADESOFT_BIN_DIR}/mcjade )
+  set_property( TEST MCJADE_MC_2 PROPERTY DEPENDS PY57_MC_1)   
+  jade_fortran_test(MCJADE_MC_2 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " " )
+
+  add_test(NAME SUPERV_MC_2 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/superv2.card  ${JADESOFT_BIN_DIR}/superv ) 
+  set_property( TEST SUPERV_MC_2 PROPERTY  DEPENDS MCJADE_MC_2) 
+  jade_fortran_test(SUPERV_MC_2 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " " ) 
+  #NOTE: superv.stat needs a random number generator seeds. Otherwise it will use the same each time
+   
+  add_test(NAME ZE4V_MC_2 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/ze4v2.card  ${JADESOFT_BIN_DIR}/ze4v)
+  set_property( TEST ZE4V_MC_2 PROPERTY  DEPENDS SUPERV_MC_2) 
+  jade_fortran_test(ZE4V_MC_2 "GFORTRAN_CONVERT_UNIT=big_endian" "F_UFMTENDIAN=big" " ") 
+
+  add_test(NAME JZREAD_MC_2 COMMAND  sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/jzread2.card  ${JADESOFT_BIN_DIR}/jzread )
+  set_property( TEST JZREAD_MC_2 PROPERTY  DEPENDS ZE4V_MC_2) 
+  jade_fortran_test(JZREAD_MC_2 PROPERTY ENVIRONMENT "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " ") 
+
+  add_test(NAME JTJOB_MC_2 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/jtjob2.card  ${JADESOFT_BIN_DIR}/jtjob)
+  set_property( TEST JTJOB_MC_2 PROPERTY  DEPENDS JZREAD_MC_2) 
+  jade_fortran_test(JTJOB_MC_2 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22" "F_UFMTENDIAN=big:2,22" "FORT_CONVERT2=big_ieee FORT_CONVERT22=big_ieee") 
+
+
+
+
+
   if (ROOT_FOUND AND H2ROOT)
     add_test(NAME H2ROOT_MC_1 COMMAND ${H2ROOT}  jtjob1.hbook  jtjob1.root)
     set_property( TEST H2ROOT_MC_1 PROPERTY  DEPENDS JTJOB_MC_1)   
-    add_test(NAME ROOT_ANALYSIS_MC_1 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_1 jtjob1.root jtjob1.pdf)
-    set_property( TEST ROOT_ANALYSIS_MC_1 PROPERTY  DEPENDS H2ROOT_MC_1) 
-    add_test(NAME ROOT_ANALYSIS_MC_2 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_2 jtjob1.root jtjob2.pdf)
-    set_property( TEST ROOT_ANALYSIS_MC_2 PROPERTY  DEPENDS H2ROOT_MC_1) 
+
+    add_test(NAME H2ROOT_MC_2 COMMAND ${H2ROOT}  jtjob2.hbook  jtjob2.root)
+    set_property( TEST H2ROOT_MC_2 PROPERTY  DEPENDS JTJOB_MC_2)   
+
+    
+    add_test(NAME ROOT_ANALYSIS1_MC_1 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_1 jtjob1.root jtjob11.pdf)    
+    set_property( TEST ROOT_ANALYSIS1_MC_1 PROPERTY  DEPENDS H2ROOT_MC_1) 
+    
+    add_test(NAME ROOT_ANALYSIS2_MC_1 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_2 jtjob1.root jtjob21.pdf)
+    set_property( TEST ROOT_ANALYSIS2_MC_1 PROPERTY  DEPENDS H2ROOT_MC_1) 
+
+    add_test(NAME ROOT_ANALYSIS1_MC_2 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_1 jtjob2.root jtjob12.pdf)
+    set_property( TEST ROOT_ANALYSIS1_MC_2 PROPERTY  DEPENDS H2ROOT_MC_2) 
+
+    add_test(NAME ROOT_ANALYSIS2_MC_2 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_2 jtjob2.root jtjob22.pdf)
+    set_property( TEST ROOT_ANALYSIS2_MC_2 PROPERTY  DEPENDS H2ROOT_MC_2) 
+
 
   endif()
 endif()

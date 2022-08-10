@@ -1,0 +1,81 @@
+LIST
+C
+C Cards for MC package:
+MCIRUN 6666
+MCSTART ON
+MC4VEC  ON
+C
+C Define the name of the 4-vector output file:
+C   - extension .cprod forces binary format (JADE 'CPROD' format)
+C   - extension .nt forces a HBOOK NTuple format (not yet supported!!!)
+C   - other extensions yield to a readable ascii format (for test purposes)
+C
+MCEVFILE 'py57.cprod'
+MCNEVT 100
+MCECMS 35.0
+MCNPRI 100
+MCTAB  OFF
+MCISR  OFF
+MCFSR  ON
+C List of PDG IDs for particles to be declared as stable if MCSTBL = ON
+MCSTBL OFF
+MCIDST  511 513 521 523 531 533 541 543 5122
+C        411 421 431
+C  3112 3122 3222 3312 3322 3334 310
+
+MCBOOS OFF
+MCRDM  101234567
+C
+C QUARK TYPE TO ANALYSE:
+C
+C MCUDSC = ON: Only UDSC flavours are filled at parton level AND hadron level
+C MCBQRK = ON: Only B quark flavour is analysed for partons/hadrons
+C MCFLAV = I : I=0: all flavours analysed, I=1-5: Flavour I is analysed
+C
+MCUDSC OFF
+MCBQRK OFF
+MCFLAV 0
+C
+C JETSET 7.4 OPAL standard parameters: b=        0.52  +/- 0.04   PARJ(42)
+C                                      sigma_Q=  0.40  +/- 0.03   PARJ(21)
+C                                      Q_0=      1.90  +/- 0.50   PARJ(82)
+C                                      eps_c=   -0.031 +/- 0.011  PARJ(54)
+C                                      eps_b=   -0.0038+/- 0.0010 PARJ(55)
+C                                      a=        0.11             PARJ(41)
+C                                      Lamb_QCD= 0.250 +/- 0.006  PARJ(81)
+JTPB    0.52
+JTPSQ   0.40
+JTPQ0   1.90
+JTPEC  -0.031
+JTPEB  -0.0038
+JTPA    0.11
+JTPLAMB 0.25
+C
+C Overwrite with special JADE tune
+C JADETUNE =0 :  ignore JADE settings
+C JADETUNE<>0: use original FF parameters
+C          =2: use also original suppression factors and disable L=1 Multipletts
+JADETUNE 0
+C
+C Jetrates (time saving option) calculation
+C
+C MCJTEV: Number of events to analyse for jet finding, -1: all
+C MCDURH = ON: Analyse using the Durham jet finding
+C MCJDE0 = ON: Analyse using the JADE E0 jet finding
+C MCCONE = ON: Analyse using the Cone jet finders
+C MCCAMJ = ON: Analyse using the Cambridge Jet finder
+C MCCKRN = ON: Analyse using the CKERN Cambridge
+C
+MCJTEV 0
+MCJDE0 OFF
+MCDURH OFF
+MCCONE OFF
+MCCAMJ OFF
+MCCKRN OFF
+C
+C User cards for MCUSxx routines:
+OUTFILE 'py57.hist'
+FSRRM OFF
+ISRRM OFF
+STOP
+EOF

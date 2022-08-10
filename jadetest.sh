@@ -38,13 +38,13 @@ fi
 
 tmp=$( echo "$*" | egrep -- '--\<prefix\>' | cut -f2 -d=)
 if test -n "$tmp"; then
- if [ "$(uname)" == "Darwin" ]; then
- export TOP=$(greadlink -f $tmp)
- else
- export TOP=$(readlink -f $tmp)
- fi
+  if [ "$(uname)" == "Darwin" ]; then
+    export TOP=$(greadlink -f $tmp)
+  else
+    export TOP=$(readlink -f $tmp)
+  fi
 else
- export TOP=$(pwd)/installed
+  export TOP=$(pwd)/installed
 fi
 
 if [ "$(uname)" == "Darwin" ]; then
@@ -72,22 +72,22 @@ if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "Intel" ]; then
 fi
 ##This is for GNU on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "GNU" ]; then
- export CC=gcc
- export CXX=g++
- export FC=gfortran
+  export CC=gcc
+  export CXX=g++
+  export FC=gfortran
 fi
 ##This is for XL on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "XL" ]; then
- export CC=xlc
- export CXX=xlC
- export FC=xlf
+  export CC=xlc
+  export CXX=xlC
+  export FC=xlf
 fi
 ##This is for NAG on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "NAG" ]; then
- export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(dirname $(which nagfor))/../lib/NAG_Fortran/
- export CC=gcc
- export CXX=g++
- export FC=nagfor
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(dirname $(which nagfor))/../lib/NAG_Fortran/
+  export CC=gcc
+  export CXX=g++
+  export FC=nagfor
 fi
 ##This is for PGI on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "PGI" ]; then
@@ -99,43 +99,43 @@ if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "PGI" ]; then
 fi
 ##This is for SUN on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "SUN" ]; then
- export PATH=/opt/oracle/developerstudio12.6/bin:$PATH
- export LD_LIBRARY_PATH=/opt/oracle/developerstudio12.6/lib:$LD_LIBRARY_PATH
- export CC=suncc
- export CXX=sunCC
- export FC=sunf77
+  export PATH=/opt/oracle/developerstudio12.6/bin:$PATH
+  export LD_LIBRARY_PATH=/opt/oracle/developerstudio12.6/lib:$LD_LIBRARY_PATH
+  export CC=suncc
+  export CXX=sunCC
+  export FC=sunf77
 fi
 ##This is for Intel on MacOSX
 if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "Intel" ]; then
- .  /opt/intel/oneapi/setvars.sh
- export CC=icc
- export CXX=icpc
- export FC=ifort
+  .  /opt/intel/oneapi/setvars.sh
+  export CC=icc
+  export CXX=icpc
+  export FC=ifort
 fi
 ##This is for GNU/Clang on MacOSX
 if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-11" ]; then
- export CC=gcc-11
- export CXX=clang++
- export FC=gfortran-11
+  export CC=gcc-11
+  export CXX=clang++
+  export FC=gfortran-11
 fi
 tmpbits=$( echo "$*" | egrep -- '--\<bits\>' | cut -f2 -d=)
 if [ "$(uname)" == "Darwin" ]; then
-bits=64
+  bits=64
 else
-if [ "$(uname -m)" == "i686" ]; then
-bits=32
-else
-bits=64
-fi
+ if [ "$(uname -m)" == "i686" ]; then
+   bits=32
+ else
+   bits=64
+ fi
 fi
 if test -z "$tmpbits"; then
- tmpbits=$tmpbits
+  tmpbits=$tmpbits
 fi
 if  [ "$tmpbits" != "32" ] && [ "$tmpbits" != "64" ] ; then
- echo "Unknown bits "$tmpbits" using 64 instead."
- echo "Possible values for the bits are 32 and 64"
+  echo "Unknown bits "$tmpbits" using 64 instead."
+  echo "Possible values for the bits are 32 and 64"
 else 
- bits=$tmpbits
+  bits=$tmpbits
 fi
 
 ########################################################################
@@ -145,6 +145,6 @@ rm -rf outputs CMakeFiles CMakeCache.txt
 $CMAKE -H../../test -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC  -DJADESOFT_DIR=$TOP$toolchain$bits/share/JADESOFT/cmake
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install .
-$CTEST -H../../test -B.  --timeout 180
-$CTEST -H../../test -B.  --timeout 180 --rerun-failed
+$CTEST -H../../test -B.  --timeout 10
+#$CTEST -H../../test -B.  --timeout 10 --rerun-failed
 cd ../..

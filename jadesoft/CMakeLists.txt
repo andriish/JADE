@@ -581,3 +581,15 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cal/aupdat1
               ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat1 
               ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat1.b  DESTINATION ${CMAKE_INSTALL_DATADIR}/JADESOFT/cal )
 
+install(TARGETS 
+ar48p
+cj623
+hw59
+hw58d
+jt63
+jt74
+lepton
+py57 DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+
+
