@@ -1,6 +1,8 @@
 #ifndef jadehelpers_h
 #define jadehelpers_h
 #include <math.h>
+#include <cmath>
+
 #include <vector>
 template <class V4>  void set_momentum(V4 &vv, const float x, const float y, const float z, const float e);
 template <class EVENT,class V4>
