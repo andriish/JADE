@@ -2,9 +2,7 @@
 set -x
 uname -a 
 cat /etc/issue
-#sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
-#sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
-yum -y install  epel-release dnf-*
+yum -y install  epel-release dnf-plugins-core
 dnf config-manager --set-enabled powertools
 yum -y install  gcc gcc-c++ gcc-gfortran make which cmake cmake-data cmake-filesystem HepMC3*
 yum -y install  lapack-static  lapack-devel lapack  gengetopt  blas-devel blas atlas-devel atlas  openblas-devel openblas openblas-serial64 openblas-threads  --skip-broken
