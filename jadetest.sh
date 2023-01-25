@@ -117,7 +117,7 @@ if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU" ]; then
  export CC=clang
  export CXX=clang++
  if [ "$?" = "0" ]; then 
-   export FC=gfortran-10
+   export FC=gfortran-12
  else
    export FC=gfortran
  fi
