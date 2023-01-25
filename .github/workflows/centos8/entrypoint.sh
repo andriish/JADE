@@ -2,7 +2,7 @@
 set -x
 uname -a 
 cat /etc/issue
-yum -y install  epel-release dnf-plugins-core
+yum -y install  epel-release dnf-*
 dnf config-manager --set-enabled powertools
 yum -y install  gcc gcc-c++ gcc-gfortran make which cmake cmake-data cmake-filesystem HepMC3*
 yum -y install  lapack-static  lapack-devel lapack  gengetopt  blas-devel blas atlas-devel atlas  openblas-devel openblas openblas-serial64 openblas-threads  --skip-broken
