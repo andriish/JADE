@@ -52,7 +52,7 @@ toolchain=GNU
 if test -z "$tmptoolchain"; then
  tmptoolchain="GNU"
 fi
-if  [ "$tmptoolchain" != "GNU" ] && [ "$tmptoolchain" != "GNU-11" ] && [ "$tmptoolchain" !=  "Intel" ] && [ "$tmptoolchain" !=  "XL" ] && [ "$tmptoolchain" !=  "NAG" ] && [ "$tmptoolchain" !=  "PGI" ]&& [ "$tmptoolchain" !=  "SUN" ]; then
+if  [ "$tmptoolchain" != "GNU" ] && [ "$tmptoolchain" != "GNU-11" ]&& [ "$tmptoolchain" != "GNU-12" ] && [ "$tmptoolchain" !=  "Intel" ] && [ "$tmptoolchain" !=  "XL" ] && [ "$tmptoolchain" !=  "NAG" ] && [ "$tmptoolchain" !=  "PGI" ]&& [ "$tmptoolchain" !=  "SUN" ]; then
   echo "Unknown toolchain "$tmptoolchain" using GNU instead."
   echo "Possible values for the toolchain are Intel, GNU, and XL"
 else 
@@ -137,6 +137,11 @@ if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-11" ]; then
   export CXX=clang++
   export FC=gfortran-11
 fi
+if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-12" ]; then
+  export CC=gcc-12
+  export CXX=clang++
+  export FC=gfortran-12
+fi
 arguments="-DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain$bits "
 if  [ "$tmpbits" == "32" ]; then
   bit_arguments="-DJADE_FORCE_32:BOOL=ON"
@@ -156,17 +161,9 @@ jade_arguments=" -DJADESOFT_DIR=$TOP$toolchain$bits/share/JADESOFT/cmake "
 ########################################################################
 mkdir -p build/jadesoft
 cd build/jadesoft
-<<<<<<< HEAD
 $CMAKE -H../../jadesoft -B.  $arguments $bit_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install .
-=======
-rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../jadesoft -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP  -DJADE_USE_CERNLIB:BOOL=ON
-make -f Makefile clean
-make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
-make install
->>>>>>> origin/master
 cd ../..
 ########################################################################
 mkdir -p build/convert
@@ -178,31 +175,15 @@ cd ../..
 ########################################################################
 mkdir -p build/jtuple
 cd build/jtuple
-<<<<<<< HEAD
 $CMAKE -H../../jtuple -B.  $arguments $bit_arguments  $jade_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install .
-=======
-rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -H../../jtuple -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP -DJADE_USE_CERNLIB:BOOL=ON
-make -f Makefile clean
-make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
-make install
->>>>>>> origin/master
 cd ../..
 ########################################################################
 mkdir -p build/fptobos
 cd build/fptobos
 rm -rf outputs CMakeFiles CMakeCache.txt
-<<<<<<< HEAD
 $CMAKE -H../../fptobos -B. $arguments $bit_arguments  $jade_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install .
-=======
-$CMAKE -H../../fptobos -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP -DPICOCERNLIBPREFIX=$TOP -DJADE_USE_CERNLIB:BOOL=ON
-make -f Makefile clean
-make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
-make install
->>>>>>> origin/master
 cd ../..
-
