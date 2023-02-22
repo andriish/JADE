@@ -1,3 +1,3 @@
-FROM quay.io/centos/centos:stream9 
+FROM almalinux:9
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
