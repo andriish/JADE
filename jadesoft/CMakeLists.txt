@@ -1,23 +1,24 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
 PROJECT(JADESOFT Fortran CXX C)
-SET(VERSION 2020.11)
+SET(VERSION 2023.03)
 include("GNUInstallDirs")
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
-option( JADE_OLD_MC  "Compile old MC executables" ON)
-option( JADE_FPE  "Trap floating point exceptions" OFF)
-option(JADE_USE_CERNLIB "Attempt to use CERNLIB instead of buildin code (picocernlib)"     OFF)
+option(JADE_OLD_MC       "Compile old MC executables" ON)
+option(JADE_FPE          "Trap floating point exceptions" OFF)
+option(JADE_USE_CERNLIB  "Attempt to use CERNLIB instead of buildin code (picocernlib)"     OFF)
 ########################################################################
 include(JADE_compiler_setup)
 ########################################################################
-  find_package(BLAS REQUIRED)
-  find_package(LAPACK REQUIRED)
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-     set(JEXTERN_GRAPH_LIBRARIES )
-  else()
-    find_package(X11  REQUIRED)
-    set(JEXTERN_GRAPH_LIBRARIES ${X11_LIBRARIES})
-  endif()
+find_package(BLAS REQUIRED)
+find_package(LAPACK REQUIRED)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12)
+  set(JEXTERN_GRAPH_LIBRARIES )
+else()
+  find_package(X11  REQUIRED)
+  set(JEXTERN_GRAPH_LIBRARIES ${X11_LIBRARIES})
+endif()
 message(STATUS "LAPACK libraries        : ${LAPACK_LIBRARIES_DIR}")
 ########################################################################
 find_package(HepMC3)
@@ -26,10 +27,10 @@ message(STATUS "HEPMC3 libraries        : ${HEPMC3_LIBRARIES} ${HEPMC3_ROOTIO_LI
 include(JADE_ROOT_setup)
 ########################################################################
 if (JADE_USE_CERNLIB)
-  find_library (LIBGRAFLIB NAMES libgraflib.a HINTS /usr/lib64/cernlib/2006/lib/ /usr/lib64/cernlib/2006/lib/)
-  find_library (LIBMATHLIB NAMES libmathlib.a HINTS /usr/lib64/cernlib/2006/lib/ /usr/lib64/cernlib/2006/lib/)
-  find_library (LIBPACKLIB NAMES libpacklib.a HINTS /usr/lib64/cernlib/2006/lib/ /usr/lib64/cernlib/2006/lib/)
-  find_library (LIBKERNLIB NAMES libkernlib.a HINTS /usr/lib64/cernlib/2006/lib/ /usr/lib64/cernlib/2006/lib/)
+  find_library (LIBGRAFLIB REQUIRED  NAMES libgraflib.a HINTS /usr/lib64/cernlib/2006/lib/ /usr/lib64/cernlib/2006/lib/ /usr/local/Cellar/cernlib/2022.11.08.0/lib/)
+  find_library (LIBMATHLIB REQUIRED  NAMES libmathlib.a HINTS /usr/lib64/cernlib/2006/lib/ /usr/lib64/cernlib/2006/lib/ /usr/local/Cellar/cernlib/2022.11.08.0/lib/)
+  find_library (LIBPACKLIB REQUIRED  NAMES libpacklib.a HINTS /usr/lib64/cernlib/2006/lib/ /usr/lib64/cernlib/2006/lib/ /usr/local/Cellar/cernlib/2022.11.08.0/lib/)
+  find_library (LIBKERNLIB REQUIRED  NAMES libkernlib.a HINTS /usr/lib64/cernlib/2006/lib/ /usr/lib64/cernlib/2006/lib/ /usr/local/Cellar/cernlib/2022.11.08.0/lib/)
   set(PICOCERNLIB "${LIBPACKLIB};${LIBKERNLIB};${LIBMATHLIB};${LIBGRAFLIB}")
 else()
   find_library(LIBPICOKERNLIB REQUIRED NAMES libpicokernlib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
@@ -73,26 +74,28 @@ SET(SRCMAIN ${CMAKE_SOURCE_DIR}/main2016)
 SET(LIB ${CMAKE_SOURCE_DIR}/lib)
 SET(BIN ${CMAKE_SOURCE_DIR}/bin)
 
-include_directories( ${SRC}/boslib ${SRC}/grafix ${SRC}/interface ${SRC}/jadegs ${SRC}/jademus ${SRC}/jadesr ${SRC}/jmc ${SRC}/patrecsr ${SRC}/source ${SRC}/tagg  ${SRC}/toflib ${SRC}/vertex ${SRC}/wertex ${SRC}/zlib  )
+include_directories( ${SRC}/boslib ${SRC}/grafix ${SRC}/interface ${SRC}/jadegs 
+                     ${SRC}/jademus ${SRC}/jadesr ${SRC}/jmc ${SRC}/patrecsr 
+                     ${SRC}/source ${SRC}/tagg  ${SRC}/toflib ${SRC}/vertex ${SRC}/wertex ${SRC}/zlib  )
 
 SET(SRCMCJADE ${SRCMAIN}/mcjade)
 SET(SRCSUPERV ${SRCMAIN}/superv)
 SET(SRCJADEZ ${SRCMAIN}/jadez)
 SET(SRCZE4V ${SRCMAIN}/ze4v)
 
-SET(SRCBOSLIB ${SRC}/boslib)
+SET(SRCBOSLIB          ${SRC}/boslib)
 SET(SRCGRAFIX          ${SRC}/grafix)
-SET(SRCINTERFACE         ${SRC}/interface)
-SET(SRCJADEGS         ${SRC}/jadegs)
+SET(SRCINTERFACE       ${SRC}/interface)
+SET(SRCJADEGS          ${SRC}/jadegs)
 SET(SRCJADEMUS         ${SRC}/jademus)
-SET(SRCJMC         ${SRC}/jmc)
-SET(SRCPATRECSR         ${SRC}/patrecsr)
-SET(SRCSOURCE         ${SRC}/source)
-SET(SRCTAGG         ${SRC}/tagg)
-SET(SRCTOFLIB         ${SRC}/toflib)
-SET(SRCVERTEX         ${SRC}/vertex)
-SET(SRCWERTEX         ${SRC}/wertex)
-SET(SRCZLIB         ${SRC}/zlib)
+SET(SRCJMC             ${SRC}/jmc)
+SET(SRCPATRECSR        ${SRC}/patrecsr)
+SET(SRCSOURCE          ${SRC}/source)
+SET(SRCTAGG            ${SRC}/tagg)
+SET(SRCTOFLIB          ${SRC}/toflib)
+SET(SRCVERTEX          ${SRC}/vertex)
+SET(SRCWERTEX          ${SRC}/wertex)
+SET(SRCZLIB            ${SRC}/zlib)
 # Have the .mod files placed in the lib folder
 SET(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${LIB})
 #Workaround for gfortran bug
@@ -123,7 +126,6 @@ SET(BOSLIB_src
          ${SRCBOSLIB}/pvert.for ${SRCBOSLIB}/rdda.F ${SRCBOSLIB}/readhl.for
          ${SRCBOSLIB}/sort4.for ${SRCBOSLIB}/ucorr.for ${SRCBOSLIB}/uhist.for ${SRCBOSLIB}/uwp.for
          ${SRCBOSLIB}/vall.for  ${SRCBOSLIB}/vecsub.f
-         
        #  ${SRCBOSLIB}/rdvar.for 
 )
 
@@ -721,21 +723,17 @@ TARGET_LINK_LIBRARIES(${ZREADEXE}  ${JEXTERN_LIBRARIES})
 #####################################################################
 
 if (JADE_OLD_MC)
+  set( MCLIBS    ariadne408 coj623d herwig58d herwig59 jt63jade jt74opal pythia5722 ckern104 ckern105  px114 )
+  foreach ( ml ${MCLIBS} )  
+   ADD_LIBRARY(${ml} STATIC ${UTIL}/mcgen/src/${ml}.f)
+  endforeach (  ml ${MCLIBS} )
 
-set( MCLIBS    ariadne408 coj623d herwig58d herwig59 jt63jade jt74opal pythia5722 ckern104 ckern105  px114 )
-foreach ( ml ${MCLIBS} )  
- ADD_LIBRARY(${ml} STATIC ${UTIL}/mcgen/src/${ml}.f)
-endforeach (  ml ${MCLIBS} )
-
-ADD_LIBRARY(mc105j STATIC                        ${UTIL}/mcgen/mc/mc105j.f  )
-  
-
-if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
-  target_compile_options(coj623d  PRIVATE -fdefault-real-8 -fdefault-double-8)
-endif()
-
-ADD_EXECUTABLE(ar48p   ${UTIL}/mcgen/ariadne/mcar48p_105j.f  ${UTIL}/mcgen/src/pymaxi.f)
-TARGET_LINK_LIBRARIES(ar48p  PRIVATE 
+  ADD_LIBRARY(mc105j STATIC                        ${UTIL}/mcgen/mc/mc105j.f  )
+  if (${CMAKE_Fortran_COMPILER_ID}  MATCHES "GNU")
+    target_compile_options(coj623d  PRIVATE -fdefault-real-8 -fdefault-double-8)
+  endif()
+  ADD_EXECUTABLE(ar48p   ${UTIL}/mcgen/ariadne/mcar48p_105j.f  ${UTIL}/mcgen/src/pymaxi.f)
+  TARGET_LINK_LIBRARIES(ar48p  PRIVATE 
                        jt74opal 
                        mc105j
                        pythia5722
@@ -745,8 +743,8 @@ TARGET_LINK_LIBRARIES(ar48p  PRIVATE
                        ${JEXTERN_LIBRARIES}  ${BLAS_LIBRARIES}  ${LAPACK_lapack_LIBRARY} 
                        )
 
-ADD_EXECUTABLE(cj623   ${UTIL}/mcgen/cojets/mccj623_105j.f ${UTIL}/mcgen/src/pystfu.f)
-TARGET_LINK_LIBRARIES(cj623   PRIVATE  
+  ADD_EXECUTABLE(cj623   ${UTIL}/mcgen/cojets/mccj623_105j.f ${UTIL}/mcgen/src/pystfu.f)
+  TARGET_LINK_LIBRARIES(cj623   PRIVATE  
                        mc105j 
                        pythia5722 
                        coj623d   
@@ -756,8 +754,8 @@ TARGET_LINK_LIBRARIES(cj623   PRIVATE
                        ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}  ${LAPACK_lapack_LIBRARY} 
                        )
 
-ADD_EXECUTABLE(hw59   ${UTIL}/mcgen/herwig/mchw59_105j.f )
-TARGET_LINK_LIBRARIES(hw59    PRIVATE                       
+  ADD_EXECUTABLE(hw59   ${UTIL}/mcgen/herwig/mchw59_105j.f )
+  TARGET_LINK_LIBRARIES(hw59    PRIVATE                       
                        mc105j 
                        herwig59 
                        ckern105   
@@ -766,8 +764,8 @@ TARGET_LINK_LIBRARIES(hw59    PRIVATE
                        ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}  ${LAPACK_lapack_LIBRARY} 
                        )
 
-ADD_EXECUTABLE(hw58d   ${UTIL}/mcgen/herwig/mchw58d_105j.f )
-TARGET_LINK_LIBRARIES(hw58d   PRIVATE                        
+  ADD_EXECUTABLE(hw58d   ${UTIL}/mcgen/herwig/mchw58d_105j.f )
+  TARGET_LINK_LIBRARIES(hw58d   PRIVATE                        
                        mc105j 
                        herwig58d  
                        ckern105   
@@ -777,8 +775,8 @@ TARGET_LINK_LIBRARIES(hw58d   PRIVATE
                        ) 
 
 
-ADD_EXECUTABLE(jt63   ${UTIL}/mcgen/jetset/mcjt63_105j.f ${UTIL}/mcgen/src/lugive.f)
-TARGET_LINK_LIBRARIES(jt63   PRIVATE                    
+  ADD_EXECUTABLE(jt63   ${UTIL}/mcgen/jetset/mcjt63_105j.f ${UTIL}/mcgen/src/lugive.f)
+  TARGET_LINK_LIBRARIES(jt63   PRIVATE                    
                        mc105j 
                        jt63jade   
                        ckern105   
@@ -786,8 +784,8 @@ TARGET_LINK_LIBRARIES(jt63   PRIVATE
                        ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES}  ${LAPACK_lapack_LIBRARY} 
                        )
 
-ADD_EXECUTABLE(jt74   ${UTIL}/mcgen/jetset/mcjt74_105j.f )
-TARGET_LINK_LIBRARIES(jt74    PRIVATE                 
+  ADD_EXECUTABLE(jt74   ${UTIL}/mcgen/jetset/mcjt74_105j.f )
+  TARGET_LINK_LIBRARIES(jt74    PRIVATE                 
                        mc105j  
                        ckern105   
                        jt74opal   
@@ -795,8 +793,8 @@ TARGET_LINK_LIBRARIES(jt74    PRIVATE
                        ${JEXTERN_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_lapack_LIBRARY} 
                        )
 
-ADD_EXECUTABLE(lepton   ${UTIL}/mcgen/lepton/lepton.f )
-TARGET_LINK_LIBRARIES(lepton    PRIVATE                
+  ADD_EXECUTABLE(lepton   ${UTIL}/mcgen/lepton/lepton.f )
+  TARGET_LINK_LIBRARIES(lepton    PRIVATE                
                        mc105j 
                        ckern105  
                        jt63jade  
@@ -805,8 +803,8 @@ TARGET_LINK_LIBRARIES(lepton    PRIVATE
                        ${INTERFACE} #ranmar
                        )
                        
-ADD_EXECUTABLE(py57   ${UTIL}/mcgen/pythia/mcpy57_105j.f ${UTIL}/mcgen/src/pymaxi.f ${UTIL}/mcgen/src/pystfu.f)
-TARGET_LINK_LIBRARIES(py57    PRIVATE                
+  ADD_EXECUTABLE(py57   ${UTIL}/mcgen/pythia/mcpy57_105j.f ${UTIL}/mcgen/src/pymaxi.f ${UTIL}/mcgen/src/pystfu.f)
+  TARGET_LINK_LIBRARIES(py57    PRIVATE                
                        mc105j 
                        ckern105  
                        pythia5722
@@ -817,8 +815,6 @@ TARGET_LINK_LIBRARIES(py57    PRIVATE
                        
 endif()
 ########################################################################
-
-
 
 ########################################################################
 

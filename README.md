@@ -20,7 +20,7 @@ This is a repository with software of JADE experiment.
  
   - CentOS 7 x86_64 with **GNU** gcc compilers
   - CentOS 8 x86_64 with **GNU** gcc compilers
-  - MacOSX 10.15+ x86_64 with **GNU** gfortran and XCode
+  - MacOSX 10.15+ x86_64 with **GNU** gcc compilers
   
   In addition, it should be possible to compile the software  with the following platforms/toolchains:
   
@@ -33,6 +33,7 @@ This is a repository with software of JADE experiment.
   - CentOS 8 ppc64le/i686/arm64 with **GNU** gcc compilers
   - CentOS 7 x86_64 with **SUN** compilers
   - CentOS 8 x86_64 with **SUN** compilers
+  - MacOSX 10.15+ x86_64 with **GNULLVM** gfortran and XCode compilers
 
   However, some of the combinations above will produce excutables that would crash in runtime or
   would not be able to read the input files in different endianess.
@@ -108,6 +109,7 @@ This is a repository with software of JADE experiment.
     The supported values for this flag are:
       
      - **GNU** 
+     - **GNULLVM** 
      - **Intel** 
      - **XL** 
      - **NAG**
