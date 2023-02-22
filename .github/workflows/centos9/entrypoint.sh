@@ -11,7 +11,7 @@ yum -y install  root-*6* --exclude=*doc* --exclude=*debug* --skip-broken
 yum -y install pythia8-devel pythia8 pythia8-data 
 yum -y install  dnf-plugins-core --exclude=*uploa* --exclude=*product* --exclude=*subscr*
 dnf -y copr enable averbyts/HEPrpms 
-yum -y install cernlib*
+yum -y install cernlib* --exclude=cernlib-devel
 
 sh jadeinstall.sh
 
