@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ "$(uname)" == "Darwin" ]; then
   export PATH=/usr/local/bin:$PATH
-  export MACOSX_DEPLOYMENT_TARGET=10.12
+  export MACOSX_DEPLOYMENT_TARGET=12.0
   if [ -z ${CMAKE+x} ]; then
     CMAKE=cmake
     CTEST=ctest
