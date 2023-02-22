@@ -113,9 +113,21 @@ if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "Intel" ]; then
  export FC=ifort
 fi
 ##This is for GNU/Clang on MacOSX
-if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU" ]; then
+if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNULLVM" ]; then
  export CC=clang
  export CXX=clang++
+ which gfortran-12
+ if [ "$?" = "0" ]; then 
+   export FC=gfortran-12
+ else
+   export FC=gfortran
+ fi
+fi
+##This is for GNU on MacOSX
+if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU" ]; then
+ export CC=gcc-12
+ export CXX=g++-12
+ which gfortran-12
  if [ "$?" = "0" ]; then 
    export FC=gfortran-12
  else
