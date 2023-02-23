@@ -1,7 +1,11 @@
       SUBROUTINE KNTREL(HEARR,NUMTRK)
       IMPLICIT INTEGER*2 (H)
       COMMON/CHEADR/HEAD(17),HRUN,HEV
-      COMMON/CADMIN/IEVTP,NREC,NRWRIT,NRERR
+CAV      COMMON/ CADMIN /IEVTP,NREC,NRWRIT,NRERR
+CAV   To assure all symbols have same size
+#include "cadmin.for"
+CAV
+
       COMMON/CBKPAT/HTRK(100)
 #include "cdata.for"
 #include "ccycp.for"

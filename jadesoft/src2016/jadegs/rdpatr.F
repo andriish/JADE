@@ -28,7 +28,9 @@ C
      *                  SWDEPL,
      *                  YSUSPN,
      *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
-     *                  DRIDEV,DRICOS,DRISIN
+CAV     *                  DRIDEV,DRICOS,DRISIN
+     *                  DRIDEV,DRICOS,DRISIN,AVFOO(611)
+CAV  Size before: 34
 C
       DATA S12 / 3.4641016 /
 C

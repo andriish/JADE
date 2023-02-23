@@ -1,0 +1,142 @@
+C   19/04/79 903031500  MEMBER NAME  STHEAD   (S)           FORTRAN
+      SUBROUTINE STHEAD( LENGTH, IHEAD )
+C-----------------------------------------------------------
+C
+C  VERSION OF 18/04/79                       E.ELSEN
+C     CHANGED TO SET WORD 16 IN HEAD BANK TO 1, TO MARK THE USAGE OF
+C     NEW, CORRECTED VERSION OF TRKGAM    SEE JCN NR     .
+C                       MOD. 15.2.1986       J.OLSON
+C     CHANGED TO SET WORD 18 IN HEAD BANK TO -1, TO MARK IF TRACKING WAS
+C     DONE WITHOUT MULTIPLE SCATTERING AND ENERGY LOSS (FLAGS= ELOSS,
+C                                                              MULSC)
+C     CHANGED TO SET WORD 17 IN HEAD BANK TO 1, IF LFLAG(4)=.TRUE.
+C     THIS MARKS THE USE OF MEIER/MAGNUSSEN LEAD GLASS SIMULATION.
+C
+C     CHANGED TO SET WORD 17 IN HEAD BANK TO 2, IF LFLAG(6)=.TRUE.
+C     THIS MARKS THE USE OF THE TOKYO SHOWER PROGRAM
+C
+C     CHANGED TO SET WORD 14 IN HEAD BANK TO VERSION NR OF SF5-SF6
+C     SHOWER PROGRAM, TAKEN FROM COMMON /CVER56/
+C
+C     CHANGED TO SET WORD 15 IN HEAD BANK TO 1, IF LFLAG(8)=.TRUE.
+C     INDICATING THE USE OF GEANT SHOWER PROGRAM FOR TAGGER.
+C
+C                       MOD. 10.06.1986       J.HAGEMANN
+C                       MOD. 11.06.1986       J.OLSSON
+C                       MOD. 06.12.1986       J.OLSSON
+C                       MOD. 25.04.1987       J.OLSSON
+C                       MOD. 17.10.1988       J.OLSSON
+C                              (UPDATE THE CHANGES 18.12.87 IN JMC.S/L )
+C                  LAST MOD. 03.03.1989       J.OLSSON
+C
+C
+C     PRODUCTION DATE NOW SAVED IN HALF WORDS 93-95
+C                         18/12/87    E ELSEN
+C
+C  SET FIRST 50 WORDS OF BANK 'HEAD', CONTAINING EVENT AND
+C  RUN INFORMATION ( SEE JADE COMPUTER NOTE 23 )
+C  EXTRA ENTRY LHHEAD RETURN LENGTH ONLY.
+C----------------------------------------------------------
+C
+      IMPLICIT INTEGER*2 (H)
+      COMMON / BCS / IW(1)
+      DIMENSION RW(1), HW(1)
+      EQUIVALENCE (HW(1),RW(1),IW(1))
+      DIMENSION IHEAD(50)
+C
+C  VERSION OF SF5-6 SHOWER MONTE CARLO, TO BE STORED IN WORD 14 OF HEAD
+C
+      COMMON /CVER56/ IVER56
+C
+      LOGICAL  ELOSS, MULSC
+      COMMON / CJSWLO / ITIMOD, MULSC, ELOSS
+C
+      LOGICAL*1 LFLAG
+      COMMON/CFLAG/LFLAG(10)
+C
+      COMMON/TODAY/IDATE(3)
+      DIMENSION HPROD(6)
+C
+      COMMON / CGEO1 / BKGAUS
+      DIMENSION HELP(2)
+      EQUIVALENCE (IHELP,HELP(1))
+      DATA HRCTYP / 1 /, HROPAT / Z'61CC' /
+      DATA ICALL / 0 /
+C
+      IF( ICALL .GT. 0 ) GO TO 1
+      ICALL = 1
+      IPVECT = IBLN('VECT')
+    1 CONTINUE
+      IBEAM = 0
+      NR = 0
+      NPVECT = IW(IPVECT)
+      IF( NPVECT .LE. 0 ) GO TO 2
+      NR = IW(NPVECT+3)
+      L0 = IW(NPVECT+1)
+      IF( L0 .LE. 12 ) GO TO 2
+      IBEAM = IW(NPVECT+13)
+    2 CONTINUE
+C               CONFIGURATION DATE FROM /TODAY/, INTO HEAD DATE AREA
+C
+      IHEAD(2) = IDATE(1)
+      IHEAD(3) = IDATE(2)
+      IHEAD(4) = IDATE(3)
+C
+C                              EVENT NUMBER, WORD 11
+C                              EVENT TYPE, WORD 12
+      HELP(1) = NR
+      HELP(2) = HRCTYP
+      IHEAD(6) = IHELP
+C                              READ OUT PATTERN, WORD 13
+C         NOTE THAT HROPAT IS HEAVILY OUTDATED AND MEANINGLESS...
+C                              SF5-SF6 VERSION NUMBER, WORD 14
+      HELP(1) = HROPAT
+      HELP(2) = 0
+      IF(LFLAG(6)) HELP(2) = IVER56
+      IHEAD(7) = IHELP
+C
+C   OVERFLOW WORD, ALWAYS ZERO IN MC, WORD 15
+C     USE WORD 15 FOR TAGGER GEANT USAGE INDICATION    3.3.89  J.O.
+C   NEW TRKGAM MARKER, WORD 16   SEE JCN NR 87.     15.2.1986
+C
+      HELP(1) = 0
+      IF(LFLAG(8)) HELP(1) = 1
+      HELP(2) = 1
+      IHEAD(8) = IHELP
+C
+C   NEW MARKER FOR USE OF MEIER/MAGNUSSEN LG TRACKING     11.06.86
+C                      OR TOKYO SHOWER PROGRAM            25.4.1987
+C   WORD 17
+C
+      HELP(1) = 0
+      IF(LFLAG(4)) HELP(1) = 1
+      IF(LFLAG(6)) HELP(1) = 2
+C
+C   NEW MARKER FOR MULTIPLE SCATTERING AND ENERGY LOSS    10.06.86
+C   WORD 18
+C
+647   HELP(2) = 0
+      IF( .NOT.ELOSS .AND. .NOT.MULSC ) HELP(2) = -1
+      IHEAD(9) = IHELP
+C                            BEAM ENERGY, WORD 29
+C                            MAGNETIC FIELD, WORD 30
+      HELP(1) = IBEAM
+      HELP(2) = BKGAUS * 1000.
+      IHEAD(15) = IHELP
+C
+C                                           STORE PRODUCTION DATE
+      CALL DATEMC( HPROD )
+      HELP(1) = HPROD(4)
+      HELP(2) = HPROD(5)
+      IHEAD(47) = IHELP
+      IHELP = IHEAD(48)
+      HELP(1) = HPROD(6)
+      IHEAD(48) = IHELP
+C
+C
+C-----------------------------------------------------------
+      ENTRY LHHEAD( LENGTH )
+C-----------------------------------------------------------
+      LENGTH = 100
+      RETURN
+      END

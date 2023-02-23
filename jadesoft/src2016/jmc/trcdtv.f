@@ -66,7 +66,8 @@ C
      *                  SWDEPL,
      *                  YSUSPN,
      *                  TIMDEL(6), ZMAX, ZOFFS, ZRESOL, ZNORM,ZAL,ZSCAL,
-     *                  DRIDEV,DRICOS,DRISIN
+     *                  DRIDEV,DRICOS,DRISIN,BVFOO(611)           
+CAV     *                  DRIDEV,DRICOS,DRISIN
 C
       COMMON / CJIONI / POTBEA, ZAROBE,
      *                  POTTRI, ZAROTR,
@@ -93,14 +94,20 @@ C
      *                  XRJETC,
      *                  RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
      *                  BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     *                  XHOL1,XHOL2,YHOL1,YHOL2
-
+     *                  XHOL1,XHOL2,YHOL1,YHOL2,BLFI
+CAV     *                  XHOL1,XHOL2,YHOL1,YHOL2
+CAV  Same size required
       COMMON / CJTRLE / TOTLEN, STPLEN, TRCOFS
       COMMON / CJSWLO / ITIMOD, MULSC, ELOSS
 C
+CAV      COMMON / CJVTXC / RVEC, ANG1, ANG2, DISTPW, FIRSTP, DISTW1,
+CAV     *                  ANGL, COSLOR, SINLOR,
+CAV     *                  ZRESV, ZMAXV, ZOFFV, ZNAMP, ZALV, TIMEV
+CAV  Assure same size
       COMMON / CJVTXC / RVEC, ANG1, ANG2, DISTPW, FIRSTP, DISTW1,
      *                  ANGL, COSLOR, SINLOR,
      *                  ZRESV, ZMAXV, ZOFFV, ZNAMP, ZALV, TIMEV
+     + , AVFOO(96)
       COMMON / CIJONV / POTVXC, ZAROVC,
      *                  POTVGA, ZAROVG
       COMMON / CGEOV  / RPIPV, DRPIPV, XRLPIV, RVXC, DRVXC, XRLVXC,

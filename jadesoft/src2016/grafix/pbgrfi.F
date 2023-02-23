@@ -19,7 +19,7 @@ C
       COMMON /CWORK1/ R,FI,XA,COSFI,X1,Y1,YA,SINFI,X2,Y2,ZET,X3,Y3,X4,Y400001900
      +               ,IMW(200)
 C
-      COMMON /CJTRIG/ PI,TWOPI
+      COMMON /CJTRIG/ PI,TWOPI,PIHALF,PI3HALF
 C
 C-----------------  C O D E  -------------------------------------------
 C

@@ -33,10 +33,10 @@ C-----2710 WORDS UP TO HERE---------------------------------------------
      *0,20),DEVA(20),IPERM(10),MWORK(20),ITHISA(10),IJA(10),EM1(20,20),E
      *MG(20,20),ELIPSE(700),INCHAM(10),INREG(10),IAPPRO(30),HBADCH(1000)
      *,CTDASH(10),CLDASH(10),VTDASH(10),VLDASH(10),IHTREG(20),LAYRAB,IEF
+C-----5421 WORDS UP TO HERE---------------------------------------------
      *FRG(10),DUMW10(69),AAA(10),BBB(10),CCC(10),DDD(10),DOVER,GMOVER,AB
      *OVER,RDOVER,DEOVER,DUMW11(55),X7(50),IHTP(30),IOVLAP(20,20)
 C-----6080 WORDS UP TO HERE---------------------------------------------
-C MOVED FROM LINE 36-----5421 WORDS UP TO HERE---------------------------------------------
       DIMENSION ILIPSE(700)
       INTEGER*2 HLIPSE(1400)
       DIMENSION IHTPER(10),IHTEMP(10),IPTEMP(10)

@@ -30,7 +30,9 @@ C       IF EQ ALREADY INITIALIZED FOR THE RUN.
 C
       BLOCK DATA
       COMMON /CTLIM/ ISECLF
-      COMMON/CBSTR/MODE
+CAV      COMMON/CBSTR/MODE
+CAV   Assuring the same size
+      COMMON/CBSTR/MODE,MAXRL,SAFEOF
 #include "ciouni.for"
       DATA ISECLF/2/
       DATA MODE/2/

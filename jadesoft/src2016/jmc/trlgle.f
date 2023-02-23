@@ -24,7 +24,9 @@ C
      *             XRJETC,
      *             RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
      *             BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     *             XHOL1,XHOL2,YHOL1,YHOL2
+     *             XHOL1,XHOL2,YHOL1,YHOL2,BLFI
+CAV     *             XHOL1,XHOL2,YHOL1,YHOL2
+CAV  Same size required
       COMMON/CLGHIT/AMPLG(3000)
       DIMENSION DC(3)
       LOGICAL * 1 LFLAG

@@ -105,6 +105,8 @@ C
      +                  PEDES, TZERO(3),
      +                  DRIROT(96,2), SINDRI(96,2), COSDRI(96,2),
      +                  DRIVEL(96,2)
+CAV
+     + ,AVFOO(31) 
 C
 C                                          VERTEX CHAMBER
 C
@@ -118,7 +120,10 @@ C
       DIMENSION ABINV(11)
       EQUIVALENCE ( ABINV(1), DTRSVV )
 C
-      COMMON / CADMIN / IEVTP,DUMM(6),ISMEAR,IJETCI,NFLAGS(10)
+CAV      COMMON / CADMIN / IEVTP,DUMM(6),ISMEAR,IJETCI,NFLAGS(10)
+CAV   To assure all symbols have same size
+#include "cadmin.for"
+CAV
 C
       COMMON / CRDSTA / NDEAD, NCDEAD, HITD(10), HCELLD(10), IPHALG
 C

@@ -116,6 +116,7 @@ C
       RETURN
       END
 ************************************************
+#ifdef REQUIRES_AND
       REAL FUNCTION AND(IW,JW)
       IMPLICIT NONE
 *
@@ -136,6 +137,8 @@ C
 C
       RETURN
       END
+#endif
+#ifdef REQUIRES_OR
 ************************************************
       REAL FUNCTION OR(IW,JW)
       IMPLICIT NONE
@@ -155,6 +158,7 @@ C
 C
       RETURN
       END
+#endif      
 ************************************************
       INTEGER*2 FUNCTION HLAND(I,J)
       IMPLICIT NONE
@@ -273,6 +277,7 @@ C
 C
       RETURN
       END
+C#ifdef REQUIRES_ISHFTL
 ************************************************
       INTEGER FUNCTION ISHFTL(IW,K)
       IMPLICIT NONE
@@ -298,6 +303,8 @@ C      K=MOD(K,64)
 C
       RETURN
       END
+C#endif
+#ifdef REQUIRES_ISHFTR
 ************************************************
       INTEGER FUNCTION ISHFTR(IW,K)
       IMPLICIT NONE
@@ -323,6 +330,7 @@ C      K=MOD(K,64)
 C
       RETURN
       END
+#endif
 ************************************************
       SUBROUTINE MVB(A,NA,B,NB,M)
       IMPLICIT NONE
@@ -424,7 +432,7 @@ C
          STOP
       ENDIF
 C
-      KA = NA	
+      KA = NA
       DO 100 KB = NB+1,NB+M
          KA = KA + 1 
          JAW = (KA-1)/4 + 1

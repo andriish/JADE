@@ -37,7 +37,7 @@ C
 #include "mvertex0.for"
 #include "mvertex1.for"
 C
-      COMMON / CJTRIG / PI,TWOPI
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
       COMMON / CHEADR / HEAD(108)
       COMMON/CWORK2/HWORK(40),JNDEX,NTR,LTR,ITR,IPO,ICNT,NBK,NCLST,NWPCL
      +             ,DUMMM(16),NTRRES,IW61

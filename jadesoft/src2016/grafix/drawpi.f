@@ -1,7 +1,7 @@
 C   15/02/84 605031743  MEMBER NAME  DRAWPI   (S)           FORTRAN
 C
 C-----------------------------------------------------------------------
-      SUBROUTINE DRAWPI_OLD( XPOS , YPOS )
+      SUBROUTINE DRAWPI( XPOS , YPOS )
 C-----------------------------------------------------------------------
 C
 C   AUTHOR:   C. BOWDERY   15/02/84 :  DRAW PI SYMBOL

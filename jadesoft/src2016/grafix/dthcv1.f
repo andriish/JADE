@@ -28,7 +28,7 @@ C
 C                       LOWER CASE 'e', BLANK, BLANK, K, LOWER CASE p
 C
       CHARACTER PLABEL*2
-      DATA PLABEL / 'e ', '  ', '  '  , 'K ', 'p ', '  '  /
+      DATA PLABEL / 'e ', '  ', '  ', 'K ', 'p ', '  '/
 C
 C------------------  C O D E  ------------------------------------------
 C

@@ -1,6 +1,7 @@
 #
 # Process: ee -> Z -> tau+ tau- @ 34.6GeV
 #
+Main:numberOfEvents = 200
 
 WeakSingleBoson:ffbar2gmZ = on
 
@@ -18,7 +19,7 @@ PartonLevel:FSR = off
 
 # Set Z properties
 23:onMode = off
-23:onIfAny = 15
+23:onIfAny = 1,2,3,4,5
 
 # Leave tau undecayed (tau decays are very slow in Pythia 8.185)
 15:mayDecay  = on

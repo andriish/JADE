@@ -23,8 +23,12 @@ C
 C
 #include "cjdrch.for"
 C
-      COMMON/CADMIN/ IEVTP,NRREAD,NRWRIT,LBREAD(4)
-      LOGICAL*1 LBREAD
+CAV      COMMON/ CADMIN / IEVTP,NRREAD,NRWRIT,LBREAD(4)
+CAV   To assure all symbols have same size
+#include "cadmin.for"
+CAV
+
+CAV      LOGICAL*1 LBREAD
 C
 #include "cbin.for"
 C---

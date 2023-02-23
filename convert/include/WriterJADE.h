@@ -68,7 +68,27 @@ public:
     bool failed();
     void write_event(const GenEvent &evt);
     void close();
+private:
+    std::map<int,std::string> fPDGID_to_JADE_name;
+    void fill_names() {
+      /* Expand me! */
+      fPDGID_to_JADE_name[ -11]="E-              ";
+      fPDGID_to_JADE_name[  11]="E+              ";
+      fPDGID_to_JADE_name[  22]="GAMMA           ";
+      fPDGID_to_JADE_name[  21]="g               ";
+      fPDGID_to_JADE_name[ -13]="MU-             ";
+      fPDGID_to_JADE_name[  13]="MU+             ";
+      fPDGID_to_JADE_name[ -15]="TAU-            ";
+      fPDGID_to_JADE_name[  15]="TAU+            ";
+      fPDGID_to_JADE_name[ 211]="PI+             ";
+      fPDGID_to_JADE_name[-211]="PI-             ";
+      fPDGID_to_JADE_name[ 111]="PI0             ";
 
+      
+
+
+    } 
+ std::vector< ConstGenParticlePtr>  GetPartons(const GenEvent &evt);
 };
 }
 #endif

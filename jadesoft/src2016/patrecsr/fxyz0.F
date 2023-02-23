@@ -31,7 +31,11 @@ C
 C-----------------------------------------------------------------------
 C
 C
-      COMMON/CADMIN/IEVTP,NREC,NRWRIT,NRERR
+CAV      COMMON/ CADMIN /IEVTP,NREC,NRWRIT,NRERR
+CAV   To assure all symbols have same size
+#include "cadmin.for"
+CAV
+
       COMMON/CHEADR/HEAD(20)
       COMMON/CALIBR/JPOINT(100),
      1HMUCAL(8370),HLGMAI(5760),HTAGSY(384),HJPULS(9216),
@@ -45,6 +49,8 @@ C
      * ZSCAL,DRIDEV,DRICOS,DRISIN,PEDES,TZERO(3),
      * DRIROT(96,2),SINDRI(96,2),COSDRI(96,2),DRIVEL(96,2),T0FIX(3),
      * CAB(8)
+CAV
+     + ,AVFOO(20)      
 C  TEMPORARY INSTALLMENT OF ARRAY T0FIX, WILL BE PERMANENT LATER
 #include "cdsmax.for"
 #include "cpatlm.for"

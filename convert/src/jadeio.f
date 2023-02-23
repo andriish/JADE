@@ -3,19 +3,19 @@
       character*80 FILEN
       INTEGER U, I, L, IERR, O
       write(*,*)U, FILEN(1:L)
-      if (O.eQ. 0) then
+      if (O .EQ. 0) then
       OPEN (U, FILE=FILEN(1:L), STATUS='REPLACE',form='unformatted')
       end if
-      if (O.eQ. 1) then
+      if (O .EQ. 1) then
       OPEN (U, FILE=FILEN(1:L), STATUS='REPLACE',form='formatted')
       end if
 
-      if (O.eQ. 2) then
+      if (O .EQ. 2) then
       OPEN (U, FILE=FILEN(1:L), CONVERT='LITTLE_ENDIAN', 
      +STATUS='REPLACE',form='unformatted')
       end if
 
-      if (O.eQ. 3) then
+      if (O .EQ. 3) then
       OPEN (U, FILE=FILEN(1:L), CONVERT='BIG_ENDIAN', 
      +STATUS='REPLACE',form='unformatted')
       end if
@@ -33,9 +33,10 @@
       SUBROUTINE JFWRITE(U, M)
       IMPLICIT NONE      
       integer U,M, IERR
-      
+      WRITE(*,*)"M=",M,"U=",U
       if ( M. EQ. 0 ) then 
       CALL WRCPRD(U,IERR)
+      CALL PRCPRD(6,IERR)
       end if 
       if ( M. EQ. 1 ) then 
       CALL PRCPRD(U,IERR)
@@ -68,13 +69,10 @@
      *        PSTRT(3,300)
       COMMON/CHCPRD/ CP(500),CF(300)
 
-      
-      
-      
       A=LOC(CP)
       B=LOC(CF)
       LOCCPROD=LOC(NEV)
-      
+
       end
 
 
@@ -135,6 +133,8 @@ Code:
  10   WRITE(LUN,'(A,2I7)') ' WRCPRD: WRITE ERROR, NEV, IOSTAT=',NEV,IERR
       RETURN
       END
+
+
 C
 CDECK  ID>, PRCPRD. 
       SUBROUTINE PRCPRD(LUN,IERR)
@@ -157,6 +157,7 @@ C  (see JADE Computer Note 69)
       COMMON/CHCPRD/ CP(500),CF(300)
       INTEGER I1,I2,I3,I4,I5,N,N2
       INTEGER LUN,IERR
+      CHARACTER*8 CHAU
 Code:
 
 
@@ -181,12 +182,12 @@ Code:
 
 C      write(*,*) LUN,' np=', NP, ' Nev= ', NEV, BEAM
 C
-      do I1=1,500
+C      do I1=1,500
 C      CP(I1)=' kalet '
-      end do
-      do I1=1,300
-      CF(I1)='jjjj ' 
-      end do
+C      end do
+C      do I1=1,300
+C      CF(I1)='jjjj ' 
+C      end do
 C
       WRITE(LUN,'(/A,I8)') ' PRCPRD: Content of common /CPROD/ in event'
      *     ,NEV
@@ -487,5 +488,3 @@ CDECK  ID>, WRCPRD.
  990  CONTINUE
 
       END
-
-

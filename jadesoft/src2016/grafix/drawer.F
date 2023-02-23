@@ -21,7 +21,7 @@ C
 #include "cgraph.for"
 C
       COMMON / CGAMOD / MODEGA, GAHEX
-      COMMON / CJTRIG / PI,TWOPI
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
 C
       DATA HYES / 2HY  /
       DATA HBLK / 2H   /

@@ -15730,6 +15730,8 @@ C
       BUFOR(INDEX)=MOD((SER*QQCONS(IGN)),DARG)
    29 SER=SER+1.
    30 SSER(IGN)=SER
+CAV To make compiller happy
+      RNF1BK=0
       RETURN
 C
 C

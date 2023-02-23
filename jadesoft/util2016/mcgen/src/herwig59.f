@@ -30,8 +30,8 @@ CDECK  ID>, H59DRIV.
 *. 19-Feb-96  Add dummy call to HWUFNE            S. Bentvelsen 
 *. 14-Apr-96  ICALL=0: Parton shower not saved    S. Bentvelsen  
 *. 17-Apr-96  Major change of routine:
-*.	       get rid of the JETSET ISR
-*.	       no hadron decay: will be done in JETSET
+*.            get rid of the JETSET ISR
+*.            no hadron decay: will be done in JETSET
 *. 23-Aug-96  Add IHRM13 for gluon mass           R.Hemingway
 *. 26-Aug-96  Move HWUINC,HWEINC after ISR set    R.Hemingway
 *. 29-Aug-96  Correct some particle labels        R.Hemingway
@@ -479,7 +479,9 @@ CDECK  ID>, HWSTBL.
       IF (HSTABL) THEN
          DO 120  IP = 1,NESTBL
              CALL LUNAME (IDSTBL (IP),CHAU)
-             CNAMS (IP) = CHAU
+CAV             CNAMS (IP) = CHAU
+CAV It is hard to say if the CNAMS should be CHARACTER*16
+             CNAMS (IP) = CHAU(1:8)
              MDCY (LUCOMP (IDSTBL (IP)),1) = 0
  120     CONTINUE
          WRITE (6,FMT='(80(''+'')/'' HWSTBL:''/'' The following '',
@@ -517,7 +519,9 @@ CDECK  ID>, HWCONV.
       COMMON/HEPEVT/NEVHEP,NHEP,ISTHEP(NMXHEP),IDHEP(NMXHEP),                   
      &JMOHEP(2,NMXHEP),JDAHEP(2,NMXHEP),PHEP(5,NMXHEP),VHEP(4,NMXHEP)           
       INTEGER  NEVHEP,NHEP,ISTHEP,IDHEP,JMOHEP,JDAHEP                           
-      REAL  PHEP,VHEP                                                           
+CAV   This was suspicious!
+CAV      REAL  PHEP,VHEP                                                           
+      DOUBLE PRECISION  PHEP,VHEP                                                           
       SAVE /HEPEVT/                                                             
       INTEGER  NLUPDM,NPLBUF                                                    
       PARAMETER  (NLUPDM=4000,NPLBUF=5)                                         
@@ -1077,7 +1081,7 @@ C.................................................
          IF (PRT) WRITE (6,FMT='('' IP,IID,PMAS (LUCOMP'',
      +      '' (IID),1),RMASS(IP),DELTA ='',2I8,3F12.5)')
      +      IP,IID,PMAS (LUCOMP (IID),1),RMASS (IP),
-     +	    (PMAS(LUCOMP(IID),1)-RMASS(IP))
+     +    (PMAS(LUCOMP(IID),1)-RMASS(IP))
          IF(PMAS(LUCOMP (IID),1).NE.0.) THEN
            RMASS (IP) = PMAS (LUCOMP (IID),1)
          ENDIF

@@ -15,6 +15,8 @@ C*       COMMON CWORK1 MUST BE FILLED PROPERLY                  *
 C*                                                              *
 C*       ENTRY: VTXS                                            *
 C****************************************************************
+CAV   CVTX2 common block comes with INTEGER*2 (H) elsewhere
+      IMPLICIT INTEGER*2 (H)
 C PMF 03.11.98 
       LOGICAL TBIT
 C%MACRO MVERTEX1

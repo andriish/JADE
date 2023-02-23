@@ -1,0 +1,62 @@
+LIST
+
+C Initialise random number generator
+ZSTART ON
+
+C Input file with the JADE events in BOS format
+SVBOS 'superv2.bos'
+
+C Max number of events to read from this file
+C EVTREAD=0: process until end of input file
+EVTREAD  0
+
+C Initial event skip
+EVTSKP   0
+
+C Output file with compressed JADE BOS events in ZE4V format
+ZE4V  'ze4v2.ze4v'
+
+C Max number of compressed BOS events to write out into this file 
+C  ZE4VOUT=0: write out until end of reading input file
+ZE4VOUT 0
+
+C Max number of ZE4V-bank prints
+ZE4VPRT 30
+
+C Max number of full JADE BOS events to write out
+C  EVTOUT=0: write out until end of reading input file
+EVTOUT  0
+
+C TP/PK-flag (1=TP/2=PK)
+TPPK 2
+
+C Selection (0:enab/1:disab)
+SELECT 1
+C Muon quality selection
+MSELCT 0
+C Elektron selection
+ESELCT 0
+
+C Output file with the JADE events in BOS format
+ZBOS
+'ze4v2.bos'
+
+C Print out of event BOS banks in readable ASCII format
+C (memory consuming, only for tests!!!)
+BANKS   ON
+ZBANK  'ze4v2.bnk'
+
+C If BANKS=ON, specify the BOS banks whose contents should
+C be printed out in readable form
+CONT 'HEAD ALGN LGCL PATR ZVTX'
+
+C Name of the calibration file
+AUPDAT0
+'./aupdat1.b'
+BUPDAT0
+'./bupdat0.b'
+BUPDAT1
+'./bupdat1.b'
+
+C
+STOP

@@ -4,7 +4,7 @@
 #include "cdata.for"
 #include "cheadr.for"
       COMMON /CWORK/ ILGE(84),HCLWR(96)
-      DATA MKTREV /Z673/, MKT2AC /Z73/, MKEHIG /Z600/,MKUNTR /ZF88C/
+      DATA MKTREV /Z'673'/,MKT2AC/Z'73'/,MKEHIG/Z'600'/,MKUNTR/Z'F88C'/
       INTEGER MKTRBT( 7) /1,2,4,8,16,32,64/
       INTEGER NCTOF ( 7) /2,3,3,3,3,3,3/
       INTEGER ICTOF ( 7) /0,1,2,3,4,5,6/

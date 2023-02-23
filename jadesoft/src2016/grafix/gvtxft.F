@@ -40,7 +40,7 @@ C
 #include "cgeo1.for"
 #include "cadmin.for"
 C
-      COMMON / CJTRIG / PI,TWOPI
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
       COMMON / CVCEX  / LVTXC
       COMMON / CGVCDO / FLVCDO(20)
       COMMON / CHEADR / HEAD(108)

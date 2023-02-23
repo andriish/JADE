@@ -1,0 +1,32 @@
+C   10/05/79 C9051001   MEMBER NAME  BONDEC   (LGSOURCE)    FORTRAN
+      SUBROUTINE BONDEC(X,Y,IN)
+C
+C     S.YAMADA /Y.YANAGISAWA  10-05-79 14:35
+C     LAST MODIFICATION  10-05-79  14:40  BY S.YAMADA
+C
+C---- CHECK IF THE POINT(X,Y) IS IN THE END CAP
+C     INPUT:
+C           (X,Y) IN IN RAD.LENGTH
+C     OUTPUT:
+C            IN=0 IF OUTSIDE, =1 IF INSIDE.
+C
+      DIMENSION YENDR(7),XENDR(14)
+      DATA YENDR/ 6.253, 12.51, 14.83, 25.01, 31.26, 37.52, 39.84/
+      DATA XENDR/ 14.83, 12.51, 6.253,    0.,    0.,    0.,   0.,
+     &            39.84, 37.52, 31.26, 31.26, 25.01, 12.51, 6.253/
+C
+      IN = 1
+C
+      XX = X
+      IF(XX.LT.0.) XX = -XX
+      YY = Y
+      IF(YY.LT.0.) YY = -YY
+        DO 30 I=1,7
+        IF(YY.LE.YENDR(I))GO TO 31
+   30   CONTINUE
+      IN = 0
+      RETURN
+C
+   31 IF((XX.GT.XENDR(I+7)) .OR. (XX.LT.XENDR(I))) IN = 0
+      RETURN
+      END

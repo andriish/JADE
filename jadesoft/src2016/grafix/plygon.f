@@ -15,7 +15,7 @@ C     IF L < 0    , ROTATION BY 2*PI/(2*NN)
 C
 C-----------------------------------------------------------------------
 C
-      COMMON / CJTRIG / PI,TWOPI
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
 C
 C
 C------------------  C O D E  ------------------------------------------

@@ -22,7 +22,11 @@ C
       COMMON /CHEADR/ HEAD(108)
       EQUIVALENCE (HRUN,HEAD(18)),(HEVENT,HEAD(19))
 #include "cdata.for"
-      COMMON /CADMIN/ IEVTP,NRREAD,NRWRIT,NRERR
+CAV      COMMON / CADMIN / IEVTP,NRREAD,NRWRIT,NRERR
+CAV   To assure all symbols have same size
+#include "cadmin.for"
+CAV
+
       COMMON /CJTRIG/ PI,TWOPI
       COMMON /CIGG/ IPRN,IGG(80),JIGG(80)
       DIMENSION HELP(2),HELP2(2),THHELP(3)

@@ -71,30 +71,33 @@ C
 C
 C     **** SET UP SCALES ETC ****
 C
+
 CAV
-      character*8 MY
-      character*1 AMYSTR(16)
-      character*8 MYL
-      REAL  ta
-      integer le
+CAV      character*8 MY
+CAV         character*1 AMYSTR(50)
+CAV      character*8 MYL
+CAV      REAL  ta
+CAV         integer le
 C
-      AMYSTR='                '
-      
-      le=0
-      DO 500 I=1,KCNT
-      HJ=HBUF(I)
-      DO 100 K=1,40
-      IF(HLETS(K).EQ.HBUF(I)) then 
-      le=le+1
-      call UHTOC(HLETS(K),1,AMYSTR(le),1)
-      end if
- 100  continue
- 500  continue
+CAV      AMYSTR='                '
+CAV      
+CAV         le=0
+CAV         write(*,*)HBUF,KCNT,THETA
+CAV         DO 500 I=1,KCNT
+CAV         HJ=HBUF(I)
+CAV         DO 100 K=1,40
+CAV         IF(HLETS(K).EQ.HJ) then 
+CAV         le=le+1
+CAV         call UHTOC(HLETS(K),1,AMYSTR(le),1)
+CAV         end if  
+CAV  100  continue
+CAV  500  continue
+CAV         write(*,*)"->",AMYSTR(1:KCNT),"<-",KCNT
 CAV
-      ta=tan(THETA)
-      call  igset('TANG',THETA)
+CAV      ta=tan(THETA)
+CAV      call  igset('TANG',THETA)
 CAV#ifdef JEXTERNISCERNLIB      
-      call ITX(XPOS,YPOS,AMYSTR)
+CAV      call ITX(XPOS,YPOS,AMYSTR)
 CAV#endif
 CAV#ifdef JEXTERNISPICO      
 C      call ITXN(XPOS,YPOS,AMYSTR(1:le),le)
@@ -104,7 +107,7 @@ CAV#endif
 CAV      
       KLM=0
       SCAL=AGT/7.0
-      SCAL=AGT/2.0 !AV
+CAV      SCAL=AGT/2.0 !AV
       IXB=0
       C=COS(THETA)
       S=SIN(THETA)
@@ -118,7 +121,7 @@ C
    10 CONTINUE
       K=40
    12 IFLAG=0
-        call UHTOC(HLETS(K),1,MY,1)
+CAV        call UHTOC(HLETS(K),1,MY,1)
       IP=HPTRS(K)
 C
 C     **** GET COORDINATES ****
@@ -135,6 +138,7 @@ C
       X=XPOS+SCAL*XX
       Y=YPOS+SCAL*YY
       IF(HND2.EQ.0) GOTO 20
+CAV      write(*,*)"->",X,Y,K,HLETS(K),"<-"
       CALL DRAWA(X,Y)
       GOTO 30
 C

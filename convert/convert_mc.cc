@@ -252,10 +252,10 @@ int main(int argc, char** argv)
         }
         break;
     case dump:
-        output_file=NULL;
+        output_file=nullptr;
         break;
     case none:
-        output_file=NULL;
+        output_file=nullptr;
         ignore_writer=true;
         break;
     default:

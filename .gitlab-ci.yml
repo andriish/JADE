@@ -1,0 +1,256 @@
+---
+stages:
+  - test
+variables:
+  FREL: 0
+########################################################################
+.Fedora: &Fedora
+  only:
+    variables:
+      - $CI_SERVER_HOST=="gitlab.cern.ch"
+  stage: test
+########################################################################
+.CentOS: &CentOS
+  only:
+    variables:
+      - $CI_SERVER_HOST=="gitlab.cern.ch"
+  stage: test
+########################################################################
+.Ubuntu: &Ubuntu
+  only:
+    variables:
+      - $CI_SERVER_HOST=="gitlab.cern.ch"
+  stage: test
+########################################################################
+.fullbuild-generic: &fullbuild-generic
+  - bash CI/build.sh imake tarball GNU nodebug
+########################################################################
+.fullbuild-rpm: &fullbuild-rpm
+  - sh CI/build.sh imake rpm  GNU nodebug
+########################################################################
+.fullbuild-cmake: &fullbuild-cmake
+  - sed -i 's/CMAKE_VERBOSE_MAKEFILE ON/CMAKE_VERBOSE_MAKEFILE OFF/g' CMakeLists.txt
+  - sh CI/build.sh  cmake tarball GNU nodebug
+########################################################################
+.fullbuild-cmake-rpm: &fullbuild-cmake-rpm
+  - sed -i 's/CMAKE_VERBOSE_MAKEFILE ON/CMAKE_VERBOSE_MAKEFILE OFF/g' CMakeLists.txt
+  - sh CI/build.sh  cmake rpm GNU nodebug
+########################################################################
+.heprpmsinstall8: &heprpmsinstall8
+  - uname -a
+  - cat /etc/issue
+  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL dnf*plu* --exclude=*uploa* --exclude=*product* --exclude=*subscr*  > rpm.log || (cat rpm.log && exit 1)
+    #for xbae
+  - dnf -y copr enable averbyts/HEPrpms epel-8-x86_64
+  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL libnsl  libnsl2-devel  > rpm.log || (cat rpm.log && exit 1)
+########################################################################
+.heprpmsinstall9: &heprpmsinstall9
+  - uname -a
+  - cat /etc/issue
+  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL dnf*plu*  > rpm.log || (cat rpm.log && exit 1)
+    #for xbae
+  - dnf -y copr enable averbyts/HEPrpms epel-9-x86_64
+  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL libnsl  libnsl2-devel > rpm.log || (cat rpm.log && exit 1)
+########################################################################
+.commoninstall: &commoninstall
+  - uname -a
+  - cat /etc/issue
+  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL dnf*plu*  --exclude=*uploa* --exclude=*product* --exclude=*subscr* > rpm.log || (cat rpm.log && exit 1)
+  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL openssh-server make binutils sed gawk grep rpm rpmdevtools imake git gcc gcc-c++ gcc-gfortran gzip > rpm.log || (cat rpm.log && exit 1)
+  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL lapack-devel blas-devel imake  libX11 libX11-devel libXaw-devel libXau-devel  xbae xbae-devel tcsh   > rpm.log || (cat rpm.log && exit 1)
+  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL lapack blas desktop-file-utils which wget bc automake  glibc-devel > rpm.log || (cat rpm.log && exit 1)
+  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL "libnsl*"  > rpm.log || (cat rpm.log && exit 1)
+  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL environment-modules  || true
+########################################################################
+.gccinstall: &gccinstall
+  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL  gcc gcc-c++ gcc-gfortran  > rpm.log || (cat rpm.log && exit 1)
+########################################################################
+.cmakeinstall: &cmakeinstall
+  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL  epel-release || true
+  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL  cmake3 || true
+  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL  cmake python3 openssl-libs openssl-devel chrpath  > rpm.log || (cat rpm.log && exit 1)
+########################################################################
+.devel32: &devel32
+    - yum -y install xbae-devel.i686 || true
+    - rpm -e openssl-devel --nodeps|| true
+    - yum -y install lapack.i686 blas.i686 > rpm.log || (cat rpm.log && exit 1)
+    - yum -y install lapack-devel.i686 blas-devel.i686 libgcc.i686  > rpm.log || (cat rpm.log && exit 1)
+    - yum -y install libnsl.i686 libXpm-devel.i686 libnsl2-devel.i686 libXfont2-devel.i686 libX11-devel.i686 libXft-devel.i686 motif-devel.i686 libXaw-devel.i686 libXau-devel.i686 glibc-devel.i686 libgfortran.i686 freetype-devel.i686   openssl-devel.i686 > rpm.log || (cat rpm.log && exit 1)
+#With appropriate privileges in docker, the RPM installation is
+#    - wget https://dl.fedoraproject.org/pub/epel/7/SRPMS/Packages/x/xbae-4.60.4-17.el7.src.rpm || true
+#    - CC='gcc -m32' CXX='g++ -m32' setarch i686 --32bit  rpmbuild --target=i686  --rebuild xbae-4.60.4-17.el7.src.rpm || true
+#    - rpm -e xbae xbae-devel || true
+#    - rpm -Uvh ~/rpmbuild/RPMS/i686/xbae*i686.rpm || true
+#Otherwise:
+#    - wget http://downloads.sourceforge.net/xbae/xbae-4.60.4.tar.gz 
+#    - ls -alh
+    - cp CI/xbae-4.60.4.tar.gz ./
+    - tar -zxf  xbae-4.60.4.tar.gz 
+    - cd  xbae-4.60.4 
+    - CC='gcc -m32' CXX='g++ -m32' ./configure --prefix=/usr --libdir=/usr/lib --disable-static --disable-dependency-tracking ||true
+    - make -j 2 || true
+    - make -j 2 install || true
+    - cd ..
+
+
+########################################################################
+Fedora35-gcc-imake-rpm-64bit:
+  image: fedora:35
+  variables:
+    FREL: 35
+  extends: .Fedora
+  before_script:
+    - *commoninstall
+    - *gccinstall
+    - *cmakeinstall
+  script:
+    - sh CI/build.sh imake rpm GNU nodebug
+  cache:
+    key: yum-cache-$FREL
+    paths:
+      - yum-cache-$FREL/
+  artifacts:
+    paths:
+      - rpmbuild/RPMS
+#######################################################################
+Centos8-gcc-imake-gen-32bit:
+  image: gitlab-registry.cern.ch/linuxsupport/rpmci/builder-cs8
+  variables:
+    FREL: C8
+  extends: .CentOS
+  before_script:
+    - *heprpmsinstall8
+    - *commoninstall
+    - *gccinstall
+    - *devel32
+  script:
+    - sh CI/build.sh imake tarball32bit GNU nodebug
+  allow_failure: false
+  artifacts:
+    paths:
+      - cern
+#######################################################################
+Centos9-gcc-imake-gen-64bit:
+  image: gitlab-registry.cern.ch/linuxsupport/rpmci/builder-cs9
+  variables:
+    FREL: C9
+  extends: .CentOS
+  before_script:
+    - *heprpmsinstall9
+    - *commoninstall
+    - *gccinstall
+  script:
+    - sh CI/build.sh imake tarball GNU nodebug
+  allow_failure: false
+  artifacts:
+    paths:
+      - cern
+#######################################################################
+Centos9-gcc-cmake-gen-32bit:
+  image: gitlab-registry.cern.ch/linuxsupport/rpmci/builder-cs9
+  variables:
+    FREL: C9
+  extends: .CentOS
+  before_script:
+    - *heprpmsinstall9
+    - *commoninstall
+    - *gccinstall
+    - *devel32
+  script:
+    - sh CI/build.sh cmake tarball32bit GNU nodebug
+  allow_failure:  false
+  artifacts:
+    paths:
+      - cern
+########################################################################
+Fedora35-gcc-cmake-gen-64bit:
+  image: fedora:35
+  variables:
+    FREL: 35
+  extends: .Fedora
+  before_script:
+    - *commoninstall
+    - *gccinstall
+    - *cmakeinstall
+  script:
+    - sh CI/build.sh cmake tarball GNU nodebug
+  cache:
+    key: yum-cache-$FREL
+    paths:
+      - yum-cache-$FREL/
+########################################################################
+Fedora35-gcc-cmake-rpm-64bit:
+  image: fedora:35
+  variables:
+    FREL: 35
+  extends: .Fedora
+  before_script:
+    - *commoninstall
+    - *gccinstall
+    - *cmakeinstall
+  script:
+    - sh CI/build.sh cmake rpm GNU nodebug
+  cache:
+    key: yum-cache-$FREL
+    paths:
+      - yum-cache-$FREL/
+  artifacts:
+    paths:
+      - rpmbuildcmake/RPMS
+#######################################################################
+Centos8-gcc-cmake-gen-64bit:
+  image: gitlab-registry.cern.ch/linuxsupport/rpmci/builder-cs8
+  variables:
+    FREL: C8
+  extends: .CentOS
+  before_script:
+    - *heprpmsinstall8
+    - *commoninstall
+    - *gccinstall
+    - *cmakeinstall
+  script:
+    - sh CI/build.sh cmake tarball GNU nodebug
+#######################################################################
+Centos8-gcc-cmake-rpm-64bit:
+  image: gitlab-registry.cern.ch/linuxsupport/rpmci/builder-cs8
+  variables:
+    FREL: C8
+  extends: .CentOS
+  before_script:
+    - *heprpmsinstall8
+    - *commoninstall
+    - *gccinstall
+    - *cmakeinstall
+  script:
+    - sh CI/build.sh cmake rpm GNU nodebug
+#######################################################################
+Centos7-gcc-imake-gen-64bit:
+  image: gitlab-registry.cern.ch/linuxsupport/rpmci/builder-cc7
+  variables:
+    FREL: CC7
+  extends: .CentOS
+  before_script:
+    - *commoninstall
+    - *gccinstall
+  script:
+    - sh CI/build.sh imake tarball GNU nodebug
+  allow_failure: false
+  artifacts:
+    paths:
+      - cern
+#######################################################################
+Centos7-gcc-imake-gen-32bit:
+  image: gitlab-registry.cern.ch/linuxsupport/rpmci/builder-cc7
+  variables:
+    FREL: C7
+  extends: .CentOS
+  before_script:
+    - *commoninstall
+    - *gccinstall
+    - *devel32
+  script:
+    - sh CI/build.sh imake tarball32bit GNU nodebug
+  allow_failure: false
+  artifacts:
+    paths:
+      - cern

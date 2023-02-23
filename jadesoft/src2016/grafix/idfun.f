@@ -87,8 +87,7 @@ C
      $'F22VIC  ','RAINER  ','F22WAL  ','IAN     ','F11PFE  ','MATHIAS ',
      $'F22HAU  ','VOLKE   ','F22PEP  ','PETER   ','F11OES  ','THORSTEN',
      $'F11PIT  ','DANIEL  ','F22WEG  ','ARMIN   ','F22SCH  ','FLORIAN '/
-C 
-      
+C
       character*2 HBLANK
       DATA BLANK /'        '/,HBLANK/'  '/
 C

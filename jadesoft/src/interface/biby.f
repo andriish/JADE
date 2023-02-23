@@ -273,7 +273,7 @@ C
       RETURN
       END
 ************************************************
-      INTEGER FUNCTION ISHFTL(IW,K)
+      INTEGER FUNCTION ISHFTLXXX(IW,K)
       IMPLICIT NONE
 *
 *  Usage: IX = ISHFTL(IW,K)
@@ -298,7 +298,7 @@ C
       RETURN
       END
 ************************************************
-      INTEGER FUNCTION ISHFTR(IW,K)
+      INTEGER FUNCTION ISHFTRXXX(IW,K)
       IMPLICIT NONE
 *
 *  Usage: IX = ISHFTR(IW,K)

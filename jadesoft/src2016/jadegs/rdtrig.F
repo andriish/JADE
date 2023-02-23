@@ -68,6 +68,8 @@ C
      +                  PEDES, TZERO(3),
      +                  DRIROT(96,2), SINDRI(96,2), COSDRI(96,2),
      +                  DRIVEL(96,2)
+CAV
+     + ,AVFOO(31)     
 C
 C
 #include "cadmin.for"
@@ -238,7 +240,6 @@ C
 C                                           ****************************
 C                                           *  1981 TRIGGER CONDITIONS *
 C                                           ****************************
-        
  1300 IF( IYEAR .GT. 81 ) GO TO 1400
 C
 C  MIN. TRACK NUMBER IN TOF + TOTAL LG ENERGY TRIGGER

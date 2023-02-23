@@ -18,7 +18,7 @@ C-----------------------------------------------------------------------
 C
       IMPLICIT INTEGER*2 (H)
 C
-      COMMON / CJTRIG / PI,TWOPI
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
       COMMON / CHEADR / HEAD(108)
 C
 #include "cgeo1.for"

@@ -31,11 +31,15 @@ C
 C
       COMMON / CGEO1  / GEO(66)
       COMMON / CJDRCH / DRCH(34)
+CAV      COMMON / CJDRCH / DRCH(34)
+      COMMON / CJDRCH / DRCH(34),AVFOO(611)
 C
 C                                          VERTEX CHAMBER
       COMMON / CVCEX  / LVTXC
       COMMON / CGEOV  / GEOV(13)
-      COMMON / CJVTXC / VXCC(15)
+CAV      COMMON / CJVTXC / VXCC(15)
+CAV Assure same size 
+      COMMON / CJVTXC / VXCC(15), AVFOO(96)
       COMMON / CBINV /  DTRSVV, ZRSVV, EFFVV(2), DOUBVV(3), IRNHVV,
      +                  SMPRMV(3)
 C

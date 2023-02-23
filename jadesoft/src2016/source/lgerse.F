@@ -17,7 +17,9 @@ C
       IMPLICIT INTEGER *2 (H)
 #include "clgwork1.for"
 #include "clgkalb.for"
-      COMMON /CLGBCH/ HABAD(2,3)
+CAV      COMMON /CLGBCH/ HABAD(2,3)
+CAV   Make symbols of same size  
+      COMMON /CLGBCH/ HABAD(2,3),HBBAD(2,2,2)
       COMMON /CTEMPB/ HCHB(500)
       INTEGER*2 HCR(3)
 C

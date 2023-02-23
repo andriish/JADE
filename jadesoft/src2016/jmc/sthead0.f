@@ -14,7 +14,9 @@ C
       EQUIVALENCE (HW(1),RW(1),IW(1))
       DIMENSION IHEAD(50)
 C
-      COMMON / CGEO1 / BKGAUS
+CAV      COMMON / CGEO1 / BKGAUS
+CAV   Add foo symbols to make compiller happy
+      COMMON / CGEO1 / BKGAUS, AVFOO(65)
       DIMENSION HELP(2)
       EQUIVALENCE (IHELP,HELP(1))
       DATA HRCTYP / 1 /, HROPAT / Z61CC /

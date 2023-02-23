@@ -7,8 +7,12 @@ C
       IMPLICIT INTEGER*2 (H)
 C
 #include "cheadr.for"
-      LOGICAL*1 LBREAD
-      COMMON /CADMIN/ IEVTP,NRREAD,NRWRIT,NRERR,LBREAD(4),IFLG
+CAV      LOGICAL*1 LBREAD
+CAV      COMMON / CADMIN / IEVTP,NRREAD,NRWRIT,NRERR,LBREAD(4),IFLG
+CAV   To assure all symbols have same size
+#include "cadmin.for"
+CAV
+
       EQUIVALENCE (HHEADR(18),HRUN) , (HHEADR(19),HEV)
 C
   100 FORMAT(' *** ERROR TRAP ***')

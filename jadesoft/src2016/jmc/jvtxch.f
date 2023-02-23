@@ -22,9 +22,14 @@ C
 C
       COMMON / CJVCEL / MCELL, MWIRE
 C
+CAV      COMMON / CJVTXC / RVEC, ANG1, ANG2, DISTPW, FIRSTP, DISTW1,
+CAV     +                  ANGL, COSLOR, SINLOR,
+CAV     +                  ZRESV, ZMAXV, ZOFFV, ZNAMP, ZALV, TIMEV
+CAV  Assure same size
       COMMON / CJVTXC / RVEC, ANG1, ANG2, DISTPW, FIRSTP, DISTW1,
      +                  ANGL, COSLOR, SINLOR,
      +                  ZRESV, ZMAXV, ZOFFV, ZNAMP, ZALV, TIMEV
+     + , AVFOO(96)
       COMMON / CIJONV / POTVXC, ZAROVC,
      +                  POTVGA, ZAROVG
       COMMON / CGEOV  / RPIPV, DRPIPV, XRLPIV, RVXC, DRVXC, XRLVXC,

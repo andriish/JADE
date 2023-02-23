@@ -43,7 +43,7 @@ C
 #include "cgeo3.for"
 #include "cwktag.for"
 C
-      COMMON / CJTRIG / PI,TWOPI
+      COMMON / CJTRIG / PI,TWOPI,PIHALF,PI3HALF
       COMMON / CHEADR / HEAD(108)
       COMMON / CWORK1 / R,FI,R1,FI1,X1,Y1,R2,FI2,X2,Y2,ZET,X3,Y3,X4,Y4,
      +                  HMW(132)

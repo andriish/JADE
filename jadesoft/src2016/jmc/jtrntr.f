@@ -30,7 +30,9 @@ C
      *             XRJETC,
      *             RLG,ZLGPL,ZLGMI,OUTR2,CTLIMP,CTLIMM,DELFI,
      *             BLXY,BLZ,BLDEP,ZENDPL,ZENDMI,DEPEND,
-     *             XHOL1,XHOL2,YHOL1,YHOL2
+     *             XHOL1,XHOL2,YHOL1,YHOL2,BLFI
+CAV     *             XHOL1,XHOL2,YHOL1,YHOL2
+CAV  Same size required
       DIMENSION PV(10),R(3),R0(3)
       DATA PMIN / 0.005 /, DKL/ 15540.0 /
 C

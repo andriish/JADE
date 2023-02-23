@@ -83,17 +83,17 @@ C
       IHEAD = IBLN('HEAD')
       IMTCO = IBLN('MTCO')
       IMUCO = IBLN('MUCO')
-            
 C                                            CADMIN FLAG
-CAV  THIS LINE IS NNEDED FOR THE REAL DATA BUR IS NOT IMPLEMENTED?    LBREAD(3) = .TRUE. 
-
+CAV  THIS LINE IS NEEDED FOR THE REAL DATA BUT IS NOT IMPLEMENTED?    
+      LBREAD(3) = .TRUE. 
+CAV
       FLG100 = .FALSE.
       IF( IFLG .EQ. 100 ) FLG100 = .TRUE.
       IF( FLG100 ) GO TO 1
 C
 C                            MAIN READ STATEMENT.
 C
- 1000 CALL BSLT      
+ 1000 CALL BSLT
       CALL BDLG
       NRECS = NRECS + 1
       CALL BREAD(NUNIT,*60,*70)
@@ -103,7 +103,6 @@ C
 C                            DO WE HAVE A 'HEAD' BANK I.E. AN EVENT ?
 C                            IF NOT THEN SKIP NEXT SECTION
 C
-
    1  IF( IDATA(IHEAD) .LE. 0 ) GO TO 10
         IHD  = IDATA( IHEAD )
         IRUN = HDATA( IHD*2 + 10 )
@@ -218,7 +217,6 @@ C
   11    LBREAD(1) = .TRUE.
         LBREAD(2) = .FALSE.
         LBREAD(3) = .FALSE.
-
 C
 C                            PROCESS 'MTCO' BANK.
 C

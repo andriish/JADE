@@ -10,8 +10,13 @@ C
 C
 #include "cdata.for"
       COMMON /CHEADR/ HEAD(108)
-      COMMON /CADMIN/ IEVTP,NRREAD,NRWRIT,NRERR
-      DIMENSION IGG(30),JIGG(10)
+CAV      COMMON / CADMIN / IEVTP,NRREAD,NRWRIT,NRERR
+CAV   To assure all symbols have same size
+#include "cadmin.for"
+CAV
+
+      DIMENSION IGG(30),JIGG(12)
+CAV      DIMENSION IGG(30),JIGG(10)
 C---
 C        INDEX=0   INITIAL CALL, BEFORE FIRST EVENT READ.
 C              1   CALLED AT THE BEGINNING OF EACH NEW RUN.

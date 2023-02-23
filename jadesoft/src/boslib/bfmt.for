@@ -1,11 +1,11 @@
 C   07/06/96 606071812  MEMBER NAME  BFMT     (S4)          FORTRAN
       SUBROUTINE BFMT(X,N,XF,EF)
-      LOGICAL*1CH(12)/'0','1','2','3','4','5','6','7','8','9','.','-'/
-      REAL*8 XF(N),FXF,SXF,BLANK/'        '/,NULL/'00000000'/
+      CHARACTER*1CH(12)/1H0,1H1,1H2,1H3,1H4,1H5,1H6,1H7,1H8,1H9,1H.,1H-/
+      REAL*8 XF(N),FXF,SXF,BLANK/8H        /,NULL/8H00000000/
       LOGICAL*1 FXL(8),SXL(8)
       EQUIVALENCE (FXL(1),FXF),(SXL(1),SXF)
       REAL*4 X(N)
-      INTEGER BLK/'    '/
+      INTEGER BLK/4H    /
       INTEGER EF
 
       IP=0

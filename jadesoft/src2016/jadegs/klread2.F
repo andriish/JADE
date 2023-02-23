@@ -94,9 +94,9 @@ C
       DIMENSION NAME(15),LENG(15),MAXL(15)
 C
       DATA NBANKS /13/
-      DATA NAME/'MUCA','LGMA','TAGS','JTPL','JTAB',
-     1          'TOFC','LGST','DEDX','SPTG','RVTX',
-     2          'ZCAL','TAGF','IDJS','    ','    '/
+      DATA NAME/4HMUCA,4HLGMA,4HTAGS,4HJTPL,4HJTAB,
+     1          4HTOFC,4HLGST,4HDEDX,4HSPTG,4HRVTX,
+     2          4HZCAL,4HTAGF,4HIDJS,4H    ,4H    /
       DATA LENG /2,2,2,2,4,  4,2,2,2,4,  4,2,4,0,0 /
       DATA MAXL/  4185,  2880,   192, 4608,  1344,
      1             546,   500,  1841,  193,     6,

@@ -719,7 +719,8 @@ C
 *
       INTEGER ICHAR
       CHARACTER*1 CHARA
-      CHARACTER CHARM(8)
+      CHARACTER*1 CHARA2
+      CHARACTER CHARM(1)
 Code:
 C NB.: alignment of character in HIGZ = middle/middle
 C      beam position before writing = bottom/left
@@ -727,6 +728,9 @@ C      beam position after writing = bottom/right
 
 C- Convert to ASCII
       CALL ITOCH(ICHAR,CHARA)
+C      CALL UHTOC(ICHAR,CHARA2)
+CAV      write(*,*)"->ITOCH",ICHAR,CHARA,"<-"
+C      write(*,*)"->UHOC",ICHAR,CHARA2,"<-"
 
 C - Force correct alignment at the top of the screen
       IF( YPOS0.GT.YTMAX-YCHAR ) YPOS0=YTMAX-YCHAR 
@@ -747,12 +751,12 @@ C - Print out character using 'screen window' coordinates
       CALL ISELNT(NTS)
       CHARm(1)=CHARA
 
-#if defined(JEXTERNISCERNLIB)      
-      CALL ITX(XPOS0+XCHAR/2.,YPOS0+YCHAR/2.,CHARA)
-#endif
-#if defined(JEXTERNISPICO)      
+C#if defined(JEXTERNISCERNLIB)      
+      CALL ITX(XPOS0+XCHAR/2.,YPOS0+YCHAR/2.,CHARM)
+C#endif
+C#if defined(JEXTERNISPICO)      
 C      CALL ITXN(XPOS0+XCHAR/2.,YPOS0+YCHAR/2.,CHARM,1)
-#endif
+C#endif
 
 C - Update beam position
       XPOS0=XPOS0+XCHAR
@@ -803,6 +807,7 @@ CAV
 C - use CERNLIB routine BLOW (M426) to unpack full words into bytes
       NBYTES=MIN(NBYTES,136)
       CALL BLOW(SOURCE,TARGET,NBYTES,8)
+
 C - test the byteorder of the present machine and
 C     print out each ASCII character coded in the INTEGER*4
 C     array TARGET
@@ -1148,9 +1153,9 @@ C      to ensure equidistant character output !!!
 C            CALL ITX(XS+W,YS+H,CSTR(I)) ! normal text
 C            CALL ITXN(XS+W,YS+H,CSTR(I),1) ! normal text
 
-#if defined(JEXTERNISCERNLIB)      
+C#if defined(JEXTERNISCERNLIB)      
       CALL ITX(XS+W,YS+H,CSTR(I)) ! normal text
-#endif
+C#endif
 #if defined(JEXTERNISPICO)      
 C      CALL ITXN(XS+W,YS+H,CSTR(I),1) ! normal text
 #endif
@@ -1753,13 +1758,6 @@ C
 C
       RETURN
       END
-
-
-
-
-
-
-
 
 
 * The End

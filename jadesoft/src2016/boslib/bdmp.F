@@ -12,11 +12,11 @@ C     BOS SUBPROGRAM =1.16=
       CALL UWP(IUND,1,10)
 C     PRINTOUT OF TRACEBACK
 *xxx 09.01.98      M=ITRACE(TEXTB,10)
-       	TEXTB(1) = 4HPEDR
-       	TEXTB(2) = 4HANTO
-       	TEXTB(3) = 4HMOVI
-       	TEXTB(4) = 4HFERN
-     	M=20
+      TEXTB(1) = 4HPEDR
+      TEXTB(2) = 4HANTO
+      TEXTB(3) = 4HMOVI
+      TEXTB(4) = 4HFERN
+      M=20
 *xxx
       WRITE(6,105) (TEXTB(J),J=1,M)
 C

@@ -29,7 +29,7 @@ C
 C        F OR D = 0.0, IF NO DATA CARDS OR LESS THAN 3 POINTS
 C
       IJ=1
-   10 CALL BLOC(INDP,'+FUN',M,&20)
+   10 CALL BLOC(INDP,'+FUN',M,*20)
       CALL CUBFUN(X,H(1),H(2),RW(INDP+1))
       BFUN=H(IJ)
       GOTO 100
@@ -38,10 +38,10 @@ C
       IJ=2
       GOTO 10
 C
-   20 CALL BLOC(INDF,'$FUN',M,&99)
+   20 CALL BLOC(INDF,'$FUN',M,*99)
    30 ND=IW(INDF)/2
       IF(ND.LT.3) GOTO 99
-      CALL BCRE(INDP,'+FUN',M,5*ND,&99,IER)
+      CALL BCRE(INDP,'+FUN',M,5*ND,*99,IER)
       INDH=INDP
       DO 40 I=1,ND
       RW(INDH+1)=RW(INDF+I+I)

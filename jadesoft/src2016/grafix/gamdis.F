@@ -20,7 +20,7 @@ C
 C
       COMMON / CGRAP2 / BCMD,DSPDTM(30)
       COMMON / CHEADR / HEAD(108)
-      COMMON /CJTRIG/ PI,TWOPI
+      COMMON /CJTRIG/ PI,TWOPI,PIHALF,PI3HALF
 C
 #include "cgraph.for"
 #include "cdata.for"
