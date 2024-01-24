@@ -5,7 +5,22 @@ include("GNUInstallDirs")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 ########################################################################
-set(JADE_FORCE_32 OFF)
+#set(JADE_FORCE_32 OFF)
+if (JADE_FORCE_32)
+  list(PREPEND CMAKE_SYSTEM_LIBRARY_PATH "/usr/lib")
+  message(STATUS "${CMAKE_SYSTEM_LIBRARY_PATH}")
+  set( FIND_LIBRARY_USE_LIB32_PATHS  ON)
+  set( FIND_LIBRARY_USE_LIB64_PATHS  OFF)
+  set(CMAKE_SIZEOF_VOID_P 4)
+  set (CMAKE_EXE_LINKER_FLAGS  "-m32 ${CMAKE_EXE_LINKER_FLAGS}")
+  #To prevent eraling the suffix in case it is 32
+  if (LIB_SUFFIX)
+    if ( ${LIB_SUFFIX}  STREQUAL "64" )
+      set (LIB_SUFFIX  )
+    endif()
+  endif()
+endif()
+
 include(JADE_compiler_setup)
 ########################################################################
 macro( jade_fortran_test testname gnuenv  intelenv nagenv)
