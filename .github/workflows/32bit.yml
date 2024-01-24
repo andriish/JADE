@@ -20,8 +20,8 @@ jobs:
             yum -y  install  dnf-plugins-core 
             yum -y  install            bc make ninja-build cmake binutils git wget diffutils file sed gawk grep which  
             yum -y  install            gcc-gfortran gcc-c++ openssl-devel openssl 
-            yum -y  install            openssl-devel.i686 openssl.i686 glibc-devel.i686 libquadmath.i686 libgfortran.i686 libnsl2-devel.i686
-            yum -y  install            openssl-devel.i686 openssl.i686 blas.i686 blas-devel.i686
+            yum -y  install            openssl-devel.i686  glibc-devel.i686 libquadmath.i686 libgfortran.i686 libnsl2-devel.i686
+            yum -y  install            openssl-devel.i686  blas.i686 blas-devel.i686
             yum -y  install            libXau.i686 libX11.i686  lapack-devel.i686 lapack.i686 
             yum -y  install            xbae.i686 xbae-devel.i686 libXaw-devel.i686 libXaw.i686 
             yum -y  install            motif-devel.i686 motif.i686 
