@@ -14,13 +14,21 @@ option(JADE_FPE                        "Trap floating point exceptions" OFF)
 option(JADE_USE_CERNLIB                "Attempt to use CERNLIB instead of buildin code (picocernlib)"     ON)
 option(JADE_FORCE_32                   "Force build of 32 bit libraries." OFF)
 if (JADE_FORCE_32)
+
   list(PREPEND CMAKE_SYSTEM_LIBRARY_PATH "/usr/lib")
   message(STATUS "${CMAKE_SYSTEM_LIBRARY_PATH}")
   set( FIND_LIBRARY_USE_LIB32_PATHS  ON)
   set( FIND_LIBRARY_USE_LIB64_PATHS  OFF)
   set(CMAKE_SIZEOF_VOID_P 4)
-  set(LIB_SUFFIX )
+  set (CMAKE_EXE_LINKER_FLAGS  "-m32 ${CMAKE_EXE_LINKER_FLAGS}")
+  #To prevent eraling the suffix in case it is 32
+  if (LIB_SUFFIX)
+    if ( ${LIB_SUFFIX}  STREQUAL "64" )
+      set (LIB_SUFFIX  )
+    endif()
+  endif()
 endif()
+
 ########################################################################
 include(JADE_compiler_setup)
 set(CMAKE_POSITION_INDEPENDENT_CODE FALSE)
@@ -36,23 +44,16 @@ message(STATUS "JADE: X11_xcb_LIB=${X11_xcb_LIB}")
 message(STATUS "JADE: X11_Xau_LIB=${X11_Xau_LIB}")
 message(STATUS "JADE: X11_Xdmcp_LIB=${X11_Xdmcp_LIB}")
 ########################################################################
-if (JADE_USE_CERNLIB)
-  find_package(CERNLIB  REQUIRED)
-  message(STATUS "JADE: CERNLIB_KERNLIB_STATIC=${CERNLIB_KERNLIB_STATIC}")
-  message(STATUS "JADE: CERNLIB_PACKLIB_STATIC=${CERNLIB_PACKLIB_STATIC}")
-  message(STATUS "JADE: CERNLIB_MATHLIB_STATIC=${CERNLIB_MATHLIB_STATIC}")
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+find_package(CERNLIB  REQUIRED)
+message(STATUS "JADE: CERNLIB_KERNLIB_STATIC=${CERNLIB_KERNLIB_STATIC}")
+message(STATUS "JADE: CERNLIB_PACKLIB_STATIC=${CERNLIB_PACKLIB_STATIC}")
+message(STATUS "JADE: CERNLIB_MATHLIB_STATIC=${CERNLIB_MATHLIB_STATIC}")
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(Motif_DIR /usr/local/Cellar/openmotif/2.3.8_1)
-  endif()
-  find_package(Motif REQUIRED)
-  message(STATUS "JADE: MOTIF_LIBRARIES=${MOTIF_LIBRARIES}")
-  set(PICOCERNLIB "${MOTIF_LIBRARIES};${CERNLIB_PACKLIB_STATIC};${CERNLIB_KERNLIB_STATIC};${CERNLIB_MATHLIB_STATIC};${CERNLIB_GRAFLIB_STATIC};${CERNLIB_GRAFX11_STATIC}")
-else()
-  include(JADE_ROOT_setup)
-  find_library(LIBPICOKERNLIB REQUIRED NAMES libpicokernlib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
-  find_library(LIBPICOGRAFLIB REQUIRED NAMES libpicograflib.a  PATHS ${PICOCERNLIBPREFIX}/lib ${PICOCERNLIBPREFIX}/lib64 NO_DEFAULT_PATH)
-  set(PICOCERNLIB ${LIBPICOKERNLIB} ${LIBPICOGRAFLIB} ${ROOT_LIBRARIES})
 endif()
+find_package(Motif REQUIRED)
+message(STATUS "JADE: MOTIF_LIBRARIES=${MOTIF_LIBRARIES}")
+set(PICOCERNLIB "${MOTIF_LIBRARIES};${CERNLIB_PACKLIB_STATIC};${CERNLIB_KERNLIB_STATIC};${CERNLIB_MATHLIB_STATIC};${CERNLIB_GRAFLIB_STATIC};${CERNLIB_GRAFX11_STATIC}")
 set(JEXTERN_LIBRARIES  ${PICOCERNLIB} )
 message(STATUS "JADE: JEXTERN_LIBRARIES    : ${JEXTERN_LIBRARIES}")
 ########################################################################
@@ -362,12 +363,6 @@ ADD_LIBRARY(${ZLIB} STATIC ${ZLIB_src})
 #JADEZ
 set(JADEZ_src ${SRCJADEZ}/gphmain.F  ${SRCJADEZ}/xuser.F)
 add_executable(${JADEZEXE} ${JADEZ_src})
-#JADEZROOT
-if (NOT JADE_USE_CERNLIB)
-  set(JADEZROOT_src ${SRCJADEZ}/gphmain2.F  ${SRCJADEZ}/xuser.F  ${SRCJADEZ}/gphmain.cxx)
-  add_executable(${JADEZROOTEXE} ${JADEZROOT_src})
-  target_include_directories(${JADEZROOTEXE} PUBLIC ${ROOT_INCLUDE_DIRS})
-endif()
 #MCJADE
 set(MCJADE_src ${SRCMCJADE}/mcjade.f ${SRCMCJADE}/mcmain.f  ${SRCMCJADE}/mcrand.f  ${SRCMCJADE}/mcuser.f ${SRCSUPERV}/showb.f)
 add_executable(${MCJADEEXE} ${MCJADE_src})
@@ -381,10 +376,7 @@ add_executable(${ZE4VEXE} ${ZE4V_src})
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   target_link_libraries(${JADEZEXE}   ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} ${X11_LIBRARIES} ${X11_xcb_LIB} ${X11_Xau_LIB} ${X11_Xdmcp_LIB})
-  if (NOT JADE_USE_CERNLIB)
-  target_link_libraries(${JADEZROOTEXE}   ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
-    ${JEXTERN_LIBRARIES} ${X11_LIBRARIES} )
-  endif()
+
   target_link_libraries(${MCJADEEXE}    ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR} 
     ${JEXTERN_LIBRARIES}  )
 
@@ -396,10 +388,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 else()
   target_link_libraries(${JADEZEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
     ${JEXTERN_LIBRARIES} ${X11_LIBRARIES} -Wl,--end-group)
-  if (NOT JADE_USE_CERNLIB)
-  target_link_libraries(${JADEZROOTEXE}  -Wl,--start-group ${GRAFIX} ${BOSLIB} ${TOFLIB} ${TAGG} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} ${WERTEX} ${PATRECSR}
-    ${JEXTERN_LIBRARIES} ${X11_LIBRARIES} -Wl,--end-group)
-  endif()
   target_link_libraries(${MCJADEEXE} -Wl,--start-group ${JMC} ${BOSLIB} ${JADEGS} ${INTERFACE} ${JADEMUS} ${SOURCE} 
     ${WERTEX} ${PATRECSR} 
     ${JEXTERN_LIBRARIES}  -Wl,--end-group)
@@ -535,9 +523,6 @@ endif()
 ########################################################################
 
 INSTALL(TARGETS ${MCJADEEXE} ${JADEZEXE} ${SUPERVEXE}  ${ZE4VEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-if (NOT JADE_USE_CERNLIB)
-  INSTALL(TARGETS ${JADEZROOTEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-endif()
 INSTALL( TARGETS ${BOSLIB} 
          ${GRAFIX} 
          ${INTERFACE} 
@@ -590,6 +575,3 @@ jt63
 jt74
 lepton
 py57 DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-
-
