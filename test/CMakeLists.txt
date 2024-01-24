@@ -41,7 +41,7 @@ message(STATUS "JADE test: JADESOFT_CAL_DIR=${JADESOFT_CAL_DIR}")
 find_package(HepMC3  REQUIRED)
 message(STATUS "JADE test: HEPMC3_LIBRARIES=${HEPMC3_LIBRARIES}")
 ########################################################################
-find_package(Pythia8 8.220)
+find_package(Pythia8 8.300)
 message(STATUS "JADE test: PYTHIA8_LIBRARIES=${PYTHIA8_LIBRARIES} PYTHIA8_VERSION=${PYTHIA8_VERSION}") 
 ########################################################################
 ENABLE_TESTING()
