@@ -552,7 +552,7 @@ configure_package_config_file(../cmake/Templates/JADESOFTConfig.cmake.in ${CMAKE
                               CMAKE_INSTALL_LIBDIR 
                               CMAKE_INSTALL_DATADIR)
             
-write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/cmake/JADESOFTConfig-version.cmake COMPATIBILITY SameMajorVersion VERSION ${PROJECT_VERSION})
+write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/cmake/JADESOFTConfig-version.cmake VERSION ${PROJECT_VERSION} COMPATIBILITY AnyNewerVersion )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/JADESOFTConfig.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/cmake/JADESOFTConfig-version.cmake

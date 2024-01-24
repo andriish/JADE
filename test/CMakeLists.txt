@@ -20,7 +20,7 @@ macro( jade_fortran_test testname gnuenv  intelenv nagenv)
   endif()
 endmacro( jade_fortran_test )
 ########################################################################
-find_package(JADESOFT REQUIRED)
+find_package(JADESOFT 2000.0.0 REQUIRED)
 message(STATUS "JADE test: JADESOFT_CAL_DIR=${JADESOFT_CAL_DIR}")
 ########################################################################
 find_package(HepMC3  REQUIRED)
