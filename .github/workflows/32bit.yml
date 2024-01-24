@@ -25,7 +25,9 @@ jobs:
             yum -y  install            libXau.i686 libX11.i686  lapack-devel.i686 lapack.i686 
             yum -y  install            xbae.i686 xbae-devel.i686 libXaw-devel.i686 libXaw.i686 
             yum -y  install            motif-devel.i686 motif.i686 
-            yum -y  install            pythia8-devel.i686 pythia8.i686  root-core.i686 root.i686 HepMC3-devel.i686 HepMC3.i686  
+            yum -y  install            pythia8-devel.i686 pythia8.i686  
+            dnf -y install --skip-broken HepMC3*.i686  --exclude=HepMC3*.x86_64 --exclude=root*.x86_64
+            dnf -y install --skip-broken root-*.i686   --exclude=root*.x86_64
             dnf -y install  'dnf-command(config-manager)'     
             dnf copr enable -y averbyts/HEPrpms
             dnf -y install --skip-broken cernlib*.i686
