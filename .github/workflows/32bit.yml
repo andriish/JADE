@@ -7,11 +7,11 @@ on:
     - cron:  "0 0 1/600 * *"
 
 jobs:
-  Fedora39x86_64_GNU:
-    name: Fedora39x86_64_GNU
+  fedora39x86_64i686_gnu:
+    name: fedora39x86_64i686_gnu
     runs-on: ubuntu-latest
     container:
-        image: ghcr.io/andriish/jade:latest
+        image: ghcr.io/andriish/fedora39x86_64i686_gnu:latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -32,7 +32,7 @@ jobs:
       id: changed-docker-files
       uses: tj-actions/changed-files@v38
       with:
-          files: Dockerfile
+          files: Dockerfile_fedora39x86_64i686_gnu
 
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v2
@@ -43,12 +43,15 @@ jobs:
     - name: Build the JADE Docker image on the change of Dockerfile
       if: steps.changed-docker-files.outputs.any_changed == 'true' 
       run: |
-         docker build . --tag ghcr.io/andriish/jade:latest
-         docker run ghcr.io/andriish/jade:latest
-         docker push ghcr.io/andriish/jade
+         docker build . -f Dockerfile_fedora39x86_64i686_gnu --tag ghcr.io/andriish/fedora39x86_64i686_gnu:latest
+         docker run ghcr.io/andriish/fedora39x86_64i686_gnu:latest
+         docker push ghcr.io/andriish/fedora39x86_64i686_gnu:latest
     - name: Build the JADE Docker image on schedule
       if: ${{ github.event_name == 'schedule' }}
       run: |
-         docker build . --tag ghcr.io/andriish/jade:latest
-         docker run ghcr.io/andriish/jade:latest
-         docker push ghcr.io/andriish/jade
+         docker build . -f Dockerfile_fedora39x86_64i686_gnu  --tag ghcr.io/andriish/fedora39x86_64i686_gnu:latest
+         docker run ghcr.io/andriish/fedora39x86_64i686_gnu:latest
+         docker push ghcr.io/andriish/fedora39x86_64i686_gnu:latest
+
+
+
