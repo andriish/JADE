@@ -6,6 +6,7 @@ on:
 #Every 50 days at midnight 
     - cron:  "0 0 1/600 * *"
 
+
 jobs:
   fedora39x86_64i686_gnu:
     name: fedora39x86_64i686_gnu
