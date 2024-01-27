@@ -5,11 +5,11 @@ This is a repository with software of JADE experiment.
 
  To build the JADE software, the following dependencies should be satisfied:
  
- - C++ compiler with C++11 standard support (tested with ``g++``, ``clang++``, ``icpc`` and ``xlC``)
- - Fortran compiler (tested with ``gfortran``, ``ifort`` and ``xlf``)
+ - C++ compiler with C++11 standard support
+ - Fortran compiler
  - ``ROOT6`` (>6.10 is recommended)
  - ``cmake`` (>3.4.5 or higher version required by the used ROOT version)
- - ``HepMC3`` with development packages (>3.1.0)
+ - ``HepMC3`` with development packages (>3.2.0)
  - Lapack with development packages 
  - X11 or XQuartz libraries with development packages
  - bash-compatible shell
@@ -18,21 +18,17 @@ This is a repository with software of JADE experiment.
  
  The following platforms/toolchains are supported:
  
-  - CentOS 7 x86_64 with **GNU** gcc compilers
-  - CentOS 8 x86_64 with **GNU** gcc compilers
+  - CentOS 7 x86_64 with **GNU** compilers
+  - CentOS 9 x86_64 with **GNU** compilers
   - MacOSX 10.15+ x86_64 with **GNU** gfortran and XCode
   
   In addition, it should be possible to compile the software  with the following platforms/toolchains:
   
-  - CentOS 7 x86_64 with **Intel** compilers
-  - CentOS 8 x86_64 with **Intel** compilers
+  - CentOS 7,8,9 x86_64 with **Intel** compilers
   - MacOSX 10.15+ x86_64 with **Intel** compilers
-  - CentOS 7 x86_64 with **PGI** compilers
-  - CentOS 8 x86_64 with **PGI** compilers
-  - CentOS 7 ppc64le/i686/arm64 with **GNU** gcc compilers
-  - CentOS 8 ppc64le/i686/arm64 with **GNU** gcc compilers
-  - CentOS 7 x86_64 with **SUN** compilers
-  - CentOS 8 x86_64 with **SUN** compilers
+  - CentOS 7,8,9 x86_64 with **NVidia** compilers
+  - CentOS 7,8,9 ppc64le/i686/arm64 with **GNU** compilers
+  - CentOS 7,8,9 x86_64 with **SUN** compilers
 
   However, some of the combinations above will produce excutables that would crash in runtime or
   would not be able to read the input files in different endianess.

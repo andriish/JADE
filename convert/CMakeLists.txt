@@ -4,6 +4,24 @@ set(VERSION 2022.08)
 include("GNUInstallDirs")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
+
+
+if (JADE_FORCE_32)
+
+  list(PREPEND CMAKE_SYSTEM_LIBRARY_PATH "/usr/lib")
+  message(STATUS "${CMAKE_SYSTEM_LIBRARY_PATH}")
+  set( FIND_LIBRARY_USE_LIB32_PATHS  ON)
+  set( FIND_LIBRARY_USE_LIB64_PATHS  OFF)
+  set(CMAKE_SIZEOF_VOID_P 4)
+  set (CMAKE_EXE_LINKER_FLAGS  "-m32 ${CMAKE_EXE_LINKER_FLAGS}")
+  #To prevent eraling the suffix in case it is 32
+  if (LIB_SUFFIX)
+    if ( ${LIB_SUFFIX}  STREQUAL "64" )
+      set (LIB_SUFFIX  )
+    endif()
+  endif()
+endif()
+
 ########################################################################
 include(JADE_compiler_setup)
 set(CMAKE_POSITION_INDEPENDENT_CODE FALSE)
@@ -16,7 +34,7 @@ message(STATUS "JADE convert: LAPACK_LIBRARIES=${LAPACK_LIBRARIES}")
 find_package(HepMC3  REQUIRED) #The later is to test JADE with NAG on Cobra
 message(STATUS "JADE convert: HEPMC3_LIBRARIES=${HEPMC3_LIBRARIES}")
 ########################################################################
-include(JADE_ROOT_setup)
+#include(JADE_ROOT_setup)
 ########################################################################
 find_program(GENGETOPT gengetopt)
 if( NOT GENGETOPT )
@@ -34,7 +52,7 @@ else()
 endif()
 add_custom_target( cmdline DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.c ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.h)
 ########################################################################
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}  ${ROOT_INCLUDE_DIRS}  ${HEPMC3_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}    ${HEPMC3_INCLUDE_DIRS})
 add_executable(convert_hepmc_to_jade
         ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.c
         ${CMAKE_CURRENT_SOURCE_DIR}/convert_mc.cc
@@ -42,9 +60,9 @@ add_executable(convert_hepmc_to_jade
         ${CMAKE_CURRENT_SOURCE_DIR}/src/jadeio.f
         )
 target_compile_definitions( convert_hepmc_to_jade PUBLIC HEPMCCONVERT_EXTENSION_JADE  )
-target_include_directories(convert_hepmc_to_jade PUBLIC ${HEPMC3_INCLUDE_DIR})
-target_link_libraries(convert_hepmc_to_jade ${HEPMC3_LIBRARIES} ${HEPMC3_SEARCH_LIB}  ${LAPACK_LIBRARIES})
-set_target_properties(convert_hepmc_to_jade PROPERTIES LINKER_LANGUAGE Fortran) 
+target_link_libraries(convert_hepmc_to_jade HepMC3::HepMC3  ${LAPACK_LIBRARIES})
+target_compile_features(convert_hepmc_to_jade PUBLIC cxx_std_11)
+set_target_properties(convert_hepmc_to_jade PROPERTIES LINKER_LANGUAGE Fortran POSITION_INDEPENDENT_CODE TRUE) 
 add_dependencies( convert_hepmc_to_jade cmdline  )
 ########################################################################
 # installs 

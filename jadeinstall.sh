@@ -162,14 +162,15 @@ jade_arguments=" -DJADESOFT_DIR=$TOP$toolchain$bits/share/JADESOFT/cmake "
 mkdir -p build/jadesoft
 cd build/jadesoft
 $CMAKE -H../../jadesoft -B.  $arguments $bit_arguments
-$CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
+$CMAKE --build  . -j 2 --verbose || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install .
 cd ../..
+echo "==============="
 ########################################################################
 mkdir -p build/convert
 cd build/convert
 $CMAKE -H../../convert -B. $arguments $bit_arguments   -DCMAKE_CXX_COMPILER=$CXX 
-$CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
+$CMAKE --build  . -j 2 --verbose || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install .
 cd ../..
 ########################################################################

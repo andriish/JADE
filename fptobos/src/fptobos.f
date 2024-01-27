@@ -144,7 +144,7 @@ C**************************************
  3000  CONTINUE
        CALL UNPJAD(IUNPFL,IBYTSW,MAXEVN,MAXEVP,IPRFLG,MAXREC)
 *  Last event reached ?
-       IF(IUNPFL.EQ.1) GO TO 8000
+       IF(IUNPFL.EQ.-1) GO TO 8000
        NEVIN = NEVIN + 1
 *
 *   Event lies now in /CEVENT/
