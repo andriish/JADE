@@ -8,7 +8,7 @@ RUN         yum -y install dnf-plugins-core && \
             yum -y install blas-devel.i686 && \
             dnf -y install HepMC3*.i686  --exclude=HepMC3*.x86_64 --exclude=root*.x86_64  --skip-broken && \
             dnf -y install root-*.i686 root-hbook.i686  liburing-devel.i686 --exclude=root*.x86_64 --skip-broken && \
-            yum -y install https://kojipkgs.fedoraproject.org//packages/root/6.30.02/3.fc39/i686/root-hbook-6.30.02-3.fc39.i686.rpm --exclude=root*.x86_64  && \
+            yum -y install https://kojipkgs.fedoraproject.org//packages/root/6.30.06/1.fc39/i686/root-hbook-6.30.06-1.fc39.i686.rpm --exclude=root*.x86_64  && \
             dnf -y install 'dnf-command(config-manager)'      && \
             dnf copr enable -y averbyts/HEPrpms  && \
             dnf -y install --skip-broken cernlib*.i686  && \
