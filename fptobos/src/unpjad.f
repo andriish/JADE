@@ -279,7 +279,7 @@ C**************************************
 ********************
 888   CONTINUE
       WRITE(6,891) LLLUN,IOS
- 891  FORMAT(' UNPJAD: READ ERROR FOR UNIT=',I2,'  IOSTAT=',I10)
+ 891  FORMAT(' UNPJAD 891: READ ERROR FOR UNIT=',I2,'  IOSTAT=',I10)
       IUNPFL = -1
       GO TO 9999
 *=======
