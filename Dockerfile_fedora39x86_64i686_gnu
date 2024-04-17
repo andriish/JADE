@@ -1,6 +1,5 @@
 FROM fedora:39
 RUN         yum -y install dnf-plugins-core && \
-RUN         yum -y install rpm-build && \
             yum -y install bc make ninja-build cmake binutils git wget diffutils file sed gawk grep which   && \
             yum -y install gcc-gfortran gcc-c++  && \
             yum -y install openssl-devel.i686  glibc-devel.i686 libquadmath.i686 libgfortran.i686 libnsl2-devel.i686 blas-devel.i686 && \
