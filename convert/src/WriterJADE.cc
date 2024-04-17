@@ -1,3 +1,5 @@
+#include <string>
+
 #include "WriterJADE.h"
 #include "HepMC3/GenVertex.h"
 #include "HepMC3/GenParticle.h"
