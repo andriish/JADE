@@ -1,0 +1,10 @@
+LIST
+*SVBOSF '/home/build/test/data_file_sv.bos'
+JTUPLE 1=44 3='data_file_jtjob.hbook'
+CALIB '/home/build/test/aupdat1.b'
+ZE4VMODE on
+PEDRO on
+MAXREC 100000
+STOP
+
+
