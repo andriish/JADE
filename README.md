@@ -97,20 +97,22 @@ This is a repository with software of JADE experiment.
 
         - Install Docker desktop from ```https://www.docker.com/products/docker-desktop/```
 
-        - In the terminal, navigate to a folder where the program should be installed (using: cd path/to/folder):
+        - In the terminal, navigate to a folder where the program should be installed (using: ```cd path/to/folder```):
         - Clone the JADE repository: ```git clone https://github.com/andriish/JADE```
 	        - If the git package is not installed: ```brew install git```
 		        - If homebrew is not installed: ```/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"```
+
         - Pull the image for the container: ```docker pull ghcr.io/andriish/fedora39x86_64i686_gnu:latest```.
           The container include all required dependencies. The list of containers can be found here: ```https://github.com/andriish?tab=packages&repo_name=JADE```
-        - Running the container:
+        - Running the container and attaching to it (now you are working inside a different environment where the software packages and workflows are cutout for the application):
+
           ```
           $ docker run -dit --platform linux/amd64 --name jade_soft -v $(pwd):/home ghcr.io/andriish/fedora39x86_64i686_gnu
           $ docker attach jade_soft
           ```
           The first command will run the container and the second will start a shell in the container.
           The container execution can be monitored in the docker-desktop application.
-        - Installing the JADE software and running some tests:
+         - Installing the JADE software and running some tests (this has to be done inside the attached container):
           ```
           $ sh jadeinstall.sh --bits=32
           $ sh jadetest.sh --bits=32
@@ -137,6 +139,8 @@ This is a repository with software of JADE experiment.
     
 Please note that JADE software consists of multiple packages that can be compiled sequenially, 
 without invocation of the ``jadeinstall.sh``.
+
+The ``jadeinstall.sh``script will create create the ``/build`` directory, where the data files are converted into ``.root`` files (among other things), which can be found in the ``/build/test``directory.
 
 ## Testing
 To run some simple tests:
