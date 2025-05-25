@@ -22,7 +22,8 @@ This is a repository with software of JADE experiment.
  See the available pre-build images for ``x86_64`` here: ``https://github.com/andriish?tab=packages&repo_name=JADE``
 
 ## Compiling JADE software in official containers 
-    - For Linux ``x86_64`` hosts 
+ 
+  - For Linux ``x86_64`` hosts 
          
         - Install docker, podman, or apptainer.
 
@@ -41,7 +42,7 @@ This is a repository with software of JADE experiment.
           $ sh jadetest.sh --bits=32
           ```
 
-    - For Apple Silicon hosts 
+  - For Apple Silicon hosts 
   
         - Install Docker desktop from ```https://www.docker.com/products/docker-desktop/```
 
