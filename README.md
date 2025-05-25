@@ -8,15 +8,70 @@ This is a repository with software of JADE experiment.
  - C++ compiler with C++11 standard support
  - Fortran compiler
  - ``ROOT6`` (>6.10 is recommended)
- - ``cmake`` (>3.4.5 or higher version required by the used ROOT version)
+ - ``cmake`` (>3.10 or higher version required by the used ROOT version)
  - ``HepMC3`` with development packages (>3.2.0)
  - Lapack with development packages 
  - X11 or XQuartz libraries with development packages
  - bash-compatible shell
+ - ``cernlib`` (> 2022 is recommended)
  - ``make``
- - ``git`` 
+ - ``git``
  
- The following platforms/toolchains are supported:
+ Because of certain ``cernlib`` limitations the 64-bit platforms the 32-bit platforms are  better tested with JADE software.
+ Therefore it is recommended to use one of those or even use the JADE software in an official container.
+ See the available pre-build images for ``x86_64`` here: ``https://github.com/andriish?tab=packages&repo_name=JADE``
+
+## Compiling JADE software in official containers 
+ 
+  - For Linux ``x86_64`` hosts 
+         
+    - Install docker, podman, or apptainer.
+
+    - Running the container and attaching to it (now you are working inside a different environment where the software packages and workflows are cutout for the application):
+
+      ```
+      $ docker run -dit --name jade_soft -v $(pwd):/home ghcr.io/andriish/fedora39x86_64i686_gnu
+      $ docker attach jade_soft
+      ```
+      The first command will run the container and the second will start a shell in the container.
+      The container execution can be monitored in the docker-desktop application.
+  
+    - Installing the JADE software and running some tests (this has to be done inside the attached container):
+      ```
+      $ sh jadeinstall.sh --bits=32
+      $ sh jadetest.sh --bits=32
+      ```
+
+  - For Apple Silicon hosts 
+  
+    - Install Docker desktop from ```https://www.docker.com/products/docker-desktop/```
+
+    - In the terminal, navigate to a folder where the program should be installed (using: ```cd path/to/folder```):
+    - Clone the JADE repository: ```git clone https://github.com/andriish/JADE```
+	  - If the git package is not installed: ```brew install git```
+		- If homebrew is not installed: ```/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"```
+
+    - Pull the image for the container: ```docker pull ghcr.io/andriish/fedora39x86_64i686_gnu:latest```.
+          The container include all required dependencies. The list of containers can be found here: ```https://github.com/andriish?tab=packages&repo_name=JADE```
+    - Running the container and attaching to it (now you are working inside a different environment where the software packages and workflows are cutout for the application):
+
+      ```
+      $ docker run -dit --platform linux/amd64 --name jade_soft -v $(pwd):/home ghcr.io/andriish/fedora39x86_64i686_gnu
+      $ docker attach jade_soft
+      ```
+      The first command will run the container and the second will start a shell in the container.
+      The container execution can be monitored in the docker-desktop application.
+  
+    - Installing the JADE software and running some tests (this has to be done inside the attached container):
+      ```
+      $ sh jadeinstall.sh --bits=32
+      $ sh jadetest.sh --bits=32
+      ```
+
+
+## Compiling JADE software on other platforms
+ 
+ The following platforms/toolchains are recognized/supported:
  
   - CentOS 7 x86_64 with **GNU** compilers
   - CentOS 9 x86_64 with **GNU** compilers
@@ -49,7 +104,7 @@ This is a repository with software of JADE experiment.
    - CentOS 7 x86_64/CentOS 8 x86_64 with **SUN** (Oracle) compilers
       The **SUN** toolchain is not supported so far, as the runtime requires hardcoded little/big endian flags for the I/O.
 
-## Building JADE software:
+### Building JADE software:
 
  - Install the dependencies
    - For CentOS7 all the dependencies are in the default and EPEL repositories  
@@ -89,35 +144,7 @@ This is a repository with software of JADE experiment.
      - Install ROOT, e.g. from  `https://root.cern/install/all_releases/` and enable it
      - Install cmake
      The git and LAPACK should be preinstalled on the newest MacOS.
-
-    - For Apple Silicon
   
-        The JADE software can be used on Apple Silicon using Docker image with Linux.
-        To do it:
-
-        - Install Docker desktop from ```https://www.docker.com/products/docker-desktop/```
-
-        - In the terminal, navigate to a folder where the program should be installed (using: ```cd path/to/folder```):
-        - Clone the JADE repository: ```git clone https://github.com/andriish/JADE```
-	        - If the git package is not installed: ```brew install git```
-		        - If homebrew is not installed: ```/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"```
-
-        - Pull the image for the container: ```docker pull ghcr.io/andriish/fedora39x86_64i686_gnu:latest```.
-          The container include all required dependencies. The list of containers can be found here: ```https://github.com/andriish?tab=packages&repo_name=JADE```
-        - Running the container and attaching to it (now you are working inside a different environment where the software packages and workflows are cutout for the application):
-
-          ```
-          $ docker run -dit --platform linux/amd64 --name jade_soft -v $(pwd):/home ghcr.io/andriish/fedora39x86_64i686_gnu
-          $ docker attach jade_soft
-          ```
-          The first command will run the container and the second will start a shell in the container.
-          The container execution can be monitored in the docker-desktop application.
-         - Installing the JADE software and running some tests (this has to be done inside the attached container):
-          ```
-          $ sh jadeinstall.sh --bits=32
-          $ sh jadetest.sh --bits=32
-          ```
-            
 - Clone the repository using git 
      ``git clone https://github.com/andriish/JADE``
     
@@ -140,7 +167,8 @@ This is a repository with software of JADE experiment.
 Please note that JADE software consists of multiple packages that can be compiled sequenially, 
 without invocation of the ``jadeinstall.sh``.
 
-The ``jadeinstall.sh``script will create create the ``/build`` directory, where the data files are converted into ``.root`` files (among other things), which can be found in the ``/build/test``directory.
+The ``jadeinstall.sh``script will create create the ``/build`` directory, where the data files are 
+converted into ``.root`` files (among other things), which can be found in the ``/build/test``directory.
 
 ## Testing
 To run some simple tests:
