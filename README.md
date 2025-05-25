@@ -8,7 +8,7 @@ This is a repository with software of JADE experiment.
  - C++ compiler with C++11 standard support
  - Fortran compiler
  - ``ROOT6`` (>6.10 is recommended)
- - ``cmake`` (>3.4.5 or higher version required by the used ROOT version)
+ - ``cmake`` (>3.10 or higher version required by the used ROOT version)
  - ``HepMC3`` with development packages (>3.2.0)
  - Lapack with development packages 
  - X11 or XQuartz libraries with development packages
@@ -16,7 +16,7 @@ This is a repository with software of JADE experiment.
  - ``make``
  - ``git`` 
  
- The following platforms/toolchains are supported:
+ The following platforms/toolchains are recognized/supported:
  
   - CentOS 7 x86_64 with **GNU** compilers
   - CentOS 9 x86_64 with **GNU** compilers
@@ -140,7 +140,8 @@ This is a repository with software of JADE experiment.
 Please note that JADE software consists of multiple packages that can be compiled sequenially, 
 without invocation of the ``jadeinstall.sh``.
 
-The ``jadeinstall.sh``script will create create the ``/build`` directory, where the data files are converted into ``.root`` files (among other things), which can be found in the ``/build/test``directory.
+The ``jadeinstall.sh``script will create create the ``/build`` directory, where the data files are 
+converted into ``.root`` files (among other things), which can be found in the ``/build/test``directory.
 
 ## Testing
 To run some simple tests:

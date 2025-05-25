@@ -161,21 +161,21 @@ jade_arguments=" -DJADESOFT_DIR=$TOP$toolchain$bits/share/JADESOFT/cmake "
 ########################################################################
 mkdir -p build/jadesoft
 cd build/jadesoft
-$CMAKE -S ../../jadesoft -B.  $arguments $bit_arguments
+$CMAKE -S ../../jadesoft -B .  $arguments $bit_arguments
 $CMAKE --build  . -j 2 --verbose || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install .
 cd ../..
 ########################################################################
 mkdir -p build/convert
 cd build/convert
-$CMAKE -S ../../convert -B. $arguments $bit_arguments   -DCMAKE_CXX_COMPILER=$CXX 
+$CMAKE -S ../../convert -B . $arguments $bit_arguments   -DCMAKE_CXX_COMPILER=$CXX 
 $CMAKE --build  . -j 2 --verbose || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install .
 cd ../..
 ########################################################################
 mkdir -p build/jtuple
 cd build/jtuple
-$CMAKE -S ../../jtuple -B.  $arguments $bit_arguments  $jade_arguments
+$CMAKE -S ../../jtuple -B .  $arguments $bit_arguments  $jade_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install .
 cd ../..
@@ -183,7 +183,7 @@ cd ../..
 mkdir -p build/fptobos
 cd build/fptobos
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -S ../../fptobos -B. $arguments $bit_arguments  $jade_arguments
+$CMAKE -S ../../fptobos -B . $arguments $bit_arguments  $jade_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install .
 cd ../..
