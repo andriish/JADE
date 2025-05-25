@@ -21,9 +21,9 @@ jobs:
            sh jadeinstall.sh --bits=32
            sh jadetest.sh --bits=32
 
-  build-JADE-docker-image:
+  build-JADE-docker-image-fedora39x86_64i686_gnu:
     runs-on: ubuntu-latest
-    name: Build JADE Docker image
+    name: Build JADE Docker image fedora39x86_64i686_gnu
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -54,5 +54,50 @@ jobs:
          docker run ghcr.io/andriish/fedora39x86_64i686_gnu:latest
          docker push ghcr.io/andriish/fedora39x86_64i686_gnu:latest
 
+  fedora41x86_64i686_gnu:
+    name: fedora41x86_64i686_gnu
+    runs-on: ubuntu-latest
+    container:
+        image: ghcr.io/andriish/fedora41x86_64i686_gnu:latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Compile
+      run: |
+           sh jadeinstall.sh --bits=32
+           sh jadetest.sh --bits=32
+
+  build-JADE-docker-image-fedora41x86_64i686_gnu:
+    runs-on: ubuntu-latest
+    name: Build JADE Docker image fedora41x86_64i686_gnu
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+          fetch-depth: 2 
+    - name: Check if the Docker file was changed
+      id: changed-docker-files
+      uses: tj-actions/changed-files@v38
+      with:
+          files: Dockerfile_fedora41x86_64i686_gnu
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build the JADE Docker image on the change of Dockerfile
+      if: steps.changed-docker-files.outputs.any_changed == 'true' 
+      run: |
+         docker build . -f Dockerfile_fedora41x86_64i686_gnu --tag ghcr.io/andriish/fedora41x86_64i686_gnu:latest
+         docker run ghcr.io/andriish/fedora41x86_64i686_gnu:latest
+         docker push ghcr.io/andriish/fedora41x86_64i686_gnu:latest
+    - name: Build the JADE Docker image on schedule
+      if: ${{ github.event_name == 'schedule' }}
+      run: |
+         docker build . -f Dockerfile_fedora41x86_64i686_gnu  --tag ghcr.io/andriish/fedora41x86_64i686_gnu:latest
+         docker run ghcr.io/andriish/fedora41x86_64i686_gnu:latest
+         docker push ghcr.io/andriish/fedora41x86_64i686_gnu:latest
 
 
