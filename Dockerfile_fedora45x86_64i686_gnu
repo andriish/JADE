@@ -1,0 +1,41 @@
+# JADE build environment, Fedora 45, 32 bit (x86_64 host with the i686 libraries):
+#   sh jadeinstall.sh --bits=32 && sh jadetest.sh --bits=32
+#
+# NB: the 32 bit and the 64 bit packages of root-core, root-cling, HepMC3-devel,
+# HepMC3-search-devel and cernlib-packlib-gfortran ship the same files and cannot be
+# installed together. Therefore this image has only the i686 versions of them
+# (see Dockerfile_fedora45x86_64_gnu for the 64 bit setup).
+# Built and pushed to ghcr.io/andriish/fedora45x86_64i686_gnu by .github/workflows/32bit.yml.
+FROM fedora:45
+# Basic tools; the tests are run with ctest and bash scripts
+RUN         dnf -y install dnf-plugins-core dnf5-plugins && \
+            dnf -y install bc make ninja-build cmake binutils git wget diffutils file sed gawk grep which procps-ng findutils && \
+            dnf -y install gcc-gfortran gcc-c++ gengetopt
+# Tools used by the tests of the event display (jadez): a virtual X server (xvfb-run,
+# without it these tests are skipped), Mesa for GL, Python with Pillow and ghostscript
+# to check and convert the pictures
+RUN         dnf -y install xorg-x11-server-Xvfb xorg-x11-xauth mesa-dri-drivers mesa-libGL \
+                           python3 python3-pillow ghostscript gdb strace
+# 32 bit libraries and development packages
+RUN         dnf -y install glibc-devel.i686 libatomic.i686 libstdc++-devel.i686 libquadmath.i686 libgfortran.i686 \
+                           libnsl2-devel.i686 openssl-devel.i686 blas-devel.i686 lapack-devel.i686 liburing-devel.i686 && \
+            dnf -y install libX11-devel.i686 libXau-devel.i686 libxcb-devel.i686 libXdmcp-devel.i686 libXt-devel.i686 \
+                           libXmu-devel.i686 libXext-devel.i686 libXaw-devel.i686 xbae-devel.i686 motif-devel.i686 && \
+            dnf -y install pythia8-devel.i686 pythia8.i686 && \
+            dnf -y install HepMC3-devel.i686 HepMC3-search-devel.i686 && \
+            dnf -y install 'root-*.i686' --exclude='root*.x86_64' --skip-broken --skip-unavailable
+# Debug symbols of the 32 bit X11 stack and glibc, so that a crash of jadez in the display
+# libraries gives a readable backtrace (the tests run gdb when jadez fails)
+RUN         dnf -y install --enablerepo=fedora-debuginfo --enablerepo=updates-debuginfo --skip-unavailable \
+                           glibc-debuginfo.i686 libX11-debuginfo.i686 libxcb-debuginfo.i686 libXau-debuginfo.i686 \
+                           libXdmcp-debuginfo.i686 libXext-debuginfo.i686 libXt-debuginfo.i686 libXmu-debuginfo.i686 \
+                           libXaw-debuginfo.i686 motif-debuginfo.i686 || true
+# NB: all i686 root packages must be named on the command line together with the exclude of 
+# the x86_64 ones. With an explicit shorter list dnf resolves the dependencies of root-core.i686
+# (root-vecops, root-multiproc, ...) to the x86_64 builds ("inferior architecture") and the
+# rpm transaction fails with file conflicts between root-core.i686 and root-core.x86_64.
+# CERNLIB (32 bit, with the static libraries), from the HEP copr. Explicit list: the glob
+# cernlib*.i686 would also install ~270 packages with debug info.
+RUN         dnf -y copr enable averbyts/HEPrpms && \
+            dnf -y install cernlib-devel.i686 cernlib-static.i686 cernlib-packlib-gfortran.i686 && \
+            dnf -y clean all
