@@ -24,6 +24,9 @@ jobs:
   build-JADE-docker-image-fedora39x86_64i686_gnu:
     runs-on: ubuntu-latest
     name: Build JADE Docker image fedora39x86_64i686_gnu
+    permissions:
+      contents: read
+      packages: write
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -70,6 +73,9 @@ jobs:
   build-JADE-docker-image-fedora41x86_64i686_gnu:
     runs-on: ubuntu-latest
     name: Build JADE Docker image fedora41x86_64i686_gnu
+    permissions:
+      contents: read
+      packages: write
     steps:
     - name: Checkout
       uses: actions/checkout@v3
