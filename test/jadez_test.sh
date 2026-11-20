@@ -52,7 +52,9 @@ if [ $rc -ne 0 ]; then
   echo "--- diagnostics (jadez failed) ---"
   uname -a; ulimit -a | grep -E "open files|core|virtual|stack"
   echo "DISPLAY=$DISPLAY HOME=$HOME"; ls -la /tmp/.X11-unix 2>&1
-  Xvfb -version 2>&1 | head -2
+  echo "--- first lines of the jadez output ---"; head -40 jadez_test.log
+  echo "--- X connection check (python ctypes, same xvfb-run) ---"
+  $RUN python3 -c "import ctypes,os;x=ctypes.CDLL('libX11.so.6');x.XOpenDisplay.restype=ctypes.c_void_p;d=x.XOpenDisplay(None);print('DISPLAY',os.environ.get('DISPLAY'),'XOpenDisplay ->',d)" 2>&1 | tail -5
   echo "--- Xvfb errors ---"; cat "$XVFB_ERR" 2>&1 | tail -30
   echo "--- end diagnostics ---"
 fi
