@@ -29,8 +29,19 @@ message(STATUS "JADE h2root: ROOT ${ROOT_VERSION}")
 add_library(minicern_jade STATIC
   src/hbook.f src/kernlib.f src/zebra.f src/cernlib.c)
 set_target_properties(minicern_jade PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_compile_options(minicern_jade PRIVATE
-  "$<$<COMPILE_LANGUAGE:Fortran>:-w;-O0;-fallow-argument-mismatch;-std=legacy>")
+# Options for the old (non-standard, argument-mismatching) minicern sources, per compiler
+if (CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
+  set(MINICERN_FFLAGS -w -O0 -fallow-argument-mismatch -std=legacy)
+elseif (CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+  set(MINICERN_FFLAGS -w -O0)
+elseif (CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC|PGI")
+  set(MINICERN_FFLAGS -w -O0)
+elseif (CMAKE_Fortran_COMPILER_ID STREQUAL "NAG")
+  set(MINICERN_FFLAGS -w -O0 -mismatch -dusty)
+else()
+  set(MINICERN_FFLAGS -O0)
+endif()
+target_compile_options(minicern_jade PRIVATE "$<$<COMPILE_LANGUAGE:Fortran>:${MINICERN_FFLAGS}>")
 target_compile_options(minicern_jade PUBLIC "$<$<COMPILE_LANGUAGE:Fortran>:-O0>")
 target_link_libraries(minicern_jade ${CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES})
 
