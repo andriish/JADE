@@ -795,7 +795,7 @@ C
 *     Updates beam position according to the character size set.
 *
       INTEGER*1 SOURCE
-      INTEGER NBYTES,TARGET,IBYTE,I
+      INTEGER NBYTES,TARGET,IBYTE,I,NB4
       DIMENSION SOURCE(*),TARGET(136)
       INTEGER*2 HTYP(2)
       INTEGER ITYP/1/
@@ -806,7 +806,10 @@ CAV
       NBYTES=INBYTES
 C - use CERNLIB routine BLOW (M426) to unpack full words into bytes
       NBYTES=MIN(NBYTES,136)
-      CALL BLOW(SOURCE,TARGET,NBYTES,8)
+C   BLOW unpacks whole words: round up to a multiple of 4 bytes, otherwise the
+C   byte order reversal below garbles the characters of the last partial word
+      NB4=MIN(4*INT((NBYTES+3)/4),136)
+      CALL BLOW(SOURCE,TARGET,NB4,8)
 
 C - test the byteorder of the present machine and
 C     print out each ASCII character coded in the INTEGER*4
@@ -1078,7 +1081,8 @@ C
       INTEGER HSTR,ISTR,NSTR,I
       CHARACTER WIN*1
       CHARACTER CSTR*1,CSTR4*4,SPCSYM*4
-      DIMENSION ISTR(ABS(NSTR)),CSTR(ABS(NSTR)),CSTR4(ABS(NSTR))
+      DIMENSION ISTR(4*INT((ABS(NSTR)+3)/4)),CSTR(ABS(NSTR))
+     +     ,CSTR4(ABS(NSTR))
      +     ,HSTR(INT(ABS(NSTR)/4)+1)
 *
       INTEGER*2 HTYP(2)
@@ -1090,7 +1094,8 @@ C - Check if initialization was done
       IF( WIN.EQ.'V' .AND. .NOT.DTEST ) CALL PABORT(3)
       IF( WIN.EQ.'S' .AND. .NOT.TTEST ) CALL PABORT(4)
 C --- Conversion from ASCII integer to character string
-      CALL BLOW(HSTR,ISTR,ABS(NSTR),8)
+C   unpack whole words (see EOUTST)
+      CALL BLOW(HSTR,ISTR,4*INT((ABS(NSTR)+3)/4),8)
       IF( NSTR.GT.0 ) THEN
          DO I=1,NSTR
             IF( HTYP(2).EQ.0 ) THEN

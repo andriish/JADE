@@ -207,3 +207,23 @@ elseif()
   message(STATUS "JADE test: valgrind package not found or disabled.  memory check tests disabled.") 
 endif()
 ########################################################################
+
+# Event display with the detector hardware (chamber boundary lines), result tables and
+# orthogonal projections ON, on the Monte Carlo event reconstructed by SUPERV_MC_1.
+if (TEST SUPERV_MC_1 AND EXISTS ${JADESOFT_BIN_DIR}/jadez)
+  add_test(NAME JADEZ_MC_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_mc_test.sh ${JADESOFT_BIN_DIR}/jadez
+           ${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/main2016/jadez/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR})
+  set_property( TEST JADEZ_MC_1 PROPERTY DEPENDS SUPERV_MC_1)
+  set_property( TEST JADEZ_MC_1 PROPERTY SKIP_RETURN_CODE 77)
+  set_property( TEST JADEZ_MC_1 PROPERTY TIMEOUT 400)
+endif()
+
+# Event display matching the reference R-phi picture (displayreferences/): hardware, tables,
+# insets and the small dE/dx plot, without bank listing.
+if (TEST SUPERV_MC_1 AND EXISTS ${JADESOFT_BIN_DIR}/jadez)
+  add_test(NAME JADEZ_RPHI_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_rphi_test.sh ${JADESOFT_BIN_DIR}/jadez
+           ${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/main2016/jadez/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR})
+  set_property( TEST JADEZ_RPHI_1 PROPERTY DEPENDS SUPERV_MC_1)
+  set_property( TEST JADEZ_RPHI_1 PROPERTY SKIP_RETURN_CODE 77)
+  set_property( TEST JADEZ_RPHI_1 PROPERTY TIMEOUT 300)
+endif()

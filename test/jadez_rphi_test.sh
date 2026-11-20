@@ -1,0 +1,63 @@
+#!/bin/bash
+# Event display test matching the reference R-phi picture (displayreferences/): detector hardware
+# (chamber boundaries), result tables, orthogonal projections and the small dE/dx plot,
+# no bank listing, on the Monte Carlo event reconstructed by SUPERV_MC_1 (superv1.bos).
+# usage: jadez_mc_test.sh <jadez executable> <help dataset> <work dir>
+# Needs a virtual X display (xvfb-run or JADEZ_TEST_DISPLAY), otherwise skipped (77).
+SCRIPTDIR=$(cd "$(dirname "$0")" && pwd)
+JADEZ=$1
+HELP=$2
+WORK=$3
+cd "$WORK" || exit 1
+for f in superv1.bos aupdat1.b; do
+  [ -f "$f" ] || { echo "missing input $f (SUPERV_MC_1 must run first)"; exit 1; }
+done
+RUN=""
+if command -v xvfb-run >/dev/null 2>&1; then
+  RUN="xvfb-run -a"
+elif [ -n "$JADEZ_TEST_DISPLAY" ]; then
+  export DISPLAY=$JADEZ_TEST_DISPLAY
+else
+  echo "SKIP: no xvfb-run and JADEZ_TEST_DISPLAY not set"
+  exit 77
+fi
+mkdir -p rphidisplay && cd rphidisplay && rm -f JADE.*
+cp ../superv1.bos .
+cp ../aupdat1.b F11LHO.AUPDAT1
+cp "$HELP" F22BOW.HELP.DATASET
+export JADE_PHIGS_SCREENSHOT=1
+# the superv output is big-endian on all units
+export GFORTRAN_CONVERT_UNIT=big_endian
+
+# OPT 13 OFF: no bank listing, OPT 14 OFF: results header lines also after a command with an
+# argument (blue PATR and orange LGCL header lines), OPT 16: automatic result tables, OPT 17: orthogonal
+# projections (insets). RB1: R-phi view with the detector hardware (chamber boundary
+# lines). DEDX -4: dE/dx versus momentum plot drawn small on the current view.
+( printf 'superv1.bos\n\n'; sleep 2
+  for c in "OPT 13" "OPT 14" "OPT 16" "OPT 17" "RB1" "DEDX -4"; do echo "$c"; sleep 1.5; done
+  echo H; sleep 2
+  echo END; sleep 2 ) | timeout 600 $RUN "$JADEZ" > ../jadez_rphi_test.log 2>&1
+rc=$?
+echo "jadez exit code $rc (R-phi reference picture)"
+fail=0
+[ $rc -eq 0 ] || { echo "FAIL: non-zero exit code"; fail=1; }
+grep -q "Fortran runtime error" ../jadez_rphi_test.log && { echo "FAIL: Fortran runtime error"; fail=1; }
+grep -q "Invalid command string" ../jadez_rphi_test.log && { echo "FAIL: display command rejected"; fail=1; }
+grep -q "NAME: " ../jadez_rphi_test.log && { echo "FAIL: bank listing printed (OPT 13 not off?)"; fail=1; }
+NV=1
+NF=$(find . -maxdepth 1 \( -name 'JADE.*.png' -o -name 'JADE.*.ps' \) -size +0 | wc -l)
+echo "$NF hardcopy files for $NV H commands"
+[ "$NF" -ge "$NV" ] || { echo "FAIL: too few hardcopies"; fail=1; }
+# coloured, orange lead glass numbers, thin grey chamber boundary lines
+DEDXOPT=""
+ls JADE.*.screen.png >/dev/null 2>&1 && DEDXOPT="--dedx"   # pixel check only for the OpenPHIGS screen pictures
+python3 "$SCRIPTDIR/check_colours.py" --grey $DEDXOPT JADE.*.png JADE.*.ps 2>/dev/null \
+  || { echo "FAIL: colours / lead glass numbers / grey detector boundary lines missing"; fail=1; }
+if command -v gs >/dev/null 2>&1; then
+  for f in JADE.*.ps; do
+    [ -s "$f" ] && gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=png16m -r100 -dEPSCrop -sOutputFile="$f.png" "$f" >/dev/null 2>&1
+  done
+fi
+echo "pictures are in $WORK/rphidisplay: JADE.nnn.ps(.png) (HIGZ) or JADE.nnn.png / JADE.nnn.screen.png (OpenPHIGS)"
+[ $fail -eq 0 ] && echo "PASS" || tail -30 ../jadez_rphi_test.log
+exit $fail

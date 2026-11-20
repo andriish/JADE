@@ -387,7 +387,9 @@
          CALL PSPLCI(ILC1)
       ENDIF
       CALL PSLN(ILN)
-      CALL PSLWSC(WLW)
+*     HIGZ line widths are multiples of a thin base width, OpenPHIGS
+*     widths are in pixels: scale them down (JADE uses 1 ... 6)
+      CALL PSLWSC(MAX(1.0,WLW*0.35))
       RETURN
       END
 ************************************************************************
@@ -468,6 +470,9 @@
             ELSE
                CALL PSTXCI(ITC1)
             ENDIF
+*           stroke text is drawn with the current line width: keep it thin
+            CALL PSLWSC(1.0)
+            CALL PSLN(1)
             CALL PSCHH(H)
             CALL PSCHUP(UX,UY)
             CALL PSTXAL(ITXH,ITXV)
@@ -639,6 +644,7 @@
       INTEGER I,L
       CHARACTER*256 FN
       CHARACTER*8 CENV
+      REAL HCSF
       LPEND=.FALSE.
       FN=CPEND
       L=LEN_TRIM(FN)
@@ -654,7 +660,16 @@
       FN=FN(1:L)//'.png'
       L=LEN_TRIM(FN)
 #endif
+*     hardcopy scale factor (default 2: 2048 x 2048 pixels for PNG);
+*     JADE_PHIGS_HCSCALE overrides it
+      HCSF=2.0
+      CALL GETENV('JADE_PHIGS_HCSCALE',CENV)
+      IF( LEN_TRIM(CENV).GT.0 ) THEN
+         READ(CENV,*,ERR=6) HCSF
+ 6       CONTINUE
+      ENDIF
       IF( NPRIM2.GT.0 .AND. LOPEN ) THEN
+         CALL PXSHCSF(95,HCSF)
          CALL POPWK(95,78,HPG_HCTYPE)
          CALL PSFNAME(95,FN(1:L))
          DO I=0,MAXCI
@@ -669,6 +684,7 @@
 *        screen (structure 1, IXSETxx colours) as FN.screen.png
          CALL GETENV('JADE_PHIGS_SCREENSHOT',CENV)
          IF( LEN_TRIM(CENV).GT.0 ) THEN
+            CALL PXSHCSF(96,HCSF)
             CALL POPWK(96,78,HPG_HCTYPE)
             CALL PSFNAME(96,FN(1:L-4)//'.screen.png')
             DO I=0,MAXCI
