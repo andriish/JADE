@@ -14,3 +14,13 @@ This directory contains a test suite for the JADE software:
   The directory ``cards`` contains all the steering cards for the used programs.
   The directory  ``src`` contains source files for the Pythia8 main program.
   The firectory  ``jadetapes`` contains a small data file used for the tests.
+
+The event display (`jadez`) is tested by three tests that need a virtual X display
+(``xvfb-run`` or ``JADEZ_TEST_DISPLAY``; skipped otherwise). They are described in
+``doc/EventDisplay.md``:
+ - ``JADEZ_DATA_1`` runs 43 display commands (32 with a picture) on the real data sample (views, muon filter
+   views, hardcopy after each drawing command) and checks the exit code, the hardcopies and the colours.
+ - ``JADEZ_MC_1`` shows the reconstructed Monte Carlo event with the detector hardware, result tables,
+   orthogonal projections and the dE/dx plot, and checks the thin grey chamber boundary lines.
+ - ``JADEZ_RPHI_1`` produces the R-phi picture that mimics ``doc/eventdisplayreferences/2.jpg``.
+ The scripts are ``jadez_test.sh``, ``jadez_mc_test.sh``, ``jadez_rphi_test.sh`` and ``check_colours.py``.
