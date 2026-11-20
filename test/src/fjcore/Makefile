@@ -16,6 +16,8 @@ all: 01-basic
 01-basic: 01-basic.o fjcore.o
 	$(CXX) $(LDFLAGS) -o $@ $@.o fjcore.o
 
+# on some systems (e.g. MacOS 10.15 with system c++) you may need to replace
+# -lstdc++ with -lc++
 fjcore_fortran_example: fjcore_fortran_example.o fjcorefortran.o fjcore.o
 	$(FC) -o $@ fjcore_fortran_example.o fjcore.o fjcorefortran.o -lstdc++
 

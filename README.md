@@ -216,7 +216,7 @@ are written by others and are either used as external dependencies or included i
 | ``convert/src/PIDUtils.h``, ``PIDCodes.h`` | MCUtils (PDG ID utilities) | Andy Buckley, https://gitlab.com/hepcedar/mcutils |
 | ``convert/src/MathUtils.h`` | HEPUtils | Andy Buckley, https://gitlab.com/hepcedar/heputils |
 | ``convert/cmdline.c``, ``cmdline.h`` | Output of gengetopt 2.23 from ``cmdline.ggo`` | https://www.gnu.org/software/gengetopt/ |
-| ``test/src/fjcore/`` | fjcore, the core of FastJet 3.4.0 | https://fastjet.fr |
+| ``test/src/fjcore/`` | fjcore, the core of FastJet 3.5.3 | https://fastjet.fr |
 | ``picocernlib/`` | Selected routines and headers of CERNLIB (kernlib, mathlib, ``ffread``), rewritten equivalents based on ROOT | https://cernlib.web.cern.ch/ |
 | ``h2root/`` | Copy of ``h2root.cxx`` and of the minicern Fortran/C sources of ROOT 6.40.04 with a 64 bit fix (``h2root/README.md``) | https://github.com/root-project/root (``main/src/h2root.cxx``, ``misc/minicern``) |
 | ``jadesoft/util*/mcgen/src/`` | Monte Carlo generators used for historic JADE productions: JETSET 6.3 / 7.4 (``jetset63*.f``, ``jt74opal.f``), PYTHIA 5.7 (``pythia5722.f``, ``pystfu.f``, ``pymaxi.f``), HERWIG 5.8 / 5.9 (``herwig58d.f``, ``herwig59.f``), ARIADNE 4.08 (``ariadne408.f``), COJETS 6.23 (``coj623d.f``), the PX and CKERN jet clustering packages (``px113.f``, ``px114.f``, ``ckern104.f``, ``ckern105.f``) | https://www.lund.tp.se/ (Lund MC: JETSET, PYTHIA, ARIADNE), https://herwig.hepforge.org (HERWIG); original CMZ/CAR sources are kept in ``util/mcgen/src`` |
