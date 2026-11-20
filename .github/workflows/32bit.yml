@@ -15,6 +15,10 @@ jobs:
     needs: build-JADE-docker-image-fedora45x86_64i686_gnu
     container:
         image: ghcr.io/andriish/fedora45x86_64i686_gnu:latest
+        # Docker's default seccomp profile on the runner rejects the direct 32 bit socket()
+        # syscall of the current glibc with ENOSYS: a 32 bit X11 client (jadez) then cannot
+        # connect to the X server (ixsync crashes on the null display)
+        options: --security-opt seccomp=unconfined
     steps:
     - name: Checkout
       uses: actions/checkout@v3
