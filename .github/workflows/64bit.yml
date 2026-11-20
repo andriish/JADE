@@ -47,7 +47,7 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Build the JADE Docker image on the change of Dockerfile
-      if: steps.changed-docker-files.outputs.any_changed == 'true' 
+      if: steps.changed-docker-files.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
       run: |
          docker build . -f Dockerfile_fedora45x86_64_gnu --tag ghcr.io/andriish/fedora45x86_64_gnu:latest
          docker run ghcr.io/andriish/fedora45x86_64_gnu:latest

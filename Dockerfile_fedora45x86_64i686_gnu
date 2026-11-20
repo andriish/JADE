@@ -22,9 +22,13 @@ RUN         dnf -y install glibc-devel.i686 libatomic.i686 libstdc++-devel.i686 
             dnf -y install libX11-devel.i686 libXau-devel.i686 libxcb-devel.i686 libXdmcp-devel.i686 libXt-devel.i686 \
                            libXmu-devel.i686 libXext-devel.i686 libXaw-devel.i686 xbae-devel.i686 motif-devel.i686 && \
             dnf -y install pythia8-devel.i686 pythia8.i686 && \
-            dnf -y install HepMC3-devel.i686 HepMC3-search-devel.i686 HepMC3.i686 HepMC3-search.i686 --exclude=HepMC3*.x86_64 && \
-            dnf -y install root-*.i686 --exclude=root*.x86_64 --skip-broken --skip-unavailable
-# CERNLIB (32 bit), from the HEP copr
+            dnf -y install HepMC3-devel.i686 HepMC3-search-devel.i686 && \
+            dnf -y install root-core.i686 root-cling.i686 root-hist.i686 root-tree.i686 root-io.i686 root-gui.i686 \
+                           root-graf.i686 root-graf-gpad.i686 root-graf-postscript.i686 root-graf3d.i686 \
+                           root-mathcore.i686 root-matrix.i686 root-net.i686 root-physics.i686 root-minuit2.i686 \
+                           root-mathmore.i686 root-tree-player.i686 --skip-unavailable
+# CERNLIB (32 bit, with the static libraries), from the HEP copr. Explicit list: the glob
+# cernlib*.i686 would also install ~270 packages with debug info.
 RUN         dnf -y copr enable averbyts/HEPrpms && \
-            dnf -y install --skip-broken --skip-unavailable cernlib*.i686 --exclude=cernlib*.x86_64 && \
+            dnf -y install cernlib-devel.i686 cernlib-static.i686 cernlib-packlib-gfortran.i686 && \
             dnf -y clean all
