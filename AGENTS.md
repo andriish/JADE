@@ -1,0 +1,128 @@
+# AGENTS.md
+
+Guidance for AI coding agents working in this repository. See [README.md](README.md) for full user-facing docs.
+
+## What this is
+
+Software of the JADE experiment (legacy e+e- collider experiment): mostly old Fortran 77 (with some C/C++), built with CMake. It is archival code; correctness and bit-compatibility of behaviour matter more than modernisation. Avoid sweeping refactors, reformatting, or "fixing" legacy idioms (old-style init, jumps into loops, hard-coded endianness handling) unless asked.
+
+## Layout
+
+| Directory | Contents |
+|---|---|
+| `jadesoft/` | Core JADE software. `src`/`src0`/`src2016` = libraries (original / pre-2016 / current), `main*`, `job*`, `util*` = executables and test jobs, `cal` = calibration, `info` = docs. Has its own `CMakeLists.txt` (project JADESOFT). |
+| `convert/` | HepMC3 → JADE (CPROD) MC event converter (C++, needs HepMC3 > 3.1.0). |
+| `fptobos/` | `fptobos` (FPACK → BOS) and `unpjad` utilities for archived data tapes. |
+| `jtuple/` | Analysis programs producing QCD-observable ntuples (ROOT format; originally PAW). |
+| `picocernlib/` | Minimal built-in replacements for needed CERNLIB routines (ROOT-based). |
+| `test/` | CTest suite; steering `cards/`, Pythia8 main in `src/`, sample data in `jadetapes/`. |
+| `convert_data_files/` | `converttoroot.py` + cards: raw data → ROOT, runs inside the `jade_soft` container. |
+| `cmake/` | Shared modules (compiler setup, ROOT setup, Pythia8 finder) and config templates. |
+| `doc/` | Scanned computing notes (PDF/PS) — do not modify. |
+
+## Build and test
+
+Build order is fixed and driven by `jadeinstall.sh`: `jadesoft` → `convert` → `jtuple` → `fptobos`. Each is an independent CMake project configured out-of-tree in `build/<name>`; the later ones find the installed JADESOFT via `-DJADESOFT_DIR=<prefix>/share/JADESOFT/cmake`.
+
+```
+sh jadeinstall.sh [--bits=32|64] [--toolchain=GNU|Intel|XL|NAG|PGI|SUN|GNU-11|GNU-12] [--prefix=/abs/path]
+sh jadetest.sh    [--bits=32|64] [--toolchain=...] [--prefix=/abs/path]
+```
+
+- Install goes to `installed<toolchain><bits>` (e.g. `installedGNU32`) in the repo root unless `--prefix` is given. `build/` and install dirs are generated — never commit them.
+- `jadetest.sh` configures `test/`, builds, and runs `ctest` (10 s timeout). Tests are sequential and depend on one another (FPTOBOS → pythia8/HepMC3 → CPROD → MCJADE → SUPERV → ZE4V → JZREAD → JTJOB); run the whole chain rather than single tests. Pythia8 is required for the MC tests.
+- CMake options (jadesoft): `JADE_OLD_MC` (ON), `JADE_FPE` (OFF), `JADE_USE_CERNLIB` (see `jadesoft/CMakeLists.txt` for the actual default), `JADE_FORCE_32` (ON for `--bits=32`).
+- Dependencies: gfortran/gcc/g++, ROOT 6, cmake, HepMC3, LAPACK/BLAS, X11 + Motif, CERNLIB, gengetopt. These are rarely installed on a dev host.
+
+### Use the container
+
+32-bit builds are best tested, and cernlib has 64-bit limitations, so the supported workflow is the prebuilt image:
+
+```
+docker run -dit --name jade_soft -v $(pwd):/home ghcr.io/andriish/fedora39x86_64i686_gnu
+docker attach jade_soft   # then run jadeinstall.sh / jadetest.sh with --bits=32 inside
+```
+
+Dockerfiles for Fedora 39/41 are in the repo root; CI definitions are in `.github/workflows/` (CentOS 7/8/9, macOS, 32-bit) and `.gitlab-ci.yml`. If a build tool is missing locally, don't try to install the toolchain on the host — say so, or use the container.
+
+## Fortran compilers available for testing
+
+The code should be tested with more than one Fortran compiler. Three are usually available on the developer machine, but none of the vendor ones is on `PATH` by default — locate and enable them first:
+
+| Compiler | Executable | How to locate / enable |
+|---|---|---|
+| GNU | `gfortran` | `which gfortran` (normally `/usr/bin`). Default toolchain for `jadeinstall.sh` / `jadetest.sh`. |
+| Intel oneAPI | `ifx` (`ifort` was removed in oneAPI 2025) | `ls /opt/intel/oneapi/compiler/*/bin/ifx`; enable with `. /opt/intel/oneapi/setvars.sh` (or `module use /opt/intel/oneapi/modulefiles && module load compiler`). |
+| NVIDIA HPC SDK | `nvfortran` (`pgfortran` is an alias) | `ls /opt/nvidia/hpc_sdk/Linux_x86_64/*/compilers/bin/nvfortran`; enable with `module use /opt/nvidia/hpc_sdk/modulefiles && module load nvhpc/<version>` (see `module avail nvhpc`), or prepend that `compilers/bin` to `PATH`. |
+
+Clues if they are not found: `which -a gfortran ifx nvfortran`, `module avail`, `ls /opt`, `find /opt /usr/local -name 'ifx' -o -name 'nvfortran' 2>/dev/null`. Check `<compiler> --version` after enabling.
+
+Notes:
+- `jadeinstall.sh --toolchain=Intel` sources `setvars.sh` but sets `FC=ifort`, and `--toolchain=PGI` loads the module `20.9` and uses `pgf77`. Those names are outdated: with current SDKs, set `FC=ifx` / `FC=nvfortran` (edit the script or export the variables and configure CMake manually with `-DCMAKE_Fortran_COMPILER=...`). Update the script if asked.
+- Use a separate build/install prefix per compiler (e.g. `--prefix=/abs/path/intel`) so artifacts do not mix.
+- NVIDIA Fortran does not support the endianness-conversion runtime the tests need (see README: PGI is unsupported), so expect failures there; still useful as a compile/portability check of the sources.
+- Intel/NVIDIA modules and compilers may differ per machine; do not hard-code versions in committed files.
+
+## 32-bit CERNLIB on the developer machine
+
+A 32-bit (`i686`) CERNLIB is installed alongside the 64-bit one, so `--bits=32` builds (`JADE_FORCE_32`, `-m32`) can be done natively with `jadeinstall.sh --bits=32` / `jadetest.sh --bits=32` without the container. This is the preferred configuration (see above).
+
+How to check/locate it (Fedora packaging):
+- `rpm -qa | grep -i cernlib` — expect both `cernlib-*.i686` (with `-devel`, `-static`, `-packlib-gfortran`, `-utils`) and `cernlib-*.x86_64`.
+- 32-bit libraries: `/usr/lib/cernlib/<version>/lib` (e.g. `libpacklib.a`, `libkernlib.a`, `libmathlib.a`, `libgraflib.a`); 64-bit ones are in `/usr/lib64/cernlib/<version>/lib` and are mostly shared-only.
+- 32-bit tools: `/usr/lib/cernlib/<version>/bin`.
+- Missing? On Fedora: `sudo dnf install cernlib-devel.i686 cernlib-static.i686 cernlib-packlib-gfortran.i686` (needs 32-bit glibc/libgfortran too, e.g. `glibc-devel.i686 libgfortran.i686`). Do not install packages without asking the user.
+
+Notes:
+- The 32-bit libraries are built with gfortran; linking them with Intel or NVIDIA Fortran may fail or misbehave, so use the GNU toolchain for CERNLIB-dependent tests.
+- With `JADE_FORCE_32` the CMake files prefer `/usr/lib` over `/usr/lib64` for library search, which is how the 32-bit CERNLIB gets picked up. If the 64-bit one is found instead, check `CMAKE_SYSTEM_LIBRARY_PATH` and the `CERNLIB_*_STATIC` lines in the configure output.
+
+## Native 32-bit build: required packages and known pitfalls
+
+`sh jadeinstall.sh --bits=32` and `sh jadetest.sh --bits=32` work natively on the Fedora developer machine with gfortran once these `.i686` packages are installed (names as in Fedora; check with `rpm -q <name>.i686`):
+
+- Toolchain/runtime: `glibc-devel`, `libatomic`, `libstdc++-devel`, `libgcc`, `libgfortran`.
+- X11/Motif/numerics: `libX11-devel`, `libXau-devel`, `libxcb-devel`, `libXdmcp-devel`, `libXt-devel`, `motif-devel`, `lapack-devel`, `blas-devel`.
+- CERNLIB: `cernlib-devel`, `cernlib-static`, `cernlib-packlib-gfortran` (see above).
+- Convert/jtuple/tests: `HepMC3-devel`, `HepMC3-search-devel`, `pythia8-devel`, `liburing-devel` (ROOT's link line needs `liburing.so`), `root-core` plus `root-hist`, `root-tree`, `root-io`, `root-gui`, `root-graf*`, `root-mathcore`, `root-matrix`, `root-net`, `root-physics`, `root-minuit2`, `root-hbook`.
+
+Symptoms of a missing package: `cannot find crt1.o` (`glibc-devel`), `cannot find .../libatomic.so` (`libatomic`), `Could NOT find Threads` (any of those, check `build/*/CMakeFiles/CMakeConfigureLog.yaml`), HepMC3 config "(64bit)" rejected (`HepMC3-devel.i686`), `HEPMC3_SEARCH_LIB-NOTFOUND` (`HepMC3-search-devel`), `No rule to make target '/usr/lib/liburing.so'` (`liburing-devel`). Many `ROOT::<Component>` "file does not exist" CMake warnings are harmless.
+
+Observed results (gfortran, 32-bit): everything builds; 26 of 29 tests pass out of the box, and 29 of 29 once the 32-bit `h2root` is first on `PATH` (see below). Other notes:
+- The CMake flag checks print `Fortran_COMPILER_SUPPORTS_<flag> - Failed` for every flag under `-m32`, but the flags are still applied. Harmless noise.
+- Libraries install to `installedGNU32/lib64` (GNUInstallDirs on Fedora), not `lib`.
+- Installing 32-bit ROOT replaces the 64-bit `root-core` (they conflict), which breaks the other 64-bit `root-*` packages and ROOT-dependent HEP tools (Rivet, VBFNLO, ...). Do not remove or reinstall ROOT packages without asking the user.
+
+### `h2root` (tests H2ROOT_*, and ROOT_ANALYSIS_* which depend on it)
+
+- `/usr/bin/h2root` comes from `root-hbook`. Fedora's x86_64 repo does not publish `root-hbook.i686`, although Koji builds it (`root.spec` has no i686 exclusion; ROOT builds `h2root` whenever Fortran is enabled). Download it manually from `https://kojipkgs.fedoraproject.org/packages/root/<version>/<release>.fc<N>/i686/root-hbook-<version>-<release>.fc<N>.i686.rpm`, matching the installed `root-core` version.
+- Even with both `root-hbook.x86_64` and `root-hbook.i686` installed, both own `/usr/bin/h2root` and rpm keeps the **64-bit** binary, which fails with `libCore.so.6.40: cannot open shared object file` because the 64-bit ROOT libraries are gone. Check with `file /usr/bin/h2root`.
+- Workaround without touching system packages: extract the 32-bit binary (`rpm2cpio root-hbook-*.i686.rpm | cpio -idm ./usr/bin/h2root` in a scratch dir; `ldd` it to confirm it resolves `/usr/lib/root/libCore.so.6.40`) and put that directory first on `PATH` before running `jadetest.sh`; `test/CMakeLists.txt` finds it with `find_program(H2ROOT NAMES h2root)`. Alternatively run the ROOT tests in the container.
+- Do not set `LD_LIBRARY_PATH=/usr/lib64/root`: it breaks the 32-bit ROOT_ANALYSIS tests.
+
+### Event display (`jadez`) and its test
+
+- `jadez` (`jadesoft/main2016/jadez`, graphics code in `src2016/grafix`) is an interactive command-line program that draws with CERNLIB HIGZ on X11. Datasets are plain files in the working directory: input BOS file, `F11LHO.AUPDAT1` (calibration) and `F22BOW.HELP.DATASET` (help). It needs `GFORTRAN_CONVERT_UNIT="big_endian;native:2"`. Dialog: dataset name, `<ENTER>` for calibration, then commands (`RB`, `ZXB`, `RU`, `END`, ...; `HELP`/`MENU` list them). It reads stdin without an `END=` handler, so EOF on stdin crashes it: always finish a scripted session with `END`.
+- Test `JADEZ_DATA_1` (`test/jadez_test.sh`) runs a scripted session. It never uses the desktop display: it uses `xvfb-run` if present or the display in `JADEZ_TEST_DISPLAY`, otherwise it is skipped (exit 77). No Xvfb on this machine: start a private headless X server with `weston --backend=headless --renderer=pixman --socket=jadetest --xwayland` (the log prints `xserver listening on display :N`; needs `XDG_RUNTIME_DIR` set to a private 0700 directory) and run `JADEZ_TEST_DISPLAY=:N ctest -R JADEZ`. Stop weston by PID (`pgrep -f 'socket=jadetest'`), not with a `pkill -f` pattern that also matches your own shell.
+
+### Graphics backends of `jadez` (`-DJADE_GRAPHICS=HIGZ|OPENPHIGS`)
+
+- Layering: `grafix` (display commands) -> PLOT-10 emulation (`src2016/interface/plot10.F`, `setcol.F`, `igwlcm.F`) -> HIGZ. Only these three files plus `welcme.f` touch the graphics package; the JADE docs (`doc/ComputingNotes`, note 103, section 7.4.2) say the original display used Tektronix PLOT-10 / IPS (DESY IBM) and that the PLOT-10 calls were mapped onto CERNLIB HIGZ in 1999. JADE code never calls PHIGS directly (the PHIGS libs in `jadesoft/util/Scripts/link` are old, commented-out OPAL-style link lines).
+- `HIGZ` (default): CERNLIB `libgrafX11` (HIGZ + X11 driver) + packlib/kernlib/mathlib. `jadez` uses about 40 HIGZ entry points (ISWN/ISVP/ISELNT, IPL/IPM/ITX, IS* attributes, IXSET*, IGBOX/IXBOX/IGPAVE, ICLRWK/IUWK, IGMETA/ICLWK for the PostScript metafile, IGLOC cursor, ...).
+- `OPENPHIGS`: `src2016/openphigs/higz_phigs.F` implements those entry points on OpenPHIGS' Fortran binding (`libphigs`), replacing libgrafX11. World coordinates are converted to NDC in the shim; structure 1 = screen picture, structure 2 = copy for the hardcopy (written when the `H` command is used or at exit). Build in a separate directory, e.g. `cmake -S jadesoft -B build_ophigs -DJADE_FORCE_32=ON -DJADE_GRAPHICS=OPENPHIGS -DCMAKE_Fortran_COMPILER=gfortran` and `cmake --build build_ophigs --target jadez`. All executables then also link `libphigs`.
+- OpenPHIGS limits: hardcopy is PNG (`JADE.nnn.png`) in 32-bit builds because OpenPHIGS' EPS/PDF/SVG export requests a 1 GiB-entry gl2ps buffer that overflows in 32-bit (`HPG_HCTYPE=7`, EPS, is used for 64-bit builds but is untested); `IGLOC` (mouse cursor input) is not implemented; HIGZ fonts and fill patterns are ignored.
+- Checked: OpenPHIGS (0.6.5, Fortran tests `/usr/lib/OpenPHIGS/tests_f`, 32- and 64-bit) runs on the private headless display (Mesa llvmpipe); `jadez` with OPENPHIGS draws the sample event (R-phi and Z-X views) into correct PNG hardcopies. Not compared pixel by pixel with the HIGZ output.
+- Test `JADEZ_DATA_1` runs 32 drawing commands (detector views, muon-filter views `RC1/ZXC1/...`, `MUPT`, `MUONS`, ...) with an `H` hardcopy after each, 11 text-only commands, and checks exit code, hardcopy count and that the pictures are coloured (`test/check_colours.py`). Pictures are left in the test working directory (`build/test`): `JADE.nnn.ps` and `JADE.nnn.ps.png` (HIGZ, converted with `gs`), or `JADE.nnn.png` and, with `JADE_PHIGS_SCREENSHOT=1` (set by the test), `JADE.nnn.screen.png` (what the OpenPHIGS screen shows).
+- Known gaps against the reference pictures in the top directory (`1004227_t.jpg`, `CCdat1_04_09.jpg`, historic displays): the sample data and the test chain do not produce muon chamber outlines (needs `MUEV` hits and muon calibration; HIGZ does not draw them either) nor the orange lead-glass energy numbers around the calorimeter (`PBGRFI`; not reproduced even with `LGMA ON` reconstruction), nor the side-view insets. Data files written by `superv` are big-endian on all units: read them with `GFORTRAN_CONVERT_UNIT=big_endian`, while `file006.bos` and `mcjade1.bos` need `big_endian;native:2`.
+- OpenPHIGS markers are about 200 times larger than HIGZ markers; the layer scales them by 0.005 (a JADE "dot" is then about 2 pixels). Without this the 1500 wire dots of the `RB1` view merged into a solid disc.
+- OpenPHIGS needs a GL-capable X display; to run headless use the private weston/Xwayland recipe above. Never run these programs against the desktop `DISPLAY`.
+
+## Conventions and gotchas
+
+- Fortran runtime must support endianness conversion (GNU/Intel work; PGI/SUN do not). Binary I/O formats (BOS, FPACK, CPROD) are endianness- and word-size-sensitive: be careful with `INTEGER`/`REAL` sizes and `-m32` assumptions.
+- Prefer editing `src2016`/`main2016`/`job2016`/`util2016` (current code). `src`, `src0`, `main`, `job`, `util` hold original/pre-2016 versions and prebuilt binaries — leave them alone unless the task is specifically about them.
+- Keep Fortran fixed-form column rules (code in cols 7–72, continuation in col 6); lines past col 72 are silently truncated.
+- When adding a source file, register it in the relevant `CMakeLists.txt`; sources are listed explicitly.
+- Compiler flags and toolchain handling live in `cmake/Modules/JADE_compiler_setup.cmake`; ROOT in `JADE_ROOT_setup.cmake`.
+- Verify changes by building in the container and running `jadetest.sh`; report honestly if you could not run them.
+- Commit messages in history are short and descriptive (e.g. "Add Fedora41"); PRs target `master`.

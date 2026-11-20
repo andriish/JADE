@@ -42,7 +42,7 @@ find_package(HepMC3  REQUIRED)
 message(STATUS "JADE test: HEPMC3_LIBRARIES=${HEPMC3_LIBRARIES}")
 ########################################################################
 find_package(Pythia8 8.300)
-message(STATUS "JADE test: PYTHIA8_LIBRARIES=${PYTHIA8_LIBRARIES} PYTHIA8_VERSION=${PYTHIA8_VERSION}") 
+message(STATUS "JADE test: PYTHIA8_FOUND=${PYTHIA8_FOUND} PYTHIA8_VERSION=${PYTHIA8_VERSION}") 
 ########################################################################
 ENABLE_TESTING()
 
@@ -66,6 +66,16 @@ add_test(NAME SUPERV_DATA_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${
 set_property( TEST SUPERV_DATA_1 PROPERTY  DEPENDS FPTOBOS_DATA_1) 
 jade_fortran_test(SUPERV_DATA_1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " ") 
 #NOTE: superv.stat needs a random number generator seeds. Otherwise it will use the same each time
+
+# Event display. Needs a virtual X server (xvfb-run, or JADEZ_TEST_DISPLAY set); skipped otherwise.
+if (EXISTS ${JADESOFT_BIN_DIR}/jadez)
+  add_test(NAME JADEZ_DATA_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_test.sh ${JADESOFT_BIN_DIR}/jadez
+           ${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/main2016/jadez/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR})
+  set_property( TEST JADEZ_DATA_1 PROPERTY DEPENDS FPTOBOS_DATA_1)
+  set_property( TEST JADEZ_DATA_1 PROPERTY SKIP_RETURN_CODE 77)
+  set_property( TEST JADEZ_DATA_1 PROPERTY TIMEOUT 700)
+  jade_fortran_test(JADEZ_DATA_1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " ")
+endif()
 
 add_test(NAME ZE4V_DATA_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/ze4vfile006.card  ${JADESOFT_BIN_DIR}/ze4v)
 set_property( TEST ZE4V_DATA_1 PROPERTY  DEPENDS SUPERV_DATA_1) 
@@ -105,8 +115,8 @@ if((NOT PYTHIA8_FOUND) OR (NOT HepMC3_FOUND))
   message(STATUS "JADE test: HepMC3 and/or Pythia8 package not found, was disabled or too old. The minimal supported Pythia8 version is 8.220. Please check if PYTHIA8_ROOT_DIR is set properly.") 
 else()
   add_executable(pythia8_JADE  ${CMAKE_CURRENT_SOURCE_DIR}/src/pythia8_JADE.cc)
-  target_link_libraries(pythia8_JADE  ${PYTHIA8_LIBRARIES}  ${HEPMC3_LIB} ${HEPMC3_SEARCH_LIB}  )
-  target_include_directories(pythia8_JADE PRIVATE ${HEPMC3_INCLUDE_DIR}  ${PYTHIA8_INCLUDE_DIR} ${PYTHIA8_INCLUDE_DIR}/Pythia8Plugins/ ${HEPMC3_INTERFACES_DIR}/pythia8/include/Pythia8/)
+  target_link_libraries(pythia8_JADE  Pythia8::Pythia8  ${HEPMC3_LIB} ${HEPMC3_SEARCH_LIB}  )
+  target_include_directories(pythia8_JADE PRIVATE ${HEPMC3_INCLUDE_DIR} ${PYTHIA8_INCLUDE_DIR}/Pythia8Plugins/ ${HEPMC3_INTERFACES_DIR}/pythia8/include/Pythia8/)
   add_test(NAME PYTHIA8_PRODUCE_HEPMC3_MC_1 COMMAND pythia8_JADE 
                                          ${CMAKE_CURRENT_SOURCE_DIR}/cards/testPythia1.input 
                                          ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output )
