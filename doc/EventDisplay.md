@@ -116,3 +116,7 @@ in a directory with `superv1.bos` and `aupdat1.b`).
   draws no axis captions by design (same in the original source).
 * The sample events are not those of the reference pictures, so the pictures
   match in structure, not pixel by pixel.
+* 64-bit builds: all tests pass with the HIGZ backend (see `h2root/README.md` for the
+  `h2root` fix needed on 64 bit). A 64-bit `jadez` built with `-DJADE_GRAPHICS=OPENPHIGS`
+  (EPS hardcopy) builds, but the three display test scripts exited with a non-zero
+  code; this has not been investigated.

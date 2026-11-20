@@ -128,7 +128,7 @@ The full description (interface, all code changes, the three display tests) is i
 - Result: all 32 tests pass (including the three display tests with a virtual display, see below), with `jade_h2root`.
 - `h2root` of ROOT 6.40.04 segfaults on 64 bit (address truncated to 32 bit in `h2root.cxx` and `hbook.f`). `h2root/` holds a fixed copy, built and installed as `jade_h2root` by `jadeinstall.sh`; `test/CMakeLists.txt` prefers it. See `h2root/README.md`.
 - Debugging ROOT code: the debug packages must match the installed version, from the `updates-debuginfo` repository (`sudo dnf --enablerepo=updates-debuginfo install root-hbook-debuginfo-6.40.04-7.fc45 root-debugsource-6.40.04-7.fc45`); the sources are then under `/usr/src/debug/root-6.40.04-7.fc45.x86_64`.
-- The OpenPHIGS `jadez` also builds in 64-bit (`-DJADE_GRAPHICS=OPENPHIGS`, hardcopy format EPS); its display tests have not passed yet (see the open item in `doc/EventDisplay.md`).
+- The OpenPHIGS `jadez` also builds in 64-bit (`-DJADE_GRAPHICS=OPENPHIGS`, hardcopy format EPS); its three display scripts failed with a non-zero exit code when I tried them (not investigated further; the HIGZ `jadez` passes all three display tests in 64-bit).
 
 ## Conventions and gotchas
 
