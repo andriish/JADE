@@ -192,6 +192,11 @@ To run some simple tests:
    The script supports the same values for the ``--toolhain`` flag as the ``jadeinstall.sh`` script.
 
 
+## Event display
+
+The interactive event display `jadez`, its graphics backends (HIGZ, OpenPHIGS), the fixes made for
+it and its tests are described in ``doc/EventDisplay.md``.
+
 ## Development options
 
 Some cmake scripts support the following options

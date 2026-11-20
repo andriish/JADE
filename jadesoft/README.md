@@ -12,6 +12,7 @@ The structure of this directory:
  - `src`      The original sources
  - `src0`     The sources for the libraries and compiled libraries pre-2016
  - `src2016`  The sources for the libraries  
+      - `openphigs` HIGZ routines on OpenPHIGS (`-DJADE_GRAPHICS=OPENPHIGS`, see `doc/EventDisplay.md`)
  - `util`     The sources for the utilities and compiled objects/binaries    pre-2016
       - `ccal`
       - `mcgen`

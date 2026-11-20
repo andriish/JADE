@@ -107,6 +107,8 @@ Observed results (gfortran, 32-bit): everything builds; 26 of 29 tests pass out 
 
 ### Graphics backends of `jadez` (`-DJADE_GRAPHICS=HIGZ|OPENPHIGS`)
 
+The full description (interface, all code changes, the three display tests) is in `doc/EventDisplay.md`; keep it up to date when changing the display, its backends or the tests.
+
 - Layering: `grafix` (display commands) -> PLOT-10 emulation (`src2016/interface/plot10.F`, `setcol.F`, `igwlcm.F`) -> HIGZ. Only these three files plus `welcme.f` touch the graphics package; the JADE docs (`doc/ComputingNotes`, note 103, section 7.4.2) say the original display used Tektronix PLOT-10 / IPS (DESY IBM) and that the PLOT-10 calls were mapped onto CERNLIB HIGZ in 1999. JADE code never calls PHIGS directly (the PHIGS libs in `jadesoft/util/Scripts/link` are old, commented-out OPAL-style link lines).
 - `HIGZ` (default): CERNLIB `libgrafX11` (HIGZ + X11 driver) + packlib/kernlib/mathlib. `jadez` uses about 40 HIGZ entry points (ISWN/ISVP/ISELNT, IPL/IPM/ITX, IS* attributes, IXSET*, IGBOX/IXBOX/IGPAVE, ICLRWK/IUWK, IGMETA/ICLWK for the PostScript metafile, IGLOC cursor, ...).
 - `OPENPHIGS`: `src2016/openphigs/higz_phigs.F` implements those entry points on OpenPHIGS' Fortran binding (`libphigs`), replacing libgrafX11. World coordinates are converted to NDC in the shim; structure 1 = screen picture, structure 2 = copy for the hardcopy (written when the `H` command is used or at exit). Build in a separate directory, e.g. `cmake -S jadesoft -B build_ophigs -DJADE_FORCE_32=ON -DJADE_GRAPHICS=OPENPHIGS -DCMAKE_Fortran_COMPILER=gfortran` and `cmake --build build_ophigs --target jadez`. All executables then also link `libphigs`.
