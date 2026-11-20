@@ -67,6 +67,16 @@ set_property( TEST SUPERV_DATA_1 PROPERTY  DEPENDS FPTOBOS_DATA_1)
 jade_fortran_test(SUPERV_DATA_1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " ") 
 #NOTE: superv.stat needs a random number generator seeds. Otherwise it will use the same each time
 
+# Event display. Needs a virtual X server (xvfb-run, or JADEZ_TEST_DISPLAY set); skipped otherwise.
+if (EXISTS ${JADESOFT_BIN_DIR}/jadez)
+  add_test(NAME JADEZ_DATA_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_test.sh ${JADESOFT_BIN_DIR}/jadez
+           ${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/main2016/jadez/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR})
+  set_property( TEST JADEZ_DATA_1 PROPERTY DEPENDS FPTOBOS_DATA_1)
+  set_property( TEST JADEZ_DATA_1 PROPERTY SKIP_RETURN_CODE 77)
+  set_property( TEST JADEZ_DATA_1 PROPERTY TIMEOUT 700)
+  jade_fortran_test(JADEZ_DATA_1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " ")
+endif()
+
 add_test(NAME ZE4V_DATA_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/ze4vfile006.card  ${JADESOFT_BIN_DIR}/ze4v)
 set_property( TEST ZE4V_DATA_1 PROPERTY  DEPENDS SUPERV_DATA_1) 
 jade_fortran_test(ZE4V_DATA_1 "GFORTRAN_CONVERT_UNIT=big_endian" "F_UFMTENDIAN=big" " ") 
@@ -200,3 +210,23 @@ else()
   message(STATUS "JADE test: valgrind package not found or disabled.  memory check tests disabled.") 
 endif()
 ########################################################################
+
+# Event display with the detector hardware (chamber boundary lines), result tables and
+# orthogonal projections ON, on the Monte Carlo event reconstructed by SUPERV_MC_1.
+if (TEST SUPERV_MC_1 AND EXISTS ${JADESOFT_BIN_DIR}/jadez)
+  add_test(NAME JADEZ_MC_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_mc_test.sh ${JADESOFT_BIN_DIR}/jadez
+           ${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/main2016/jadez/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR})
+  set_property( TEST JADEZ_MC_1 PROPERTY DEPENDS SUPERV_MC_1)
+  set_property( TEST JADEZ_MC_1 PROPERTY SKIP_RETURN_CODE 77)
+  set_property( TEST JADEZ_MC_1 PROPERTY TIMEOUT 400)
+endif()
+
+# Event display matching the reference R-phi picture (doc/eventdisplayreferences/): hardware, tables,
+# insets and the small dE/dx plot, without bank listing.
+if (TEST SUPERV_MC_1 AND EXISTS ${JADESOFT_BIN_DIR}/jadez)
+  add_test(NAME JADEZ_RPHI_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_rphi_test.sh ${JADESOFT_BIN_DIR}/jadez
+           ${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/main2016/jadez/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR})
+  set_property( TEST JADEZ_RPHI_1 PROPERTY DEPENDS SUPERV_MC_1)
+  set_property( TEST JADEZ_RPHI_1 PROPERTY SKIP_RETURN_CODE 77)
+  set_property( TEST JADEZ_RPHI_1 PROPERTY TIMEOUT 300)
+endif()

@@ -208,6 +208,7 @@ are written by others and are either used as external dependencies or included i
 | LAPACK / BLAS | Linear algebra | https://www.netlib.org/lapack/ |
 | X11, Motif | Graphics libraries | https://www.x.org, https://motif.ics.com |
 | gengetopt | Generates the command line parser of ``convert`` (optional, ``cmdline.c/h`` are included) | https://www.gnu.org/software/gengetopt/ |
+| Xvfb, Python 3 + Pillow, Ghostscript | Virtual display, picture conversion and checks in the display tests | https://www.x.org/releases/X11R7.7/doc/man/man1/Xvfb.1.xhtml, https://python-pillow.org, https://ghostscript.com |
 
 ### Codes included in the repository
 
@@ -224,6 +225,13 @@ are written by others and are either used as external dependencies or included i
 | ``jadesoft/src*/grafix/ellips.f``, ``disaxi.f`` | Mortran/Sheltran-generated sources carrying the "Copyright Stanford Mortran 3.1" notice | https://www.slac.stanford.edu |
 
 Individual files keep the licence and author notices they came with; check the file headers before reusing them.
+The reference pictures in ``doc/eventdisplayreferences/`` and the notes in ``doc/`` are historic JADE material.
+
+## Event display
+
+The interactive event display `jadez`, its graphics, the fixes made for
+it and its tests are described in ``doc/EventDisplay.md``.
+
 ## Development options
 
 Some cmake scripts support the following options
