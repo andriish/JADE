@@ -39,11 +39,11 @@ sh jadetest.sh    [--bits=32|64] [--toolchain=...] [--prefix=/abs/path]
 32-bit builds are best tested, and cernlib has 64-bit limitations, so the supported workflow is the prebuilt image:
 
 ```
-docker run -dit --name jade_soft -v $(pwd):/home ghcr.io/andriish/fedora39x86_64i686_gnu
+docker run -dit --name jade_soft -v $(pwd):/home ghcr.io/andriish/fedora45x86_64i686_gnu
 docker attach jade_soft   # then run jadeinstall.sh / jadetest.sh with --bits=32 inside
 ```
 
-Dockerfiles for Fedora 39/41 are in the repo root; CI definitions are in `.github/workflows/` (CentOS 7/8/9, macOS, 32-bit) and `.gitlab-ci.yml`. If a build tool is missing locally, don't try to install the toolchain on the host — say so, or use the container.
+Dockerfiles for Fedora 45 are in the repo root (`Dockerfile_fedora45x86_64i686_gnu` for 32-bit, `Dockerfile_fedora45x86_64_gnu` for 64-bit; they install the tools needed by `jadetest.sh`, including `xvfb-run`, Python with Pillow and ghostscript for the display tests); CI definitions are in `.github/workflows/` (CentOS 7/8/9, macOS, 32-bit, 64-bit) and `.gitlab-ci.yml`. If a build tool is missing locally, don't try to install the toolchain on the host — say so, or use the container.
 
 ## Fortran compilers available for testing
 
@@ -138,4 +138,4 @@ The full description (interface, all code changes, the three display tests) is i
 - When adding a source file, register it in the relevant `CMakeLists.txt`; sources are listed explicitly.
 - Compiler flags and toolchain handling live in `cmake/Modules/JADE_compiler_setup.cmake`; ROOT in `JADE_ROOT_setup.cmake`.
 - Verify changes by building in the container and running `jadetest.sh`; report honestly if you could not run them.
-- Commit messages in history are short and descriptive (e.g. "Add Fedora41"); PRs target `master`.
+- Commit messages in history are short and descriptive (e.g. "Add Fedora45"); PRs target `master`.
