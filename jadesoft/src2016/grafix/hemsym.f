@@ -102,8 +102,10 @@ CAV#endif
 CAV#ifdef JEXTERNISPICO      
 C      call ITXN(XPOS,YPOS,AMYSTR(1:le),le)
 CAV#endif
-      
-      return
+C     The early RETURN disabled the stroke font below (DNUM, e.g. the
+C     lead glass energies); the call of ITX above is commented out, so
+C     nothing was drawn at all. Use the stroke font.
+C      return
 CAV      
       KLM=0
       SCAL=AGT/7.0
@@ -126,11 +128,19 @@ CAV        call UHTOC(HLETS(K),1,MY,1)
 C
 C     **** GET COORDINATES ****
 C
-   15 HKLM(2)=HCORDS(IP)
-      IF(IFLAG.EQ.0) KLM=ISHFTR(KLM,8)
-      H64=64
-      HND2=HLAND(HKLM(2),H64)   !PMF 13/08/99 IAND2 -> HLAND
-      IX=ISHFTR(IAND(KLM,56),3)
+C     Each INTEGER*2 table word holds two packed bytes (first byte =
+C     high byte). The old code obtained them with an EQUIVALENCE between
+C     an INTEGER*2 array and an INTEGER*4, which only works on big-endian
+C     machines; use plain arithmetic instead.
+   15 IW=HCORDS(IP)
+      IF(IW.LT.0) IW=IW+65536
+      IF(IFLAG.EQ.0) THEN
+         KLM=IW/256
+      ELSE
+         KLM=IW-(IW/256)*256
+      ENDIF
+      HND2=IAND(KLM,64)
+      IX=IAND(KLM,56)/8
       X=IX + IXB
       Y=IAND(KLM,7)
       XX=X*C - Y*S
