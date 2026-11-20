@@ -18,7 +18,7 @@ else
     else
       cmake_version="2"
     fi
-    which cmake3
+    which cmake3 >/dev/null 2>&1
     if [ "$?" = "0" ]; then 
       cmake3_version=$( cmake3 --version | head -n 1 | cut -f 3 -d' ' | cut -f1 -d. )
     else
@@ -36,7 +36,7 @@ if [ "$?" != "0" ]; then
 fi
 
 
-tmpprefix=$( echo "$*" | egrep -- '--\<prefix\>' | cut -f2 -d=)
+tmpprefix=$( echo "$*" | grep -E -- '--\<prefix\>' | cut -f2 -d=)
 if test -n "$tmpprefix"; then
  if [ "$(uname)" == "Darwin" ]; then
    export TOP=$(greadlink -f $tmp)
@@ -47,7 +47,7 @@ else
  export TOP=$(pwd)/installed
 fi
 ########################################################################
-tmptoolchain=$( echo "$*" | egrep -- '--\<toolchain\>' | cut -f2 -d=)
+tmptoolchain=$( echo "$*" | grep -E -- '--\<toolchain\>' | cut -f2 -d=)
 toolchain=GNU
 if test -z "$tmptoolchain"; then
  tmptoolchain="GNU"
@@ -60,7 +60,7 @@ else
 fi
 echo "Used toolchain="$toolchain
 
-tmpbits=$( echo "$*" | egrep -- '--\<bits\>' | cut -f2 -d=)
+tmpbits=$( echo "$*" | grep -E -- '--\<bits\>' | cut -f2 -d=)
 if [ "$(uname)" == "Darwin" ]; then
   bits=64
 else

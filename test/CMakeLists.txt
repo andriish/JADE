@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10) #Because of ROOT
 PROJECT(JADETEST Fortran CXX C)
 set(VERSION 2024.04)
 include("GNUInstallDirs")
@@ -206,7 +206,7 @@ find_program( MEMORYCHECK_COMMAND valgrind )
 if(MEMORYCHECK_COMMAND)
   message(STATUS "JADE test: valgrind package found in ${MEMORYCHECK_COMMAND}.  memory check tests enabled.") 
   set( MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full --error-exitcode=1" )
-elseif()
+else()
   message(STATUS "JADE test: valgrind package not found or disabled.  memory check tests disabled.") 
 endif()
 ########################################################################

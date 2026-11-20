@@ -1,5 +1,5 @@
 ########################################################################
-CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10) #Because of ROOT
 PROJECT(JTUPLE Fortran CXX C)
 set(VERSION 2022.08)
 include("GNUInstallDirs")

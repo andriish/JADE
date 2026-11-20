@@ -18,7 +18,7 @@ else
     else
       cmake_version="2"
     fi
-    which cmake3
+    which cmake3 >/dev/null 2>&1
     if [ "$?" = "0" ]; then 
       cmake3_version=$( cmake3 --version | head -n 1 | cut -f 3 -d' ' | cut -f1 -d. )
     else
@@ -36,7 +36,7 @@ if [ "$?" != "0" ]; then
 fi
 
 
-tmp=$( echo "$*" | egrep -- '--\<prefix\>' | cut -f2 -d=)
+tmp=$( echo "$*" | grep -E -- '--\<prefix\>' | cut -f2 -d=)
 if test -n "$tmp"; then
   if [ "$(uname)" == "Darwin" ]; then
     export TOP=$(greadlink -f $tmp)
@@ -51,7 +51,7 @@ if [ "$(uname)" == "Darwin" ]; then
   export PYTHIA8_ROOT_DIR=/usr/local/Cellar/pythia/8.243
 fi
 ########################################################################
-tmptoolchain=$( echo "$*" | egrep -- '--\<toolchain\>' | cut -f2 -d=)
+tmptoolchain=$( echo "$*" | grep -E -- '--\<toolchain\>' | cut -f2 -d=)
 toolchain=GNU
 if test -z "$tmptoolchain"; then
  tmptoolchain="GNU"
@@ -123,7 +123,7 @@ if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-12" ]; then
   export CXX=clang++
   export FC=gfortran-12
 fi
-tmpbits=$( echo "$*" | egrep -- '--\<bits\>' | cut -f2 -d=)
+tmpbits=$( echo "$*" | grep -E -- '--\<bits\>' | cut -f2 -d=)
 if [ "$(uname)" == "Darwin" ]; then
   bits=64
 else
