@@ -1,4 +1,4 @@
-// fjcore -- extracted from FastJet v3.4.0 (http://fastjet.fr)
+// fjcore -- extracted from FastJet v3.5.3 (https://fastjet.fr)
 //
 // fjcore constitutes a digest of the main FastJet functionality.
 // The files fjcore.hh and fjcore.cc are meant to provide easy access to these 
@@ -22,7 +22,8 @@
 //
 //   - access to all native pp and ee algorithms, kt, anti-kt, C/A.
 //     For C/A, the NlnN method is available, while anti-kt and kt
-//     are limited to the N^2 one (still the fastest for N < 100k particles)
+//     are limited to the N^2 ones, including tiling (still the fastest
+//     for N < 100k particles)
 //   - access to selectors, for implementing cuts and selections
 //   - access to all functionalities related to pseudojets (e.g. a jet's
 //     structure or user-defined information)
@@ -40,12 +41,12 @@
 // header files and of the fjcore namespace with the fastjet one.
 //
 // fjcore.hh and fjcore.cc are not meant to be human-readable.
-// For documentation, see the full FastJet manual and doxygen at http://fastjet.fr
+// For documentation, see the full FastJet manual and doxygen at https://fastjet.fr
 //
 // Like FastJet, fjcore is released under the terms of the GNU General Public
-// License version 2 (GPLv2). If you use this code as part of work towards a
+// License version 2 (GPLv2) or later. If you use this code as part of work towards a
 // scientific publication, whether directly or contained within another program
-// (e.g. Delphes, MadGraph, SpartyJet, Rivet, LHC collaboration software frameworks, 
+// (e.g. Pythia, MadGraph, Sherpa, POWHEGBox, Rivet, LHC collaboration software frameworks, 
 // etc.), you should include a citation to
 // 
 //   EPJC72(2012)1896 [arXiv:1111.6097] (FastJet User Manual)
@@ -54,7 +55,7 @@
 //FJSTARTHEADER
 // $Id$
 //
-// Copyright (c) 2005-2021, Matteo Cacciari, Gavin P. Salam and Gregory Soyez
+// Copyright (c) 2005-2026, Matteo Cacciari, Gavin P. Salam and Gregory Soyez
 //
 //----------------------------------------------------------------------
 // This file is part of FastJet (fjcore).

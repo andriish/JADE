@@ -1,4 +1,4 @@
-// fjcore -- extracted from FastJet v3.4.0 (http://fastjet.fr)
+// fjcore -- extracted from FastJet v3.5.3, git-hash 49b0dd62 (https://fastjet.fr)
 //
 // fjcore constitutes a digest of the main FastJet functionality.
 // The files fjcore.hh and fjcore.cc are meant to provide easy access to these 
@@ -22,7 +22,8 @@
 //
 //   - access to all native pp and ee algorithms, kt, anti-kt, C/A.
 //     For C/A, the NlnN method is available, while anti-kt and kt
-//     are limited to the N^2 one (still the fastest for N < 100k particles)
+//     are limited to the N^2 ones, including tiling (still the fastest
+//     for N < 100k particles)
 //   - access to selectors, for implementing cuts and selections
 //   - access to all functionalities related to pseudojets (e.g. a jet's
 //     structure or user-defined information)
@@ -40,12 +41,12 @@
 // header files and of the fjcore namespace with the fastjet one.
 //
 // fjcore.hh and fjcore.cc are not meant to be human-readable.
-// For documentation, see the full FastJet manual and doxygen at http://fastjet.fr
+// For documentation, see the full FastJet manual and doxygen at https://fastjet.fr
 //
 // Like FastJet, fjcore is released under the terms of the GNU General Public
-// License version 2 (GPLv2). If you use this code as part of work towards a
+// License version 2 (GPLv2) or later. If you use this code as part of work towards a
 // scientific publication, whether directly or contained within another program
-// (e.g. Delphes, MadGraph, SpartyJet, Rivet, LHC collaboration software frameworks, 
+// (e.g. Pythia, MadGraph, Sherpa, POWHEGBox, Rivet, LHC collaboration software frameworks, 
 // etc.), you should include a citation to
 // 
 //   EPJC72(2012)1896 [arXiv:1111.6097] (FastJet User Manual)
@@ -54,7 +55,7 @@
 //FJSTARTHEADER
 // $Id$
 //
-// Copyright (c) 2005-2021, Matteo Cacciari, Gavin P. Salam and Gregory Soyez
+// Copyright (c) 2005-2026, Matteo Cacciari, Gavin P. Salam and Gregory Soyez
 //
 //----------------------------------------------------------------------
 // This file is part of FastJet (fjcore).
@@ -110,14 +111,12 @@ template<class BJ> void ClusterSequence::_simple_N2_cluster() {
     diJ[i] = _bj_diJ(jetA);
     jetA++; // have jetA follow i
   }
-  int history_location = n-1;
   while (tail != head) {
     double diJ_min = diJ[0];
     int diJ_min_jet = 0;
     for (int i = 1; i < n; i++) {
       if (diJ[i] < diJ_min) {diJ_min_jet = i; diJ_min  = diJ[i];}
     }
-    history_location++;
     jetA = & briefjets[diJ_min_jet];
     jetB = static_cast<BJ *>(jetA->NN);
     diJ_min *= _invR2; 
@@ -132,29 +131,116 @@ template<class BJ> void ClusterSequence::_simple_N2_cluster() {
     tail--; n--;
     *jetA = *tail;
     diJ[jetA - head] = diJ[tail-head];
+#define FJ_N2_UPDATE_STRATEGY 2
+#if   FJ_N2_UPDATE_STRATEGY==0
     for (BJ * jetI = head; jetI != tail; jetI++) {
       if (jetI->NN == jetA || jetI->NN == jetB) {
-	_bj_set_NN_nocross(jetI, head, tail);
-	diJ[jetI-head] = _bj_diJ(jetI); // update diJ 
+        _bj_set_NN_nocross(jetI, head, tail);
+        diJ[jetI-head] = _bj_diJ(jetI); // update diJ 
       } 
       if (jetB != NULL) {
-	double dist = _bj_dist(jetI,jetB);
-	if (dist < jetI->NN_dist) {
-	  if (jetI != jetB) {
-	    jetI->NN_dist = dist;
-	    jetI->NN = jetB;
-	    diJ[jetI-head] = _bj_diJ(jetI); // update diJ...
-	  }
-	}
-	if (dist < jetB->NN_dist) {
-	  if (jetI != jetB) {
-	    jetB->NN_dist = dist;
-	    jetB->NN      = jetI;}
-	}
+        double dist = _bj_dist(jetI,jetB);
+        if (dist < jetI->NN_dist) {
+          if (jetI != jetB) {
+            jetI->NN_dist = dist;
+            jetI->NN = jetB;
+            diJ[jetI-head] = _bj_diJ(jetI); // update diJ...
+          }
+        }
+        if (dist < jetB->NN_dist) {
+          if (jetI != jetB) {
+            jetB->NN_dist = dist;
+            jetB->NN      = jetI;}
+        }
+      }
+      if (jetI->NN == tail) {jetI->NN = jetA;}
+    }    
+    if (jetB != NULL) {diJ[jetB-head] = _bj_diJ(jetB);}
+#elif FJ_N2_UPDATE_STRATEGY==1
+    for (BJ * jetI = head; jetI != tail; jetI++) {
+      if (jetI->NN == jetA || (jetB && jetI->NN == jetB)) {
+        _bj_set_NN_nocross(jetI, head, tail);
+        diJ[jetI-head] = _bj_diJ(jetI); // update diJ 
+      } 
+      if (jetB != NULL) {
+        double dist = _bj_dist(jetI,jetB);
+        if (dist < jetI->NN_dist) {
+          if (jetI != jetB) {
+            jetI->NN_dist = dist;
+            jetI->NN = jetB;
+            diJ[jetI-head] = _bj_diJ(jetI); // update diJ...
+          }
+        }
+        if (dist < jetB->NN_dist) {
+          if (jetI != jetB) {
+            jetB->NN_dist = dist;
+            jetB->NN      = jetI;}
+        }
+      }
+      if (jetI->NN == tail) {jetI->NN = jetA;}
+    }    
+    if (jetB != NULL) {diJ[jetB-head] = _bj_diJ(jetB);}
+#elif FJ_N2_UPDATE_STRATEGY==2
+    if (jetB != NULL){
+      for (BJ * jetI = head; jetI != tail; jetI++) {
+        if (jetI->NN == jetA || jetI->NN == jetB) {
+          _bj_set_NN_nocross(jetI, head, tail);
+          diJ[jetI-head] = _bj_diJ(jetI); // update diJ 
+        } 
+        double dist = _bj_dist(jetI,jetB);
+        if (dist < jetI->NN_dist) {
+          if (jetI != jetB) {
+            jetI->NN_dist = dist;
+            jetI->NN = jetB;
+            diJ[jetI-head] = _bj_diJ(jetI); // update diJ...
+          }
+        }
+        if (dist < jetB->NN_dist) {
+          if (jetI != jetB) {
+            jetB->NN_dist = dist;
+            jetB->NN      = jetI;}
+        }
+        if (jetI->NN == tail) {jetI->NN = jetA;}
+      }
+      diJ[jetB-head] = _bj_diJ(jetB);
+    } else {
+      for (BJ * jetI = head; jetI != tail; jetI++) {
+        if (jetI->NN == jetA) {
+          _bj_set_NN_nocross(jetI, head, tail);
+          diJ[jetI-head] = _bj_diJ(jetI); // update diJ 
+        } 
+        if (jetI->NN == tail) {jetI->NN = jetA;}
+      }
+    }
+#elif FJ_N2_UPDATE_STRATEGY==3
+    auto jetB_or_A = jetB ? jetB : jetA;
+    for (BJ * jetI = head; jetI != tail; jetI++) {
+      if (jetI->NN == jetA || jetI->NN == jetB_or_A) {
+        _bj_set_NN_nocross(jetI, head, tail);
+        diJ[jetI-head] = _bj_diJ(jetI); // update diJ 
+      } 
+      if (jetB != NULL) {
+        double dist = _bj_dist(jetI,jetB);
+        if (dist < jetI->NN_dist) {
+          if (jetI != jetB) {
+            jetI->NN_dist = dist;
+            jetI->NN = jetB;
+            diJ[jetI-head] = _bj_diJ(jetI); // update diJ...
+          }
+        }
+        if (dist < jetB->NN_dist) {
+          if (jetI != jetB) {
+            jetB->NN_dist = dist;
+            jetB->NN      = jetI;}
+        }
       }
       if (jetI->NN == tail) {jetI->NN = jetA;}
     }
     if (jetB != NULL) {diJ[jetB-head] = _bj_diJ(jetB);}
+#else
+#error "unknown N2 update strategy"
+#endif
+#undef FJ_N2_UPDATE_STRATEGY
   }
   delete[] diJ;
   delete[] briefjets;
@@ -759,8 +845,7 @@ private:
   void _initialize(const std::vector<Coord2D> & positions, 
 	      const Coord2D & left_corner, const Coord2D & right_corner,
 	      const unsigned int max_size);
-  static const unsigned int _nshift = 3;
-  class Point; // will be defined below
+  FJCORE_WINDLL static const unsigned int _nshift = 3;
   template<class T> class triplet {
   public:
     inline const T & operator[](unsigned int i) const {return _contents[i];};
@@ -768,6 +853,7 @@ private:
   private:
     T _contents[_nshift];
   };
+  class Point;
   class Shuffle {
   public:
     unsigned int x, y;
@@ -778,14 +864,25 @@ private:
   typedef SearchTree<Shuffle>     Tree;
   typedef Tree::circulator        circulator;
   typedef Tree::const_circulator  const_circulator;
+  class Point {
+  public:
+    Coord2D coord;
+    Point * neighbour;
+    double  neighbour_dist2;
+    triplet<circulator> circ;
+    unsigned int review_flag;
+    double distance2(const Point & other) const {
+      return coord.distance2(other.coord);
+    };
+  };
   triplet<SharedPtr<Tree> >  _trees;
   SharedPtr<MinHeap>     _heap;
   std::vector<Point>     _points;
   std::stack<Point *>    _available_points;
   std::vector<Point *>   _points_under_review;
-  static const unsigned int _remove_heap_entry = 1;
-  static const unsigned int _review_heap_entry = 2;
-  static const unsigned int _review_neighbour  = 4;
+  FJCORE_WINDLL static const unsigned int _remove_heap_entry = 1;
+  FJCORE_WINDLL static const unsigned int _review_heap_entry = 2;
+  FJCORE_WINDLL static const unsigned int _review_neighbour  = 4;
   void _add_label(Point * point, unsigned int review_flag);
   void _set_label(Point * point, unsigned int review_flag);
   void _deal_with_points_to_review();
@@ -798,17 +895,6 @@ private:
   triplet<unsigned int> _shifts;     // absolute shifts
   triplet<unsigned int> _rel_shifts; // shifts relative to previous shift
   unsigned int _cp_search_range;
-};
-class ClosestPair2D::Point {
-public:
-  Coord2D coord;
-  Point * neighbour;
-  double  neighbour_dist2;
-  triplet<circulator> circ;
-  unsigned int review_flag;
-  double distance2(const Point & other) const {
-    return coord.distance2(other.coord);
-  };
 };
 inline bool floor_ln2_less(unsigned x, unsigned y) {
   if (x>y) return false;
@@ -983,10 +1069,10 @@ protected:
   ClusterSequence & _cs;
   const std::vector<PseudoJet> & _jets;
   std::vector<Tile2> _tiles;
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   int _ncall; // GPS tmp
   int _ncall_dtt; // GPS tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   double _Rparam, _R2, _invR2;
   double _tiles_eta_min, _tiles_eta_max;
   double _tile_size_eta, _tile_size_phi;
@@ -1009,7 +1095,7 @@ protected:
   void _add_untagged_neighbours_to_tile_union_using_max_info(const TiledJet * const jet, 
 		 std::vector<int> & tile_union, int & n_near_tiles);
   double _distance_to_tile(const TiledJet * bj, const Tile2 *) 
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
     ;
 #else
     const;
@@ -1032,7 +1118,7 @@ protected:
   }
   template <class J> inline double _bj_dist(
                 const J * const jetA, const J * const jetB) 
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
     {
     _ncall++; // GPS tmp
 #else
@@ -1045,7 +1131,7 @@ protected:
   }
   template <class J> inline double _bj_dist_not_periodic(
                 const J * const jetA, const J * const jetB)
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
     {
     _ncall++; // GPS tmp
 #else
@@ -1070,10 +1156,10 @@ protected:
   ClusterSequence & _cs;
   const std::vector<PseudoJet> & _jets;
   std::vector<Tile25> _tiles;
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   int _ncall; // GPS tmp
   int _ncall_dtt; // GPS tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   double _Rparam, _R2, _invR2;
   double _tiles_eta_min, _tiles_eta_max;
   double _tile_size_eta, _tile_size_phi;
@@ -1096,7 +1182,7 @@ protected:
   void _add_untagged_neighbours_to_tile_union_using_max_info(const TiledJet * const jet, 
 		 std::vector<int> & tile_union, int & n_near_tiles);
   double _distance_to_tile(const TiledJet * bj, const Tile25 *) 
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
     ;
 #else
     const;
@@ -1119,7 +1205,7 @@ protected:
   }
   template <class J> inline double _bj_dist(
                 const J * const jetA, const J * const jetB) 
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
     {
     _ncall++; // GPS tmp
 #else
@@ -1132,7 +1218,7 @@ protected:
   }
   template <class J> inline double _bj_dist_not_periodic(
                 const J * const jetA, const J * const jetB)
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
     {
     _ncall++; // GPS tmp
 #else
@@ -1409,9 +1495,9 @@ FJCORE_END_NAMESPACE
 FJCORE_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 using namespace std;
 #ifdef FJCORE_HAVE_LIMITED_THREAD_SAFETY
-atomic<ostream *> ClusterSequence::_fastjet_banner_ostr{&cout};
+FJCORE_WINDLL atomic<ostream *> ClusterSequence::_fastjet_banner_ostr{&cout};
 #else
-ostream * ClusterSequence::_fastjet_banner_ostr = &cout;
+FJCORE_WINDLL ostream * ClusterSequence::_fastjet_banner_ostr = &cout;
 #endif  // FJCORE_HAVE_LIMITED_THREAD_SAFETY
 ClusterSequence::~ClusterSequence () {
   if (_structure_shared_ptr){
@@ -1445,7 +1531,6 @@ void ClusterSequence::_initialise_and_run_no_decant () {
     return;
   } else if (_jet_algorithm == ee_kt_algorithm ||
 	     _jet_algorithm == ee_genkt_algorithm) {
-    _strategy = N2Plain;
     if (_jet_algorithm == ee_kt_algorithm) {
       assert(_Rparam > 2.0); 
       _invR2 = 1.0;
@@ -1457,7 +1542,12 @@ void ClusterSequence::_initialise_and_run_no_decant () {
       }
       _invR2 = 1.0/_R2;
     }
-    _simple_N2_cluster_EEBriefJet();
+    if (_strategy == N2PlainEEAccurate) {
+      _simple_N2_cluster_EEAccurateBriefJet();      
+    } else {
+      _strategy = N2Plain;
+      _simple_N2_cluster_EEBriefJet();
+    }
     return;
   } else if (_jet_algorithm == undefined_jet_algorithm) {
     throw Error("A ClusterSequence cannot be created with an uninitialised JetDefinition");
@@ -1561,7 +1651,7 @@ void ClusterSequence::print_banner() {
   (*ostr) << "#                     FastJet release " << fastjet_version << " [fjcore]" << endl;
   (*ostr) << "#                 M. Cacciari, G.P. Salam and G. Soyez                  \n"; 
   (*ostr) << "#     A software package for jet finding and analysis at colliders      \n";
-  (*ostr) << "#                           http://fastjet.fr                           \n"; 
+  (*ostr) << "#                           https://fastjet.fr                           \n"; 
   (*ostr) << "#	                                                                      \n";
   (*ostr) << "# Please cite EPJC72(2012)1896 [arXiv:1111.6097] if you use this package\n";
   (*ostr) << "# for scientific work and optionally PLB641(2006)57 [hep-ph/0512210].   \n";
@@ -1624,6 +1714,8 @@ string ClusterSequence::strategy_string (Strategy strategy_in)  const {
     strategy = "NlnN4pi"; break;
   case N2Plain:
     strategy = "N2Plain"; break;
+  case N2PlainEEAccurate:
+    strategy = "N2PlainEEAccurate"; break;
   case N2Tiled:
     strategy = "N2Tiled"; break;
   case N2MinHeapTiled:
@@ -1789,6 +1881,7 @@ void ClusterSequence::transfer_from_sequence(const ClusterSequence & from_seq,
   _strategy                = from_seq._strategy               ;
   _jet_algorithm           = from_seq._jet_algorithm          ;
   _plugin_activated        = from_seq._plugin_activated       ;
+  _Qtot                    = from_seq._Qtot                   ;
   if (action_on_jets)
     _jets     = (*action_on_jets)(from_seq._jets);
   else
@@ -2146,12 +2239,12 @@ void ClusterSequence::_add_step_to_history (
   int local_step = _history.size()-1;
   assert(parent1 >= 0);
   if (_history[parent1].child != Invalid){
-    throw InternalError("trying to recomine an object that has previsously been recombined");
+    throw InternalError("trying to recombine an object that has previously been recombined");
   }
   _history[parent1].child = local_step;
   if (parent2 >= 0) {
     if (_history[parent2].child != Invalid){
-      throw InternalError("trying to recomine an object that has previsously been recombined");
+      throw InternalError("trying to recombine an object that has previously been recombined");
     }
     _history[parent2].child = local_step;
   }
@@ -2646,6 +2739,10 @@ template<> inline void ClusterSequence::_bj_set_jetinfo(
   jetA->NN_dist = _R2;
   jetA->NN      = NULL;
 }
+template<> inline void ClusterSequence::_bj_set_jetinfo(
+                           EEAccurateBriefJet * const jetA, const int _jets_index) const {
+  _bj_set_jetinfo<EEBriefJet>(jetA, _jets_index);
+}
 template<> double ClusterSequence::_bj_dist(
                 const EEBriefJet * const jeta, 
                 const EEBriefJet * const jetb) const {
@@ -2653,14 +2750,32 @@ template<> double ClusterSequence::_bj_dist(
     - jeta->nx*jetb->nx
     - jeta->ny*jetb->ny
     - jeta->nz*jetb->nz;
-  dist *= 2; // distance is _2_*min(Ei^2,Ej^2)*(1-cos theta)
-  return dist;
+  return dist*2; // distance is _2_*min(Ei^2,Ej^2)*(1-cos theta)
+}
+template<> double ClusterSequence::_bj_dist(
+                const EEAccurateBriefJet * const jeta, 
+                const EEAccurateBriefJet * const jetb) const {
+  double dist = 1.0 
+    - jeta->nx*jetb->nx
+    - jeta->ny*jetb->ny
+    - jeta->nz*jetb->nz;
+  if (dist*dist < numeric_limits<double>::epsilon()) {
+    double cross_x = jeta->ny * jetb->nz - jetb->ny * jeta->nz;
+    double cross_y = jeta->nz * jetb->nx - jetb->nz * jeta->nx;
+    double cross_z = jeta->nx * jetb->ny - jetb->nx * jeta->ny;
+    dist = cross_x*cross_x + cross_y*cross_y + cross_z*cross_z;
+    return dist;
+  }
+  return dist*2; // distance is _2_*min(Ei^2,Ej^2)*(1-cos theta)
 }
 void ClusterSequence::_simple_N2_cluster_BriefJet() {  
   _simple_N2_cluster<BriefJet>();
 }
 void ClusterSequence::_simple_N2_cluster_EEBriefJet() {  
   _simple_N2_cluster<EEBriefJet>();
+}
+void ClusterSequence::_simple_N2_cluster_EEAccurateBriefJet() {  
+  _simple_N2_cluster<EEAccurateBriefJet>();
 }
 FJCORE_END_NAMESPACE
 #include <iostream>
@@ -2780,13 +2895,10 @@ void ClusterSequence::_initialise_tiles() {
       pptile++;
       tile->surrounding_tiles = pptile;
       if (ieta > _tiles_ieta_min) {
-	// with the itile subroutine, we can safely run tiles from
-	// idphi=-1 to idphi=+1, because it takes care of
-	// negative and positive boundaries
-	for (int idphi = -1; idphi <=+1; idphi++) {
-	  *pptile = & _tiles[_tile_index(ieta-1,iphi+idphi)];
-	  pptile++;
-	}	
+        for (int idphi = -1; idphi <=+1; idphi++) {
+          *pptile = & _tiles[_tile_index(ieta-1,iphi+idphi)];
+          pptile++;
+        }        
       }
       *pptile = & _tiles[_tile_index(ieta,iphi-1)];
       pptile++;
@@ -2794,10 +2906,10 @@ void ClusterSequence::_initialise_tiles() {
       *pptile = & _tiles[_tile_index(ieta,iphi+1)];
       pptile++;
       if (ieta < _tiles_ieta_max) {
-	for (int idphi = -1; idphi <= +1; idphi++) {
-	  *pptile = & _tiles[_tile_index(ieta+1,iphi+idphi)];
-	  pptile++;
-	}	
+        for (int idphi = -1; idphi <= +1; idphi++) {
+          *pptile = & _tiles[_tile_index(ieta+1,iphi+idphi)];
+          pptile++;
+        }        
       }
       tile->end_tiles = pptile;
       tile->tagged = false;
@@ -2817,7 +2929,7 @@ int ClusterSequence::_tile_index(const double eta, const double phi) const {
   return (iphi + ieta * _n_tiles_phi);
 }
 inline void ClusterSequence::_tj_set_jetinfo( TiledJet * const jet,
-					      const int _jets_index) {
+                                              const int _jets_index) {
   _bj_set_jetinfo<>(jet, _jets_index);
   jet->tile_index = _tile_index(jet->eta, jet->phi);
   Tile * tile = &_tiles[jet->tile_index];
@@ -2840,7 +2952,7 @@ void ClusterSequence::_print_tiles(TiledJet * briefjets ) const {
   }
 }
 void ClusterSequence::_add_neighbours_to_tile_union(const int tile_index, 
-	       vector<int> & tile_union, int & n_near_tiles) const {
+               vector<int> & tile_union, int & n_near_tiles) const {
   for (Tile * const * near_tile = _tiles[tile_index].begin_tiles; 
        near_tile != _tiles[tile_index].end_tiles; near_tile++){
     tile_union[n_near_tiles] = *near_tile - & _tiles[0];
@@ -2849,7 +2961,7 @@ void ClusterSequence::_add_neighbours_to_tile_union(const int tile_index,
 }
 inline void ClusterSequence::_add_untagged_neighbours_to_tile_union(
                const int tile_index, 
-	       vector<int> & tile_union, int & n_near_tiles)  {
+               vector<int> & tile_union, int & n_near_tiles)  {
   for (Tile ** near_tile = _tiles[tile_index].begin_tiles; 
        near_tile != _tiles[tile_index].end_tiles; near_tile++){
     if (! (*near_tile)->tagged) {
@@ -2877,18 +2989,18 @@ void ClusterSequence::_tiled_N2_cluster() {
   for (tile = _tiles.begin(); tile != _tiles.end(); tile++) {
     for (jetA = tile->head; jetA != NULL; jetA = jetA->next) {
       for (jetB = tile->head; jetB != jetA; jetB = jetB->next) {
-	double dist = _bj_dist(jetA,jetB);
-	if (dist < jetA->NN_dist) {jetA->NN_dist = dist; jetA->NN = jetB;}
-	if (dist < jetB->NN_dist) {jetB->NN_dist = dist; jetB->NN = jetA;}
+        double dist = _bj_dist(jetA,jetB);
+        if (dist < jetA->NN_dist) {jetA->NN_dist = dist; jetA->NN = jetB;}
+        if (dist < jetB->NN_dist) {jetB->NN_dist = dist; jetB->NN = jetA;}
       }
     }
     for (Tile ** RTile = tile->RH_tiles; RTile != tile->end_tiles; RTile++) {
       for (jetA = tile->head; jetA != NULL; jetA = jetA->next) {
-	for (jetB = (*RTile)->head; jetB != NULL; jetB = jetB->next) {
-	  double dist = _bj_dist(jetA,jetB);
-	  if (dist < jetA->NN_dist) {jetA->NN_dist = dist; jetA->NN = jetB;}
-	  if (dist < jetB->NN_dist) {jetB->NN_dist = dist; jetB->NN = jetA;}
-	}
+        for (jetB = (*RTile)->head; jetB != NULL; jetB = jetB->next) {
+          double dist = _bj_dist(jetA,jetB);
+          if (dist < jetA->NN_dist) {jetA->NN_dist = dist; jetA->NN = jetB;}
+          if (dist < jetB->NN_dist) {jetB->NN_dist = dist; jetB->NN = jetA;}
+        }
       }
     }
   }
@@ -2898,14 +3010,12 @@ void ClusterSequence::_tiled_N2_cluster() {
     diJ[i] = _bj_diJ(jetA);
     jetA++; // have jetA follow i
   }
-  int history_location = n-1;
   while (tail != head) {
     double diJ_min = diJ[0];
     int diJ_min_jet = 0;
     for (int i = 1; i < n; i++) {
       if (diJ[i] < diJ_min) {diJ_min_jet = i; diJ_min  = diJ[i];}
     }
-    history_location++;
     jetA = & briefjets[diJ_min_jet];
     jetB = jetA->NN;
     diJ_min *= _invR2; 
@@ -2926,26 +3036,24 @@ void ClusterSequence::_tiled_N2_cluster() {
     if (jetB != NULL) {
       bool sort_it = false;
       if (jetB->tile_index != jetA->tile_index) {
-	sort_it = true;
-	_add_neighbours_to_tile_union(jetB->tile_index,tile_union,n_near_tiles);
+        sort_it = true;
+        _add_neighbours_to_tile_union(jetB->tile_index,tile_union,n_near_tiles);
       }
       if (oldB.tile_index != jetA->tile_index && 
-	  oldB.tile_index != jetB->tile_index) {
-	sort_it = true;
-	_add_neighbours_to_tile_union(oldB.tile_index,tile_union,n_near_tiles);
+          oldB.tile_index != jetB->tile_index) {
+        sort_it = true;
+        _add_neighbours_to_tile_union(oldB.tile_index,tile_union,n_near_tiles);
       }
       if (sort_it) {
-	// sort the tiles before then compressing the list
-	sort(tile_union.begin(), tile_union.begin()+n_near_tiles);
-	// and now condense the list
-	int nnn = 1;
-	for (int i = 1; i < n_near_tiles; i++) {
-	  if (tile_union[i] != tile_union[nnn-1]) {
-	    tile_union[nnn] = tile_union[i]; 
-	    nnn++;
-	  }
-	}
-	n_near_tiles = nnn;
+        sort(tile_union.begin(), tile_union.begin()+n_near_tiles);
+        int nnn = 1;
+        for (int i = 1; i < n_near_tiles; i++) {
+          if (tile_union[i] != tile_union[nnn-1]) {
+            tile_union[nnn] = tile_union[i]; 
+            nnn++;
+          }
+        }
+        n_near_tiles = nnn;
       }
     }
     tail--; n--;
@@ -2954,58 +3062,53 @@ void ClusterSequence::_tiled_N2_cluster() {
       *jetA = *tail;
       diJ[jetA - head] = diJ[tail-head];
       if (jetA->previous == NULL) {
-	_tiles[jetA->tile_index].head = jetA;
+        _tiles[jetA->tile_index].head = jetA;
       } else {
-	jetA->previous->next = jetA;
+        jetA->previous->next = jetA;
       }
       if (jetA->next != NULL) {jetA->next->previous = jetA;}
     }
     for (int itile = 0; itile < n_near_tiles; itile++) {
       Tile * tile_ptr = &_tiles[tile_union[itile]];
       for (TiledJet * jetI = tile_ptr->head; jetI != NULL; jetI = jetI->next) {
-	// see if jetI had jetA or jetB as a NN -- if so recalculate the NN
-	if (jetI->NN == jetA || (jetI->NN == jetB && jetB != NULL)) {
-	  jetI->NN_dist = _R2;
-	  jetI->NN      = NULL;
-	  // now go over tiles that are neighbours of I (include own tile)
-	  for (Tile ** near_tile  = tile_ptr->begin_tiles; 
-	               near_tile != tile_ptr->end_tiles; near_tile++) {
-	    // and then over the contents of that tile
-	    for (TiledJet * jetJ  = (*near_tile)->head; 
+        if (jetI->NN == jetA || (jetI->NN == jetB && jetB != NULL)) {
+          jetI->NN_dist = _R2;
+          jetI->NN      = NULL;
+          for (Tile ** near_tile  = tile_ptr->begin_tiles; 
+                       near_tile != tile_ptr->end_tiles; near_tile++) {
+            for (TiledJet * jetJ  = (*near_tile)->head; 
                             jetJ != NULL; jetJ = jetJ->next) {
-	      double dist = _bj_dist(jetI,jetJ);
-	      if (dist < jetI->NN_dist && jetJ != jetI) {
-		jetI->NN_dist = dist; jetI->NN = jetJ;
-	      }
-	    }
-	  }
-	  diJ[jetI-head] = _bj_diJ(jetI); // update diJ 
-	}
-	// check whether new jetB is closer than jetI's current NN and
-	// if need to update things
-	if (jetB != NULL) {
-	  double dist = _bj_dist(jetI,jetB);
-	  if (dist < jetI->NN_dist) {
-	    if (jetI != jetB) {
-	      jetI->NN_dist = dist;
-	      jetI->NN = jetB;
-	      diJ[jetI-head] = _bj_diJ(jetI); // update diJ...
-	    }
-	  }
-	  if (dist < jetB->NN_dist) {
-	    if (jetI != jetB) {
-	      jetB->NN_dist = dist;
-	      jetB->NN      = jetI;}
-	  }
-	}
+              double dist = _bj_dist(jetI,jetJ);
+              if (dist < jetI->NN_dist && jetJ != jetI) {
+                jetI->NN_dist = dist; jetI->NN = jetJ;
+              }
+            }
+          }
+          diJ[jetI-head] = _bj_diJ(jetI); // update diJ 
+        }
+        if (jetB != NULL) {
+          double dist = _bj_dist(jetI,jetB);
+          if (dist < jetI->NN_dist) {
+            if (jetI != jetB) {
+              jetI->NN_dist = dist;
+              jetI->NN = jetB;
+              diJ[jetI-head] = _bj_diJ(jetI); // update diJ...
+            }
+          }
+          if (dist < jetB->NN_dist) {
+            if (jetI != jetB) {
+              jetB->NN_dist = dist;
+              jetB->NN      = jetI;}
+          }
+        }
       }
     }
     if (jetB != NULL) {diJ[jetB-head] = _bj_diJ(jetB);}
     for (Tile ** near_tile = _tiles[tail->tile_index].begin_tiles; 
-	         near_tile!= _tiles[tail->tile_index].end_tiles; near_tile++){
+                 near_tile!= _tiles[tail->tile_index].end_tiles; near_tile++){
       for (TiledJet * jetJ = (*near_tile)->head; 
-	             jetJ != NULL; jetJ = jetJ->next) {
-	if (jetJ->NN == tail) {jetJ->NN = jetA;}
+                     jetJ != NULL; jetJ = jetJ->next) {
+        if (jetJ->NN == tail) {jetJ->NN = jetA;}
       }
     }
     if (jetB != NULL) {diJ[jetB-head] = _bj_diJ(jetB);}
@@ -3030,18 +3133,18 @@ void ClusterSequence::_faster_tiled_N2_cluster() {
   for (tile = _tiles.begin(); tile != _tiles.end(); tile++) {
     for (jetA = tile->head; jetA != NULL; jetA = jetA->next) {
       for (jetB = tile->head; jetB != jetA; jetB = jetB->next) {
-	double dist = _bj_dist(jetA,jetB);
-	if (dist < jetA->NN_dist) {jetA->NN_dist = dist; jetA->NN = jetB;}
-	if (dist < jetB->NN_dist) {jetB->NN_dist = dist; jetB->NN = jetA;}
+        double dist = _bj_dist(jetA,jetB);
+        if (dist < jetA->NN_dist) {jetA->NN_dist = dist; jetA->NN = jetB;}
+        if (dist < jetB->NN_dist) {jetB->NN_dist = dist; jetB->NN = jetA;}
       }
     }
     for (Tile ** RTile = tile->RH_tiles; RTile != tile->end_tiles; RTile++) {
       for (jetA = tile->head; jetA != NULL; jetA = jetA->next) {
-	for (jetB = (*RTile)->head; jetB != NULL; jetB = jetB->next) {
-	  double dist = _bj_dist(jetA,jetB);
-	  if (dist < jetA->NN_dist) {jetA->NN_dist = dist; jetA->NN = jetB;}
-	  if (dist < jetB->NN_dist) {jetB->NN_dist = dist; jetB->NN = jetA;}
-	}
+        for (jetB = (*RTile)->head; jetB != NULL; jetB = jetB->next) {
+          double dist = _bj_dist(jetA,jetB);
+          if (dist < jetA->NN_dist) {jetA->NN_dist = dist; jetA->NN = jetB;}
+          if (dist < jetB->NN_dist) {jetB->NN_dist = dist; jetB->NN = jetA;}
+        }
       }
     }
   }
@@ -3053,11 +3156,10 @@ void ClusterSequence::_faster_tiled_N2_cluster() {
   jetA = head;
   for (int i = 0; i < n; i++) {
     diJ[i].diJ = _bj_diJ(jetA); // kt distance * R^2
-    diJ[i].jet = jetA;  // our compact diJ table will not be in	     
+    diJ[i].jet = jetA;  // our compact diJ table will not be in             
     jetA->diJ_posn = i; // one-to-one corresp. with non-compact jets,
     jetA++; // have jetA follow i 
   }
-  int history_location = n-1;
   while (n > 0) {
     diJ_plus_link * best, *stop; // pointers a bit faster than indices
     double diJ_min = diJ[0].diJ; // initialise the best one here.
@@ -3066,7 +3168,6 @@ void ClusterSequence::_faster_tiled_N2_cluster() {
     for (diJ_plus_link * here = diJ+1; here != stop; here++) {
       if (here->diJ < diJ_min) {best = here; diJ_min  = here->diJ;}
     }
-    history_location++;
     jetA = best->jet;
     jetB = jetA->NN;
     diJ_min *= _invR2; 
@@ -3084,16 +3185,16 @@ void ClusterSequence::_faster_tiled_N2_cluster() {
     }
     int n_near_tiles = 0;
     _add_untagged_neighbours_to_tile_union(jetA->tile_index, 
-					   tile_union, n_near_tiles);
+                                           tile_union, n_near_tiles);
     if (jetB != NULL) {
       if (jetB->tile_index != jetA->tile_index) {
-	_add_untagged_neighbours_to_tile_union(jetB->tile_index,
-					       tile_union,n_near_tiles);
+        _add_untagged_neighbours_to_tile_union(jetB->tile_index,
+                                               tile_union,n_near_tiles);
       }
       if (oldB.tile_index != jetA->tile_index && 
-	  oldB.tile_index != jetB->tile_index) {
-	_add_untagged_neighbours_to_tile_union(oldB.tile_index,
-					       tile_union,n_near_tiles);
+          oldB.tile_index != jetB->tile_index) {
+        _add_untagged_neighbours_to_tile_union(oldB.tile_index,
+                                               tile_union,n_near_tiles);
       }
     }
     n--;
@@ -3103,42 +3204,36 @@ void ClusterSequence::_faster_tiled_N2_cluster() {
       Tile * tile_ptr = &_tiles[tile_union[itile]];
       tile_ptr->tagged = false; // reset tag, since we're done with unions
       for (TiledJet * jetI = tile_ptr->head; jetI != NULL; jetI = jetI->next) {
-	// see if jetI had jetA or jetB as a NN -- if so recalculate the NN
-	if (jetI->NN == jetA || (jetI->NN == jetB && jetB != NULL)) {
-	  jetI->NN_dist = _R2;
-	  jetI->NN      = NULL;
-	  // now go over tiles that are neighbours of I (include own tile)
-	  for (Tile ** near_tile  = tile_ptr->begin_tiles; 
-	               near_tile != tile_ptr->end_tiles; near_tile++) {
-	    // and then over the contents of that tile
-	    for (TiledJet * jetJ  = (*near_tile)->head; 
+        if (jetI->NN == jetA || (jetI->NN == jetB && jetB != NULL)) {
+          jetI->NN_dist = _R2;
+          jetI->NN      = NULL;
+          for (Tile ** near_tile  = tile_ptr->begin_tiles; 
+                       near_tile != tile_ptr->end_tiles; near_tile++) {
+            for (TiledJet * jetJ  = (*near_tile)->head; 
                             jetJ != NULL; jetJ = jetJ->next) {
-	      double dist = _bj_dist(jetI,jetJ);
-	      if (dist < jetI->NN_dist && jetJ != jetI) {
-		jetI->NN_dist = dist; jetI->NN = jetJ;
-	      }
-	    }
-	  }
-	  diJ[jetI->diJ_posn].diJ = _bj_diJ(jetI); // update diJ kt-dist
-	}
-	// check whether new jetB is closer than jetI's current NN and
-	// if jetI is closer than jetB's current (evolving) nearest
-	// neighbour. Where relevant update things
-	if (jetB != NULL) {
-	  double dist = _bj_dist(jetI,jetB);
-	  if (dist < jetI->NN_dist) {
-	    if (jetI != jetB) {
-	      jetI->NN_dist = dist;
-	      jetI->NN = jetB;
-	      diJ[jetI->diJ_posn].diJ = _bj_diJ(jetI); // update diJ...
-	    }
-	  }
-	  if (dist < jetB->NN_dist) {
-	    if (jetI != jetB) {
-	      jetB->NN_dist = dist;
-	      jetB->NN      = jetI;}
-	  }
-	}
+              double dist = _bj_dist(jetI,jetJ);
+              if (dist < jetI->NN_dist && jetJ != jetI) {
+                jetI->NN_dist = dist; jetI->NN = jetJ;
+              }
+            }
+          }
+          diJ[jetI->diJ_posn].diJ = _bj_diJ(jetI); // update diJ kt-dist
+        }
+        if (jetB != NULL) {
+          double dist = _bj_dist(jetI,jetB);
+          if (dist < jetI->NN_dist) {
+            if (jetI != jetB) {
+              jetI->NN_dist = dist;
+              jetI->NN = jetB;
+              diJ[jetI->diJ_posn].diJ = _bj_diJ(jetI); // update diJ...
+            }
+          }
+          if (dist < jetB->NN_dist) {
+            if (jetI != jetB) {
+              jetB->NN_dist = dist;
+              jetB->NN      = jetI;}
+          }
+        }
       }
     }
     if (jetB != NULL) {diJ[jetB->diJ_posn].diJ = _bj_diJ(jetB);}
@@ -3163,18 +3258,18 @@ void ClusterSequence::_minheap_faster_tiled_N2_cluster() {
   for (tile = _tiles.begin(); tile != _tiles.end(); tile++) {
     for (jetA = tile->head; jetA != NULL; jetA = jetA->next) {
       for (jetB = tile->head; jetB != jetA; jetB = jetB->next) {
-	double dist = _bj_dist(jetA,jetB);
-	if (dist < jetA->NN_dist) {jetA->NN_dist = dist; jetA->NN = jetB;}
-	if (dist < jetB->NN_dist) {jetB->NN_dist = dist; jetB->NN = jetA;}
+        double dist = _bj_dist(jetA,jetB);
+        if (dist < jetA->NN_dist) {jetA->NN_dist = dist; jetA->NN = jetB;}
+        if (dist < jetB->NN_dist) {jetB->NN_dist = dist; jetB->NN = jetA;}
       }
     }
     for (Tile ** RTile = tile->RH_tiles; RTile != tile->end_tiles; RTile++) {
       for (jetA = tile->head; jetA != NULL; jetA = jetA->next) {
-	for (jetB = (*RTile)->head; jetB != NULL; jetB = jetB->next) {
-	  double dist = _bj_dist(jetA,jetB);
-	  if (dist < jetA->NN_dist) {jetA->NN_dist = dist; jetA->NN = jetB;}
-	  if (dist < jetB->NN_dist) {jetB->NN_dist = dist; jetB->NN = jetA;}
-	}
+        for (jetB = (*RTile)->head; jetB != NULL; jetB = jetB->next) {
+          double dist = _bj_dist(jetA,jetB);
+          if (dist < jetA->NN_dist) {jetA->NN_dist = dist; jetA->NN = jetB;}
+          if (dist < jetB->NN_dist) {jetB->NN_dist = dist; jetB->NN = jetA;}
+        }
       }
     }
   }
@@ -3186,11 +3281,9 @@ void ClusterSequence::_minheap_faster_tiled_N2_cluster() {
   MinHeap minheap(diJs);
   vector<TiledJet *> jets_for_minheap;
   jets_for_minheap.reserve(n); 
-  int history_location = n-1;
   while (n > 0) {
     double diJ_min = minheap.minval() *_invR2;
     jetA = head + minheap.minloc();
-    history_location++;
     jetB = jetA->NN;
     if (jetB != NULL) {
       if (jetA < jetB) {std::swap(jetA,jetB);}
@@ -3207,23 +3300,16 @@ void ClusterSequence::_minheap_faster_tiled_N2_cluster() {
     minheap.remove(jetA-head);
     int n_near_tiles = 0;
     _add_untagged_neighbours_to_tile_union(jetA->tile_index, 
-					   tile_union, n_near_tiles);
+                                           tile_union, n_near_tiles);
     if (jetB != NULL) {
       if (jetB->tile_index != jetA->tile_index) {
-	_add_untagged_neighbours_to_tile_union(jetB->tile_index,
-					       tile_union,n_near_tiles);
+        _add_untagged_neighbours_to_tile_union(jetB->tile_index,
+                                               tile_union,n_near_tiles);
       }
       if (oldB.tile_index != jetA->tile_index && 
-	  oldB.tile_index != jetB->tile_index) {
-	// GS: the line below generates a warning that oldB.tile_index
-	// may be used uninitialised. However, to reach this point, we
-	// ned jetB != NULL (see test a few lines above) and is jetB
-	// !=NULL, one would have gone through "oldB = *jetB before
-	// (see piece of code ~20 line above), so the index is
-	// initialised. We do not do anything to avoid the warning to
-	// avoid any potential speed impact.
-	_add_untagged_neighbours_to_tile_union(oldB.tile_index,
-					       tile_union,n_near_tiles);
+          oldB.tile_index != jetB->tile_index) {
+        _add_untagged_neighbours_to_tile_union(oldB.tile_index,
+                                               tile_union,n_near_tiles);
       }
       jetB->label_minheap_update_needed();
       jets_for_minheap.push_back(jetB);
@@ -3232,48 +3318,40 @@ void ClusterSequence::_minheap_faster_tiled_N2_cluster() {
       Tile * tile_ptr = &_tiles[tile_union[itile]];
       tile_ptr->tagged = false; // reset tag, since we're done with unions
       for (TiledJet * jetI = tile_ptr->head; jetI != NULL; jetI = jetI->next) {
-	// see if jetI had jetA or jetB as a NN -- if so recalculate the NN
-	if (jetI->NN == jetA || (jetI->NN == jetB && jetB != NULL)) {
-	  jetI->NN_dist = _R2;
-	  jetI->NN      = NULL;
-	  // label jetI as needing heap action...
-	  if (!jetI->minheap_update_needed()) {
-	    jetI->label_minheap_update_needed();
-	    jets_for_minheap.push_back(jetI);}
-	  // now go over tiles that are neighbours of I (include own tile)
-	  for (Tile ** near_tile  = tile_ptr->begin_tiles; 
-	               near_tile != tile_ptr->end_tiles; near_tile++) {
-	    // and then over the contents of that tile
-	    for (TiledJet * jetJ  = (*near_tile)->head; 
+        if (jetI->NN == jetA || (jetI->NN == jetB && jetB != NULL)) {
+          jetI->NN_dist = _R2;
+          jetI->NN      = NULL;
+          if (!jetI->minheap_update_needed()) {
+            jetI->label_minheap_update_needed();
+            jets_for_minheap.push_back(jetI);}
+          for (Tile ** near_tile  = tile_ptr->begin_tiles; 
+                       near_tile != tile_ptr->end_tiles; near_tile++) {
+            for (TiledJet * jetJ  = (*near_tile)->head; 
                             jetJ != NULL; jetJ = jetJ->next) {
-	      double dist = _bj_dist(jetI,jetJ);
-	      if (dist < jetI->NN_dist && jetJ != jetI) {
-		jetI->NN_dist = dist; jetI->NN = jetJ;
-	      }
-	    }
-	  }
-	}
-	// check whether new jetB is closer than jetI's current NN and
-	// if jetI is closer than jetB's current (evolving) nearest
-	// neighbour. Where relevant update things
-	if (jetB != NULL) {
-	  double dist = _bj_dist(jetI,jetB);
-	  if (dist < jetI->NN_dist) {
-	    if (jetI != jetB) {
-	      jetI->NN_dist = dist;
-	      jetI->NN = jetB;
-	      // label jetI as needing heap action...
-	      if (!jetI->minheap_update_needed()) {
-		jetI->label_minheap_update_needed();
-		jets_for_minheap.push_back(jetI);}
-	    }
-	  }
-	  if (dist < jetB->NN_dist) {
-	    if (jetI != jetB) {
-	      jetB->NN_dist = dist;
-	      jetB->NN      = jetI;}
-	  }
-	}
+              double dist = _bj_dist(jetI,jetJ);
+              if (dist < jetI->NN_dist && jetJ != jetI) {
+                jetI->NN_dist = dist; jetI->NN = jetJ;
+              }
+            }
+          }
+        }
+        if (jetB != NULL) {
+          double dist = _bj_dist(jetI,jetB);
+          if (dist < jetI->NN_dist) {
+            if (jetI != jetB) {
+              jetI->NN_dist = dist;
+              jetI->NN = jetB;
+              if (!jetI->minheap_update_needed()) {
+                jetI->label_minheap_update_needed();
+                jets_for_minheap.push_back(jetI);}
+            }
+          }
+          if (dist < jetB->NN_dist) {
+            if (jetI != jetB) {
+              jetB->NN_dist = dist;
+              jetB->NN      = jetI;}
+          }
+        }
       }
     }
     while (jets_for_minheap.size() > 0) {
@@ -3322,17 +3400,17 @@ FJCORE_END_NAMESPACE      // defined in fastjet/internal/base.hh
 FJCORE_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 using namespace std;
 #ifdef FJCORE_HAVE_LIMITED_THREAD_SAFETY
-atomic<bool> Error::_print_errors{true};
-atomic<bool> Error::_print_backtrace{false};
-atomic<ostream *> Error::_default_ostr{& cerr};
-atomic<mutex *>   Error::_stream_mutex{nullptr};
+FJCORE_WINDLL atomic<bool> Error::_print_errors{true};
+FJCORE_WINDLL atomic<bool> Error::_print_backtrace{false};
+FJCORE_WINDLL atomic<ostream *> Error::_default_ostr{& cerr};
+FJCORE_WINDLL atomic<mutex *>   Error::_stream_mutex{nullptr};
 #else
-bool Error::_print_errors = true;
-bool Error::_print_backtrace = false;
-ostream * Error::_default_ostr = & cerr;
+FJCORE_WINDLL bool Error::_print_errors = true;
+FJCORE_WINDLL bool Error::_print_backtrace = false;
+FJCORE_WINDLL ostream * Error::_default_ostr = & cerr;
 #endif  // FJCORE_HAVE_LIMITED_THREAD_SAFETY
-#if (!defined(FJCORE_HAVE_EXECINFO_H)) || defined(__FJCORE__)
-  LimitedWarning Error::_execinfo_undefined;
+#if (!defined(FJCORE_HAVE_EXECINFO_H)) || defined(__FJCORE_ONLY_CORE__)
+FJCORE_WINDLL LimitedWarning Error::_execinfo_undefined;
 #endif
 Error::Error(const std::string & message_in) {
   _message = message_in; 
@@ -3354,7 +3432,7 @@ Error::Error(const std::string & message_in) {
   }
 }
 void Error::set_print_backtrace(bool enabled) {
-#if (!defined(FJCORE_HAVE_EXECINFO_H)) || defined(__FJCORE__)
+#if (!defined(FJCORE_HAVE_EXECINFO_H)) || defined(__FJCORE_ONLY_CORE__)
   if (enabled) {
     _execinfo_undefined.warn("Error::set_print_backtrace(true) will not work with this build of FastJet");
   }
@@ -3370,7 +3448,7 @@ FJCORE_END_NAMESPACE
 #include<sstream>
 FJCORE_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 using namespace std;
-const double JetDefinition::max_allowable_R = 1000.0;
+FJCORE_WINDLL const double JetDefinition::max_allowable_R = 1000.0;
 JetDefinition::JetDefinition(JetAlgorithm jet_algorithm_in, 
 			     double R_in, 
 			     RecombinationScheme recomb_scheme_in,
@@ -3668,15 +3746,15 @@ FJCORE_END_NAMESPACE
 using namespace std;
 FJCORE_BEGIN_NAMESPACE
 #ifdef FJCORE_HAVE_LIMITED_THREAD_SAFETY
-atomic<ostream *> LimitedWarning::_default_ostr{&cerr};
-atomic<mutex *> LimitedWarning::_stream_mutex{nullptr};
-atomic<int> LimitedWarning::_max_warn_default{5};
-std::mutex LimitedWarning::_global_warnings_summary_mutex;
+FJCORE_WINDLL atomic<ostream *> LimitedWarning::_default_ostr{&cerr};
+FJCORE_WINDLL atomic<mutex *> LimitedWarning::_stream_mutex{nullptr};
+FJCORE_WINDLL atomic<int> LimitedWarning::_max_warn_default{5};
+FJCORE_WINDLL std::mutex LimitedWarning::_global_warnings_summary_mutex;
 #else
-ostream * LimitedWarning::_default_ostr = &cerr;
-int LimitedWarning::_max_warn_default = 5;
+FJCORE_WINDLL ostream * LimitedWarning::_default_ostr = &cerr;
+FJCORE_WINDLL int LimitedWarning::_max_warn_default = 5;
 #endif // FJCORE_HAVE_LIMITED_THREAD_SAFETY
-std::list< LimitedWarning::Summary > LimitedWarning::_global_warnings_summary;
+FJCORE_WINDLL std::list< LimitedWarning::Summary > LimitedWarning::_global_warnings_summary;
 int LimitedWarning::n_warn_so_far() const{
   if (((LimitedWarning::Summary *)_this_warning_summary) == 0) return 0;
   return (*_this_warning_summary).second;
@@ -3805,16 +3883,9 @@ PseudoJet::PseudoJet(const double px_in, const double py_in, const double pz_in,
 PseudoJet & PseudoJet::operator=(const PseudoJet & other_pj){
   _structure = other_pj._structure;
   _user_info = other_pj._user_info;
-  _kt2 = other_pj._kt2; 
   _cluster_hist_index = other_pj._cluster_hist_index;
   _user_index = other_pj._user_index;
-  _px = other_pj._px;
-  _py = other_pj._py;
-  _pz = other_pj._pz;
-  _E  = other_pj._E;
-  _phi = other_pj._phi; 
-  _rap = other_pj._rap;
-  _init_status.store(other_pj._init_status);
+  reset_momentum(other_pj);
   return *this;
 }
 #endif // FJCORE_HAVE_THREAD_SAFETY
@@ -3834,13 +3905,9 @@ void PseudoJet::_ensure_valid_rap_phi() const{
                                              std::memory_order_seq_cst,
                                              std::memory_order_relaxed)){
       _set_rap_phi();
-      _init_status = Init_Done; // can safely be done after all physics varlables are set
+      _init_status.store(Init_Done, memory_order_release); 
     } else {
-      do{
-        expected = Init_Done;
-      } while (!_init_status.compare_exchange_weak(expected, Init_Done,
-                                                   std::memory_order_relaxed,
-                                                   std::memory_order_relaxed));
+      while (_init_status.load(memory_order_acquire) != Init_Done);
     }
   }
 }
@@ -5040,15 +5107,16 @@ Selector & Selector::operator |=(const Selector & b){
 }
 FJCORE_END_NAMESPACE      // defined in fastjet/internal/base.hh
 #include <iomanip>
+#include <algorithm>
 using namespace std;
 FJCORE_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 LazyTiling25::LazyTiling25(ClusterSequence & cs) :
   _cs(cs), _jets(cs.jets())
 {
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   _ncall = 0; // gps tmp
   _ncall_dtt = 0; // gps tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   _Rparam = cs.jet_def().R();
   _R2 = _Rparam * _Rparam;
   _invR2 = 1.0 / _R2;
@@ -5076,7 +5144,7 @@ void LazyTiling25::_initialise_tiles() {
     }
   }
 #endif // _FASTJET_TILING25_USE_TILING_ANALYSIS_
-# define FJCORE_LAZY25_MIN3TILESY
+#define FJCORE_LAZY25_MIN3TILESY
 #ifdef FJCORE_LAZY25_MIN3TILESY
    if (_tiles_eta_max - _tiles_eta_min < 3*_tile_size_eta) {
      _tile_size_eta = (_tiles_eta_max - _tiles_eta_min)/3;
@@ -5242,12 +5310,12 @@ inline void LazyTiling25::_add_untagged_neighbours_to_tile_union_using_max_info(
   }
 }
 inline double LazyTiling25::_distance_to_tile(const TiledJet * bj, const Tile25 * tile) 
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
    {
   _ncall_dtt++; // GPS tmp
 #else
   const {
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   double deta;
   if (_tiles[bj->tile_index].eta_centre == tile->eta_centre) deta = 0;
   else   deta = std::abs(bj->eta - tile->eta_centre) - _tile_half_size_eta;
@@ -5359,9 +5427,9 @@ void LazyTiling25::run() {
       if (jetA->NN_dist > tile->max_NN_dist) tile->max_NN_dist = jetA->NN_dist;
     }
   }
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   cout << "intermediate ncall, dtt = " << _ncall << " " << _ncall_dtt << endl; // GPS tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   vector<double> diJs(n);
   for (int i = 0; i < n; i++) {
     diJs[i] = _bj_diJ(&briefjets[i]);
@@ -5370,11 +5438,9 @@ void LazyTiling25::run() {
   MinHeap minheap(diJs);
   vector<TiledJet *> jets_for_minheap;
   jets_for_minheap.reserve(n); 
-  int history_location = n-1;
   while (n > 0) {
     double diJ_min = minheap.minval() *_invR2;
     jetA = head + minheap.minloc();
-    history_location++;
     jetB = jetA->NN;
     if (jetB != NULL) {
       if (jetA < jetB) {std::swap(jetA,jetB);}
@@ -5440,24 +5506,25 @@ void LazyTiling25::run() {
     n--;
   }
   delete[] briefjets;
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   cout << "ncall, dtt = " << _ncall << " " << _ncall_dtt << endl; // GPS tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
 }
 FJCORE_END_NAMESPACE
 #include <iomanip>
 #include <limits>
 #include <cmath>
+#include <algorithm>
 using namespace std;
 #define _FJCORE_TILING2_USE_TILING_ANALYSIS_
 FJCORE_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 LazyTiling9::LazyTiling9(ClusterSequence & cs) :
   _cs(cs), _jets(cs.jets())
 {
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   _ncall = 0; // gps tmp
   _ncall_dtt = 0; // gps tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   _Rparam = cs.jet_def().R();
   _R2 = _Rparam * _Rparam;
   _invR2 = 1.0 / _R2;
@@ -5484,7 +5551,7 @@ void LazyTiling9::_initialise_tiles() {
     }
   }
 #endif
-# define FJCORE_LAZY9_MIN2TILESY
+#define FJCORE_LAZY9_MIN2TILESY
 #ifdef FJCORE_LAZY9_MIN2TILESY
    if (_tiles_eta_max - _tiles_eta_min < 2*_tile_size_eta) {
      _tile_size_eta = (_tiles_eta_max - _tiles_eta_min)/2;
@@ -5627,12 +5694,12 @@ inline void LazyTiling9::_add_untagged_neighbours_to_tile_union_using_max_info(
   }
 }
 inline double LazyTiling9::_distance_to_tile(const TiledJet * bj, const Tile2 * tile) 
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
    {
   _ncall_dtt++; // GPS tmp
 #else
   const {
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   double deta;
   if (_tiles[bj->tile_index].eta_centre == tile->eta_centre) deta = 0;
   else   deta = std::abs(bj->eta - tile->eta_centre) - _tile_half_size_eta;
@@ -5744,9 +5811,9 @@ void LazyTiling9::run() {
       if (jetA->NN_dist > tile->max_NN_dist) tile->max_NN_dist = jetA->NN_dist;
     }
   }
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   cout << "intermediate ncall, dtt = " << _ncall << " " << _ncall_dtt << endl; // GPS tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
   vector<double> diJs(n);
   for (int i = 0; i < n; i++) {
     diJs[i] = _bj_diJ(&briefjets[i]);
@@ -5755,11 +5822,9 @@ void LazyTiling9::run() {
   MinHeap minheap(diJs);
   vector<TiledJet *> jets_for_minheap;
   jets_for_minheap.reserve(n); 
-  int history_location = n-1;
   while (n > 0) {
     double diJ_min = minheap.minval() *_invR2;
     jetA = head + minheap.minloc();
-    history_location++;
     jetB = jetA->NN;
     if (jetB != NULL) {
       if (jetA < jetB) {std::swap(jetA,jetB);}
@@ -5825,12 +5890,13 @@ void LazyTiling9::run() {
     n--;
   }
   delete[] briefjets;
-#ifdef INSTRUMENT2
+#ifdef FJCORE_INSTRUMENT2
   cout << "ncall, dtt = " << _ncall << " " << _ncall_dtt << endl; // GPS tmp
-#endif // INSTRUMENT2
+#endif // FASTJET_INSTRUMENT2
 }
 FJCORE_END_NAMESPACE
 #include <iomanip>
+#include <algorithm>
 using namespace std;
 FJCORE_BEGIN_NAMESPACE      // defined in fastjet/internal/base.hh
 LazyTiling9Alt::LazyTiling9Alt(ClusterSequence & cs) :
@@ -6126,11 +6192,9 @@ void LazyTiling9Alt::run() {
   MinHeap minheap(diJs);
   vector<TiledJet *> jets_for_minheap;
   jets_for_minheap.reserve(n); 
-  int history_location = n-1;
   while (n > 0) {
     double diJ_min = minheap.minval() *_invR2;
     jetA = head + minheap.minloc();
-    history_location++;
     jetB = jetA->NN;
     if (jetB != NULL) {
       if (jetA < jetB) {std::swap(jetA,jetB);}
@@ -6229,6 +6293,17 @@ void TilingExtent::_determine_rapidity_extent(const vector<PseudoJet> & particle
     if (ibin < 0) ibin = 0;
     if (ibin >= nbins) ibin = nbins - 1;
     counts[ibin]++;
+  }
+  if (_minrap > _maxrap) {
+    _minrap = -2.5;
+    _maxrap =  2.5;
+    for (unsigned i = 0; i < particles.size(); i++) {
+      double rap = particles[i].pz() > 0 ? _maxrap : _minrap;
+      ibin = int(rap+nrap); 
+      if (ibin < 0) ibin = 0;
+      if (ibin >= nbins) ibin = nbins - 1;
+      counts[ibin]++;
+    }
   }
   double max_in_bin = 0;
   for (ibin = 0; ibin < nbins; ibin++) {
