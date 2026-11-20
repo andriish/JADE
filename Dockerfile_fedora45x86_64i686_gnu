@@ -15,7 +15,7 @@ RUN         dnf -y install dnf-plugins-core dnf5-plugins && \
 # without it these tests are skipped), Mesa for GL, Python with Pillow and ghostscript
 # to check and convert the pictures
 RUN         dnf -y install xorg-x11-server-Xvfb xorg-x11-xauth mesa-dri-drivers mesa-libGL \
-                           python3 python3-pillow ghostscript gdb
+                           python3 python3-pillow ghostscript gdb strace
 # 32 bit libraries and development packages
 RUN         dnf -y install glibc-devel.i686 libatomic.i686 libstdc++-devel.i686 libquadmath.i686 libgfortran.i686 \
                            libnsl2-devel.i686 openssl-devel.i686 blas-devel.i686 lapack-devel.i686 liburing-devel.i686 && \

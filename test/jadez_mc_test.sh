@@ -44,6 +44,13 @@ if [ $rc -ne 0 ]; then
   echo "--- first lines of the jadez output ---"; head -40 ../jadez_mc_test.log
   echo "--- X connection check (python ctypes, same xvfb-run) ---"
   $RUN python3 -c "import ctypes,os;x=ctypes.CDLL('libX11.so.6');x.XOpenDisplay.restype=ctypes.c_void_p;d=x.XOpenDisplay(None);print('DISPLAY',os.environ.get('DISPLAY'),'XOpenDisplay ->',d)" 2>&1 | tail -5
+  echo "--- X environment seen by a client under xvfb-run ---"
+  $RUN sh -c 'env | grep -E "^(DISPLAY|XAUTHORITY|HOME)="; xauth list 2>&1 | head -3; hostname; cat /etc/hosts; ls -la /tmp/.X11-unix' 2>&1 | head -20
+  if command -v strace >/dev/null 2>&1; then
+    echo "--- strace of the display connection of jadez ---"
+    $RUN strace -f -e trace=connect,socket,access -o "$(pwd)/jadez_strace.log" "$JADEZ" < /dev/null > /dev/null 2>&1
+    grep -E "X11|connect|ENOENT|EACCES|EPERM|ECONN" "$(pwd)/jadez_strace.log" | tail -20
+  fi
   if command -v gdb >/dev/null 2>&1; then
     echo "--- gdb backtrace of jadez at start-up ---"
     $RUN gdb -batch -ex run -ex bt -ex "info sharedlibrary" --args "$JADEZ" < /dev/null 2>&1 | grep -v "^\[" | tail -50
