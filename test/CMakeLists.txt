@@ -80,7 +80,10 @@ set_property( TEST JTJOB_DATA_1 PROPERTY  DEPENDS JZREAD_DATA_1)
 jade_fortran_test(JTJOB_DATA_1 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22" "F_UFMTENDIAN=big:2,22" "FORT_CONVERT2=big_ieee FORT_CONVERT22=big_ieee") 
 
 
-find_program(H2ROOT NAMES h2root)
+# jade_h2root (installed with JADESOFT, see h2root/README.md) is preferred: the h2root of
+# ROOT 6.40 crashes on 64 bit machines
+find_program(H2ROOT NAMES jade_h2root h2root HINTS ${JADESOFT_BIN_DIR})
+message(STATUS "JADE test: H2ROOT=${H2ROOT}")
 find_package(ROOT COMPONENTS Core RIO Tree)
 if (H2ROOT AND ROOT_FOUND)
   message(STATUS "JADE test: ROOT_INCLUDE_DIRS=${ROOT_INCLUDE_DIRS} ROOT_LIBRARIES=${ROOT_LIBRARIES}")
