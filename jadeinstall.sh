@@ -187,3 +187,12 @@ $CMAKE -S ../../fptobos -B . $arguments $bit_arguments  $jade_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install .
 cd ../..
+########################################################################
+# h2root with the 64 bit address fix (HBOOK -> ROOT converter used by the tests)
+mkdir -p build/h2root
+cd build/h2root
+rm -rf outputs CMakeFiles CMakeCache.txt
+$CMAKE -S ../../h2root -B . $arguments $bit_arguments  -DCMAKE_CXX_COMPILER=$CXX
+$CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
+$CMAKE --install .
+cd ../..

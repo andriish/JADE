@@ -122,6 +122,14 @@ The full description (interface, all code changes, the three display tests) is i
 - OpenPHIGS markers are about 200 times larger than HIGZ markers; the layer scales them by 0.005 (a JADE "dot" is then about 2 pixels). Without this the 1500 wire dots of the `RB1` view merged into a solid disc.
 - OpenPHIGS needs a GL-capable X display; to run headless use the private weston/Xwayland recipe above. Never run these programs against the desktop `DISPLAY`.
 
+## 64-bit build (`sh jadeinstall.sh --bits=64`, `sh jadetest.sh --bits=64`)
+
+- Needs the x86_64 development packages: `cernlib-devel`, `cernlib-static`, `HepMC3-devel`, `HepMC3-search-devel`, `root-core` (+ `root-cling`, `root-hbook`, the other `root-*`). The 32-bit and 64-bit builds of `root-core`, `root-cling`, `HepMC3-devel`, `HepMC3-search-devel` and `cernlib-packlib-gfortran` ship the same files and **cannot be installed together**: switching between the 32-bit and the 64-bit setup needs `sudo dnf install --allowerasing ...` (it removes the other architecture's ROOT subpackages). `dnf install --assumeno` does not detect these file conflicts.
+- Result: all 32 tests pass (including the three display tests with a virtual display, see below), with `jade_h2root`.
+- `h2root` of ROOT 6.40.04 segfaults on 64 bit (address truncated to 32 bit in `h2root.cxx` and `hbook.f`). `h2root/` holds a fixed copy, built and installed as `jade_h2root` by `jadeinstall.sh`; `test/CMakeLists.txt` prefers it. See `h2root/README.md`.
+- Debugging ROOT code: the debug packages must match the installed version, from the `updates-debuginfo` repository (`sudo dnf --enablerepo=updates-debuginfo install root-hbook-debuginfo-6.40.04-7.fc45 root-debugsource-6.40.04-7.fc45`); the sources are then under `/usr/src/debug/root-6.40.04-7.fc45.x86_64`.
+- The OpenPHIGS `jadez` also builds in 64-bit (`-DJADE_GRAPHICS=OPENPHIGS`, hardcopy format EPS); its display tests have not passed yet (see the open item in `doc/EventDisplay.md`).
+
 ## Conventions and gotchas
 
 - Fortran runtime must support endianness conversion (GNU/Intel work; PGI/SUN do not). Binary I/O formats (BOS, FPACK, CPROD) are endianness- and word-size-sensitive: be careful with `INTEGER`/`REAL` sizes and `-m32` assumptions.
