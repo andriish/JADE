@@ -156,6 +156,8 @@ rm -rf outputs CMakeFiles CMakeCache.txt
 $CMAKE -S ../../test -B . -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC  -DJADESOFT_DIR=$TOP$toolchain$bits/share/JADESOFT/cmake $bit_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install .
-$CTEST .  --timeout 10
+$CTEST .  --timeout 10 --output-on-failure
+ctest_status=$?
 #$CTEST -H../../test -B.  --timeout 10 --rerun-failed
 cd ../..
+exit $ctest_status
