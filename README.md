@@ -229,7 +229,7 @@ The reference pictures in ``doc/eventdisplayreferences/`` and the notes in ``doc
 
 ## Event display
 
-The interactive event display `jadez`, its graphics backends (HIGZ, OpenPHIGS), the fixes made for
+The interactive event display `jadez`, its graphics, the fixes made for
 it and its tests are described in ``doc/EventDisplay.md``.
 
 ## Development options

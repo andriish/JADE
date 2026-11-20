@@ -28,7 +28,6 @@ mkdir -p rphidisplay && cd rphidisplay && rm -f JADE.*
 cp ../superv1.bos .
 cp ../aupdat1.b F11LHO.AUPDAT1
 cp "$HELP" F22BOW.HELP.DATASET
-export JADE_PHIGS_SCREENSHOT=1
 # the superv output is big-endian on all units
 export GFORTRAN_CONVERT_UNIT=big_endian
 
@@ -75,15 +74,13 @@ NF=$(find . -maxdepth 1 \( -name 'JADE.*.png' -o -name 'JADE.*.ps' \) -size +0 |
 echo "$NF hardcopy files for $NV H commands"
 [ "$NF" -ge "$NV" ] || { echo "FAIL: too few hardcopies"; fail=1; }
 # coloured, orange lead glass numbers, thin grey chamber boundary lines
-DEDXOPT=""
-ls JADE.*.screen.png >/dev/null 2>&1 && DEDXOPT="--dedx"   # pixel check only for the OpenPHIGS screen pictures
-python3 "$SCRIPTDIR/check_colours.py" --grey $DEDXOPT JADE.*.png JADE.*.ps 2>/dev/null \
+python3 "$SCRIPTDIR/check_colours.py" --grey JADE.*.png JADE.*.ps 2>/dev/null \
   || { echo "FAIL: colours / lead glass numbers / grey detector boundary lines missing"; fail=1; }
 if command -v gs >/dev/null 2>&1; then
   for f in JADE.*.ps; do
     [ -s "$f" ] && gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=png16m -r100 -dEPSCrop -sOutputFile="$f.png" "$f" >/dev/null 2>&1
   done
 fi
-echo "pictures are in $WORK/rphidisplay: JADE.nnn.ps(.png) (HIGZ) or JADE.nnn.png / JADE.nnn.screen.png (OpenPHIGS)"
+echo "pictures are in $WORK/rphidisplay: JADE.nnn.ps(.png)"
 [ $fail -eq 0 ] && echo "PASS" || tail -30 ../jadez_rphi_test.log
 exit $fail

@@ -55,36 +55,6 @@ find_package(Motif REQUIRED)
 message(STATUS "JADE: MOTIF_LIBRARIES=${MOTIF_LIBRARIES}")
 set(PICOCERNLIB "${MOTIF_LIBRARIES};${CERNLIB_PACKLIB_STATIC};${CERNLIB_KERNLIB_STATIC};${CERNLIB_MATHLIB_STATIC};${CERNLIB_GRAFLIB_STATIC};${CERNLIB_GRAFX11_STATIC}")
 set(JEXTERN_LIBRARIES  ${PICOCERNLIB} )
-########################################################################
-# Graphics backend of the event display jadez:
-#  HIGZ      - CERNLIB HIGZ (libgrafX11), the default
-#  OPENPHIGS - OpenPHIGS; the HIGZ calls of the PLOT-10 emulation are
-#              implemented in src2016/openphigs/higz_phigs.F
-set(JADE_GRAPHICS "HIGZ" CACHE STRING "Graphics backend of jadez: HIGZ or OPENPHIGS")
-set_property(CACHE JADE_GRAPHICS PROPERTY STRINGS HIGZ OPENPHIGS)
-if (JADE_GRAPHICS STREQUAL "OPENPHIGS")
-  find_library(OPENPHIGS_LIBRARY NAMES phigs)
-  find_path(OPENPHIGS_INCLUDE_DIR NAMES phigs/phigs.h phigs.h)
-  if (NOT OPENPHIGS_LIBRARY)
-    message(FATAL_ERROR "JADE_GRAPHICS=OPENPHIGS, but libphigs was not found (set OPENPHIGS_LIBRARY).")
-  endif()
-  message(STATUS "JADE: graphics backend OPENPHIGS: ${OPENPHIGS_LIBRARY}")
-  add_library(highzphigs STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src2016/openphigs/higz_phigs.F)
-  target_include_directories(highzphigs PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src2016/openphigs)
-  # Hardcopy format: PNG (5) for 32 bit builds (the OpenPHIGS EPS export fails there), EPS (7) otherwise
-  if (JADE_FORCE_32 OR CMAKE_SIZEOF_VOID_P EQUAL 4)
-    target_compile_definitions(highzphigs PRIVATE HPG_HCTYPE=5)
-  else()
-    target_compile_definitions(highzphigs PRIVATE HPG_HCTYPE=7)
-  endif()
-  # HIGZ (graflib, grafX11) is replaced by highzphigs + OpenPHIGS
-  set(PICOCERNLIB "${MOTIF_LIBRARIES};${CERNLIB_PACKLIB_STATIC};${CERNLIB_KERNLIB_STATIC};${CERNLIB_MATHLIB_STATIC};highzphigs;${OPENPHIGS_LIBRARY}")
-  set(JEXTERN_LIBRARIES  ${PICOCERNLIB} )
-elseif (JADE_GRAPHICS STREQUAL "HIGZ")
-  message(STATUS "JADE: graphics backend HIGZ (CERNLIB)")
-else()
-  message(FATAL_ERROR "JADE_GRAPHICS must be HIGZ or OPENPHIGS, got '${JADE_GRAPHICS}'")
-endif()
 message(STATUS "JADE: JEXTERN_LIBRARIES    : ${JEXTERN_LIBRARIES}")
 ########################################################################
 set(MCJADEEXE    mcjade)

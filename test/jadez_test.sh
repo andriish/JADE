@@ -42,8 +42,6 @@ TEXT="TRUE STAT VX EC FC CLUS DEDX TOF MASS MUTYP MUR2"
 NDRAW=$(echo $DRAW | wc -w)
 NTEXT=$(echo $TEXT | wc -w)
 rm -f JADE.*.png JADE.*.ps
-# OpenPHIGS backend: also save what is shown on the screen (JADE.nnn.screen.png)
-export JADE_PHIGS_SCREENSHOT=1
 
 # dataset name, <ENTER> for the calibration file, then the commands, then END
 ( printf 'file006.bos\n\n'; sleep 2
@@ -81,7 +79,7 @@ grep -q "Fortran runtime error" jadez_test.log && { echo "FAIL: Fortran runtime 
 grep -q "NR OF EVENTS READ:     1 " jadez_test.log || { echo "FAIL: event not read"; fail=1; }
 grep -q "Invalid command string" jadez_test.log && { echo "FAIL: display command rejected"; fail=1; }
 
-# hardcopies: HIGZ writes JADE.nnn.ps, OpenPHIGS JADE.nnn.png (or .ps)
+# hardcopies: HIGZ writes JADE.nnn.ps
 NFILES=$(find . -maxdepth 1 \( -name 'JADE.*.png' -o -name 'JADE.*.ps' \) -size +0 | wc -l)
 echo "$NFILES hardcopy files for $NDRAW H commands"
 [ "$NFILES" -ge "$NDRAW" ] || { echo "FAIL: too few hardcopies"; fail=1; }
@@ -95,6 +93,6 @@ if command -v gs >/dev/null 2>&1; then
     [ -s "$f" ] && gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=png16m -r100 -dEPSCrop -sOutputFile="$f.png" "$f" >/dev/null 2>&1
   done
 fi
-echo "pictures are in $WORK: JADE.nnn.ps(.png) (HIGZ) or JADE.nnn.png / JADE.nnn.screen.png (OpenPHIGS)"
+echo "pictures are in $WORK: JADE.nnn.ps(.png)"
 [ $fail -eq 0 ] && echo "PASS" || tail -30 jadez_test.log
 exit $fail

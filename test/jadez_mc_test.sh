@@ -28,7 +28,6 @@ mkdir -p mcdisplay && cd mcdisplay && rm -f JADE.*
 cp ../superv1.bos .
 cp ../aupdat1.b F11LHO.AUPDAT1
 cp "$HELP" F22BOW.HELP.DATASET
-export JADE_PHIGS_SCREENSHOT=1
 # the superv output is big-endian on all units
 export GFORTRAN_CONVERT_UNIT=big_endian
 
@@ -79,6 +78,6 @@ if command -v gs >/dev/null 2>&1; then
     [ -s "$f" ] && gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=png16m -r100 -dEPSCrop -sOutputFile="$f.png" "$f" >/dev/null 2>&1
   done
 fi
-echo "pictures are in $WORK/mcdisplay: JADE.nnn.ps(.png) (HIGZ) or JADE.nnn.png / JADE.nnn.screen.png (OpenPHIGS)"
+echo "pictures are in $WORK/mcdisplay: JADE.nnn.ps(.png)"
 [ $fail -eq 0 ] && echo "PASS" || tail -30 ../jadez_mc_test.log
 exit $fail
