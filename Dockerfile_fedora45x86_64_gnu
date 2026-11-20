@@ -1,0 +1,29 @@
+# JADE build environment, Fedora 45, 64 bit:
+#   sh jadeinstall.sh --bits=64 && sh jadetest.sh --bits=64
+# All 32 tests of jadetest.sh pass in this setup (the display tests run on the virtual
+# X display of xvfb-run). See Dockerfile_fedora45x86_64i686_gnu for the 32 bit setup,
+# which cannot be installed together with this one (conflicting ROOT/HepMC3/CERNLIB files).
+FROM fedora:45
+# Basic tools; the tests are run with ctest and bash scripts
+RUN         dnf -y install dnf-plugins-core dnf5-plugins && \
+            dnf -y install bc make ninja-build cmake binutils git wget diffutils file sed gawk grep which procps-ng findutils && \
+            dnf -y install gcc-gfortran gcc-c++ gengetopt
+# Tools used by the tests of the event display (jadez): a virtual X server (xvfb-run,
+# without it these tests are skipped), Mesa for GL, Python with Pillow and ghostscript
+# to check and convert the pictures
+RUN         dnf -y install xorg-x11-server-Xvfb xorg-x11-xauth mesa-dri-drivers mesa-libGL \
+                           python3 python3-pillow ghostscript
+# Development packages
+RUN         dnf -y install openssl-devel libnsl2-devel blas-devel lapack-devel liburing-devel && \
+            dnf -y install libX11-devel libXau-devel libxcb-devel libXdmcp-devel libXt-devel \
+                           libXmu-devel libXext-devel libXaw-devel xbae-devel motif-devel && \
+            dnf -y install pythia8-devel pythia8 HepMC3-devel HepMC3-search-devel && \
+            dnf -y install root-core root-cling root-hbook root-hist root-tree root-io root-gui root-graf root-graf-gpad \
+                           root-graf-postscript root-graf3d root-mathcore root-matrix root-net root-physics \
+                           root-minuit2 root-mathmore root-tree-player --skip-unavailable
+# CERNLIB (64 bit, with the static libraries), from the HEP copr
+RUN         dnf -y copr enable averbyts/HEPrpms && \
+            dnf -y install cernlib-devel cernlib-static cernlib-packlib-gfortran
+# Optional: OpenPHIGS, for the graphics backend  cmake -DJADE_GRAPHICS=OPENPHIGS
+RUN         dnf -y install --skip-unavailable OpenPHIGS-devel && \
+            dnf -y clean all
