@@ -9,6 +9,9 @@ JADEZ=$1
 HELP=$2
 WORK=$3
 cd "$WORK" || exit 1
+# HIGZ reads (and creates) $HOME/higz_windows.dat; use a private HOME so the result does not
+# depend on the user's home directory (and nothing is left in it)
+export HOME="$(pwd)/home_higz"; mkdir -p "$HOME"
 for f in superv1.bos aupdat1.b; do
   [ -f "$f" ] || { echo "missing input $f (SUPERV_MC_1 must run first)"; exit 1; }
 done
@@ -48,8 +51,10 @@ if [ $rc -ne 0 ]; then
   $RUN sh -c 'env | grep -E "^(DISPLAY|XAUTHORITY|HOME)="; xauth list 2>&1 | head -3; hostname; cat /etc/hosts; ls -la /tmp/.X11-unix' 2>&1 | head -20
   if command -v strace >/dev/null 2>&1; then
     echo "--- strace of the display connection of jadez ---"
-    $RUN strace -f -e trace=connect,socket,access -o "$(pwd)/jadez_strace.log" "$JADEZ" < /dev/null > /dev/null 2>&1
-    grep -E "X11|connect|ENOENT|EACCES|EPERM|ECONN" "$(pwd)/jadez_strace.log" | tail -20
+    $RUN strace -f -e trace=%file,%network -o "$(pwd)/jadez_strace.log" "$JADEZ" < /dev/null > /dev/null 2>&1
+    grep -v -E "ld.so|/lib/|/usr/lib|/proc/|/sys/|/dev/" "$(pwd)/jadez_strace.log" | tail -40
+    echo "--- HIGZ window file (HIGZ reads \$HOME/higz_windows.dat, display host name) ---"
+    ls -la "$HOME" 2>&1 | head; cat -A "$HOME/higz_windows.dat" 2>&1 | head -12
   fi
   if command -v gdb >/dev/null 2>&1; then
     echo "--- gdb backtrace of jadez at start-up ---"
