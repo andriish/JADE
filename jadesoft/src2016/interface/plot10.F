@@ -1139,8 +1139,11 @@ C         HEIGHT=64./35.*HGHT
 C         WIDTH=30.5/64.*HEIGHT
 C      ENDIF
       HEIGHT=HGHT*1.3
-CAV      WIDTH=HEIGHT*55./117.
-      WIDTH=HEIGHT*125./117. !FFTGJ
+C     character advance: the 2016 value 125./117. (!FFTGJ) spaced the letters of
+C     the result tables and header lines far apart; 55./117. is the original
+C     one and gives the compact spacing of the historic pictures
+      WIDTH=HEIGHT*55./117.
+CAV      WIDTH=HEIGHT*125./117. !FFTGJ
       CALL ISCHH(HEIGHT*.5)
       CALL IGSET('TANG',THETA)
 
