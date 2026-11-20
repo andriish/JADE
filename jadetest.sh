@@ -160,3 +160,4 @@ $CTEST .  --timeout 10 --output-on-failure
 ctest_status=$?
 #$CTEST -H../../test -B.  --timeout 10 --rerun-failed
 cd ../..
+exit $ctest_status

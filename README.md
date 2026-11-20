@@ -35,6 +35,11 @@ This is a repository with software of JADE experiment.
       ```
       The first command will run the container and the second will start a shell in the container.
       The container execution can be monitored in the docker-desktop application.
+
+    - For 64-bit builds use the image ``ghcr.io/andriish/fedora45x86_64_gnu`` and ``sh jadeinstall.sh --bits=64`` / ``sh jadetest.sh --bits=64``.
+      The Dockerfiles are ``Dockerfile_fedora45x86_64i686_gnu`` (32-bit) and ``Dockerfile_fedora45x86_64_gnu`` (64-bit); they also
+      contain the tools needed to run the tests (``ctest``, ``bash``, a virtual X server ``xvfb-run`` for the event display tests,
+      Python with Pillow and ghostscript).
   
     - Installing the JADE software and running some tests (this has to be done inside the attached container):
       ```
