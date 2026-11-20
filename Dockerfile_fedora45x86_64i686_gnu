@@ -5,6 +5,7 @@
 # HepMC3-search-devel and cernlib-packlib-gfortran ship the same files and cannot be
 # installed together. Therefore this image has only the i686 versions of them
 # (see Dockerfile_fedora45x86_64_gnu for the 64 bit setup).
+# Built and pushed to ghcr.io/andriish/fedora45x86_64i686_gnu by .github/workflows/32bit.yml.
 FROM fedora:45
 # Basic tools; the tests are run with ctest and bash scripts
 RUN         dnf -y install dnf-plugins-core dnf5-plugins && \

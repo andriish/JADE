@@ -2,6 +2,7 @@ name: build
 on:
  push:
  pull_request:
+ workflow_dispatch:
  schedule:
 #Every 50 days at midnight 
     - cron:  "0 0 1/600 * *"
@@ -11,6 +12,7 @@ jobs:
   fedora45x86_64i686_gnu:
     name: fedora45x86_64i686_gnu
     runs-on: ubuntu-latest
+    needs: build-JADE-docker-image-fedora45x86_64i686_gnu
     container:
         image: ghcr.io/andriish/fedora45x86_64i686_gnu:latest
     steps:
