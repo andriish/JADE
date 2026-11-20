@@ -1,5 +1,9 @@
 # - Locate pythia8 library
-# Defines:
+# Provides the imported target:
+#
+#  Pythia8::Pythia8   (usage: target_link_libraries(tgt PRIVATE Pythia8::Pythia8))
+#
+# Also defines (legacy variables, kept for compatibility):
 #
 #  PYTHIA8_FOUND
 #  PYTHIA8_VERSION
@@ -53,6 +57,16 @@ endif()
 
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(Pythia8 REQUIRED_VARS PYTHIA8_INCLUDE_DIR PYTHIA8_LIBRARIES PYTHIA8_XMLDOC_DIR VERSION_VAR PYTHIA8_VERSION )
+
+if(PYTHIA8_FOUND AND NOT TARGET Pythia8::Pythia8)
+  add_library(Pythia8::Pythia8 UNKNOWN IMPORTED)
+  set_target_properties(Pythia8::Pythia8 PROPERTIES
+    IMPORTED_LOCATION "${PYTHIA8_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${PYTHIA8_INCLUDE_DIR};${PYTHIA8_INCLUDE_DIR}/Pythia8")
+  if(PYTHIA8_VERSION VERSION_LESS 8.200 AND PYTHIA8_lhapdfdummy_LIBRARY)
+    set_property(TARGET Pythia8::Pythia8 APPEND PROPERTY INTERFACE_LINK_LIBRARIES "${PYTHIA8_lhapdfdummy_LIBRARY}")
+  endif()
+endif()
 
 mark_as_advanced(PYTHIA8_FOUND PYTHIA8_INCLUDE_DIR PYTHIA8_LIBRARY PYTHIA8_LIBRARIES PYTHIA8_XMLDOC_DIR)
 

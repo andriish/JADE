@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.5.0) #Because of ROOT
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10) #Because of ROOT
 PROJECT(JADETEST Fortran CXX C)
 set(VERSION 2024.04)
 include("GNUInstallDirs")
@@ -42,7 +42,7 @@ find_package(HepMC3  REQUIRED)
 message(STATUS "JADE test: HEPMC3_LIBRARIES=${HEPMC3_LIBRARIES}")
 ########################################################################
 find_package(Pythia8 8.300)
-message(STATUS "JADE test: PYTHIA8_LIBRARIES=${PYTHIA8_LIBRARIES} PYTHIA8_VERSION=${PYTHIA8_VERSION}") 
+message(STATUS "JADE test: PYTHIA8_FOUND=${PYTHIA8_FOUND} PYTHIA8_VERSION=${PYTHIA8_VERSION}") 
 ########################################################################
 ENABLE_TESTING()
 
@@ -105,8 +105,8 @@ if((NOT PYTHIA8_FOUND) OR (NOT HepMC3_FOUND))
   message(STATUS "JADE test: HepMC3 and/or Pythia8 package not found, was disabled or too old. The minimal supported Pythia8 version is 8.220. Please check if PYTHIA8_ROOT_DIR is set properly.") 
 else()
   add_executable(pythia8_JADE  ${CMAKE_CURRENT_SOURCE_DIR}/src/pythia8_JADE.cc)
-  target_link_libraries(pythia8_JADE  ${PYTHIA8_LIBRARIES}  ${HEPMC3_LIB} ${HEPMC3_SEARCH_LIB}  )
-  target_include_directories(pythia8_JADE PRIVATE ${HEPMC3_INCLUDE_DIR}  ${PYTHIA8_INCLUDE_DIR} ${PYTHIA8_INCLUDE_DIR}/Pythia8Plugins/ ${HEPMC3_INTERFACES_DIR}/pythia8/include/Pythia8/)
+  target_link_libraries(pythia8_JADE  Pythia8::Pythia8  ${HEPMC3_LIB} ${HEPMC3_SEARCH_LIB}  )
+  target_include_directories(pythia8_JADE PRIVATE ${HEPMC3_INCLUDE_DIR} ${PYTHIA8_INCLUDE_DIR}/Pythia8Plugins/ ${HEPMC3_INTERFACES_DIR}/pythia8/include/Pythia8/)
   add_test(NAME PYTHIA8_PRODUCE_HEPMC3_MC_1 COMMAND pythia8_JADE 
                                          ${CMAKE_CURRENT_SOURCE_DIR}/cards/testPythia1.input 
                                          ${CMAKE_CURRENT_BINARY_DIR}/testPythia1.output )
@@ -193,7 +193,7 @@ find_program( MEMORYCHECK_COMMAND valgrind )
 if(MEMORYCHECK_COMMAND)
   message(STATUS "JADE test: valgrind package found in ${MEMORYCHECK_COMMAND}.  memory check tests enabled.") 
   set( MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full --error-exitcode=1" )
-elseif()
+else()
   message(STATUS "JADE test: valgrind package not found or disabled.  memory check tests disabled.") 
 endif()
 ########################################################################
