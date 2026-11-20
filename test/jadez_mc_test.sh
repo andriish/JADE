@@ -14,7 +14,7 @@ for f in superv1.bos aupdat1.b; do
 done
 RUN=""
 if command -v xvfb-run >/dev/null 2>&1; then
-  RUN="xvfb-run -a"
+  XVFB_ERR="$(pwd)/xvfb_err.log"; RUN="xvfb-run -a -e $XVFB_ERR"
 elif [ -n "$JADEZ_TEST_DISPLAY" ]; then
   export DISPLAY=$JADEZ_TEST_DISPLAY
 else
@@ -37,6 +37,14 @@ NV=$(echo $VIEWS | wc -w)
   for c in $VIEWS; do echo "$c"; sleep 1; echo H; sleep 1.5; done
   echo END; sleep 2 ) | timeout 600 $RUN "$JADEZ" > ../jadez_mc_test.log 2>&1
 rc=$?
+if [ $rc -ne 0 ]; then
+  echo "--- diagnostics (jadez failed) ---"
+  uname -a; ulimit -a | grep -E "open files|core|virtual|stack"
+  echo "DISPLAY=$DISPLAY HOME=$HOME"; ls -la /tmp/.X11-unix 2>&1
+  Xvfb -version 2>&1 | head -2
+  echo "--- Xvfb errors ---"; cat "$XVFB_ERR" 2>&1 | tail -30
+  echo "--- end diagnostics ---"
+fi
 echo "jadez exit code $rc, $NV hardware views with OPT 16 and OPT 17"
 fail=0
 [ $rc -eq 0 ] || { echo "FAIL: non-zero exit code"; fail=1; }

@@ -197,6 +197,43 @@ To run some simple tests:
    The script supports the same values for the ``--toolhain`` flag as the ``jadeinstall.sh`` script.
 
 
+## External (non-JADE) codes
+
+The JADE experiment code itself is in ``jadesoft/src*``, ``main*``, ``job*``, ``cal``. The following codes
+are written by others and are either used as external dependencies or included in the repository.
+
+### Dependencies installed separately
+
+| Code | Used for | Link |
+|---|---|---|
+| CERNLIB (packlib, kernlib, mathlib, HIGZ/``libgrafX11``) | Optional (``JADE_USE_CERNLIB``), HBOOK, HIGZ graphics of the event display ``jadez`` | https://cernlib.web.cern.ch/ |
+| ROOT 6 | ``jtuple``, ``picocernlib``, ``h2root``, analysis tests | https://root.cern |
+| HepMC3 | Event record read by ``convert`` and written by the tests | https://gitlab.cern.ch/hepmc/HepMC3 |
+| Pythia 8 | Generation of the MC test events | https://pythia.org |
+| OpenPHIGS | Optional graphics backend of ``jadez`` (``-DJADE_GRAPHICS=OPENPHIGS``) | https://github.com/OpenPHIGS/OpenPHIGS |
+| LAPACK / BLAS | Linear algebra | https://www.netlib.org/lapack/ |
+| X11, Motif | Graphics libraries | https://www.x.org, https://motif.ics.com |
+| gengetopt | Generates the command line parser of ``convert`` (optional, ``cmdline.c/h`` are included) | https://www.gnu.org/software/gengetopt/ |
+| Xvfb, Python 3 + Pillow, Ghostscript | Virtual display, picture conversion and checks in the display tests | https://www.x.org/releases/X11R7.7/doc/man/man1/Xvfb.1.xhtml, https://python-pillow.org, https://ghostscript.com |
+
+### Codes included in the repository
+
+| Location | Code | Origin / link |
+|---|---|---|
+| ``convert/src/PIDUtils.h``, ``PIDCodes.h`` | MCUtils (PDG ID utilities) | Andy Buckley, https://gitlab.com/hepcedar/mcutils |
+| ``convert/src/MathUtils.h`` | HEPUtils | Andy Buckley, https://gitlab.com/hepcedar/heputils |
+| ``convert/cmdline.c``, ``cmdline.h`` | Output of gengetopt 2.23 from ``cmdline.ggo`` | https://www.gnu.org/software/gengetopt/ |
+| ``test/src/fjcore/`` | fjcore, the core of FastJet 3.4.0 | https://fastjet.fr |
+| ``picocernlib/`` | Selected routines and headers of CERNLIB (kernlib, mathlib, ``ffread``), rewritten equivalents based on ROOT | https://cernlib.web.cern.ch/ |
+| ``h2root/`` | Copy of ``h2root.cxx`` and of the minicern Fortran/C sources of ROOT 6.40.04 with a 64 bit fix (``h2root/README.md``) | https://github.com/root-project/root (``main/src/h2root.cxx``, ``misc/minicern``) |
+| ``jadesoft/util*/mcgen/src/`` | Monte Carlo generators used for historic JADE productions: JETSET 6.3 / 7.4 (``jetset63*.f``, ``jt74opal.f``), PYTHIA 5.7 (``pythia5722.f``, ``pystfu.f``, ``pymaxi.f``), HERWIG 5.8 / 5.9 (``herwig58d.f``, ``herwig59.f``), ARIADNE 4.08 (``ariadne408.f``), COJETS 6.23 (``coj623d.f``), the PX and CKERN jet clustering packages (``px113.f``, ``px114.f``, ``ckern104.f``, ``ckern105.f``) | https://www.lund.tp.se/ (Lund MC: JETSET, PYTHIA, ARIADNE), https://herwig.hepforge.org (HERWIG); original CMZ/CAR sources are kept in ``util/mcgen/src`` |
+| ``jadesoft/util/Rbin/``, ``Pbin/`` ``fsplit.c`` | ``fsplit`` Fortran file splitter, University of California (BSD licence) | https://www.freebsd.org |
+| ``jadesoft/src*/grafix/ellips.f``, ``disaxi.f`` | Mortran/Sheltran-generated sources carrying the "Copyright Stanford Mortran 3.1" notice | https://www.slac.stanford.edu |
+| ``jadesoft/src2016/openphigs/`` | Not external code: the HIGZ-on-OpenPHIGS layer written for this repository, it only uses the OpenPHIGS library | |
+
+Individual files keep the licence and author notices they came with; check the file headers before reusing them.
+The reference pictures in ``displayreferences/`` and the notes in ``doc/`` are historic JADE material.
+
 ## Event display
 
 The interactive event display `jadez`, its graphics backends (HIGZ, OpenPHIGS), the fixes made for
