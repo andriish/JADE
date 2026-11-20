@@ -7,7 +7,7 @@ FROM fedora:45
 # Basic tools; the tests are run with ctest and bash scripts
 RUN         dnf -y install dnf-plugins-core dnf5-plugins && \
             dnf -y install bc make ninja-build cmake binutils git wget diffutils file sed gawk grep which procps-ng findutils && \
-            dnf -y install gcc-gfortran gcc-c++ gengetopt
+            dnf -y install gcc-gfortran gcc-c++ gengetopt valgrind
 # Tools used by the tests of the event display (jadez): a virtual X server (xvfb-run,
 # without it these tests are skipped), Mesa for GL, Python with Pillow and ghostscript
 # to check and convert the pictures
