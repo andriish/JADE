@@ -3,7 +3,6 @@
 
 usage: check_colours.py [--grey] file...   (JADE.nnn.png and/or JADE.nnn.ps)
   --grey : also require the thin grey detector boundary lines (JADE colour 0.4 0.4 0.4)
-  --dedx : also require the small yellow dE/dx plot in the bottom-left corner (PNG screen pictures only)
 
 PNG : counts the distinct saturated (non-grey) colours; needs Pillow, or skips.
 PS  : counts the distinct 'r g b c' colour settings written by HIGZ.
@@ -19,9 +18,7 @@ found = set()
 orange = False
 grey = 0
 need_grey = '--grey' in sys.argv
-need_dedx = '--dedx' in sys.argv
-dedx_ok = False
-args = [a for a in sys.argv[1:] if a not in ('--grey', '--dedx')]
+args = [a for a in sys.argv[1:] if a != '--grey']
 for f in args:
     if not os.path.isfile(f):
         continue
@@ -32,12 +29,6 @@ for f in args:
             print('Pillow not available, PNG colours not checked')
             sys.exit(0)
         im = Image.open(f).convert('RGB')
-        if f.endswith('.screen.png'):
-            w, h = im.size
-            box = im.crop((int(w * 0.10), int(h * 0.86), int(w * 0.32), int(h * 0.98)))
-            ny = sum(n for n, c in box.getcolors(maxcolors=1 << 24) if c == (255, 255, 0))
-            if ny > 300:
-                dedx_ok = True
         for n, (r, g, b) in im.getcolors(maxcolors=1 << 24):
             if max(r, g, b) - min(r, g, b) > 60 and n > 3:
                 found.add((r // 64, g // 64, b // 64))
@@ -56,7 +47,5 @@ for f in args:
             if abs(r - 0.4) < 0.05 and abs(g - 0.4) < 0.05 and abs(b - 0.4) < 0.05:
                 grey += 1000
 print('distinct non-grey colours: %d %s, orange (lead glass numbers): %s, grey boundary pixels: %d' % (len(found), sorted(found), orange, grey))
-if need_dedx:
-    print('small dE/dx plot (bottom left): %s' % dedx_ok)
-ok = len(found) >= MINCOL and orange and (grey >= 2000 or not need_grey) and (dedx_ok or not need_dedx)
+ok = len(found) >= MINCOL and orange and (grey >= 2000 or not need_grey)
 sys.exit(0 if ok else 1)
