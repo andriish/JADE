@@ -44,6 +44,10 @@ if [ $rc -ne 0 ]; then
   echo "--- first lines of the jadez output ---"; head -40 ../jadez_mc_test.log
   echo "--- X connection check (python ctypes, same xvfb-run) ---"
   $RUN python3 -c "import ctypes,os;x=ctypes.CDLL('libX11.so.6');x.XOpenDisplay.restype=ctypes.c_void_p;d=x.XOpenDisplay(None);print('DISPLAY',os.environ.get('DISPLAY'),'XOpenDisplay ->',d)" 2>&1 | tail -5
+  if command -v gdb >/dev/null 2>&1; then
+    echo "--- gdb backtrace of jadez at start-up ---"
+    $RUN gdb -batch -ex run -ex bt -ex "info sharedlibrary" --args "$JADEZ" < /dev/null 2>&1 | grep -v "^\[" | tail -50
+  fi
   echo "--- Xvfb errors ---"; cat "$XVFB_ERR" 2>&1 | tail -30
   echo "--- end diagnostics ---"
 fi
