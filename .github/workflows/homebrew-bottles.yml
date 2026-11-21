@@ -42,6 +42,8 @@ jobs:
         brew tap-new --no-git jade/hep
         tapdir="$(brew --repository)/Library/Taps/jade/homebrew-hep"
         mkdir -p "$tapdir/Formula"
+        # Recent Homebrew refuses to load formulae from untrusted taps.
+        brew trust jade/hep || true
         rebuild=$(python3 -I .github/homebrew/bottles.py rebuild .github/homebrew/Formula/$f.rb)
         python3 -I .github/homebrew/bottles.py prepare .github/homebrew/Formula/$f.rb "$tapdir/Formula/$f.rb" "$rebuild"
         pkgver=$(brew info --json=v2 jade/hep/$f | python3 -I .github/homebrew/bottles.py pkgver)

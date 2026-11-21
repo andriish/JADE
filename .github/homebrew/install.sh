@@ -15,6 +15,8 @@ if [ $# -gt 0 ]; then formulae=("$@"); else formulae=(cernlib hepmc3); fi
 tapdir="$(brew --repository)/Library/Taps/jade/homebrew-hep"
 [ -d "$tapdir" ] || brew tap-new --no-git "$tap"
 mkdir -p "$tapdir/Formula"
+# Recent Homebrew refuses to load formulae from untrusted taps (older versions have no `brew trust`).
+brew trust "$tap" >/dev/null 2>&1 || true
 
 for f in "${formulae[@]}"; do
   src="$here/Formula/$f.rb"
