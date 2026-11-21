@@ -11,7 +11,7 @@ Software of the JADE experiment (legacy e+e- collider experiment): mostly old Fo
 | Directory | Contents |
 |---|---|
 | `jadesoft/` | Core JADE software. `src`/`src0`/`src2016` = libraries (original / pre-2016 / current), `main*`, `job*`, `util*` = executables and test jobs, `cal` = calibration, `info` = docs. Has its own `CMakeLists.txt` (project JADESOFT). |
-| `convert/` | HepMC3 → JADE (CPROD) MC event converter (C++, needs HepMC3 > 3.1.0). |
+| `convert/` | HepMC3 → JADE (CPROD) MC event converter (C++, needs HepMC3 > 3.2). |
 | `fptobos/` | `fptobos` (FPACK → BOS) and `unpjad` utilities for archived data tapes. |
 | `jtuple/` | Analysis programs producing QCD-observable ntuples (ROOT format; originally PAW). |
 | `picocernlib/` | Minimal built-in replacements for needed CERNLIB routines (ROOT-based). |
@@ -25,7 +25,7 @@ Software of the JADE experiment (legacy e+e- collider experiment): mostly old Fo
 Build order is fixed and driven by `jadeinstall.sh`: `jadesoft` → `convert` → `jtuple` → `fptobos`. Each is an independent CMake project configured out-of-tree in `build/<name>`; the later ones find the installed JADESOFT via `-DJADESOFT_DIR=<prefix>/share/JADESOFT/cmake`.
 
 ```
-sh jadeinstall.sh [--bits=32|64] [--toolchain=GNU|Intel|XL|NAG|PGI|SUN|GNU-11|GNU-12] [--prefix=/abs/path]
+sh jadeinstall.sh [--bits=32|64] [--toolchain=GNU|Intel|XL|NAG|PGI|SUN|GNU-11..GNU-16] [--prefix=/abs/path]
 sh jadetest.sh    [--bits=32|64] [--toolchain=...] [--prefix=/abs/path]
 ```
 
@@ -43,7 +43,7 @@ docker run -dit --name jade_soft -v $(pwd):/home ghcr.io/andriish/fedora45x86_64
 docker attach jade_soft   # then run jadeinstall.sh / jadetest.sh with --bits=32 inside
 ```
 
-Dockerfiles for Fedora 45 are in the repo root (`Dockerfile_fedora45x86_64i686_gnu` for 32-bit, `Dockerfile_fedora45x86_64_gnu` for 64-bit, `Dockerfile_fedora45aarch64_gnu` for aarch64, built natively by `.github/workflows/aarch64.yml` on `ubuntu-24.04-arm`; the scripts reject `--bits=32` on non-x86 hosts and CMake adds `-fsigned-char` for C/C++ on aarch64/arm because the legacy code assumes signed `char`; they install the tools needed by `jadetest.sh`, including `xvfb-run`, Python with Pillow and ghostscript for the display tests); CI definitions are in `.github/workflows/` (CentOS 7/8/9, macOS, 32-bit, 64-bit) and `.gitlab-ci.yml`. If a build tool is missing locally, don't try to install the toolchain on the host — say so, or use the container.
+Dockerfiles for Fedora 45 are in the repo root (`Dockerfile_fedora45x86_64i686_gnu` for 32-bit, `Dockerfile_fedora45x86_64_gnu` for 64-bit, `Dockerfile_fedora45aarch64_gnu` for aarch64, built natively by `.github/workflows/aarch64.yml` on `ubuntu-24.04-arm`; the scripts reject `--bits=32` on non-x86 hosts and CMake adds `-fsigned-char` for C/C++ on aarch64/arm because the legacy code assumes signed `char`; they install the tools needed by `jadetest.sh`, including `xvfb-run`, Python with Pillow and ghostscript for the display tests); CentOS Stream 9 and 10 have the same kind of images (`Dockerfile_centos9x86_64_gnu`, `Dockerfile_centos10x86_64_gnu`, workflows `centos9.yml`, `centos10.yml`); CI definitions are in `.github/workflows/` (CentOS 9/10, macOS, 32-bit, 64-bit, aarch64) and `.gitlab-ci.yml`. If a build tool is missing locally, don't try to install the toolchain on the host — say so, or use the container.
 
 ## Fortran compilers available for testing
 
@@ -126,7 +126,7 @@ The full description (interface, all code changes, the three display tests) is i
 
 ## Conventions and gotchas
 
-- Fortran runtime must support endianness conversion (GNU/Intel work; PGI/SUN do not). Binary I/O formats (BOS, FPACK, CPROD) are endianness- and word-size-sensitive: be careful with `INTEGER`/`REAL` sizes and `-m32` assumptions.
+- Fortran runtime must support endianness conversion (GNU/Intel/NVIDIA work; SUN should work but has not been tested for years). Binary I/O formats (BOS, FPACK, CPROD) are endianness- and word-size-sensitive: be careful with `INTEGER`/`REAL` sizes and `-m32` assumptions.
 - Prefer editing `src2016`/`main2016`/`job2016`/`util2016` (current code). `src`, `src0`, `main`, `job`, `util` hold original/pre-2016 versions and prebuilt binaries — leave them alone unless the task is specifically about them.
 - Keep Fortran fixed-form column rules (code in cols 7–72, continuation in col 6); lines past col 72 are silently truncated.
 - When adding a source file, register it in the relevant `CMakeLists.txt`; sources are listed explicitly.
