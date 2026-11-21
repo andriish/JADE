@@ -31,6 +31,7 @@ cp "$HELP" F22BOW.HELP.DATASET
 # the superv output is big-endian on all units
 export GFORTRAN_CONVERT_UNIT=big_endian
 export F_UFMTENDIAN=big   # the same for Intel Fortran
+export FORT_CONVERT_UNIT=big_endian   # and for NVIDIA Fortran
 
 # OPT 16: automatic result tables, OPT 17: orthogonal projections (insets).
 # A non-zero argument draws the detector hardware (chamber boundary lines).
