@@ -1,4 +1,4 @@
-name: build
+name: Fedora 45 i686 on x86_64 (GNU)
 on:
  push:
  pull_request:

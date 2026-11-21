@@ -1,0 +1,28 @@
+# JADE build environment, CentOS Stream 9, 64 bit, GNU compilers:
+#   sh jadeinstall.sh --bits=64 && sh jadetest.sh --bits=64
+# Built and used by .github/workflows/centos9.yml. Same layout as Dockerfile_fedora45x86_64_gnu.
+FROM quay.io/centos/centos:stream9
+# Repositories: CRB (devel packages), EPEL (ROOT, HepMC3, Pythia8, gengetopt, ...)
+RUN         dnf -y install dnf-plugins-core epel-release && \
+            dnf config-manager --set-enabled crb
+# Basic tools; the tests are run with ctest and bash scripts
+RUN         dnf -y install bc make cmake binutils git wget diffutils file sed gawk grep which procps-ng findutils && \
+            dnf -y install gcc-gfortran gcc-c++ gengetopt valgrind
+# Tools used by the tests of the event display (jadez): a virtual X server (xvfb-run,
+# without it these tests are skipped), Mesa for GL, Python with Pillow and ghostscript
+# to check and convert the pictures
+RUN         dnf -y install --setopt=strict=0 xorg-x11-server-Xvfb xorg-x11-xauth mesa-dri-drivers mesa-libGL \
+                           python3 python3-pillow ghostscript
+# Development packages
+RUN         dnf -y install openssl-devel libnsl2-devel blas-devel lapack-devel lapack-static liburing-devel && \
+            dnf -y install libX11-devel libXau-devel libxcb-devel libXdmcp-devel libXt-devel \
+                           libXmu-devel libXext-devel libXaw-devel libXcursor-devel libSM-devel libICE-devel \
+                           xbae-devel motif-devel --setopt=strict=0 && \
+            dnf -y install pythia8-devel pythia8 pythia8-data HepMC3-devel HepMC3-search-devel && \
+            dnf -y install root-core root-cling root-hbook root-hist root-tree root-io root-gui root-graf root-graf-gpad \
+                           root-graf-postscript root-graf3d root-mathcore root-matrix root-net root-physics \
+                           root-minuit2 root-mathmore root-tree-player --setopt=strict=0
+# CERNLIB (64 bit, with the static libraries), from the HEP copr
+RUN         dnf -y copr enable averbyts/HEPrpms && \
+            dnf -y install cernlib-devel cernlib-static cernlib-packlib-gfortran && \
+            dnf -y clean all
