@@ -40,6 +40,8 @@ This is a repository with software of JADE experiment.
       The Dockerfiles are ``Dockerfile_fedora45x86_64i686_gnu`` (32-bit) and ``Dockerfile_fedora45x86_64_gnu`` (64-bit); they also
       contain the tools needed to run the tests (``ctest``, ``bash``, ``valgrind``, a virtual X server ``xvfb-run`` for the event display tests,
       Python with Pillow and ghostscript).
+    - On aarch64 (64-bit ARM) use the image ``ghcr.io/andriish/fedora45aarch64_gnu`` (``Dockerfile_fedora45aarch64_gnu``, built by
+      ``.github/workflows/aarch64.yml`` on an ARM runner) with the same ``--bits=64`` commands. 32-bit builds are only possible on x86.
   
     - Installing the JADE software and running some tests (this has to be done inside the attached container):
       ```
