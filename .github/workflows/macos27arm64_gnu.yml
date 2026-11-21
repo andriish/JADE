@@ -18,7 +18,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-<<<<<<< HEAD
     - name: Homebrew cache key
       id: brewkey
       # The whole prefix is cached, so the key has to change with the runner image (macOS and Homebrew
@@ -34,22 +33,12 @@ jobs:
     - name: Install dependencies
       run: |
         brew install cmake gcc coreutils wget gengetopt root pythia openmotif libx11
-=======
-    - name: Install dependencies
-      run: |
-        brew install cmake gcc coreutils wget gengetopt root pythia openmotif libx11
-        brew tap davidchall/hep
-        # recent Homebrew refuses to load formulae from untrusted third-party taps
-        brew trust davidchall/hep
-        brew install hepmc3 root cernlib pythia
->>>>>>> origin/master
     - name: Virtual X display for the jadez tests
       # The display tests run only on a virtual display (JADEZ_TEST_DISPLAY, see test/jadez_test.sh);
       # macOS has no xvfb-run, but XQuartz ships Xvfb.  Without it the display tests are skipped.
       run: |
         brew install --cask xquartz || true
         brew install ghostscript pillow || true
-<<<<<<< HEAD
         if [ -x /opt/X11/bin/Xvfb ]; then
           nohup /opt/X11/bin/Xvfb :99 -screen 0 1280x1024x24 -nolisten tcp > "$RUNNER_TEMP/Xvfb.log" 2>&1 &
           for i in 1 2 3 4 5 6 7 8 9 10; do [ -S /tmp/.X11-unix/X99 ] && break; sleep 1; done
@@ -68,14 +57,11 @@ jobs:
       with:
         path: /opt/homebrew
         key: ${{ steps.brewkey.outputs.key }}
-=======
->>>>>>> origin/master
     - name: Compile
       # On macOS only the versioned GNU-NN toolchains set the compilers (Homebrew gcc-16, gfortran-16).
       run: sh jadeinstall.sh --toolchain=GNU-16
     - name: Test
       run: sh jadetest.sh --toolchain=GNU-16
-<<<<<<< HEAD
     - name: Diagnose crashes
       # The Apple linker merges COMMON block sizes comparing only the low 16 bits, so a COMMON larger
       # than 64 KiB can be linked with the size of a smaller declaration (see AGENTS.md, "Apple linker
@@ -94,5 +80,3 @@ jobs:
         cd build/test
         export GFORTRAN_CONVERT_UNIT='big_endian;native:2'
         lldb -b -o "process launch -i $PWD/../../test/cards/supervfile006.card" -k "bt" -k "register read" -k "disassemble -p -c 6" -k "quit" -- "$exe" || true
-=======
->>>>>>> origin/master
