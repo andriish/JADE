@@ -1,0 +1,88 @@
+name: homebrew-bottles
+# Builds Homebrew bottles for the formulae in .github/homebrew/Formula and pushes them to
+# GitHub Packages (ghcr.io/<owner>/jade/<formula>). The tag is <pkg_version>-<rebuild>,
+# where the rebuild number is derived from the recipe file (.github/homebrew/bottles.py), so a
+# changed recipe gets new bottles and an unchanged one is skipped.
+on:
+  push:
+    paths:
+      - '.github/homebrew/**'
+      - '.github/workflows/homebrew-bottles.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  bottle:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    strategy:
+      fail-fast: false
+      matrix:
+        formula: [cernlib, hepmc3]
+        # Newest macOS image (macOS 27, arm64). One image per formula only: a second
+        # one would need the uploads merged (brew pr-upload --keep-old).
+        os: [xcode-27]
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.formula }} on ${{ matrix.os }}
+    env:
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+      HOMEBREW_NO_ANALYTICS: 1
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Prepare the local tap
+      id: prep
+      run: |
+        f=${{ matrix.formula }}
+        owner=$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')
+        root_url="https://ghcr.io/v2/${owner}/jade"
+        brew tap-new --no-git jade/hep
+        tapdir="$(brew --repository)/Library/Taps/jade/homebrew-hep"
+        mkdir -p "$tapdir/Formula"
+        # Recent Homebrew refuses to load formulae from untrusted taps.
+        brew trust jade/hep || true
+        rebuild=$(python3 -I .github/homebrew/bottles.py rebuild .github/homebrew/Formula/$f.rb)
+        python3 -I .github/homebrew/bottles.py prepare .github/homebrew/Formula/$f.rb "$tapdir/Formula/$f.rb" "$rebuild"
+        pkgver=$(brew info --json=v2 jade/hep/$f | python3 -I .github/homebrew/bottles.py pkgver)
+        echo "root_url=$root_url" >> "$GITHUB_OUTPUT"
+        echo "tag=$pkgver-$rebuild" >> "$GITHUB_OUTPUT"
+        if python3 -I .github/homebrew/bottles.py exists "$root_url" "$f" "$pkgver" "$rebuild"; then
+          echo "Bottles $f:$pkgver-$rebuild are already published, nothing to do."
+          echo "skip=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Build
+      if: steps.prep.outputs.skip == 'false'
+      run: brew install --build-bottle --verbose jade/hep/${{ matrix.formula }}
+
+    - name: Test
+      if: steps.prep.outputs.skip == 'false'
+      run: brew test --verbose jade/hep/${{ matrix.formula }}
+
+    - name: Bottle
+      if: steps.prep.outputs.skip == 'false'
+      run: |
+        mkdir bottles && cd bottles
+        brew bottle --json --keep-old --root-url="${{ steps.prep.outputs.root_url }}" jade/hep/${{ matrix.formula }}
+        ls -l
+
+    - name: Upload to GitHub Packages
+      if: steps.prep.outputs.skip == 'false'
+      working-directory: bottles
+      env:
+        HOMEBREW_GITHUB_PACKAGES_USER: ${{ github.actor }}
+        HOMEBREW_GITHUB_PACKAGES_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: brew pr-upload --upload-only --root-url="${{ steps.prep.outputs.root_url }}"
+
+    - name: Keep the bottles as workflow artifact
+      if: steps.prep.outputs.skip == 'false'
+      uses: actions/upload-artifact@v4
+      with:
+        name: bottle-${{ matrix.formula }}-${{ matrix.os }}
+        path: bottles/
+        retention-days: 7

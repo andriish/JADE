@@ -18,6 +18,7 @@ Software of the JADE experiment (legacy e+e- collider experiment): mostly old Fo
 | `test/` | CTest suite; steering `cards/`, Pythia8 main in `src/`, sample data in `jadetapes/`. |
 | `convert_data_files/` | `converttoroot.py` + cards: raw data → ROOT, runs inside the `jade_soft` container. |
 | `cmake/` | Shared modules (compiler setup, ROOT setup, Pythia8 finder) and config templates. |
+| `.github/homebrew/` | macOS: Homebrew formulae `cernlib` and `hepmc3` (3.3.1), `install.sh` (local tap `jade/hep`, bottles from ghcr.io). Bottles are rebuilt by `.github/workflows/homebrew-bottles.yml` on the newest macOS image (`xcode-27`) whenever a recipe changes; see `.github/homebrew/README.md`. |
 | `doc/` | Scanned computing notes (PDF/PS) — do not modify. |
 
 ## Build and test

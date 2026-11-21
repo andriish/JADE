@@ -9,11 +9,19 @@ on:
 jobs:
   compilejobOSX:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
-    runs-on: macos-latest
+    runs-on: xcode-27 # newest macOS image (macOS 27, arm64)
     name: JADE_on_OSX
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        brew install cmake gcc coreutils wget gengetopt root pythia openmotif libx11
+    - name: Install cernlib and hepmc3 from the JADE tap
+      # bottles from ghcr.io, see .github/homebrew/
+      run: bash .github/homebrew/install.sh cernlib hepmc3
     - name: Compile
-      id: compile
-      run: ./.github/workflows/osx/entrypoint.sh
+      # On macOS only the versioned GNU-NN toolchains set the compilers (Homebrew gcc-16, gfortran-16).
+      run: sh jadeinstall.sh --toolchain=GNU-16
+    - name: Test
+      run: sh jadetest.sh --toolchain=GNU-16
