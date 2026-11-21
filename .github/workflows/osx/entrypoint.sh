@@ -1,8 +1,8 @@
 #!/bin/sh -l
 set -x
-brew tap davidchall/hep
-brew install hepmc3 root cernlib pythia8 wget coreutils gcc
+brew install cmake gcc coreutils wget gengetopt root pythia openmotif libx11
+# cernlib and hepmc3 from the JADE tap (.github/homebrew/), bottles from ghcr.io
+bash .github/homebrew/install.sh cernlib hepmc3 || exit 1
 
-sh jadeinstall.sh  --toolchain=GNU-12
-sh jadetest.sh  --toolchain=GNU-12
-
+sh jadeinstall.sh
+sh jadetest.sh
