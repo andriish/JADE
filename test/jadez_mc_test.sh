@@ -15,6 +15,8 @@ export HOME="$(pwd)/home_higz"; mkdir -p "$HOME"
 for f in superv1.bos aupdat1.b; do
   [ -f "$f" ] || { echo "missing input $f (SUPERV_MC_1 must run first)"; exit 1; }
 done
+# macOS has no `timeout` unless coreutils' gnubin is on PATH; Homebrew coreutils gives `gtimeout`
+TMO=timeout; command -v timeout >/dev/null 2>&1 || TMO=gtimeout
 RUN=""
 if command -v xvfb-run >/dev/null 2>&1; then
   XVFB_ERR="$(pwd)/xvfb_err.log"; RUN="xvfb-run -a -e $XVFB_ERR"
@@ -39,7 +41,7 @@ VIEWS="RB1 RC1 ZXB1 ZYB1 ZXC1 ZYC1 FW1 RU1 CYL1 DEDX-2"
 NV=$(echo $VIEWS | wc -w)
 ( printf 'superv1.bos\n\n'; sleep 2; echo "OPT 16"; sleep 1; echo "OPT 17"; sleep 1
   for c in $VIEWS; do echo "$c"; sleep 1; echo H; sleep 1.5; done
-  echo END; sleep 2 ) | timeout 600 $RUN "$JADEZ" > ../jadez_mc_test.log 2>&1
+  echo END; sleep 2 ) | $TMO 600 $RUN "$JADEZ" > ../jadez_mc_test.log 2>&1
 rc=$?
 if [ $rc -ne 0 ]; then
   echo "--- diagnostics (jadez failed) ---"

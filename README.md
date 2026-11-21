@@ -160,14 +160,18 @@ This is a repository with software of JADE experiment.
     dnf -y copr enable averbyts/HEPrpms
     yum -y install  cernlib*
     ```
-   - For MacOSX the XCode and homebrew should be installed. The dependencies are in the homebrew default and homebrew-hep (davidchall/hep) repositories
+   - For MacOSX the XCode and homebrew should be installed. Most dependencies are in the homebrew default repository,
+     ``cernlib`` and ``hepmc3`` come from the recipes in this repository (``.github/homebrew/``, see its README):
     ```
-    brew install coreutils gcc cmake
-    brew tap davidchall/hep
-    brew install hepmc3
+    brew install coreutils gcc cmake gengetopt
     brew install --cask xquartz
     brew install openmotif
+    bash .github/homebrew/install.sh      # cernlib and hepmc3, run in the root of this repository
     ```
+     The last command creates the local tap ``jade/hep``, uses the prebuilt bottles from ghcr.io for Apple Silicon
+     when they exist for the current recipe (otherwise Homebrew builds from source) and installs
+     ``jade/hep/cernlib`` and ``jade/hep/hepmc3``. Use ``--toolchain=GNU-N`` with the version of the installed
+     ``gcc`` (e.g. ``sh jadeinstall.sh --toolchain=GNU-16``), the plain ``GNU`` toolchain does not set the compilers on macOS.
      Install ROOT, e.g. from ``https://root.cern/install/all_releases/``, and enable it.
      Motif (``openmotif``, not tested) is only needed for the event display ``jadez``.
      The git and LAPACK should be preinstalled on the newest MacOS.
@@ -216,9 +220,9 @@ To run some simple tests:
      (``yum -y install xorg-x11-server-Xvfb python3 python3-pillow ghostscript``); without ``xvfb-run`` these
      tests are skipped. The ``H2ROOT_*`` and ``ROOT_ANALYSIS_*`` tests need ``jade_h2root`` (see below)
      and are skipped without it. The memory-check tests run only if ``valgrind`` is installed (``yum -y install valgrind``).
-   - For MacOSX the dependencies are in the homebrew-hep repository (davidchall/hep)
+   - For MacOSX Pythia8 is in the homebrew default repository
      ```
-     brew install pythia8
+     brew install pythia
      ```
 
  - ``jade_h2root``: the tests convert the HBOOK files into ROOT files with ``h2root``. The ``h2root`` of ROOT 6.40.04 (package ``root-hbook``)
