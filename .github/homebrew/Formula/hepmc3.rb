@@ -1,7 +1,8 @@
 # Based on Formula/hepmc3.rb of https://github.com/davidchall/homebrew-hep.
 # Changes: version 3.3.1, no bottle block (bottles are built by
 # .github/workflows/homebrew-bottles.yml and the block is added by .github/homebrew/install.sh),
-# no Python bindings and no ROOT I/O (not needed by JADE), search library enabled.
+# no Python bindings and no ROOT I/O (not needed by JADE), search library enabled,
+# examples neither built nor installed (the test compiles a small program instead).
 class Hepmc3 < Formula
   desc "C++ event record for Monte Carlo generators"
   homepage "https://hepmc.web.cern.ch/hepmc/"
@@ -27,6 +28,8 @@ class Hepmc3 < Formula
       -DHEPMC3_ENABLE_PYTHON=OFF
       -DHEPMC3_ENABLE_ROOTIO=OFF
       -DHEPMC3_ENABLE_PROTOBUFIO=OFF
+      -DHEPMC3_BUILD_EXAMPLES=OFF
+      -DHEPMC3_INSTALL_EXAMPLES=OFF
     ]
     args << "-DHEPMC3_ENABLE_TEST=ON" if build.with? "test"
 
@@ -39,9 +42,21 @@ class Hepmc3 < Formula
   test do
     assert_equal prefix.to_s, shell_output("#{bin}/HepMC3-config --prefix").strip
 
-    cp_r share/"doc/HepMC3/examples/.", testpath
-    system "cmake", "-DUSE_INSTALLED_HEPMC3=ON", "CMakeLists.txt"
-    system "make", "basic_tree.exe"
-    system "outputs/bin/basic_tree.exe"
+    (testpath/"t.cc").write <<~EOS
+      #include <HepMC3/GenEvent.h>
+      #include <HepMC3/GenParticle.h>
+      #include <HepMC3/GenVertex.h>
+      #include <HepMC3/Print.h>
+      int main() {
+        HepMC3::GenEvent evt(HepMC3::Units::GEV, HepMC3::Units::MM);
+        auto v = std::make_shared<HepMC3::GenVertex>();
+        evt.add_vertex(v);
+        v->add_particle_out(std::make_shared<HepMC3::GenParticle>(
+            HepMC3::FourVector(0, 0, 1, 1), 22, 1));
+        return evt.particles().size() == 1 ? 0 : 1;
+      }
+    EOS
+    system ENV.cxx, "-std=c++17", "t.cc", "-I#{include}", "-L#{lib}", "-lHepMC3", "-o", "t"
+    system "./t"
   end
 end
