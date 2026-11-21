@@ -59,7 +59,7 @@ toolchain=GNU
 if test -z "$tmptoolchain"; then
  tmptoolchain="GNU"
 fi
-if  [ "$tmptoolchain" != "GNU" ] && [ "$tmptoolchain" != "GNU-11" ]&& [ "$tmptoolchain" != "GNU-12" ] && [ "$tmptoolchain" !=  "Intel" ] && [ "$tmptoolchain" !=  "XL" ] && [ "$tmptoolchain" !=  "NAG" ] && [ "$tmptoolchain" !=  "PGI" ]&& [ "$tmptoolchain" !=  "SUN" ]; then
+if  [ "$tmptoolchain" != "GNU" ] && [ "$tmptoolchain" != "GNU-11" ]&& [ "$tmptoolchain" != "GNU-12" ] && [ "$tmptoolchain" != "GNU-13" ] && [ "$tmptoolchain" != "GNU-14" ] && [ "$tmptoolchain" != "GNU-15" ] && [ "$tmptoolchain" != "GNU-16" ] && [ "$tmptoolchain" !=  "Intel" ] && [ "$tmptoolchain" !=  "XL" ] && [ "$tmptoolchain" !=  "NAG" ] && [ "$tmptoolchain" !=  "PGI" ]&& [ "$tmptoolchain" !=  "SUN" ]; then
   echo "Unknown toolchain "$tmptoolchain" using GNU instead."
   echo "Possible values for the toolchain are Intel, GNU, and XL"
 else 
@@ -157,6 +157,26 @@ if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-12" ]; then
   export CC=gcc-12
   export CXX=clang++
   export FC=gfortran-12
+fi
+if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-13" ]; then
+  export CC=gcc-13
+  export CXX=clang++
+  export FC=gfortran-13
+fi
+if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-14" ]; then
+  export CC=gcc-14
+  export CXX=clang++
+  export FC=gfortran-14
+fi
+if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-15" ]; then
+  export CC=gcc-15
+  export CXX=clang++
+  export FC=gfortran-15
+fi
+if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-16" ]; then
+  export CC=gcc-16
+  export CXX=clang++
+  export FC=gfortran-16
 fi
 arguments="-DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain$bits "
 if  [ "$tmpbits" == "32" ]; then

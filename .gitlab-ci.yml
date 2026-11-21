@@ -36,14 +36,6 @@ variables:
   - sed -i 's/CMAKE_VERBOSE_MAKEFILE ON/CMAKE_VERBOSE_MAKEFILE OFF/g' CMakeLists.txt
   - sh CI/build.sh  cmake rpm GNU nodebug
 ########################################################################
-.heprpmsinstall8: &heprpmsinstall8
-  - uname -a
-  - cat /etc/issue
-  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL dnf*plu* --exclude=*uploa* --exclude=*product* --exclude=*subscr*  > rpm.log || (cat rpm.log && exit 1)
-    #for xbae
-  - dnf -y copr enable averbyts/HEPrpms epel-8-x86_64
-  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL libnsl  libnsl2-devel  > rpm.log || (cat rpm.log && exit 1)
-########################################################################
 .heprpmsinstall9: &heprpmsinstall9
   - uname -a
   - cat /etc/issue
@@ -113,23 +105,6 @@ Fedora35-gcc-imake-rpm-64bit:
     paths:
       - rpmbuild/RPMS
 #######################################################################
-Centos8-gcc-imake-gen-32bit:
-  image: gitlab-registry.cern.ch/linuxsupport/rpmci/builder-cs8
-  variables:
-    FREL: C8
-  extends: .CentOS
-  before_script:
-    - *heprpmsinstall8
-    - *commoninstall
-    - *gccinstall
-    - *devel32
-  script:
-    - sh CI/build.sh imake tarball32bit GNU nodebug
-  allow_failure: false
-  artifacts:
-    paths:
-      - cern
-#######################################################################
 Centos9-gcc-imake-gen-64bit:
   image: gitlab-registry.cern.ch/linuxsupport/rpmci/builder-cs9
   variables:
@@ -198,59 +173,3 @@ Fedora35-gcc-cmake-rpm-64bit:
     paths:
       - rpmbuildcmake/RPMS
 #######################################################################
-Centos8-gcc-cmake-gen-64bit:
-  image: gitlab-registry.cern.ch/linuxsupport/rpmci/builder-cs8
-  variables:
-    FREL: C8
-  extends: .CentOS
-  before_script:
-    - *heprpmsinstall8
-    - *commoninstall
-    - *gccinstall
-    - *cmakeinstall
-  script:
-    - sh CI/build.sh cmake tarball GNU nodebug
-#######################################################################
-Centos8-gcc-cmake-rpm-64bit:
-  image: gitlab-registry.cern.ch/linuxsupport/rpmci/builder-cs8
-  variables:
-    FREL: C8
-  extends: .CentOS
-  before_script:
-    - *heprpmsinstall8
-    - *commoninstall
-    - *gccinstall
-    - *cmakeinstall
-  script:
-    - sh CI/build.sh cmake rpm GNU nodebug
-#######################################################################
-Centos7-gcc-imake-gen-64bit:
-  image: gitlab-registry.cern.ch/linuxsupport/rpmci/builder-cc7
-  variables:
-    FREL: CC7
-  extends: .CentOS
-  before_script:
-    - *commoninstall
-    - *gccinstall
-  script:
-    - sh CI/build.sh imake tarball GNU nodebug
-  allow_failure: false
-  artifacts:
-    paths:
-      - cern
-#######################################################################
-Centos7-gcc-imake-gen-32bit:
-  image: gitlab-registry.cern.ch/linuxsupport/rpmci/builder-cc7
-  variables:
-    FREL: C7
-  extends: .CentOS
-  before_script:
-    - *commoninstall
-    - *gccinstall
-    - *devel32
-  script:
-    - sh CI/build.sh imake tarball32bit GNU nodebug
-  allow_failure: false
-  artifacts:
-    paths:
-      - cern
