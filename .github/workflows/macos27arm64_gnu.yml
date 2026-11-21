@@ -63,13 +63,20 @@ jobs:
     - name: Test
       run: sh jadetest.sh --toolchain=GNU-16
     - name: Diagnose crashes
-      # superv dies with SIGSEGV right after BINT, JZREAD/JTJOB with SIGBUS (backtraces have no symbols).
-      # Suspect: COMMON /BCS/ is defined with different sizes (60000 words in superv, 1 in boslib) and
-      # the Mach-O linker keeps the small one.  Print the symbol layout and a debugger backtrace.
+      # The Apple linker merges COMMON block sizes comparing only the low 16 bits, so a COMMON larger
+      # than 64 KiB can be linked with the size of a smaller declaration (see AGENTS.md, "Apple linker
+      # bug").  JADE gives the large COMMONs a real definition (BLOCK DATA); a crash in ZEBRA/HBOOK
+      # (SIGSEGV/SIGBUS) or "KLREAD ERROR: EVENT TIME = 0" usually means one is missing or too small.
+      # Print the linked sizes of the large COMMONs and a debugger backtrace of superv.
       if: failure()
       run: |
+        ld -v 2>&1 | head -1
+        for p in superv mcjade jadez; do
+          exe=$PWD/installedGNU-1664/bin/$p
+          echo "== $p"
+          nm -n -m "$exe" | grep -A1 -E " _(pawc|calibr|cwork|bcs)_$" || true
+        done
         exe=$PWD/installedGNU-1664/bin/superv
-        nm -n -m "$exe" | grep -i -A1 -E "_bcs_$" || true
         cd build/test
         export GFORTRAN_CONVERT_UNIT='big_endian;native:2'
-        lldb -b -o "process launch -i $PWD/../../test/cards/supervfile006.card" -o "bt" -o "register read" -o "disassemble -p -c 6" -- "$exe" || true
+        lldb -b -o "process launch -i $PWD/../../test/cards/supervfile006.card" -k "bt" -k "register read" -k "disassemble -p -c 6" -k "quit" -- "$exe" || true

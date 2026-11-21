@@ -233,3 +233,25 @@ C     Handle *FILE cards:
 C     The End:
       return
       end
+C
+      BLOCK DATA JZPAWC
+C     Real (initialised) definition of /PAWC/ with its full size.
+C     Without it the macOS linker can give /PAWC/ the size of one of
+C     the small declarations in CERNLIB (libpacklib.a) instead of the
+C     largest one, and HLIMIT then writes past the end of the common.
+      INTEGER NWPAW
+      PARAMETER (NWPAW=1000000)
+      INTEGER HMEMOR(NWPAW)
+      COMMON /PAWC/ HMEMOR
+      DATA HMEMOR(1) /0/
+      END
+C
+      BLOCK DATA JZPWR4
+C     Real (initialised) definitions of the COMMON blocks larger than
+C     64 KiB with their largest size.  The macOS linker (ld-prime) merges
+C     COMMON sizes comparing only the low 16 bits and can keep a smaller
+C     declaration from another object or library (see AGENTS.md).
+      INTEGER IPAWR4(50007)
+      COMMON /PAWCR4/ IPAWR4
+      DATA IPAWR4(1) /0/
+      END

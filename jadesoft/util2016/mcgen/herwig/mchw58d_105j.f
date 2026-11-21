@@ -2512,3 +2512,15 @@ C
 
       RETURN
       END
+C
+      BLOCK DATA HWPAW8
+C     Real (initialised) definition of /PAWC/ with its full size.
+C     Without it the macOS linker can give /PAWC/ the size of one of
+C     the small declarations in CERNLIB (libpacklib.a) instead of the
+C     largest one, and HLIMIT then writes past the end of the common.
+      INTEGER NWPAW
+      PARAMETER (NWPAW=200000)
+      REAL HMEM(NWPAW)
+      COMMON /PAWC/ HMEM
+      DATA HMEM(1) /0./
+      END
