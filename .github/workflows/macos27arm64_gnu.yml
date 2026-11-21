@@ -22,6 +22,8 @@ jobs:
       run: |
         brew install cmake gcc coreutils wget gengetopt root pythia openmotif libx11
         brew tap davidchall/hep
+        # recent Homebrew refuses to load formulae from untrusted third-party taps
+        brew trust davidchall/hep
         brew install hepmc3 root cernlib pythia
     - name: Virtual X display for the jadez tests
       # The display tests run only on a virtual display (JADEZ_TEST_DISPLAY, see test/jadez_test.sh);
