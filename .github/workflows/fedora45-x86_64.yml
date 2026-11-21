@@ -1,4 +1,4 @@
-name: build
+name: Fedora 45 x86_64 (GNU)
 on:
  push:
  pull_request:
@@ -9,12 +9,12 @@ on:
 
 
 jobs:
-  centos10x86_64_gnu:
-    name: centos10x86_64_gnu
+  fedora45x86_64_gnu:
+    name: fedora45x86_64_gnu
     runs-on: ubuntu-latest
-    needs: build-JADE-docker-image-centos10x86_64_gnu
+    needs: build-JADE-docker-image-fedora45x86_64_gnu
     container:
-        image: ghcr.io/andriish/centos10x86_64_gnu:latest
+        image: ghcr.io/andriish/fedora45x86_64_gnu:latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -23,9 +23,9 @@ jobs:
            sh jadeinstall.sh --bits=64
            sh jadetest.sh --bits=64
 
-  build-JADE-docker-image-centos10x86_64_gnu:
+  build-JADE-docker-image-fedora45x86_64_gnu:
     runs-on: ubuntu-latest
-    name: Build JADE Docker image centos10x86_64_gnu
+    name: Build JADE Docker image fedora45x86_64_gnu
     permissions:
       contents: read
       packages: write
@@ -38,7 +38,7 @@ jobs:
       id: changed-docker-files
       uses: tj-actions/changed-files@v38
       with:
-          files: Dockerfile_centos10x86_64_gnu
+          files: Dockerfile_fedora45x86_64_gnu
 
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v2
@@ -49,12 +49,12 @@ jobs:
     - name: Build the JADE Docker image on the change of Dockerfile
       if: steps.changed-docker-files.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
       run: |
-         docker build . -f Dockerfile_centos10x86_64_gnu --tag ghcr.io/andriish/centos10x86_64_gnu:latest
-         docker run ghcr.io/andriish/centos10x86_64_gnu:latest
-         docker push ghcr.io/andriish/centos10x86_64_gnu:latest
+         docker build . -f Dockerfile_fedora45x86_64_gnu --tag ghcr.io/andriish/fedora45x86_64_gnu:latest
+         docker run ghcr.io/andriish/fedora45x86_64_gnu:latest
+         docker push ghcr.io/andriish/fedora45x86_64_gnu:latest
     - name: Build the JADE Docker image on schedule
       if: ${{ github.event_name == 'schedule' }}
       run: |
-         docker build . -f Dockerfile_centos10x86_64_gnu  --tag ghcr.io/andriish/centos10x86_64_gnu:latest
-         docker run ghcr.io/andriish/centos10x86_64_gnu:latest
-         docker push ghcr.io/andriish/centos10x86_64_gnu:latest
+         docker build . -f Dockerfile_fedora45x86_64_gnu  --tag ghcr.io/andriish/fedora45x86_64_gnu:latest
+         docker run ghcr.io/andriish/fedora45x86_64_gnu:latest
+         docker push ghcr.io/andriish/fedora45x86_64_gnu:latest

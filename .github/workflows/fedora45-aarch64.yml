@@ -1,4 +1,4 @@
-name: aarch64
+name: Fedora 45 aarch64 (GNU)
 on:
  push:
  pull_request:

@@ -1,4 +1,4 @@
-name: build
+name: macOS (GNU)
 on:
  push:
  pull_request:
