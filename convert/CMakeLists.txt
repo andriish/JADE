@@ -67,6 +67,10 @@ set_target_properties(convert_hepmc_to_jade PROPERTIES LINKER_LANGUAGE Fortran P
 if (CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   set_property(TARGET convert_hepmc_to_jade APPEND_STRING PROPERTY LINK_FLAGS " -nofor-main")
 endif()
+# NVIDIA Fortran, as the linker, expects a Fortran main program (MAIN_) unless told otherwise
+if (CMAKE_Fortran_COMPILER_ID MATCHES "PGI|NVHPC")
+  set_property(TARGET convert_hepmc_to_jade APPEND_STRING PROPERTY LINK_FLAGS " -Mnomain")
+endif()
 add_dependencies( convert_hepmc_to_jade cmdline  )
 ########################################################################
 # installs 

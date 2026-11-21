@@ -31,6 +31,7 @@ cp "$HELP" F22BOW.HELP.DATASET
 # the superv output is big-endian on all units
 export GFORTRAN_CONVERT_UNIT=big_endian
 export F_UFMTENDIAN=big   # the same for Intel Fortran
+export FORT_CONVERT_UNIT=big_endian   # and for NVIDIA Fortran
 
 # OPT 13 OFF: no bank listing, OPT 14 OFF: results header lines also after a command with an
 # argument (blue PATR and orange LGCL header lines), OPT 16: automatic result tables, OPT 17: orthogonal

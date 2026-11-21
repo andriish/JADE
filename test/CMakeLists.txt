@@ -33,6 +33,11 @@ macro( jade_fortran_test testname gnuenv  intelenv nagenv)
   if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "NAG")
      set_property( TEST ${testname} PROPERTY ENVIRONMENT "${nagenv}") 
   endif()
+  if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "PGI|NVHPC")
+     # the NVIDIA runtime uses FORT_CONVERT_UNIT with the same syntax as GFORTRAN_CONVERT_UNIT
+     string(REPLACE "GFORTRAN_CONVERT_UNIT" "FORT_CONVERT_UNIT" nvenv "${gnuenv}")
+     set_property( TEST ${testname} PROPERTY ENVIRONMENT "${nvenv}")
+  endif()
 endmacro( jade_fortran_test )
 ########################################################################
 find_package(JADESOFT 2000.0.0 REQUIRED)

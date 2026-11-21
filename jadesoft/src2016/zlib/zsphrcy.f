@@ -1,5 +1,6 @@
 C   17/05/88 805171203  MEMBER NAME  SPHRCY   (S)           FORTRAN77
       SUBROUTINE zSPHRCY( P, NMOM, SPHITY , AXIS ) ! PMF 11/04/00 SPHRCY->zSPHRCY
+      USE, INTRINSIC :: IEEE_ARITHMETIC   ! IEEE_IS_NAN: ISNAN is a gfortran/ifx extension
 C *---------------------------------------------------------
 C *
 C *  VERSION OF 23/02/79
@@ -31,12 +32,12 @@ CCCCCCCCC
 C   DIAGONALIZE MOMENTUM TENSOR T
 C
 CAV Try to protect from NaNs
-       if ( isnan(T(1))) GOTO 31
-       if ( isnan(T(2))) GOTO 31
-       if ( isnan(T(3))) GOTO 31
-       if ( isnan(T(4))) GOTO 31
-       if ( isnan(T(5))) GOTO 31
-       if ( isnan(T(6))) GOTO 31
+       if ( ieee_is_nan(T(1))) GOTO 31
+       if ( ieee_is_nan(T(2))) GOTO 31
+       if ( ieee_is_nan(T(3))) GOTO 31
+       if ( ieee_is_nan(T(4))) GOTO 31
+       if ( ieee_is_nan(T(5))) GOTO 31
+       if ( ieee_is_nan(T(6))) GOTO 31
 CAV
        CALL EIGEN( T, R, 3, 0 )
 C

@@ -100,11 +100,13 @@ if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "NAG" ]; then
 fi
 ##This is for PGI on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "PGI" ]; then
-  module use  /opt/nvidia/hpc_sdk/modulefiles/nvhpc/
-  module load 20.9
-  export CC=pgcc
-  export CXX=pgc++
-  export FC=pgf77
+  # NVIDIA HPC SDK: the newest installed version
+  NVHPC_BIN=$(ls -d /opt/nvidia/hpc_sdk/Linux_x86_64/[0-9]*.[0-9]*/compilers/bin 2>/dev/null | sort -V | tail -1)
+  if [ ! -x "$NVHPC_BIN/nvfortran" ]; then echo "nvfortran not found in /opt/nvidia/hpc_sdk/Linux_x86_64/*/compilers/bin"; exit 1; fi
+  export PATH=$NVHPC_BIN:$PATH
+  export CC=nvc
+  export CXX=nvc++
+  export FC=nvfortran
 fi
 ##This is for SUN on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "SUN" ]; then
