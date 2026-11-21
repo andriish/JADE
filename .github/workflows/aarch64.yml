@@ -1,0 +1,60 @@
+name: aarch64
+on:
+ push:
+ pull_request:
+ workflow_dispatch:
+ schedule:
+#Every 50 days at midnight 
+    - cron:  "0 0 1/600 * *"
+
+
+jobs:
+  fedora45aarch64_gnu:
+    name: fedora45aarch64_gnu
+    runs-on: ubuntu-24.04-arm
+    needs: build-JADE-docker-image-fedora45aarch64_gnu
+    container:
+        image: ghcr.io/andriish/fedora45aarch64_gnu:latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Compile
+      run: |
+           sh jadeinstall.sh --bits=64
+           sh jadetest.sh --bits=64
+
+  build-JADE-docker-image-fedora45aarch64_gnu:
+    runs-on: ubuntu-24.04-arm
+    name: Build JADE Docker image fedora45aarch64_gnu
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+          fetch-depth: 2 
+    - name: Check if the Docker file was changed
+      id: changed-docker-files
+      uses: tj-actions/changed-files@v38
+      with:
+          files: Dockerfile_fedora45aarch64_gnu
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build the JADE Docker image on the change of Dockerfile
+      if: steps.changed-docker-files.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
+      run: |
+         docker build . -f Dockerfile_fedora45aarch64_gnu --tag ghcr.io/andriish/fedora45aarch64_gnu:latest
+         docker run ghcr.io/andriish/fedora45aarch64_gnu:latest
+         docker push ghcr.io/andriish/fedora45aarch64_gnu:latest
+    - name: Build the JADE Docker image on schedule
+      if: ${{ github.event_name == 'schedule' }}
+      run: |
+         docker build . -f Dockerfile_fedora45aarch64_gnu  --tag ghcr.io/andriish/fedora45aarch64_gnu:latest
+         docker run ghcr.io/andriish/fedora45aarch64_gnu:latest
+         docker push ghcr.io/andriish/fedora45aarch64_gnu:latest
