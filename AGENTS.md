@@ -124,6 +124,19 @@ The full description (interface, all code changes, the three display tests) is i
 - `h2root` of ROOT 6.40.04 segfaults on 64 bit (address truncated to 32 bit in `h2root.cxx` and `hbook.f`). `h2root/` holds a fixed copy, built and installed as `jade_h2root` by `jadeinstall.sh`; `test/CMakeLists.txt` prefers it. See `h2root/README.md`.
 - Debugging ROOT code: the debug packages must match the installed version, from the `updates-debuginfo` repository (`sudo dnf --enablerepo=updates-debuginfo install root-hbook-debuginfo-6.40.04-7.fc45 root-debugsource-6.40.04-7.fc45`); the sources are then under `/usr/src/debug/root-6.40.04-7.fc45.x86_64`.
 
+## Floating-point traps (`JADE_FPE=ON`)
+
+`-DJADE_FPE=ON` (gfortran `-ffpe-trap=invalid,zero,overflow`, Intel `-fpe0`, NVHPC `-Ktrap=fp`) is OFF by default, because the legacy code does arithmetic on missing or wrong data and then carries on silently with `inf`/NaN. Status (64-bit gfortran, every project built with FPE on): 33 of 37 tests pass, including the five `JADEZ_SEQ_*` tests; the four failures below are all `SIGFPE` in legacy routines. Backtraces come from gdb (`run < card`, with `GFORTRAN_CONVERT_UNIT='big_endian;native:2'`; for `jadez` under `xvfb-run` with the `TOF` command).
+
+| Test | Site | Cause |
+|---|---|---|
+| `SUPERV_DATA_1` | `source/lgesmr.f:19`, `SQRT(0.0036/ESH+…)` | Cluster energy `ESH=ADATA(2)` is exactly 0: divide by zero. Without trapping `SIG=inf`, `ESH*(1+FNORM*SIG)` is `0*inf=NaN`, the `IF(ESH.LT.0.)` guard is false for a NaN, so a NaN is written back into `ADATA(2)`. Also, the `EQUIVALENCE (IDATA,ADATA)` is commented out, so `IABS(IDATA(1))` reads an uninitialised `IDATA` and the barrel branch is always taken. |
+| `SUPERV_MC_1` | `source/tpcnst.F:18`, `IF(EBMGEV.LT.1.)` | `TPCNST` lacks `IMPLICIT INTEGER*2 (H)` (other routines such as `lgcdir9.F` have it), so `HDATA` is a 4-byte REAL array (`patrecsr/cdata.for` only declares dimensions). `0.001*HDATA(NPHD2+29)` reads the wrong word as a float, here the pattern 0xfffffe41 (integer -447) = NaN; comparing a NaN traps "invalid". Without trapping `EBMGEV` and `BKGAUS` are garbage or NaN (`NaN<1.` is false). The code is identical in `src`. |
+| `JADEZ_DATA_1` | `toflib/tofma2.f:39`, `TRANS=1./SV(I)` | `SV(1..42)` (COMMON `TFPRM`, TOF scale constants) is all 0, i.e. the TOF calibration is not loaded for the sample run (nrun=24), seen at the display command `TOF`. Without trapping the TOF times become `inf`/NaN; the test passes because it only checks that pictures and banks exist. |
+| `JZREAD_MC_2` | `hf1` (HBOOK) called from `jtuple/src/jzevnt.F:146`, `hfill(132,eclus,…)` | `xecl(i)` (cluster energy read from the `superv` output) is NaN, so the HBOOK limit comparison traps. Probably a consequence of the NaN made in `lgesmr` (not verified). |
+
+None of the NaNs is detected by the tests (they check existence of banks, histograms and pictures, not values). These were left unfixed on purpose: fixing them changes the output of the physics code, which needs a before/after comparison of the reference results (see "What this is"). A fix would be: skip zero-energy clusters in `LGESMR`, add `IMPLICIT INTEGER*2 (H)` to `TPCNST`, skip counters with `SV=0` in `TOFMA2`. The other tests (new `JADEZ_SEQ_*` ones included) run clean with FPE on.
+
 ## Conventions and gotchas
 
 - Fortran runtime must support endianness conversion (GNU/Intel/NVIDIA work; SUN should work but has not been tested for years). Binary I/O formats (BOS, FPACK, CPROD) are endianness- and word-size-sensitive: be careful with `INTEGER`/`REAL` sizes and `-m32` assumptions.
