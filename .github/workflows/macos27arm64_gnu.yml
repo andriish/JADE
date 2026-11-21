@@ -7,13 +7,29 @@ on:
     - cron:  "0 0 1/600 * *"
 
 jobs:
-  compilejobOSX:
+  macos27arm64_gnu:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: xcode-27 # newest macOS image (macOS 27, arm64)
-    name: JADE_on_OSX
+    name: macos27arm64_gnu
+    env:
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_ANALYTICS: 1
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+    - name: Homebrew cache key
+      id: brewkey
+      # The whole prefix is cached, so the key has to change with the runner image (macOS and Homebrew
+      # version) and with the recipes of this repository.
+      run: |
+        echo "key=brew-$(sw_vers -productVersion)-$(brew --version | head -1 | tr ' ' '-')-${{ hashFiles('.github/homebrew/Formula/*.rb', '.github/workflows/macos27arm64_gnu.yml') }}" >> "$GITHUB_OUTPUT"
+    - name: Restore the Homebrew prefix
+      id: brewcache
+      uses: actions/cache/restore@v4
+      with:
+        path: /opt/homebrew
+        key: ${{ steps.brewkey.outputs.key }}
     - name: Install dependencies
       run: |
         brew install cmake gcc coreutils wget gengetopt root pythia openmotif libx11
@@ -34,6 +50,13 @@ jobs:
     - name: Install cernlib and hepmc3 from the JADE tap
       # bottles from ghcr.io, see .github/homebrew/
       run: bash .github/homebrew/install.sh cernlib hepmc3
+    - name: Save the Homebrew prefix
+      # saved right after the installs, so a later failure of the build or the tests does not lose it
+      if: steps.brewcache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: /opt/homebrew
+        key: ${{ steps.brewkey.outputs.key }}
     - name: Compile
       # On macOS only the versioned GNU-NN toolchains set the compilers (Homebrew gcc-16, gfortran-16).
       run: sh jadeinstall.sh --toolchain=GNU-16
