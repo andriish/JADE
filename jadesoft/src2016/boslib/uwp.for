@@ -13,14 +13,6 @@ C
       EQUIVALENCE(FMT(1),LFMT(1)),(LL(1),REQ),(LL(5),NEQ)
       REAL*8 FMZ(11)
       EQUIVALENCE (FMT(3),FMZ(1))
-C     Each word is formatted through a variable of the matching type into a 12
-C     character buffer (strict runtimes, e.g. NVIDIA, reject an I edit descriptor
-C     for a REAL item), and the buffers are printed as text.
-      REAL*4 RV
-      INTEGER*4 IV
-      EQUIVALENCE (RV,IV)
-      CHARACTER*12 CT(10)
-      INTEGER KD,NI
 *** s.u
       INTEGER VS(2),TEXT(10)
 C
@@ -79,27 +71,24 @@ C
       GOTO 40
    20 CONTINUE
       IF(LA.GT.2) GOTO 40
-      KD=1
-      GOTO 49
+      FMT(M)=FMTA
+      GOTO 50
    40 IF(ABS(REQ).GT.1.E20.OR.ABS(REQ).LT.1.E-20) GOTO 30
       IF(ABS(REQ).LT.10000.0.AND.ABS(REQ).GE.0.1) GOTO 45
-      KD=3
-      GOTO 49
-   45 KD=2
-      GOTO 49
-   30 KD=4
-   49 RV=BIN(J)
-      IF(KD.EQ.1) WRITE(CT(M-3),'(8X,A4)') RV
-      IF(KD.EQ.2) WRITE(CT(M-3),'(F12.4)') RV
-      IF(KD.EQ.3) WRITE(CT(M-3),'(G12.4)') RV
-      IF(KD.EQ.4) WRITE(CT(M-3),'(I12)') IV
+      FMT(M)=FMTG
+      GOTO 50
+   45 FMT(M)=FMTF
+      GOTO 50
+   30 FMT(M)=FMTI
    50 CONTINUE
-      NI=M-3
+      LFMT(8*M)=LAST
       IF(N.LE.10) GOTO 55
+      FMT(3)=FMT1
       JB=MOD(IB,1000)
-      WRITE(6,'(1X,I5,'' -'',I3,10A12)') IA,JB,(CT(II),II=1,NI)
+      WRITE(6,FMT) IA,JB,(BIN(II),II=IA,IB)
       GOTO 60
-   55 WRITE(6,'(11X,10A12)') (CT(II),II=1,NI)
+   55 FMT(3)=FMT2
+      WRITE(6,FMZ) (BIN(II),II=IA,IB)
    60 CONTINUE
       GOTO 100
 C     ENTRY WITH SPPRESSSION OF ZEROS IN SEVERAL LINES
