@@ -1,0 +1,36 @@
+name: macOS 27 arm64 (GNU)
+on:
+ push:
+ pull_request:
+ schedule:
+#Every 50 days at midnight 
+    - cron:  "0 0 1/600 * *"
+
+jobs:
+  macos27arm64_gnu:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    runs-on: xcode-27 # newest macOS image (macOS 27, arm64)
+    name: macos27arm64_gnu
+    env:
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_ANALYTICS: 1
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        brew install cmake gcc coreutils wget gengetopt root pythia openmotif libx11
+        brew tap davidchall/hep
+        brew install hepmc3 root cernlib pythia
+    - name: Virtual X display for the jadez tests
+      # The display tests run only on a virtual display (JADEZ_TEST_DISPLAY, see test/jadez_test.sh);
+      # macOS has no xvfb-run, but XQuartz ships Xvfb.  Without it the display tests are skipped.
+      run: |
+        brew install --cask xquartz || true
+        brew install ghostscript pillow || true
+    - name: Compile
+      # On macOS only the versioned GNU-NN toolchains set the compilers (Homebrew gcc-16, gfortran-16).
+      run: sh jadeinstall.sh --toolchain=GNU-16
+    - name: Test
+      run: sh jadetest.sh --toolchain=GNU-16
