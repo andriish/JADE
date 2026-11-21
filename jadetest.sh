@@ -152,6 +152,13 @@ if  [ "$tmpbits" != "32" ] && [ "$tmpbits" != "64" ] ; then
 else 
   bits=$tmpbits
 fi
+##32 bit builds (-m32) are only possible on x86
+if [ "$bits" = "32" ]; then
+  case "$(uname -m)" in
+    x86_64|i686|i386) ;;
+    *) echo "32 bit builds are not supported on $(uname -m), use --bits=64"; exit 1 ;;
+  esac
+fi
 
 if  [ "$tmpbits" == "32" ]; then
   bit_arguments="-DJADE_FORCE_32:BOOL=ON"

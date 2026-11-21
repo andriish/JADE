@@ -43,7 +43,7 @@ docker run -dit --name jade_soft -v $(pwd):/home ghcr.io/andriish/fedora45x86_64
 docker attach jade_soft   # then run jadeinstall.sh / jadetest.sh with --bits=32 inside
 ```
 
-Dockerfiles for Fedora 45 are in the repo root (`Dockerfile_fedora45x86_64i686_gnu` for 32-bit, `Dockerfile_fedora45x86_64_gnu` for 64-bit; they install the tools needed by `jadetest.sh`, including `xvfb-run`, Python with Pillow and ghostscript for the display tests); CI definitions are in `.github/workflows/` (CentOS 7/8/9, macOS, 32-bit, 64-bit) and `.gitlab-ci.yml`. If a build tool is missing locally, don't try to install the toolchain on the host — say so, or use the container.
+Dockerfiles for Fedora 45 are in the repo root (`Dockerfile_fedora45x86_64i686_gnu` for 32-bit, `Dockerfile_fedora45x86_64_gnu` for 64-bit, `Dockerfile_fedora45aarch64_gnu` for aarch64, built natively by `.github/workflows/aarch64.yml` on `ubuntu-24.04-arm`; the scripts reject `--bits=32` on non-x86 hosts and CMake adds `-fsigned-char` for C/C++ on aarch64/arm because the legacy code assumes signed `char`; they install the tools needed by `jadetest.sh`, including `xvfb-run`, Python with Pillow and ghostscript for the display tests); CI definitions are in `.github/workflows/` (CentOS 7/8/9, macOS, 32-bit, 64-bit) and `.gitlab-ci.yml`. If a build tool is missing locally, don't try to install the toolchain on the host — say so, or use the container.
 
 ## Fortran compilers available for testing
 
