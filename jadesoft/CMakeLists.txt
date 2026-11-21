@@ -267,7 +267,7 @@ set(JADEMUS_src
  muwire.F tanthm.F xymud.F
 )
 list(TRANSFORM JADEMUS_src PREPEND "${SRCJADEMUS}/")
-if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "PGI")
+if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "PGI|NVHPC")
   LIST(APPEND JADEMUS_src ${SRCJADEMUS}/muininohash.F)
 else()
   LIST(APPEND JADEMUS_src ${SRCJADEMUS}/muini.F)
