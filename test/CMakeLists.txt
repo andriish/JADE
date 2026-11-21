@@ -235,3 +235,28 @@ if (TEST SUPERV_MC_1 AND EXISTS ${JADESOFT_BIN_DIR}/jadez)
   set_property( TEST JADEZ_RPHI_1 PROPERTY SKIP_RETURN_CODE 77)
   set_property( TEST JADEZ_RPHI_1 PROPERTY TIMEOUT 300)
 endif()
+
+# Short sequences (5-6 commands) of display commands in one jadez session: the display state is carried from
+# one command to the next. The tests are skipped without a virtual X server.
+# name, input (data: file006.bos, mc: superv1.bos), draw (hardcopy after each command) or text, commands
+function(jade_jadez_sequence name input mode)
+  set(_cmds ${ARGN})
+  if (${input} STREQUAL "data")
+    set(_dep FPTOBOS_DATA_1)
+  else()
+    set(_dep SUPERV_MC_1)
+  endif()
+  if (TEST ${_dep} AND EXISTS ${JADESOFT_BIN_DIR}/jadez)
+    add_test(NAME ${name} COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_seq_test.sh ${JADESOFT_BIN_DIR}/jadez
+             ${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/main2016/jadez/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR}
+             ${name} ${input} ${mode} ${_cmds})
+    set_property( TEST ${name} PROPERTY DEPENDS ${_dep})
+    set_property( TEST ${name} PROPERTY SKIP_RETURN_CODE 77)
+    set_property( TEST ${name} PROPERTY TIMEOUT 300)
+  endif()
+endfunction()
+jade_jadez_sequence(JADEZ_SEQ_VIEWS_1 data draw RB ZXB ZYB FW RU CYL)
+jade_jadez_sequence(JADEZ_SEQ_TRACKS_1 data draw RB DET TRLG FADC VRX VRZX)
+jade_jadez_sequence(JADEZ_SEQ_TEXT_1 data text STAT TRUE VX EC CLUS MASS)
+jade_jadez_sequence(JADEZ_SEQ_OPT_1 mc draw RB1 "OPT 16" "OPT 17" RB1 ZXC1 RU1)
+jade_jadez_sequence(JADEZ_SEQ_MUON_1 mc draw RC1 ZXC1 ZYC1 MUPT MUONS FWMU1)
