@@ -1,4 +1,13 @@
 #!/bin/bash
+#Options: --bits=32|64 --toolchain=NAME --prefix=/abs/path, in any order
+tmpprefix=""; tmptoolchain=""; tmpbits=""
+for arg in "$@"; do
+  case "$arg" in
+    --prefix=*) tmpprefix="${arg#*=}" ;;
+    --toolchain=*) tmptoolchain="${arg#*=}" ;;
+    --bits=*) tmpbits="${arg#*=}" ;;
+  esac
+done
 if [ "$(uname)" == "Darwin" ]; then
   export PATH=/usr/local/bin:$PATH
   export MACOSX_DEPLOYMENT_TARGET=12.0
@@ -36,18 +45,16 @@ if [ "$?" != "0" ]; then
 fi
 
 
-tmpprefix=$( echo "$*" | grep -E -- '--\<prefix\>' | cut -f2 -d=)
 if test -n "$tmpprefix"; then
  if [ "$(uname)" == "Darwin" ]; then
-   export TOP=$(greadlink -f $tmp)
+   export TOP=$(greadlink -f $tmpprefix)
  else
-   export TOP=$(readlink -f $tmp)
+   export TOP=$(readlink -f $tmpprefix)
  fi
 else
  export TOP=$(pwd)/installed
 fi
 ########################################################################
-tmptoolchain=$( echo "$*" | grep -E -- '--\<toolchain\>' | cut -f2 -d=)
 toolchain=GNU
 if test -z "$tmptoolchain"; then
  tmptoolchain="GNU"
@@ -60,7 +67,6 @@ else
 fi
 echo "Used toolchain="$toolchain
 
-tmpbits=$( echo "$*" | grep -E -- '--\<bits\>' | cut -f2 -d=)
 if [ "$(uname)" == "Darwin" ]; then
   bits=64
 else
@@ -71,7 +77,7 @@ else
   fi
 fi
 if test -z "$tmpbits"; then
-  tmpbits=$tmpbits
+  tmpbits=$bits
 fi
 if  [ "$tmpbits" != "32" ] && [ "$tmpbits" != "64" ] ; then
   echo "Unknown bits "$tmpbits" using 64 instead."
@@ -81,10 +87,11 @@ else
 fi
 ##This is for Intel on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "Intel" ]; then
-  . /opt/intel/oneapi/setvars.sh
-  export CC=icc
-  export CXX=icpc
-  export FC=ifort
+  . /opt/intel/oneapi/setvars.sh --force
+  export CC=icx
+  export CXX=icpx
+  export FC=ifx
+  which ifx icx icpx >/dev/null 2>&1 || { echo "Intel compilers (ifx, icx, icpx) not found after setvars.sh; install intel-oneapi-compiler-fortran and intel-oneapi-compiler-dpcpp-cpp"; exit 1; }
 fi
 ##This is for GNU on Linux
 if [ "$(uname)" = "Linux" ] && [ "$toolchain" = "GNU" ]; then
@@ -126,10 +133,10 @@ fi
 
 ##This is for Intel on MacOSX
 if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "Intel" ]; then
-  .  /opt/intel/oneapi/setvars.sh
-  export CC=icc
-  export CXX=icpc
-  export FC=ifort
+  . /opt/intel/oneapi/setvars.sh --force
+  export CC=icx
+  export CXX=icpx
+  export FC=ifx
 fi
 ##This is for GNU/Clang on MacOSX
 if [ "$(uname)" = "Darwin" ] && [ "$toolchain" = "GNU-11" ]; then

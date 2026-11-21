@@ -33,11 +33,16 @@ C**GET RANDOM AZIMUTHAL COS, SIN
       XR1=2.*(XR1-.5)
       X=XR1*XR1+XR2*XR2
       IF(X-1.) 2,2,1
-    2 C=(XR1*XR1-XR2*XR2)/X
-      S=2.*XR1*XR2/X
+C   CC,SS: local copies of C,S. C and S are dummy arguments of ENTRY NEWDR2 only;
+C   the NEWDIR/NEWDR1 path must not use them (ifx rejects it, error 6482, and the
+C   arguments do not exist when NEWDR1 is called)
+    2 CC=(XR1*XR1-XR2*XR2)/X
+      SS=2.*XR1*XR2/X
       GO TO 8
 C***********************************************************
       ENTRY NEWDR2(DIR,CTH,STH,C,S)
+      CC=C
+      SS=S
 C
 C     CHECK CTH,STH, C AND S
       IF( ABS(CTH).GT.1.0 .OR. ABS(STH).GT.1.0 ) GO TO 93
@@ -80,7 +85,7 @@ C
       B(3)=AM
     4 SUM = 0.
         DO 10 I=1,3
-        DIR(I)=ALMN(I)*CTH+(C*A(I)+S*B(I))*STH
+        DIR(I)=ALMN(I)*CTH+(CC*A(I)+SS*B(I))*STH
    10   SUM = SUM+DIR(I)**2
 C
       IF(SUM.GE.0.99 .AND. SUM.LE.1.01) GO TO 100
@@ -89,10 +94,10 @@ C*****  CORRECT THE ROUNDING ERROR  *******************
       DATA IERR/0/
       IERR = IERR+1
       TH2 = CTH**2+STH**2
-      CS2 = C*C+S*S
+      CS2 = CC*CC+SS*SS
 C     IF(IERR.LE.10 .OR. SUM.LE.0. .OR. SUM.GT.1.1 )
       IF(IERR.LE.3 .AND.( SUM.LE.0. .OR. SUM.GT.1.1 ))
-     $          WRITE(6,6000) DIR,SUM,AL,AM,AN,A,B,CTH,STH,TH2,C,S,CS2
+     $          WRITE(6,6000) DIR,SUM,AL,AM,AN,A,B,CTH,STH,TH2,CC,SS,CS2
  6000 FORMAT('0 ****  ERROR ,DIR=',3F10.4,'  SUM2=',E10.3,
      1       /'   AL,AM,AN=',3F10.4,'  A,B=',6E10.3,
      2       /'   CTH,STH,TH2,C,S,CS2=',6E11.3)
@@ -111,7 +116,7 @@ C---- WARNING
    93 WRITE( 6,693 ) CTH,STH
   693 FORMAT('0 WRONG ANGLE FOR NEWDR2; CTH,STH=',2E12.4,'  <===ERROR=')
       GO TO 100
-   94 WRITE( 6,694 ) C,S
+   94 WRITE( 6,694 ) CC,SS
   694 FORMAT('0 WRONG ANGLE FOR NEWDR2; C,S=',2E12.4,'  <===ERROR=')
 C
   100 RETURN
@@ -120,7 +125,7 @@ C
   690 FORMAT('0**** 2 SUCCESSIVE RANDOM NUMBERS ARE 0.IN NEWDR1.***',
      1        /'  EMERGENCY STOP')
       GO TO 200
-   91 WRITE(6,691) SUM,C,S,CS2
+   91 WRITE(6,691) SUM,CC,SS,CS2
   691 FORMAT('0**SUM=0 OR  WRONG INPUT C,S FOR NEWDR2 ********',
      1       /' SUM=',E12.4,'   C,S,C*C+S*S=',3E12.4,
      2       /'   EMERGENCY STOP')

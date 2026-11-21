@@ -3768,6 +3768,9 @@ CDECK  ID>, PXDIAM.
  170      CONTINUE
  180  CONTINUE
       XXCUT = DSQRT (MAX (XXMIN,2.*XXCUT)) / FLOAT (NDIM)
+*   a NaN matrix (event with zero total momentum): gfortran's MAX returns XXMIN
+*   here, other compilers return the NaN and the loop below would never end
+      IF (XXCUT.NE.XXCUT) XXCUT = XXMIN
 *  start iteration
 *  ----- ---------
       NITER = 0
