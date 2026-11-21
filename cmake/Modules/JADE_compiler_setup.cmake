@@ -47,8 +47,10 @@ endif()
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "PGI|NVHPC")
   # NVIDIA HPC SDK (nvfortran, CMake compiler id NVHPC; PGI for the old pgfortran)
   # -Mnodaz -Mnoflushz: the BOS library compares bit patterns stored in REAL variables (denormal numbers,
-  # e.g. NOTLOW in boslib/star.for); nvfortran treats denormal operands as zero by default
-  set(Fortran_FLAGS_TO_CHECK "-g" "-O0" "-traceback" "-Msave" "-Mextend" "-Mpreprocess" "-Minit-local-zero" "-Mnodaz" "-Mnoflushz")
+  # e.g. NOTLOW in boslib/star.for); nvfortran treats denormal operands as zero by default.
+  # -Mnofma: fused multiply-add makes P*P-Q*Q of equal numbers a tiny negative value (SQRT of it is a NaN
+  # once denormals are no longer flushed, e.g. in jmc/jeloss.f), gfortran and ifx do not fuse here.
+  set(Fortran_FLAGS_TO_CHECK "-g" "-O0" "-traceback" "-Msave" "-Mextend" "-Mpreprocess" "-Minit-local-zero" "-Mnodaz" "-Mnoflushz" "-Mnofma")
   add_definitions(-DREQUIRES_OR -DREQUIRES_AND)
   # The CERNLIB static libraries are built with gfortran and need its runtime
   set(CMAKE_Fortran_STANDARD_LIBRARIES "${CMAKE_Fortran_STANDARD_LIBRARIES} -lgfortran")
@@ -103,7 +105,7 @@ if (${CMAKE_C_COMPILER_ID}  MATCHES  "XL")
   set(C_FLAGS_TO_CHECK   "-g" "-O1 ")
 endif()
 if (${CMAKE_C_COMPILER_ID}  MATCHES  "PGI|NVHPC")
-  set(C_FLAGS_TO_CHECK   "-g" "-O1 ")
+  set(C_FLAGS_TO_CHECK   "-g" "-O1" "-Mnofma")
 endif()
 if (${CMAKE_C_COMPILER_ID}  MATCHES  "SunPro")
   set(C_FLAGS_TO_CHECK   " -g" "-O1")
