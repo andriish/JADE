@@ -14,6 +14,14 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        brew install cmake gcc coreutils wget gengetopt root pythia openmotif libx11
+    - name: Install cernlib and hepmc3 from the JADE tap
+      # bottles from ghcr.io, see .github/homebrew/
+      run: bash .github/homebrew/install.sh cernlib hepmc3
     - name: Compile
-      id: compile
-      run: ./.github/workflows/osx/entrypoint.sh
+      # On macOS only the versioned GNU-NN toolchains set the compilers (Homebrew gcc-16, gfortran-16).
+      run: sh jadeinstall.sh --toolchain=GNU-16
+    - name: Test
+      run: sh jadetest.sh --toolchain=GNU-16
