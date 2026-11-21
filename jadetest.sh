@@ -56,9 +56,6 @@ else
   export TOP=$(pwd)/installed
 fi
 
-if [ "$(uname)" == "Darwin" ]; then
-  export PYTHIA8_ROOT_DIR=/usr/local/Cellar/pythia/8.243
-fi
 ########################################################################
 toolchain=GNU
 if test -z "$tmptoolchain"; then

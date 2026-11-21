@@ -216,9 +216,9 @@ To run some simple tests:
      (``yum -y install xorg-x11-server-Xvfb python3 python3-pillow ghostscript``); without ``xvfb-run`` these
      tests are skipped. The ``H2ROOT_*`` and ``ROOT_ANALYSIS_*`` tests need ``jade_h2root`` (see below)
      and are skipped without it. The memory-check tests run only if ``valgrind`` is installed (``yum -y install valgrind``).
-   - For MacOSX the dependencies are in the homebrew-hep repository (davidchall/hep)
+   - For MacOSX Pythia8 is in the homebrew default repository
      ```
-     brew install pythia8
+     brew install pythia
      ```
 
  - ``jade_h2root``: the tests convert the HBOOK files into ROOT files with ``h2root``. The ``h2root`` of ROOT 6.40.04 (package ``root-hbook``)
