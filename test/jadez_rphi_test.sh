@@ -24,12 +24,13 @@ else
   echo "SKIP: no xvfb-run and JADEZ_TEST_DISPLAY not set"
   exit 77
 fi
-mkdir -p rphidisplay && cd rphidisplay && rm -f JADE.*
+mkdir -p rphidisplay && cd rphidisplay && rm -f JADE.* fort.77
 cp ../superv1.bos .
 cp ../aupdat1.b F11LHO.AUPDAT1
 cp "$HELP" F22BOW.HELP.DATASET
 # the superv output is big-endian on all units
 export GFORTRAN_CONVERT_UNIT=big_endian
+export F_UFMTENDIAN=big   # the same for Intel Fortran
 
 # OPT 13 OFF: no bank listing, OPT 14 OFF: results header lines also after a command with an
 # argument (blue PATR and orange LGCL header lines), OPT 16: automatic result tables, OPT 17: orthogonal
@@ -70,6 +71,12 @@ grep -q "Fortran runtime error" ../jadez_rphi_test.log && { echo "FAIL: Fortran 
 grep -q "Invalid command string" ../jadez_rphi_test.log && { echo "FAIL: display command rejected"; fail=1; }
 grep -q "NAME: " ../jadez_rphi_test.log && { echo "FAIL: bank listing printed (OPT 13 not off?)"; fail=1; }
 NV=1
+# Intel Fortran: HIGZ (in the gfortran-built CERNLIB) writes the PostScript through libgfortran's
+# unit 77, which is not the unit that jadez opened as JADE.nnn.ps, so the pictures end up in
+# fort.77 and the JADE.nnn.ps stay empty. Split fort.77 into one file per picture.
+if [ -s fort.77 ] && [ -z "$(find . -maxdepth 1 -name 'JADE.*.ps' -size +0)" ]; then
+  csplit -s -z -f JADE.fort77. -b '%03d.ps' fort.77 '/^%!PS-Adobe/' '{*}' && rm -f fort.77
+fi
 NF=$(find . -maxdepth 1 \( -name 'JADE.*.png' -o -name 'JADE.*.ps' \) -size +0 | wc -l)
 echo "$NF hardcopy files for $NV H commands"
 [ "$NF" -ge "$NV" ] || { echo "FAIL: too few hardcopies"; fail=1; }

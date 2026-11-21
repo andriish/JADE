@@ -63,6 +63,10 @@ target_compile_definitions( convert_hepmc_to_jade PUBLIC HEPMCCONVERT_EXTENSION_
 target_link_libraries(convert_hepmc_to_jade HepMC3::HepMC3  ${LAPACK_LIBRARIES})
 target_compile_features(convert_hepmc_to_jade PUBLIC cxx_std_11)
 set_target_properties(convert_hepmc_to_jade PROPERTIES LINKER_LANGUAGE Fortran POSITION_INDEPENDENT_CODE TRUE) 
+# Intel Fortran adds its own Fortran main program when it links; the main here is the C++ one
+if (CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+  set_property(TARGET convert_hepmc_to_jade APPEND_STRING PROPERTY LINK_FLAGS " -nofor-main")
+endif()
 add_dependencies( convert_hepmc_to_jade cmdline  )
 ########################################################################
 # installs 
