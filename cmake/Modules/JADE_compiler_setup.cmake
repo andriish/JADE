@@ -61,6 +61,13 @@ endif()
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "SunPro")
   set(Fortran_FLAGS_TO_CHECK   " -g" "-O0" "-f77" "-fixed" "-ftrap=%none" "-DGAMMA=SUNGAMMA" "-xpp=cpp")
 endif()
+# gfortran's preprocessor defines no operating system macros for Fortran sources (no __APPLE__,
+# unlike gcc for C), but the BLOCK DATA units that work around the Apple linker COMMON size bug
+# are guarded with #ifdef __APPLE__ (see AGENTS.md).  Define it for Fortran only: the C/C++
+# compilers define it themselves.
+if (APPLE)
+  add_compile_definitions($<$<COMPILE_LANGUAGE:Fortran>:__APPLE__>)
+endif()
 # For 32 bit builds the test programs of the flag checks (Fortran, C and C++) must be compiled and
 # linked with -m32 (the linker flags already contain it), otherwise every check fails. Each flag
 # is added once, only if its check succeeds (it used to be added twice: conditionally and then
