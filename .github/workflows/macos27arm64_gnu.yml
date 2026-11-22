@@ -40,6 +40,9 @@ jobs:
         # no "|| true": a missing Xvfb must stop the job here with a clear message, instead of
         # skipping the display tests later
         brew install --cask xquartz
+        # The restored Homebrew prefix contains the xquartz Caskroom entry, but /opt/X11 is outside the
+        # prefix and is not restored: brew then says "already installed" and does nothing.
+        [ -x /opt/X11/bin/Xvfb ] || brew reinstall --cask xquartz
         brew install ghostscript pillow || true
         if [ ! -x /opt/X11/bin/Xvfb ]; then
           echo "::error::No /opt/X11/bin/Xvfb after installing xquartz"; ls /opt/X11/bin 2>&1 | head -30; exit 1
