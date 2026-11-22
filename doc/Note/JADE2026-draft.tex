@@ -24,6 +24,11 @@
 %\usepackage{showframe}
 \usepackage{supertabular}
 \usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\small,breaklines=true,columns=fullflexible,keepspaces=true,
+  frame=lines,backgroundcolor=\color{black!4},showstringspaces=false,upquote=true,
+  xleftmargin=1em,xrightmargin=1em,aboveskip=0.8em,belowskip=0.8em}
 \usepackage{multicol}
 \usepackage{multirow}
 \usepackage{ifthen}
@@ -48,13 +53,15 @@
 
 
 \renewcommand{\arraystretch}{1.20}
-\title{JADE preserved data in 2022}
+\title{JADE preserved data in 2026}
 \author[b]{Andrii Verbytskyi\thanks{andrii.verbytskyi@mpp.mpg.de}}
 \affil[b]{Max-Planck-Institut f\"{u}r Physik}
-\prepnum{MPP-2022-XXX, JADE-CN-104}
+\author[a]{Claude\thanks{AI assistant (Claude Sonnet 5.5, Anthropic), used as described in Section~\ref{sec:ai}}}
+\affil[a]{Anthropic}
+\prepnum{MPP-2026-XXX, JADE-CN-104}
 \renewcommand\Authands{\\and\\}
 \abstract{
-\input{JADE2022-abs}
+\input{JADE2026-abs}
 }
 
 
@@ -106,8 +113,8 @@
 \begin{document}
 \maketitle
 \tableofcontents
-\include{JADE2022-txt}
-{\bibliographystyle{./JADE2022}{\raggedright\bibliography{JADE2022.bib}}}\vfill\eject
+\include{JADE2026-txt}
+{\bibliographystyle{./JADE2026}{\raggedright\bibliography{JADE2026.bib}}}\vfill\eject
 \clearpage
 
 

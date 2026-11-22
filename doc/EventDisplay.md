@@ -67,7 +67,7 @@ JADEZ_TEST_DISPLAY=:N ctest -R JADEZ
 by pixel colours (needs Pillow, otherwise skipped), PostScript files by the
 `r g b c` colour settings.
 
-**Where the pictures are.** In the test working directory (`build/test`):
+**Where the pictures are.** In the test working directory (`build<toolchain><bits>/test`, e.g. `buildGNU64/test`):
 `JADE.nnn.ps` (the tests also convert them to `JADE.nnn.ps.png` with `gs` if
 available). `JADEZ_MC_1` and `JADEZ_RPHI_1` write into the
 subdirectories `mcdisplay/` and `rphidisplay/`; logs are `jadez_test.log`,
@@ -78,11 +78,10 @@ HIGZ build installed by `jadeinstall.sh --bits=32`.
 
 ## 4. Known limitations and open items
 
-* Not reproduced compared with the reference pictures: muon chamber outlines
-  (need `MUEV` hits and muon calibration, absent from the sample data; HIGZ does
-  not draw them either); pink dashed track segments; filled hit patterns in the
+* Not reproduced compared with the reference pictures: pink dashed track segments; filled hit patterns in the
   insets; the axis-triad letters "Y" and "Z" (only "X" is drawn); the "e" label of the small dE/dx plot. The small plot `DEDX -4`
   draws no axis captions by design (same in the original source).
 * The sample events are not those of the reference pictures, so the pictures
   match in structure, not pixel by pixel.
+* Muon chamber outlines (muon filter views `RC1`, `ZXC1`, ...): drawn by `MUPIC` only if the muon calibration (bank `MUCA`) is loaded into `/CALIBR/` by `KLREAD`. This works with the calibration files of `jadesoft/cal2026` (little-endian hosts, see `AGENTS.md`); with the old `cal` files nothing was drawn. The sample event has no muon hits (`MUHITS 0`), so only the outlines appear.
 * 64-bit builds: all tests pass (see `h2root/README.md` for the `h2root` fix needed on 64 bit).

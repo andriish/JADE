@@ -67,6 +67,14 @@ configure_file(${JADESOFT_CAL_DIR}/bupdat1.b    ${CMAKE_CURRENT_BINARY_DIR}/bupd
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006    ${CMAKE_CURRENT_BINARY_DIR}/jadetapes/JAD073/file006 COPYONLY)
 
 
+# The bank names of the binary calibration files must have the byte order of the host, otherwise KLREAD
+# ignores every record and no calibration constants are applied (see jadesoft/CMakeLists.txt, calcheck.f).
+add_executable(calcheck ${CMAKE_CURRENT_SOURCE_DIR}/src/calcheck.f)
+foreach(calfile aupdat1 bupdat0 bupdat1)
+  add_test(NAME CALIB_NAMES_${calfile} COMMAND calcheck ${CMAKE_CURRENT_BINARY_DIR}/${calfile}.b)
+  jade_fortran_test(CALIB_NAMES_${calfile} "GFORTRAN_CONVERT_UNIT=big_endian" "F_UFMTENDIAN=big" " ")
+endforeach()
+
 add_TEST(NAME FPTOBOS_DATA_1_CLEANUP COMMAND rm -f ${CMAKE_CURRENT_BINARY_DIR}/file006.bos)
 
 add_test(NAME FPTOBOS_DATA_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/fptobos1.card  ${JADESOFT_BIN_DIR}/fptobos)

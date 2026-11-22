@@ -205,7 +205,7 @@ Please note that JADE software consists of multiple packages that can be compile
 without invocation of the ``jadeinstall.sh``.
 
 The ``jadeinstall.sh`` script will create the ``/build`` directory, where the data files are
-converted into ``.root`` files (among other things), which can be found in the ``/build/test`` directory.
+converted into ``.root`` files (among other things), which can be found in the ``build<toolchain><bits>/test`` directory (e.g. ``buildGNU64/test``).
 
 ## Testing
 
@@ -281,8 +281,10 @@ it and its tests are described in ``doc/EventDisplay.md``.
 
 Some cmake scripts support the following options
   - ``JADE_OLD_MC:BOOL``  "Compile old MC executables" default is ``ON``
-  - ``JADE_FPE:BOOL``  "Trap floating point exceptions" default is  ``ON``
-  - ``JADE_USE_CERNLIB:BOOL`` "Attempt to use CERNLIB instead of buildin code (picocernlib)" default is  ``OFF``
+  - ``JADE_FPE:BOOL``  "Trap floating point exceptions" default is  ``OFF``
+  - ``JADE_USE_CERNLIB:BOOL`` "Attempt to use CERNLIB instead of buildin code (picocernlib)" default is  ``ON``. The real CERNLIB is
+    always needed: ``picocernlib`` is not built by ``jadeinstall.sh`` and not linked, ``jadesoft`` ignores the option, and
+    in ``jtuple`` and ``fptobos`` switching it off leaves no replacement to link
 
 
 

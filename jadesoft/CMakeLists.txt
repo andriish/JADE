@@ -563,12 +563,30 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/JADESOFTConfig.cmake
               DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT devel)
 
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cal/aupdat1 
-              ${CMAKE_CURRENT_SOURCE_DIR}/cal/aupdat1.b 
-              ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat0 
-              ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat0.b 
-              ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat1 
-              ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat1.b  DESTINATION ${CMAKE_INSTALL_DATADIR}/JADESOFT/cal )
+# Calibration files. KLREAD compares the bank name of every record of the binary files (*.b) with
+# a Hollerith constant of the program, so the name word must have the byte order of the host:
+#   cal      the binary files as written on a big-endian machine (names stored big-endian)
+#   cal2026  the same ASCII files converted again with util2016/ccal/conv on a little-endian host
+#            (GFORTRAN_CONVERT_UNIT=big_endian), the names match on little-endian machines
+# With the "cal" files on a little-endian machine KLREAD ignores all records, i.e. no calibration
+# constants (also none for the muon chambers) are applied. Select with -DJADE_CAL_DIR_NAME=cal|cal2026.
+if (NOT JADE_CAL_DIR_NAME)
+  include(TestBigEndian)
+  test_big_endian(JADE_HOST_BIG_ENDIAN)
+  if (JADE_HOST_BIG_ENDIAN)
+    set(JADE_CAL_DIR_NAME cal)
+  else()
+    set(JADE_CAL_DIR_NAME cal2026)
+  endif()
+endif()
+set(JADE_CAL_DIR_NAME ${JADE_CAL_DIR_NAME} CACHE STRING "Calibration files directory of jadesoft (cal or cal2026)" FORCE)
+message(STATUS "JADE: calibration files from ${JADE_CAL_DIR_NAME}")
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${JADE_CAL_DIR_NAME}/aupdat1
+              ${CMAKE_CURRENT_SOURCE_DIR}/${JADE_CAL_DIR_NAME}/aupdat1.b
+              ${CMAKE_CURRENT_SOURCE_DIR}/${JADE_CAL_DIR_NAME}/bupdat0
+              ${CMAKE_CURRENT_SOURCE_DIR}/${JADE_CAL_DIR_NAME}/bupdat0.b
+              ${CMAKE_CURRENT_SOURCE_DIR}/${JADE_CAL_DIR_NAME}/bupdat1
+              ${CMAKE_CURRENT_SOURCE_DIR}/${JADE_CAL_DIR_NAME}/bupdat1.b  DESTINATION ${CMAKE_INSTALL_DATADIR}/JADESOFT/cal )
 
 install(TARGETS 
 ar48p

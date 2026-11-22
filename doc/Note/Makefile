@@ -1,4 +1,4 @@
-latexfile=JADE2022
+latexfile=JADE2026
 newname?=FFC
 STYLE?=draft
 

@@ -71,6 +71,8 @@ fail=0
 [ $rc -eq 0 ] || { echo "FAIL: non-zero exit code"; fail=1; }
 grep -q "Fortran runtime error" ../jadez_mc_test.log && { echo "FAIL: Fortran runtime error"; fail=1; }
 grep -q "Invalid command string" ../jadez_mc_test.log && { echo "FAIL: display command rejected"; fail=1; }
+# KLREAD must have applied the calibration (muon chamber constants): MUANAC warns if /CALIBR/ is empty
+grep -q "NO CALIBRATION FOUND" ../jadez_mc_test.log && { echo "FAIL: calibration constants not used (see CALIB_NAMES tests, jadesoft/cal2026)"; fail=1; }
 # Intel Fortran: HIGZ (in the gfortran-built CERNLIB) writes the PostScript through libgfortran's
 # unit 77, which is not the unit that jadez opened as JADE.nnn.ps, so the pictures end up in
 # fort.77 and the JADE.nnn.ps stay empty. Split fort.77 into one file per picture.
