@@ -10,7 +10,9 @@ for arg in "$@"; do
 done
 if [ "$(uname)" == "Darwin" ]; then
   export PATH=/usr/local/bin:$PATH
-  export MACOSX_DEPLOYMENT_TARGET=12.0
+  # Target the running macOS (e.g. 27.0), like the Homebrew libraries: a lower target gives one
+  # "built for newer 'macOS' version" linker warning per object file. Override by setting it.
+  export MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET:-$(sw_vers -productVersion | cut -d. -f1).0}
   if [ -z ${CMAKE+x} ]; then
     CMAKE=cmake
     CTEST=ctest
