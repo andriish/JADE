@@ -247,8 +247,8 @@ are written by others and are either used as external dependencies or included i
 
 | Code | Used for | Link |
 |---|---|---|
-| CERNLIB (packlib, kernlib, mathlib, HIGZ/``libgrafX11``) | Optional (``JADE_USE_CERNLIB``), HBOOK, HIGZ graphics of the event display ``jadez`` | https://cernlib.web.cern.ch/ |
-| ROOT 6 | ``jtuple``, ``picocernlib``, ``h2root``, analysis tests | https://root.cern |
+| CERNLIB (packlib, kernlib, mathlib, HIGZ/``libgrafX11``) | Required: HBOOK, HIGZ graphics of the event display ``jadez`` | https://cernlib.web.cern.ch/ |
+| ROOT 6 | ``jtuple``, ``h2root``, analysis tests | https://root.cern |
 | HepMC3 | Event record read by ``convert`` and written by the tests | https://gitlab.cern.ch/hepmc/HepMC3 |
 | Pythia 8 | Generation of the MC test events | https://pythia.org |
 | LAPACK / BLAS | Linear algebra | https://www.netlib.org/lapack/ |
@@ -263,7 +263,6 @@ are written by others and are either used as external dependencies or included i
 | ``convert/src/AtlasPID.h`` | AtlasPID (PDG ID utilities, PDG 2022 numbering) | Andrii Verbytskyi, https://gitlab.cern.ch/averbyts/atlaspid |
 | ``convert/cmdline.c``, ``cmdline.h`` | Output of gengetopt 2.23 from ``cmdline.ggo`` | https://www.gnu.org/software/gengetopt/ |
 | ``test/src/fjcore/`` | fjcore, the core of FastJet 3.5.3 | https://fastjet.fr |
-| ``picocernlib/`` | Selected routines and headers of CERNLIB (kernlib, mathlib, ``ffread``), rewritten equivalents based on ROOT | https://cernlib.web.cern.ch/ |
 | ``h2root/`` | ``h2root.cxx`` and the minicern Fortran/C sources of the ROOT branch ``v6-40-00-patches`` (contain the 64 bit fix, ``h2root/README.md``) | https://github.com/root-project/root (``main/src/h2root.cxx``, ``misc/minicern``) |
 | ``jadesoft/util*/mcgen/src/`` | Monte Carlo generators used for historic JADE productions: JETSET 6.3 / 7.4 (``jetset63*.f``, ``jt74opal.f``), PYTHIA 5.7 (``pythia5722.f``, ``pystfu.f``, ``pymaxi.f``), HERWIG 5.8 / 5.9 (``herwig58d.f``, ``herwig59.f``), ARIADNE 4.08 (``ariadne408.f``), COJETS 6.23 (``coj623d.f``), the PX and CKERN jet clustering packages (``px113.f``, ``px114.f``, ``ckern104.f``, ``ckern105.f``) | https://www.lund.tp.se/ (Lund MC: JETSET, PYTHIA, ARIADNE), https://herwig.hepforge.org (HERWIG); original CMZ/CAR sources are kept in ``util/mcgen/src`` |
 | ``jadesoft/util/Rbin/``, ``Pbin/`` ``fsplit.c`` | ``fsplit`` Fortran file splitter, University of California (BSD licence) | https://www.freebsd.org |
@@ -281,8 +280,7 @@ it and its tests are described in ``doc/EventDisplay.md``.
 
 Some cmake scripts support the following options
   - ``JADE_OLD_MC:BOOL``  "Compile old MC executables" default is ``ON``
-  - ``JADE_FPE:BOOL``  "Trap floating point exceptions" default is  ``ON``
-  - ``JADE_USE_CERNLIB:BOOL`` "Attempt to use CERNLIB instead of buildin code (picocernlib)" default is  ``OFF``
+  - ``JADE_FPE:BOOL``  "Trap floating point exceptions" default is  ``OFF``
 
 
 
