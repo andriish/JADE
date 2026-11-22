@@ -1,0 +1,157 @@
+C   23/03/97 703262117  MEMBER NAME  PRMUCA   (SEL96.S)  M  FORTRAN
+      SUBROUTINE PRMUCA(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants MUCA out, according to specification
+C       Writing to Unit MUNIT
+C  MUCA:  print as Integer       1
+C                  Integer      15 (contains description text)
+C                  Integer*2  8304  (half integer)
+C                  Real          1
+C                  Integer      13
+C                  Real          1
+C                  Integer       2
+C
+      COMMON /CALIBR/ JPOINT(100),
+     1   CMUCA(4185),CLGMA(2880),CTAGS( 192),CJTPL(4608),CJTAB(1344),
+     2   CTOFC( 546),CLGST( 500),CDEDX(1841),CSPTG( 193),CRVTX(   6),
+     3   CZCAL(11329),CTAGF( 32),CIDJS(12000),CVCALC(1084),
+     4   CVCALR(8),CVCALB(4),CVCALF(1008)
+         DIMENSION ACALIB(100),HCALIB(100),ICALIB(100)
+         EQUIVALENCE(JPOINT(1),ACALIB(1),HCALIB(1),ICALIB(1))
+C
+      DIMENSION KBUF(10000),HBUF(20000),ABUF(10000)
+C     EQUIVALENCE(KBUF(1),HBUF(1))
+      DATA LCYC/10/, IPR/0/
+C
+      IF(NWORD.GT.1) WRITE(MUNIT,100) NWORD,(KBUF(I),I=1,9)
+  100 FORMAT(1X,I6,' ',A4,' ',2I2,I2,2I10,I6,I10,I2)
+      NWDAT = NWORD - 9
+      IF(NWDAT.LE.0) GO TO 9999
+        NND = 9
+      IF(KBUF(7).EQ.0) GO TO 500
+C Consequtive words in records
+      IF(KBUF(7).NE.1) GO TO 1400
+5555    CONTINUE
+        WRITE(MUNIT,1501) KBUF(NND+1),(KBUF(NND+J),J=2,16)
+1501    FORMAT(' ',I5,2X,15A4)
+        KREMAI = NWORD - 16 - 9
+        HKREMA = 2*KREMAI
+        IF(HKREMA.GT.8304) HKREMA = 8304
+        NCYCL = HKREMA/LCYC
+        NKREM = NCYCL*LCYC
+        NREST = HKREMA - NKREM
+        NND = NND + 16
+        IF(IPR.NE.0) WRITE(6,5671) KREMAI,HKREMA,NCYCL,NKREM,NREST
+5671  FORMAT(' 5671: KREM HKREM NCYCL NKREM NREST ',5I6)
+        NND2 = NND*2
+        IF(NCYCL.LE.0) GO TO 1512
+          NND2 = NND2 - LCYC
+          DO 1508 IK = 1,NCYCL
+          NND2 = NND2 + LCYC
+          WRITE(MUNIT,1502) (HBUF(NND2 + JK),JK = 1,LCYC)
+1502      FORMAT(10(1X,I6))
+1508      CONTINUE
+          NND2 = NND2 + LCYC
+1512    CONTINUE
+        IF(IPR.NE.0) WRITE(6,5672) NND2,NREST
+5672  FORMAT(' 5672: NND2 NREST ',2I7)
+        IF(NREST.LE.0) GO TO 1520
+          WRITE(MUNIT,1502) (HBUF(NND2 + JK),JK = 1,NREST)
+1520    CONTINUE
+        NND = (NND2+NREST)/2
+        IF(IPR.NE.0) WRITE(6,5673) NND,NWORD
+5673  FORMAT(' 5673: NND NWORD ',2I7)
+        IF(NND.EQ.NWORD) GO TO 9999
+        WRITE(6,1535) NND,NWORD
+1535    FORMAT(' PRMUCA Error 1: NND ne NWORD ',2I7)
+        GO TO 9999
+C*********************
+1400  CONTINUE
+C                         starting not at word 1
+      NST = KBUF(7)
+C** NST is address in MUON array, assumed always somewhere between
+C                                 33 and 8336
+C** NND = 9 upon arrival here
+C  following are parameters in the Muon internal array
+      NEND = NST + NWDAT*2 - 1
+      NEND2 = NEND
+      IF(NEND2.GT.8336) NEND2 = 8336
+      INTER = NEND2 - NST + 1
+      NCYCL = INTER/LCYC
+C  following are parameters in HBUF
+      NND2 = NND*2
+      NENDE = NND2 + INTER
+      NREST = INTER - NCYCL*LCYC
+        IF(IPR.NE.0) WRITE(6,5674) NST,NWDAT,NND,NND2,NENDE
+5674  FORMAT(' 5674: NST NWDAT NND NND2 NENDE ',5I6)
+        IF(IPR.NE.0) WRITE(6,5675) NEND,NEND2,INTER,NCYCL,NREST
+5675  FORMAT(' 5675: NEND-2 INTER NCYCL NREST ',5I7)
+      IF(NCYCL.LE.0) GO TO 1412
+        NND2 = NND2 - LCYC
+        DO 1408 IK = 1,NCYCL
+        NND2 = NND2 + LCYC
+        WRITE(MUNIT,1502) (HBUF(NND2+JK),JK=1,LCYC)
+1408    CONTINUE
+        NND2 = NND2 + LCYC
+1412  CONTINUE
+        IF(IPR.NE.0) WRITE(6,5676) NND2,NREST
+5676  FORMAT(' 5676: NND2 NREST ',2I7)
+      IF(NREST.LE.0) GO TO 1420
+        WRITE(MUNIT,1502) (HBUF(NND2 + JK),JK = 1,NREST)
+        NND2 = NND2 + NREST
+1420  CONTINUE
+        NND = NND2/2
+        IF(IPR.NE.0) WRITE(6,5677) NND,NWORD
+5677  FORMAT(' 5677: NND2 NND NWORD ',3I7)
+      IF(NND.EQ.NWORD)  GO TO 9999
+C  Come here for printing the end of the MUCA constants
+      NREST = NWORD - NND
+        IF(IPR.NE.0) WRITE(6,5678) NREST
+5678  FORMAT(' 5678: NREST ',I7)
+      IF(NREST.NE.17) GO TO 1450
+      WRITE(MUNIT,1421) ABUF(NND+1),(KBUF(NND+IK),IK=2,8)
+1421  FORMAT(' ',F12.4,1X,7I8)
+      WRITE(MUNIT,1422) (KBUF(NND+IK),IK=9,14),ABUF(NND+15),
+     $              (KBUF(NND+IK),IK=16,17)
+1422  FORMAT(' ',6I8,F12.4,2I5)
+      GO TO 9999
+C  Error exit
+1450  WRITE(6,1451) NREST
+1451  FORMAT(' PRMUCA Error 2: NREST ',I10)
+      GO TO 9999
+C*****************
+500   CONTINUE
+      IF(NWORD.GT.2000) GO TO 5555
+C                         single word updates, assume all integer*2
+        KREMAI = NWORD - 9
+        HKREMA = 2*KREMAI
+        NCYCL = HKREMA/LCYC
+        NKREM = NCYCL*LCYC
+        NREST = HKREMA - NKREM
+        NND = 9
+        NND2 = 2*NND
+        IF(IPR.NE.0) WRITE(6,5679) KREMAI,HKREMA,NCYCL,NKREM,NREST
+5679  FORMAT(' 5679: KREMAI HKREMA NCYCL NKREM NREST ',5I7)
+        IF(NCYCL.LE.0) GO TO 512
+          NND2 = NND2 - LCYC
+          DO 508 IK = 1,NCYCL
+          NND2 = NND2 + LCYC
+          WRITE(MUNIT,1502) (HBUF(NND2 + JK),JK = 1,LCYC)
+508       CONTINUE
+          NND2 = NND2 + LCYC
+512     CONTINUE
+        IF(IPR.NE.0) WRITE(6,5680) NND2,NREST
+5680  FORMAT(' 5680: NND2 NREST ',2I7)
+        IF(NREST.LE.0) GO TO 520
+          WRITE(MUNIT,1502) (HBUF(NND2 + JK),JK = 1,NREST)
+520     CONTINUE
+        NND = (NND2+NREST)/2
+        IF(IPR.NE.0) WRITE(6,5681) NND,NWORD
+5681  FORMAT(' 5681: NND NWORD ',2I7)
+       IF(NND.EQ.NWORD) GO TO 9999
+       WRITE (6,1654) NND,NWORD
+1654   FORMAT(' PRMUCA Error 3:  NND ne NWORD ',2I8)
+C***********
+9999  CONTINUE
+      RETURN
+      END

@@ -1,0 +1,178 @@
+C
+C /CALIBR/
+C
+      COMMON /CALIBR/ JPOINT(100),
+     1   CMUCA(4185),CLGMA(2880),CTAGS( 192),CJTPL(4608),CJTAB(1344),
+     2   CTOFC( 546),CLGST( 500),CDEDX(1841),CSPTG( 193),CRVTX(   6),
+     3   CZCAL(11329),CTAGF( 32),CIDJS(12000),CVCALC(1084),
+     4   CVCALR(8),CVCALB(4),CVCALF(1008)
+         DIMENSION ACALIB(100),HCALIB(100),ICALIB(100)
+         EQUIVALENCE(JPOINT(1),ACALIB(1),HCALIB(1),ICALIB(1))
+      SUBROUTINE PRIDJS(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+***
+      SUBROUTINE PRDEDX(MUNIT,NWORD,KBUF,HBUF,ABUF)
+C       Write constants DEDX out, according to specification
+C       Writing to Unit MUNIT
+C
+C  DEDX:  print as Float.nr.    Used in DEDXBN routines (CDEDEDX)
+C                               This is true for first 5*2*96 words
+C                               assume same for the words 961-1344
+C
+C
+***
+      SUBROUTINE PRIDJS(MUNIT,NWORD,KBUF,HBUF,ABUF)
+C       Write constants IDJS out, according to specification
+C       Writing to Unit MUNIT
+C
+C  IDJS:  JFTNEW and CNEWID use these constants
+C                 CALCST(96,27)      2592  words
+C                 DSTORW(5,64,24)    7680  words   ==> 10272
+C                 NVRUN,XVRUN,YVRUN   900  words   ==> 11171 (I,F,F)
+C                 IUPDS(6,40)         240  words   ==> 11178 (4I,2F)
+C
+C
+***
+      SUBROUTINE PRJTAB(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants JTAB out, according to specification
+C       Writing to Unit MUNIT
+C
+C  JTAB:  print as Float.nr.    Used as DELTA(96,2)  in REFITO
+C                               This is true for first 5*2*96 words
+C                               assume same for the words 961-1344
+C
+C
+***
+      SUBROUTINE PRJTPL(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants JTPL out, according to specification
+C       Writing to Unit MUNIT
+C
+C  JTPL:  print as Integer*2.   Used as HJPULS(9216) in REFITO
+C
+C
+***
+      SUBROUTINE PRLGMA(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants LGMA out, according to specification
+C       Writing to Unit MUNIT
+C
+C  LGMA:  print as Integer*2     2880 * 2
+C         The data should be pedestals and gains for all 2880 blocks
+C             according to LGCALB information
+C
+***
+      SUBROUTINE PRLGST(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants LGST out, according to specification
+C       Writing to Unit MUNIT
+C
+C  LGST:  print as Integer*2
+C
+C
+***
+      SUBROUTINE PRMUCA(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants MUCA out, according to specification
+C       Writing to Unit MUNIT
+C  MUCA:  print as Integer       1
+C                  Integer      15 (contains description text)
+C                  Integer*2  8304  (half integer)
+C                  Real          1
+C                  Integer      13
+C                  Real          1
+C                  Integer       2
+C
+***
+      SUBROUTINE PRRVTX(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants RVTX out, according to specification
+C       Writing to Unit MUNIT
+C
+C  RVTX:  print as Float.nr.    6 numbers assumed as XYZ, with errors
+C
+C
+***
+      SUBROUTINE PRSPTG(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants SPTG out, according to specification
+C       Writing to Unit MUNIT
+C
+C  SPTG:  print as Integer*2
+C
+C
+***
+      SUBROUTINE PRTAGF(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants TAGF out, according to specification
+C       Writing to Unit MUNIT
+C
+C  TAGF:  print as Integer*2.   Used only as HCALIB in CALAD
+C
+C
+***
+      SUBROUTINE PRTAGS(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants TAGS out, according to specification
+C       Writing to Unit MUNIT
+C
+C  TAGS:  print as Integer*2
+C
+***
+      SUBROUTINE PRTOFC(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants TOFC out, according to specification
+C       Writing to Unit MUNIT
+C
+C  TOFC:  print as Float.nr.    Used as CORNOR 1-378 in macro TFPRM
+C                               Used as CADCA 1-168 in macro TFADC
+C
+C
+***
+      SUBROUTINE PRVTXB(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants VTXB out, according to specification
+C       Writing to Unit MUNIT
+C
+C  VTXB:  print as Float.nr.       Format still unknown
+C
+***
+      SUBROUTINE PRVTXC(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants VTXC out, according to specification
+C       Writing to Unit MUNIT
+C
+C  VTXC:  print as Float.nr.       Format from macro MVCCAL
+C                 I,47F,A8,F,A8,9F,336F,336F,350F
+C    This format is wrong and probably outdated. The following is found
+C                 A8,48F,A8,10F,336F,336F,350F
+C
+***
+      SUBROUTINE PRVTXF(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants VTXF out, according to specification
+C       Writing to Unit MUNIT
+C
+C  VTXF:  print as Float.nr.       Format still unknown
+C
+***
+      SUBROUTINE PRVTXR(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants VTXR out, according to specification
+C       Writing to Unit MUNIT
+C
+C  VTXR:  print as Float.nr.       Format still unknown
+C
+***
+      SUBROUTINE PRZCAL(MUNIT,NWORD,KBUF,HBUF,ABUF)
+      IMPLICIT INTEGER*2 (H)
+C       Write constants ZCAL out, according to specification
+C       Writing to Unit MUNIT
+C
+C  ZCAL:  print as Float.nr.    Only ACALIB usage is found
+C
+C
+
+
+
