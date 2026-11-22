@@ -227,7 +227,7 @@ To run some simple tests:
 
  - ``jade_h2root``: the tests convert the HBOOK files into ROOT files with ``h2root``. The ``h2root`` of ROOT 6.40.04 (package ``root-hbook``)
    crashes with a segmentation fault on 64-bit machines (it truncates the address of its ntuple buffer to 32 bits).
-   Therefore the repository contains a fixed copy (``h2root/``, see ``h2root/README.md``) that ``jadeinstall.sh`` builds and installs as ``jade_h2root``;
+   Therefore the repository contains a copy of the fixed sources (``h2root/``, see ``h2root/README.md``) that ``jadeinstall.sh`` builds and installs as ``jade_h2root``;
    the tests prefer it, and ``root-hbook`` is not needed. Without ``jade_h2root`` (and without a working ``h2root`` in ``PATH``) the tests are skipped.
 
  - Run the ``jadetest.sh`` script with exactly the same ``--prefix``, ``--toolchain`` and ``--bits`` options as the ``jadeinstall.sh`` script
@@ -260,12 +260,11 @@ are written by others and are either used as external dependencies or included i
 
 | Location | Code | Origin / link |
 |---|---|---|
-| ``convert/src/PIDUtils.h``, ``PIDCodes.h`` | MCUtils (PDG ID utilities) | Andy Buckley, https://gitlab.com/hepcedar/mcutils |
-| ``convert/src/MathUtils.h`` | HEPUtils | Andy Buckley, https://gitlab.com/hepcedar/heputils |
+| ``convert/src/AtlasPID.h`` | AtlasPID (PDG ID utilities, PDG 2022 numbering) | Andrii Verbytskyi, https://gitlab.cern.ch/averbyts/atlaspid |
 | ``convert/cmdline.c``, ``cmdline.h`` | Output of gengetopt 2.23 from ``cmdline.ggo`` | https://www.gnu.org/software/gengetopt/ |
 | ``test/src/fjcore/`` | fjcore, the core of FastJet 3.5.3 | https://fastjet.fr |
 | ``picocernlib/`` | Selected routines and headers of CERNLIB (kernlib, mathlib, ``ffread``), rewritten equivalents based on ROOT | https://cernlib.web.cern.ch/ |
-| ``h2root/`` | Copy of ``h2root.cxx`` and of the minicern Fortran/C sources of ROOT 6.40.04 with a 64 bit fix (``h2root/README.md``) | https://github.com/root-project/root (``main/src/h2root.cxx``, ``misc/minicern``) |
+| ``h2root/`` | ``h2root.cxx`` and the minicern Fortran/C sources of the ROOT branch ``v6-40-00-patches`` (contain the 64 bit fix, ``h2root/README.md``) | https://github.com/root-project/root (``main/src/h2root.cxx``, ``misc/minicern``) |
 | ``jadesoft/util*/mcgen/src/`` | Monte Carlo generators used for historic JADE productions: JETSET 6.3 / 7.4 (``jetset63*.f``, ``jt74opal.f``), PYTHIA 5.7 (``pythia5722.f``, ``pystfu.f``, ``pymaxi.f``), HERWIG 5.8 / 5.9 (``herwig58d.f``, ``herwig59.f``), ARIADNE 4.08 (``ariadne408.f``), COJETS 6.23 (``coj623d.f``), the PX and CKERN jet clustering packages (``px113.f``, ``px114.f``, ``ckern104.f``, ``ckern105.f``) | https://www.lund.tp.se/ (Lund MC: JETSET, PYTHIA, ARIADNE), https://herwig.hepforge.org (HERWIG); original CMZ/CAR sources are kept in ``util/mcgen/src`` |
 | ``jadesoft/util/Rbin/``, ``Pbin/`` ``fsplit.c`` | ``fsplit`` Fortran file splitter, University of California (BSD licence) | https://www.freebsd.org |
 | ``jadesoft/src*/grafix/ellips.f``, ``disaxi.f`` | Mortran/Sheltran-generated sources carrying the "Copyright Stanford Mortran 3.1" notice | https://www.slac.stanford.edu |
