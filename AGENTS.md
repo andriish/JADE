@@ -18,6 +18,7 @@ Software of the JADE experiment (legacy e+e- collider experiment): mostly old Fo
 | `test/` | CTest suite; steering `cards/`, Pythia8 main in `src/`, sample data in `jadetapes/`. |
 | `convert_data_files/` | `converttoroot.py` + cards: raw data → ROOT, runs inside the `jade_soft` container. |
 | `cmake/` | Shared modules (compiler setup, ROOT setup, Pythia8 finder) and config templates. |
+| `.github/homebrew/` | macOS: Homebrew formulae `cernlib` and `hepmc3` (3.3.1), `install.sh` (local tap `jade/hep`, bottles from ghcr.io). Bottles are rebuilt by `.github/workflows/homebrew-bottles.yml` on the newest macOS image (`xcode-27`) whenever a recipe changes; see `.github/homebrew/README.md`. |
 | `doc/` | Scanned computing notes (PDF/PS) — do not modify. |
 
 ## Build and test
@@ -43,7 +44,7 @@ docker run -dit --name jade_soft -v $(pwd):/home ghcr.io/andriish/fedora45x86_64
 docker attach jade_soft   # then run jadeinstall.sh / jadetest.sh with --bits=32 inside
 ```
 
-Dockerfiles for Fedora 45 are in the repo root (`Dockerfile_fedora45x86_64i686_gnu` for 32-bit, `Dockerfile_fedora45x86_64_gnu` for 64-bit, `Dockerfile_fedora45aarch64_gnu` for aarch64, built natively by `.github/workflows/fedora45aarch64_gnu.yml` on `ubuntu-24.04-arm`; the scripts reject `--bits=32` on non-x86 hosts and CMake adds `-fsigned-char` for C/C++ on aarch64/arm because the legacy code assumes signed `char`; they install the tools needed by `jadetest.sh`, including `xvfb-run`, Python with Pillow and ghostscript for the display tests); CentOS Stream 9 and 10 have the same kind of images (`Dockerfile_centos9x86_64_gnu`, `Dockerfile_centos10x86_64_gnu`, workflows `centos9x86_64_gnu.yml`, `centos10x86_64_gnu.yml`); CI definitions are in `.github/workflows/` (one file per image, named like its Dockerfile, e.g. `fedora45x86_64_gnu.yml` for `Dockerfile_fedora45x86_64_gnu`, plus `macos.yml`) and `.gitlab-ci.yml`. If a build tool is missing locally, don't try to install the toolchain on the host — say so, or use the container.
+Dockerfiles for Fedora 45 are in the repo root (`Dockerfile_fedora45x86_64i686_gnu` for 32-bit, `Dockerfile_fedora45x86_64_gnu` for 64-bit, `Dockerfile_fedora45aarch64_gnu` for aarch64, built natively by `.github/workflows/fedora45aarch64_gnu.yml` on `ubuntu-24.04-arm`; the scripts reject `--bits=32` on non-x86 hosts and CMake adds `-fsigned-char` for C/C++ on aarch64/arm because the legacy code assumes signed `char`; they install the tools needed by `jadetest.sh`, including `xvfb-run`, Python with Pillow and ghostscript for the display tests); CentOS Stream 9 and 10 have the same kind of images (`Dockerfile_centos9x86_64_gnu`, `Dockerfile_centos10x86_64_gnu`, workflows `centos9x86_64_gnu.yml`, `centos10x86_64_gnu.yml`); CI definitions are in `.github/workflows/` (one file per image, named like its Dockerfile, e.g. `fedora45x86_64_gnu.yml` for `Dockerfile_fedora45x86_64_gnu`, plus `macos27arm64_gnu.yml` for macOS) and `.gitlab-ci.yml`. If a build tool is missing locally, don't try to install the toolchain on the host — say so, or use the container.
 
 ## Fortran compilers available for testing
 
@@ -123,6 +124,16 @@ The full description (interface, all code changes, the three display tests) is i
 - Result: all 32 tests pass (including the three display tests with a virtual display, see below), with `jade_h2root`.
 - `h2root` of ROOT 6.40.04 segfaults on 64 bit (address truncated to 32 bit in `h2root.cxx` and `hbook.f`). `h2root/` holds a fixed copy, built and installed as `jade_h2root` by `jadeinstall.sh`; `test/CMakeLists.txt` prefers it. See `h2root/README.md`.
 - Debugging ROOT code: the debug packages must match the installed version, from the `updates-debuginfo` repository (`sudo dnf --enablerepo=updates-debuginfo install root-hbook-debuginfo-6.40.04-7.fc45 root-debugsource-6.40.04-7.fc45`); the sources are then under `/usr/src/debug/root-6.40.04-7.fc45.x86_64`.
+
+## macOS (Apple Silicon, Homebrew)
+
+`sh jadeinstall.sh --toolchain=GNU-16` and `sh jadetest.sh --toolchain=GNU-16` (only the versioned `GNU-NN` toolchains select Homebrew's `gcc-NN`/`gfortran-NN`). Status (macOS 27.2 arm64, GCC 16.2 built from source, Apple `ld-27106.1`): everything builds, all 32 tests pass, including the three display tests on Xvfb.
+
+- Dependencies: `brew install cmake gcc coreutils wget gengetopt root pythia openmotif libx11`, plus `cernlib` and `hepmc3` from `.github/homebrew/Formula` (`bash .github/homebrew/install.sh` uses the ghcr.io bottles if they exist; for a local build copy the recipes into the tap `jade/hep` and `brew install --build-from-source jade/hep/cernlib jade/hep/hepmc3`). An older `davidchall/hep/hepmc3` must be uninstalled first.
+- Homebrew GCC bottle: on a macOS newer than the one the bottle was built for, the bottle can have a stale sysroot (e.g. `MacOSX14.sdk`) and `include-fixed` headers from that SDK. Symptoms: `ld: library 'System' not found` for any Fortran link (CMake "compiler cannot compile a simple test program"); with `SDKROOT=$(xcrun --show-sdk-path)` Fortran works but C files fail inside GCC's `include-fixed/stdio.h` (`unknown type name 'FILE'`, first seen in `convert/cmdline.c`). Fix: `brew reinstall --build-from-source gcc` (about 1-1.5 h on an M1), or put the SDK the bottle expects into `/Library/Developer/CommandLineTools/SDKs/`. Check with `gcc-16 -v` (`--with-sysroot=`, target `aarch64-apple-darwinNN`).
+- Pythia8: `cmake/Modules/FindPythia8.cmake` searches `PYTHIA8_ROOT_DIR` (CMake or environment variable), then `$HOMEBREW_PREFIX/opt/pythia`, `/opt/homebrew/opt/pythia`, `/usr/local/opt/pythia`. Homebrew does not link `share/Pythia8/xmldoc` into `/opt/homebrew/share`, so without the keg paths Pythia8 is "not found" and only 10 tests are configured.
+- Display tests: Xvfb from XQuartz (`/opt/X11/bin/Xvfb :99 -screen 0 1280x1024x24 -nolisten tcp &`, then `JADEZ_TEST_DISPLAY=:99`). `test/check_colours.py` needs Pillow: put `/opt/homebrew/bin` (Homebrew `python3` with `pillow`) before `/usr/bin` on `PATH`. The `libX11.so.6` error printed by `test/jadez_test.sh` (X connection check with Python ctypes) is diagnostic only.
+- `MACOSX_DEPLOYMENT_TARGET=12.0` in `jadeinstall.sh` gives many harmless `ld: warning: building for macOS-12.0, but linking with dylib ... built for newer version` messages.
 
 ## Conventions and gotchas
 
