@@ -78,8 +78,9 @@ HIGZ build installed by `jadeinstall.sh --bits=32`.
 
 ## 4. Known limitations and open items
 
-* Not reproduced compared with the reference pictures: pink dashed track segments; filled hit patterns in the
-  insets; the axis-triad letters "Y" and "Z" (only "X" is drawn); the "e" label of the small dE/dx plot. The small plot `DEDX -4`
+* Not reproduced compared with the reference pictures: the pink dashed segments along the tracks (the tracks are plain blue lines over red hit
+  points); two of the three letters of every axis triad (the R-phi triad has only "X", the triads of the insets only "Z"); the "e" label of the small
+  dE/dx plot. (The insets themselves, with tracks and hits drawn as small red points, are present.) The small plot `DEDX -4`
   draws no axis captions by design (same in the original source).
 * The sample events are not those of the reference pictures, so the pictures
   match in structure, not pixel by pixel.
