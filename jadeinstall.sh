@@ -10,7 +10,9 @@ for arg in "$@"; do
 done
 if [ "$(uname)" == "Darwin" ]; then
   export PATH=/usr/local/bin:$PATH
-  export MACOSX_DEPLOYMENT_TARGET=12.0
+  # Target the running macOS (e.g. 27.0), like the Homebrew libraries: a lower target gives one
+  # "built for newer 'macOS' version" linker warning per object file. Override by setting it.
+  export MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET:-$(sw_vers -productVersion | cut -d. -f1).0}
   if [ -z ${CMAKE+x} ]; then
     CMAKE=cmake
     CTEST=ctest
@@ -199,21 +201,21 @@ mkdir -p build/jadesoft
 cd build/jadesoft
 $CMAKE -S ../../jadesoft -B .  $arguments $bit_arguments
 $CMAKE --build  . -j 2 --verbose || { echo 'cmake build failed' ; exit 1; }
-$CMAKE --install .
+$CMAKE --install . || { echo 'cmake install failed' ; exit 1; }
 cd ../..
 ########################################################################
 mkdir -p build/convert
 cd build/convert
 $CMAKE -S ../../convert -B . $arguments $bit_arguments   -DCMAKE_CXX_COMPILER=$CXX 
 $CMAKE --build  . -j 2 --verbose || { echo 'cmake build failed' ; exit 1; }
-$CMAKE --install .
+$CMAKE --install . || { echo 'cmake install failed' ; exit 1; }
 cd ../..
 ########################################################################
 mkdir -p build/jtuple
 cd build/jtuple
 $CMAKE -S ../../jtuple -B .  $arguments $bit_arguments  $jade_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
-$CMAKE --install .
+$CMAKE --install . || { echo 'cmake install failed' ; exit 1; }
 cd ../..
 ########################################################################
 mkdir -p build/fptobos
@@ -221,7 +223,7 @@ cd build/fptobos
 rm -rf outputs CMakeFiles CMakeCache.txt
 $CMAKE -S ../../fptobos -B . $arguments $bit_arguments  $jade_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
-$CMAKE --install .
+$CMAKE --install . || { echo 'cmake install failed' ; exit 1; }
 cd ../..
 ########################################################################
 # h2root with the 64 bit address fix (HBOOK -> ROOT converter used by the tests)
@@ -230,5 +232,5 @@ cd build/h2root
 rm -rf outputs CMakeFiles CMakeCache.txt
 $CMAKE -S ../../h2root -B . $arguments $bit_arguments  -DCMAKE_CXX_COMPILER=$CXX
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
-$CMAKE --install .
+$CMAKE --install . || { echo 'cmake install failed' ; exit 1; }
 cd ../..
