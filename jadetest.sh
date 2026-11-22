@@ -201,6 +201,10 @@ ctest_status=$(cat "$ctest_log.status")
 if [ "${JADE_FAIL_ON_SKIP:-0}" = "1" ] && grep -q -E '\*\*\*Skipped|Not Run' "$ctest_log"; then
   echo "JADE_FAIL_ON_SKIP=1: some tests were skipped or not run:"
   grep -E '\*\*\*Skipped|Not Run' "$ctest_log"
+  # print why each one was skipped (the SKIP line of the test script)
+  for t in $(grep -E '\*\*\*Skipped' "$ctest_log" | sed -E 's/.*Test +#[0-9]+: ([A-Za-z0-9_]+).*/\1/'); do
+    echo "--- $t:"; $CTEST -R "^$t\$" -V 2>&1 | grep -i -E "skip|not set|missing|not found" | head -5
+  done
   [ "$ctest_status" = "0" ] && ctest_status=1
 fi
 #$CTEST -H../../test -B.  --timeout 10 --rerun-failed

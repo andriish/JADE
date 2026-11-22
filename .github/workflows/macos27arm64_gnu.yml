@@ -37,16 +37,20 @@ jobs:
       # The display tests run only on a virtual display (JADEZ_TEST_DISPLAY, see test/jadez_test.sh);
       # macOS has no xvfb-run, but XQuartz ships Xvfb.  Without it the display tests are skipped.
       run: |
-        brew install --cask xquartz || true
+        # no "|| true": a missing Xvfb must stop the job here with a clear message, instead of
+        # skipping the display tests later
+        brew install --cask xquartz
         brew install ghostscript pillow || true
-        if [ -x /opt/X11/bin/Xvfb ]; then
-          nohup /opt/X11/bin/Xvfb :99 -screen 0 1280x1024x24 -nolisten tcp > "$RUNNER_TEMP/Xvfb.log" 2>&1 &
-          for i in 1 2 3 4 5 6 7 8 9 10; do [ -S /tmp/.X11-unix/X99 ] && break; sleep 1; done
-          ls -la /tmp/.X11-unix || true
-          echo "JADEZ_TEST_DISPLAY=:99" >> "$GITHUB_ENV"
-        else
-          echo "No Xvfb found, jadez tests will be skipped"; ls /opt/X11/bin 2>&1 | head -30
+        if [ ! -x /opt/X11/bin/Xvfb ]; then
+          echo "::error::No /opt/X11/bin/Xvfb after installing xquartz"; ls /opt/X11/bin 2>&1 | head -30; exit 1
         fi
+        nohup /opt/X11/bin/Xvfb :99 -screen 0 1280x1024x24 -nolisten tcp > "$RUNNER_TEMP/Xvfb.log" 2>&1 &
+        for i in 1 2 3 4 5 6 7 8 9 10; do [ -S /tmp/.X11-unix/X99 ] && break; sleep 1; done
+        ls -la /tmp/.X11-unix || true
+        if ! pgrep -x Xvfb >/dev/null; then
+          echo "::error::Xvfb is not running"; cat "$RUNNER_TEMP/Xvfb.log"; exit 1
+        fi
+        echo "JADEZ_TEST_DISPLAY=:99" >> "$GITHUB_ENV"
     - name: Install cernlib and hepmc3 from the JADE tap
       # bottles from ghcr.io, see .github/homebrew/
       run: bash .github/homebrew/install.sh cernlib hepmc3
