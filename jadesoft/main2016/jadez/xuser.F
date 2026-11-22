@@ -201,3 +201,18 @@ C
  4000 INDEXX = INDEXX + 1
       RETURN
       END
+C
+#ifdef __APPLE__
+      BLOCK DATA JZBIGC
+C     Real (initialised) definitions of the COMMON blocks larger than
+C     64 KiB with their largest size.  The macOS linker (ld-prime) merges
+C     COMMON sizes comparing only the low 16 bits and can keep a smaller
+C     declaration from another object or library (see AGENTS.md).
+      INTEGER NCAL(41860),NWRK(20001)
+      REAL RPAW(50000)
+      COMMON /CALIBR/ NCAL
+      COMMON /CWORK/ NWRK
+      COMMON /PAWC/ RPAW
+      DATA NCAL(1) /0/, NWRK(1) /0/, RPAW(1) /0./
+      END
+#endif
