@@ -234,6 +234,7 @@ C     The End:
       return
       end
 C
+#ifdef __APPLE__
       BLOCK DATA JZPAWC
 C     Real (initialised) definition of /PAWC/ with its full size.
 C     Without it the macOS linker can give /PAWC/ the size of one of
@@ -245,7 +246,9 @@ C     largest one, and HLIMIT then writes past the end of the common.
       COMMON /PAWC/ HMEMOR
       DATA HMEMOR(1) /0/
       END
+#endif
 C
+#ifdef __APPLE__
       BLOCK DATA JZPWR4
 C     Real (initialised) definitions of the COMMON blocks larger than
 C     64 KiB with their largest size.  The macOS linker (ld-prime) merges
@@ -255,3 +258,4 @@ C     declaration from another object or library (see AGENTS.md).
       COMMON /PAWCR4/ IPAWR4
       DATA IPAWR4(1) /0/
       END
+#endif

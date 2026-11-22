@@ -174,6 +174,7 @@ C     The End:
       return
       end
 C
+#ifdef __APPLE__
       BLOCK DATA JTPAWC
 C     Real (initialised) definition of /PAWC/ with its full size.
 C     Without it the macOS linker can give /PAWC/ the size of one of
@@ -185,3 +186,4 @@ C     largest one, and HLIMIT then writes past the end of the common.
       COMMON /PAWC/ HMEMOR
       DATA HMEMOR(1) /0/
       END
+#endif

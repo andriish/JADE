@@ -202,6 +202,7 @@ C
       RETURN
       END
 C
+#ifdef __APPLE__
       BLOCK DATA JZBIGC
 C     Real (initialised) definitions of the COMMON blocks larger than
 C     64 KiB with their largest size.  The macOS linker (ld-prime) merges
@@ -214,3 +215,4 @@ C     declaration from another object or library (see AGENTS.md).
       COMMON /PAWC/ RPAW
       DATA NCAL(1) /0/, NWRK(1) /0/, RPAW(1) /0./
       END
+#endif
