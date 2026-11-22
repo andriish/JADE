@@ -5,8 +5,12 @@ Hello,
 the macOS linker truncates common symbols when the same symbol is defined as a common (tentative) definition in several object files with different sizes. The size of the result is decided by comparing only the low 16 bits of the sizes, so a symbol of, for example, 131072 bytes can be linked with the size of a 400 byte declaration. The program then has a symbol that is smaller than the code compiled against it expects, and writes past its end into whatever follows. No error or warning is printed.
 
 ENVIRONMENT
-  macOS 27.2, arm64 (Apple Silicon)
-  ld: ld-27106.1 (output of `ld -v`)  [fill in: full `ld -v` line, `xcrun --show-sdk-version`, `clang --version`, macOS build number from `sw_vers`]
+  macOS 27.2.1 (build 26B131), arm64 (Apple M1)
+  ld: @(#)PROGRAM:ld PROJECT:ld-27106.1, BUILD 19:06:34 Oct 19 2026
+      (LTO support using LLVM version 21.0.0; TAPI version 21.0.0 (tapi-2100.3.8.1))
+  SDK: MacOSX 27.2 (/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk)
+  Command Line Tools: 27.2.0.0.1792721180 (no Xcode installed)
+  clang: Apple clang version 21.0.0 (clang-2100.4.1.1), target arm64-apple-darwin27.2.0
   -ld_classic is no longer accepted, so there is no way to select another linker.
   Fortran: GCC/gfortran 16.2 (Homebrew), which always emits COMMON blocks as common symbols.
   C: clang with -fcommon (clang defaults to -fno-common).
@@ -39,7 +43,31 @@ EXPECTED RESULT
   xx has 131072 bytes (the size of the largest definition).
 
 ACTUAL RESULT
-  xx has 400 bytes. [fill in: the output of `make` on the machine used for the report]
+  xx has 400 bytes. Output of `make FC=gfortran-16` on the machine above:
+
+  == C, link order a.o b.o     (expected 131072)
+  0000000100004000 (__DATA,__common) external _xx
+          Section __common: 400 (zerofill)
+  == C, link order b.o a.o     (expected 131072)
+  0000000100004000 (__DATA,__common) external _xx
+          Section __common: 400 (zerofill)
+  == C, workaround wa.o b.o    (expected 131072)
+  0000000100004000 (__DATA,__common) external _xx
+          Section __common: 131072 (zerofill)
+  == Fortran, link order a.o b.o  (expected 131072)
+  0000000100008000 (__DATA,__common) external _xx_
+          Section __common: 400 (zerofill)
+  == Fortran, link order b.o a.o  (expected 131072)
+  0000000100008000 (__DATA,__common) external _xx_
+          Section __common: 400 (zerofill)
+  == Fortran, BLOCK DATA workaround (expected 131072)
+  0000000100008010 (__DATA,__common) external _xx_
+          Section __common: 131088 (zerofill)
+
+  (`otool -l c_ab` shows the same: section __common, size 0x190.)
+  The result does not depend on the link order. In the Fortran workaround case the section is
+  16 bytes larger because another 16-byte symbol precedes xx_ (xx_ starts at section offset
+  0x10); xx_ itself has 131072 bytes.
   In a real program (several MB of statically allocated Fortran COMMON blocks) this showed up as segmentation faults and bus errors inside library code that uses a 20 MB COMMON block which the linker had shrunk to 40 KB, and as silent corruption of the data following the symbol (a second COMMON block had been shrunk from 167440 to 40000 bytes). Because nothing is reported at link time, the failure appears far away from the cause.
 
 WORKAROUND

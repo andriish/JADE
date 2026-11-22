@@ -4,7 +4,7 @@
 exe=$1
 if [ "$(uname)" = "Darwin" ]; then
   nm -n -m "$exe" | grep -E ' _xx_?$' ; 
-  size -m "$exe" | grep -E 'Section \(__DATA, __(common|bss)\)'
+  size -m "$exe" | grep -E 'Section __(common|bss):'
 else
   nm -S "$exe" | grep -E ' [BbCc] xx_?$'
 fi
