@@ -146,9 +146,9 @@ The Apple linker (`ld-prime`, seen with `ld-27106.1`; `-ld_classic` is no longer
 
 ### Apple linker bug: reproducer and bug report
 
-Files (all in `test/applelinker_repro/`, not part of the CMake build; the listings below are the same files): `a.c`, `b.c`, `main.c`, `wa.c` (C), `a.f`, `b.f`, `main.f`, `wa.f` (Fortran), `Makefile`, `linked_size.sh`, and the e-mail text `BUGREPORT.md`. Run `make` in that directory (needs a C compiler; the Fortran part needs gfortran and is skipped without it). It builds each variant in both link orders plus the workaround and prints the linked size of `xx`; the expected size is 131072 bytes everywhere, the buggy Apple linker gives 400 for the first two variants.
+Files (all in `test/applelinker_repro/`, not part of the CMake build; the listings below are the same files): `a.c`, `b.c`, `main.c` (C), `a.f`, `b.f`, `main.f` (Fortran), `Makefile`, `linked_size.sh`, and the e-mail text `BUGREPORT.md`. Run `make` in that directory (needs a C compiler; the Fortran part needs gfortran and is skipped without it). It builds the C and the Fortran variant in both link orders and prints the linked size of `xx`; the expected size is 131072 bytes everywhere, the buggy Apple linker gives 400.
 
-Status: the Fortran form (two objects with `COMMON /XX/` of 32768 and 100 words) is the reduction of the real failure on macOS 27.2 arm64 (`ld-27106.1`, gfortran 16.2). The C form (`-fcommon`) and the `size -m` branch of `linked_size.sh` have **not** been run on macOS yet: run `make` there and put the output into the report before sending. On Linux (GNU ld) all variants give 131072 (checked).
+Status: the Fortran form (two objects with `COMMON /XX/` of 32768 and 100 words) is the reduction of the real failure on macOS 27.2 arm64 (`ld-27106.1`, gfortran 16.2). The C form (`-fcommon`) was run on macOS 27.2.1 (Apple M1, Command Line Tools only, `ld-27106.1`, Apple clang 21.0.0) and also gives 400 bytes for both link orders, in C and in Fortran (`make FC=gfortran-16`); that output is in `BUGREPORT.md`. Fill in the name before sending. On Linux (GNU ld) all variants give 131072 (checked).
 
 Where to submit: Apple has no public e-mail address for linker bugs. Use Feedback Assistant (the app, or https://feedbackassistant.apple.com; area "Developer Tools", Xcode / command line tools), attach `test/applelinker_repro` as a zip and paste `BUGREPORT.md` as the description. The text is written as an e-mail, so it can be sent as such if Apple Developer Support gives a contact for the case. No address is recorded here on purpose: do not guess one.
 
@@ -168,11 +168,6 @@ void fb(void) { xx[99] = 2; }
 ```c
 extern void fa(void), fb(void);
 int main(void) { fa(); fb(); return 0; }
-```
-`wa.c` (workaround)
-```c
-/* Workaround: a real (initialised) definition of the full size. */
-int xx[32768] = {0};
 ```
 `a.f`
 ```fortran
@@ -195,13 +190,6 @@ int xx[32768] = {0};
       CALL FB
       END
 ```
-`wa.f` (workaround)
-```fortran
-      BLOCK DATA WA
-      COMMON /XX/ A(32768)
-      DATA A(1) /0./
-      END
-```
 `Makefile`
 ```make
 # Reproducer for the Apple linker bug: tentative definitions (C common symbols, Fortran COMMON
@@ -217,16 +205,14 @@ endif
 CFLAGS  += -fcommon -O0
 FFLAGS  += -O0
 
-all: c_ab c_ba c_wa
+all: c_ab c_ba
 	@echo "== C, link order a.o b.o     (expected 131072)"; ./linked_size.sh c_ab
 	@echo "== C, link order b.o a.o     (expected 131072)"; ./linked_size.sh c_ba
-	@echo "== C, workaround wa.o b.o    (expected 131072)"; ./linked_size.sh c_wa
 	@if command -v $(FC) >/dev/null 2>&1; then $(MAKE) fortran; else echo "(no $(FC): Fortran part skipped)"; fi
 
-fortran: f_ab f_ba f_wa
+fortran: f_ab f_ba
 	@echo "== Fortran, link order a.o b.o  (expected 131072)"; ./linked_size.sh f_ab
 	@echo "== Fortran, link order b.o a.o  (expected 131072)"; ./linked_size.sh f_ba
-	@echo "== Fortran, BLOCK DATA workaround (expected 131072)"; ./linked_size.sh f_wa
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -237,17 +223,13 @@ c_ab: main.o a.o b.o
 	$(CC) -o $@ main.o a.o b.o
 c_ba: main.o b.o a.o
 	$(CC) -o $@ main.o b.o a.o
-c_wa: main.o wa.o b.o a.o
-	$(CC) -o $@ main.o wa.o b.o a.o
 f_ab: main.fo a.fo b.fo
 	$(FC) -o $@ main.fo a.fo b.fo
 f_ba: main.fo b.fo a.fo
 	$(FC) -o $@ main.fo b.fo a.fo
-f_wa: main.fo wa.fo b.fo a.fo
-	$(FC) -o $@ main.fo wa.fo b.fo a.fo
 
 clean:
-	rm -f *.o *.fo c_ab c_ba c_wa f_ab f_ba f_wa
+	rm -f *.o *.fo c_ab c_ba f_ab f_ba
 ```
 `linked_size.sh`
 ```sh
@@ -257,7 +239,7 @@ clean:
 exe=$1
 if [ "$(uname)" = "Darwin" ]; then
   nm -n -m "$exe" | grep -E ' _xx_?$' ; 
-  size -m "$exe" | grep -E 'Section \(__DATA, __(common|bss)\)'
+  size -m "$exe" | grep -E 'Section __(common|bss):'
 else
   nm -S "$exe" | grep -E ' [BbCc] xx_?$'
 fi
