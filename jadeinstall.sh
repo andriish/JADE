@@ -199,21 +199,21 @@ mkdir -p build/jadesoft
 cd build/jadesoft
 $CMAKE -S ../../jadesoft -B .  $arguments $bit_arguments
 $CMAKE --build  . -j 2 --verbose || { echo 'cmake build failed' ; exit 1; }
-$CMAKE --install .
+$CMAKE --install . || { echo 'cmake install failed' ; exit 1; }
 cd ../..
 ########################################################################
 mkdir -p build/convert
 cd build/convert
 $CMAKE -S ../../convert -B . $arguments $bit_arguments   -DCMAKE_CXX_COMPILER=$CXX 
 $CMAKE --build  . -j 2 --verbose || { echo 'cmake build failed' ; exit 1; }
-$CMAKE --install .
+$CMAKE --install . || { echo 'cmake install failed' ; exit 1; }
 cd ../..
 ########################################################################
 mkdir -p build/jtuple
 cd build/jtuple
 $CMAKE -S ../../jtuple -B .  $arguments $bit_arguments  $jade_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
-$CMAKE --install .
+$CMAKE --install . || { echo 'cmake install failed' ; exit 1; }
 cd ../..
 ########################################################################
 mkdir -p build/fptobos
@@ -221,7 +221,7 @@ cd build/fptobos
 rm -rf outputs CMakeFiles CMakeCache.txt
 $CMAKE -S ../../fptobos -B . $arguments $bit_arguments  $jade_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
-$CMAKE --install .
+$CMAKE --install . || { echo 'cmake install failed' ; exit 1; }
 cd ../..
 ########################################################################
 # h2root with the 64 bit address fix (HBOOK -> ROOT converter used by the tests)
@@ -230,5 +230,5 @@ cd build/h2root
 rm -rf outputs CMakeFiles CMakeCache.txt
 $CMAKE -S ../../h2root -B . $arguments $bit_arguments  -DCMAKE_CXX_COMPILER=$CXX
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
-$CMAKE --install .
+$CMAKE --install . || { echo 'cmake install failed' ; exit 1; }
 cd ../..

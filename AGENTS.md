@@ -143,6 +143,128 @@ The Apple linker (`ld-prime`, seen with `ld-27106.1`; `-ld_classic` is no longer
 - Keep the sizes in these blocks equal to the largest declaration in the program (a real definition smaller than a tentative one would itself truncate). When adding a program, or enlarging/adding a COMMON larger than 64 KiB (also CERNLIB ones such as `/PAWC/`, `/PAWCR4/`), add or update the block.
 - How to check a program: relink with `-Wl,-map,<file>` (take the command from `build/<proj>/CMakeFiles/<exe>.dir/link.txt`), read the linked size and the supplying object of each `_name_` from the map, and compare with the largest `(common)` size (`nm -m`) among the **linked** inputs listed in the map (not all archive members). `nm -n -m <exe>` plus the next symbol's address also shows the linked size.
 
+
+### Apple linker bug: reproducer and bug report
+
+Files (all in `test/applelinker_repro/`, not part of the CMake build; the listings below are the same files): `a.c`, `b.c`, `main.c`, `wa.c` (C), `a.f`, `b.f`, `main.f`, `wa.f` (Fortran), `Makefile`, `linked_size.sh`, and the e-mail text `BUGREPORT.md`. Run `make` in that directory (needs a C compiler; the Fortran part needs gfortran and is skipped without it). It builds each variant in both link orders plus the workaround and prints the linked size of `xx`; the expected size is 131072 bytes everywhere, the buggy Apple linker gives 400 for the first two variants.
+
+Status: the Fortran form (two objects with `COMMON /XX/` of 32768 and 100 words) is the reduction of the real failure on macOS 27.2 arm64 (`ld-27106.1`, gfortran 16.2). The C form (`-fcommon`) and the `size -m` branch of `linked_size.sh` have **not** been run on macOS yet: run `make` there and put the output into the report before sending. On Linux (GNU ld) all variants give 131072 (checked).
+
+Where to submit: Apple has no public e-mail address for linker bugs. Use Feedback Assistant (the app, or https://feedbackassistant.apple.com; area "Developer Tools", Xcode / command line tools), attach `test/applelinker_repro` as a zip and paste `BUGREPORT.md` as the description. The text is written as an e-mail, so it can be sent as such if Apple Developer Support gives a contact for the case. No address is recorded here on purpose: do not guess one.
+
+`a.c`
+```c
+/* 131072 bytes, a tentative definition (with -fcommon this becomes a common symbol). */
+int xx[32768];
+void fa(void) { xx[32767] = 1; }
+```
+`b.c`
+```c
+/* 400 bytes, the same name: a second tentative definition. */
+int xx[100];
+void fb(void) { xx[99] = 2; }
+```
+`main.c`
+```c
+extern void fa(void), fb(void);
+int main(void) { fa(); fb(); return 0; }
+```
+`wa.c` (workaround)
+```c
+/* Workaround: a real (initialised) definition of the full size. */
+int xx[32768] = {0};
+```
+`a.f`
+```fortran
+      SUBROUTINE FA
+      COMMON /XX/ A(32768)
+      A(32768) = 1.
+      END
+```
+`b.f`
+```fortran
+      SUBROUTINE FB
+      COMMON /XX/ B(100)
+      B(100) = 2.
+      END
+```
+`main.f`
+```fortran
+      PROGRAM MAIN
+      CALL FA
+      CALL FB
+      END
+```
+`wa.f` (workaround)
+```fortran
+      BLOCK DATA WA
+      COMMON /XX/ A(32768)
+      DATA A(1) /0./
+      END
+```
+`Makefile`
+```make
+# Reproducer for the Apple linker bug: tentative definitions (C common symbols, Fortran COMMON
+# blocks) of the same name are merged comparing only the low 16 bits of their sizes.
+# Expected linked size of xx: 131072 bytes (the largest). Buggy linker: 400 bytes.
+# Usage: make          build and report (C, and Fortran if gfortran is found)
+#        make clean
+CC      ?= cc
+# make's built-in default for FC is f77
+ifeq ($(origin FC),default)
+FC      = gfortran
+endif
+CFLAGS  += -fcommon -O0
+FFLAGS  += -O0
+
+all: c_ab c_ba c_wa
+	@echo "== C, link order a.o b.o     (expected 131072)"; ./linked_size.sh c_ab
+	@echo "== C, link order b.o a.o     (expected 131072)"; ./linked_size.sh c_ba
+	@echo "== C, workaround wa.o b.o    (expected 131072)"; ./linked_size.sh c_wa
+	@if command -v $(FC) >/dev/null 2>&1; then $(MAKE) fortran; else echo "(no $(FC): Fortran part skipped)"; fi
+
+fortran: f_ab f_ba f_wa
+	@echo "== Fortran, link order a.o b.o  (expected 131072)"; ./linked_size.sh f_ab
+	@echo "== Fortran, link order b.o a.o  (expected 131072)"; ./linked_size.sh f_ba
+	@echo "== Fortran, BLOCK DATA workaround (expected 131072)"; ./linked_size.sh f_wa
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+%.fo: %.f
+	$(FC) $(FFLAGS) -c $< -o $@
+
+c_ab: main.o a.o b.o
+	$(CC) -o $@ main.o a.o b.o
+c_ba: main.o b.o a.o
+	$(CC) -o $@ main.o b.o a.o
+c_wa: main.o wa.o b.o a.o
+	$(CC) -o $@ main.o wa.o b.o a.o
+f_ab: main.fo a.fo b.fo
+	$(FC) -o $@ main.fo a.fo b.fo
+f_ba: main.fo b.fo a.fo
+	$(FC) -o $@ main.fo b.fo a.fo
+f_wa: main.fo wa.fo b.fo a.fo
+	$(FC) -o $@ main.fo wa.fo b.fo a.fo
+
+clean:
+	rm -f *.o *.fo c_ab c_ba c_wa f_ab f_ba f_wa
+```
+`linked_size.sh`
+```sh
+#!/bin/sh
+# Print the size of the linked symbol xx (C) or xx_ (Fortran) of the executable $1.
+# macOS: size of the __common/__bss section of the executable; Linux: nm -S.
+exe=$1
+if [ "$(uname)" = "Darwin" ]; then
+  nm -n -m "$exe" | grep -E ' _xx_?$' ; 
+  size -m "$exe" | grep -E 'Section \(__DATA, __(common|bss)\)'
+else
+  nm -S "$exe" | grep -E ' [BbCc] xx_?$'
+fi
+```
+
+The text of the report (generic, without any reference to this project) is in `test/applelinker_repro/BUGREPORT.md`.
+
 ## Conventions and gotchas
 
 - Fortran runtime must support endianness conversion (GNU/Intel/NVIDIA work; SUN should work but has not been tested for years). Binary I/O formats (BOS, FPACK, CPROD) are endianness- and word-size-sensitive: be careful with `INTEGER`/`REAL` sizes and `-m32` assumptions.

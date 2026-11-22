@@ -61,6 +61,9 @@ jobs:
       # On macOS only the versioned GNU-NN toolchains set the compilers (Homebrew gcc-16, gfortran-16).
       run: sh jadeinstall.sh --toolchain=GNU-16
     - name: Test
+      # fails if a test fails, or is skipped (e.g. no Xvfb): see JADE_FAIL_ON_SKIP in jadetest.sh
+      env:
+        JADE_FAIL_ON_SKIP: 1
       run: sh jadetest.sh --toolchain=GNU-16
     - name: Diagnose crashes
       # The Apple linker merges COMMON block sizes comparing only the low 16 bits, so a COMMON larger
