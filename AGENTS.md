@@ -14,7 +14,6 @@ Software of the JADE experiment (legacy e+e- collider experiment): mostly old Fo
 | `convert/` | HepMC3 → JADE (CPROD) MC event converter (C++, needs HepMC3 > 3.2). |
 | `fptobos/` | `fptobos` (FPACK → BOS) and `unpjad` utilities for archived data tapes. |
 | `jtuple/` | Analysis programs producing QCD-observable ntuples (ROOT format; originally PAW). |
-| `picocernlib/` | Minimal built-in replacements for needed CERNLIB routines (ROOT-based). |
 | `test/` | CTest suite; steering `cards/`, Pythia8 main in `src/`, sample data in `jadetapes/`. |
 | `convert_data_files/` | `converttoroot.py` + cards: raw data → ROOT, runs inside the `jade_soft` container. |
 | `cmake/` | Shared modules (compiler setup, ROOT setup, Pythia8 finder) and config templates. |
@@ -32,7 +31,7 @@ sh jadetest.sh    [--bits=32|64] [--toolchain=...] [--prefix=/abs/path]
 
 - Install goes to `installed<toolchain><bits>` (e.g. `installedGNU32`) in the repo root unless `--prefix` is given. `build<toolchain><bits>/` (e.g. `buildGNU32`) and install dirs are generated — never commit them.
 - `jadetest.sh` configures `test/`, builds, and runs `ctest` (10 s timeout). Tests are sequential and depend on one another (FPTOBOS → pythia8/HepMC3 → CPROD → MCJADE → SUPERV → ZE4V → JZREAD → JTJOB); run the whole chain rather than single tests. Pythia8 is required for the MC tests.
-- CMake options (jadesoft): `JADE_OLD_MC` (ON), `JADE_FPE` (OFF), `JADE_USE_CERNLIB` (see `jadesoft/CMakeLists.txt` for the actual default), `JADE_FORCE_32` (ON for `--bits=32`).
+- CMake options (jadesoft): `JADE_OLD_MC` (ON), `JADE_FPE` (OFF), `JADE_FORCE_32` (ON for `--bits=32`).
 - Dependencies: gfortran/gcc/g++, ROOT 6, cmake, HepMC3, LAPACK/BLAS, X11 + Motif, CERNLIB, gengetopt. These are rarely installed on a dev host.
 
 ### Use the container

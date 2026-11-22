@@ -188,15 +188,6 @@ else
 fi
 jade_arguments=" -DJADESOFT_DIR=$TOP$toolchain$bits/share/JADESOFT/cmake "
 ########################################################################
-#mkdir -p build$toolchain$bits/picocernlib
-#cd build$toolchain$bits/picocernlib
-#rm -rf outputs CMakeFiles CMakeCache.txt
-#$CMAKE -H../../picocernlib -B. -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC -DCMAKE_INSTALL_PREFIX=$TOP$toolchain
-#make -f Makefile clean
-#make -f Makefile -j 2 || { echo 'make failed' ; exit 1; }
-#make install
-#cd ../..
-########################################################################
 mkdir -p build$toolchain$bits/jadesoft
 cd build$toolchain$bits/jadesoft
 $CMAKE -S ../../jadesoft -B .  $arguments $bit_arguments

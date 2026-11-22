@@ -11,7 +11,6 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 ########################################################################
 option(JADE_OLD_MC                     "Compile old MC executables" ON)
 option(JADE_FPE                        "Trap floating point exceptions" OFF)
-option(JADE_USE_CERNLIB                "Attempt to use CERNLIB instead of buildin code (picocernlib)"     ON)
 option(JADE_FORCE_32                   "Force build of 32 bit libraries." OFF)
 if (JADE_FORCE_32)
 
@@ -53,14 +52,12 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 find_package(Motif REQUIRED)
 message(STATUS "JADE: MOTIF_LIBRARIES=${MOTIF_LIBRARIES}")
-set(PICOCERNLIB "${MOTIF_LIBRARIES};${CERNLIB_PACKLIB_STATIC};${CERNLIB_KERNLIB_STATIC};${CERNLIB_MATHLIB_STATIC};${CERNLIB_GRAFLIB_STATIC};${CERNLIB_GRAFX11_STATIC}")
-set(JEXTERN_LIBRARIES  ${PICOCERNLIB} )
+set(JEXTERN_LIBRARIES  "${MOTIF_LIBRARIES};${CERNLIB_PACKLIB_STATIC};${CERNLIB_KERNLIB_STATIC};${CERNLIB_MATHLIB_STATIC};${CERNLIB_GRAFLIB_STATIC};${CERNLIB_GRAFX11_STATIC}")
 message(STATUS "JADE: JEXTERN_LIBRARIES    : ${JEXTERN_LIBRARIES}")
 ########################################################################
 set(MCJADEEXE    mcjade)
 set(SUPERVEXE    superv)
 set(JADEZEXE     jadez)
-set(JADEZROOTEXE jadezroot)
 set(ZE4VEXE      ze4v)
 
 # Define the library name
