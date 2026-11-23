@@ -39,7 +39,7 @@ C
        IF ( NLIST(J,2,2) .LT. ISTART ) NLIST(J,2,2) = IEND
        IF ( NLIST(J,4,2) .LT. (ISTART + 8) )  NLIST(J,4,2) = IEND + 8
        IF ( NLIST(J,7,2) .LT. (ISTART + 16) ) NLIST(J,7,2) = IEND + 16
-       IF ( NLIST(J,9,2) .GT. (IEND + 16) )   NLIST(J,9,2) = ISTART + 1600004200
+       IF ( NLIST(J,9,2) .GT. (IEND + 16) )   NLIST(J,9,2) = ISTART + 16
        IF ( NLIST(J,6,2) .GT. (IEND + 8) )    NLIST(J,6,2) = ISTART + 8
        IF ( NLIST(J,3,2) .GT. IEND ) NLIST(J,3,2) = ISTART
   20      CONTINUE
@@ -75,7 +75,7 @@ C
              NLIST(J,8,2) = J - 8
              NLIST(J,9,2) = J - 7
        IF ( NLIST(J,2,2) .LT. ISTART )        NLIST(J,2,2) = IEND
-       IF ( NLIST(J,4,2) .GT. (IEND - 16) )   NLIST(J,4,2) = ISTART - 1600007800
+       IF ( NLIST(J,4,2) .GT. (IEND - 16) )   NLIST(J,4,2) = ISTART - 16
        IF ( NLIST(J,7,2) .LT. (ISTART - 8) )  NLIST(J,7,2) = IEND - 8
        IF ( NLIST(J,9,2) .GT. (IEND - 8) )    NLIST(J,9,2) = ISTART - 8
        IF ( NLIST(J,6,2) .LT. (ISTART - 16) ) NLIST(J,6,2) = IEND - 16
