@@ -865,7 +865,7 @@ C
 C                            DATA IS GOOD, BUT PULL IN IF JUST OUTSIDE
 C                            PHYSICAL RANGE
 C
-          IF( IMMTD .LT. 0  .OR.  IMMTD .GT. 155 ) NMU(22) = NMU(22) + 100086900
+          IF( IMMTD .LT. 0  .OR.  IMMTD .GT. 155 ) NMU(22) = NMU(22) + 1
           IF( IMMTD .LT. 0   ) IMMTD = 0
           IF( IMMTD .GT. 155 ) IMMTD = 155
 C

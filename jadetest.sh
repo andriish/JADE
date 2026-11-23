@@ -10,7 +10,9 @@ for arg in "$@"; do
 done
 if [ "$(uname)" == "Darwin" ]; then
   export PATH=/usr/local/bin:$PATH
-  export MACOSX_DEPLOYMENT_TARGET=12.0
+  # Target the running macOS (e.g. 27.0), like the Homebrew libraries: a lower target gives one
+  # "built for newer 'macOS' version" linker warning per object file. Override by setting it.
+  export MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET:-$(sw_vers -productVersion | cut -d. -f1).0}
   if [ -z ${CMAKE+x} ]; then
     CMAKE=cmake
     CTEST=ctest
@@ -56,9 +58,6 @@ else
   export TOP=$(pwd)/installed
 fi
 
-if [ "$(uname)" == "Darwin" ]; then
-  export PYTHIA8_ROOT_DIR=/usr/local/Cellar/pythia/8.243
-fi
 ########################################################################
 toolchain=GNU
 if test -z "$tmptoolchain"; then
@@ -193,8 +192,21 @@ rm -rf outputs CMakeFiles CMakeCache.txt
 $CMAKE -S ../../test -B . -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC  -DJADESOFT_DIR=$TOP$toolchain$bits/share/JADESOFT/cmake $bit_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install .
-$CTEST .  --timeout 10 --output-on-failure
-ctest_status=$?
+# JADE_FAIL_ON_SKIP=1 (used by CI): tests that are skipped or not run (missing Xvfb, h2root, ...)
+# count as failures, so that a broken CI setup cannot give a green result.
+ctest_log=$(pwd)/ctest_output.log
+# (the status goes through a file: PIPESTATUS does not exist in every sh)
+{ $CTEST .  --timeout 10 --output-on-failure; echo $? > "$ctest_log.status"; } 2>&1 | tee "$ctest_log"
+ctest_status=$(cat "$ctest_log.status")
+if [ "${JADE_FAIL_ON_SKIP:-0}" = "1" ] && grep -q -E '\*\*\*Skipped|Not Run' "$ctest_log"; then
+  echo "JADE_FAIL_ON_SKIP=1: some tests were skipped or not run:"
+  grep -E '\*\*\*Skipped|Not Run' "$ctest_log"
+  # print why each one was skipped (the SKIP line of the test script)
+  for t in $(grep -E '\*\*\*Skipped' "$ctest_log" | sed -E 's/.*Test +#[0-9]+: ([A-Za-z0-9_]+).*/\1/'); do
+    echo "--- $t:"; $CTEST -R "^$t\$" -V 2>&1 | grep -i -E "skip|not set|missing|not found" | head -5
+  done
+  [ "$ctest_status" = "0" ] && ctest_status=1
+fi
 #$CTEST -H../../test -B.  --timeout 10 --rerun-failed
 cd ../..
 exit $ctest_status

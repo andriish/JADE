@@ -544,7 +544,7 @@ C   IS NO NEED TO DO THE WEDGE TESTS.
                 WEDGE1=CT-CUTT
                 WEDGE2=CT+CUTT
                 IF(WEDGE1.LT.TEDGE1  .AND.  WEDGE2.GT.TEDGE1)GO TO 2205
-                 IF(WEDGE1.LT.TEDGE2  .AND.  WEDGE2.GT.TEDGE2)GO TO 220500054500
+                 IF(WEDGE1.LT.TEDGE2  .AND.  WEDGE2.GT.TEDGE2)GO TO 2205
                    GO TO 2210
  2205           FOUNDL=.TRUE.
                 FOUND1=.TRUE.

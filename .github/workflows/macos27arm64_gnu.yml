@@ -1,0 +1,94 @@
+name: macOS 27 arm64 (GNU)
+# TEMPORARILY DISABLED: the automatic triggers are commented out, the workflow can still be started by hand
+on:
+# push:
+# pull_request:
+ workflow_dispatch:
+# schedule:
+#Every 50 days at midnight 
+#    - cron:  "0 0 1/600 * *"
+
+jobs:
+  macos27arm64_gnu:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    runs-on: xcode-27 # newest macOS image (macOS 27, arm64)
+    name: macos27arm64_gnu
+    env:
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_ANALYTICS: 1
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Homebrew cache key
+      id: brewkey
+      # The whole prefix is cached, so the key has to change with the runner image (macOS and Homebrew
+      # version) and with the recipes of this repository.
+      run: |
+        echo "key=brew-$(sw_vers -productVersion)-$(brew --version | head -1 | tr ' ' '-')-${{ hashFiles('.github/homebrew/Formula/*.rb', '.github/workflows/macos27arm64_gnu.yml') }}" >> "$GITHUB_OUTPUT"
+    - name: Restore the Homebrew prefix
+      id: brewcache
+      uses: actions/cache/restore@v4
+      with:
+        path: /opt/homebrew
+        key: ${{ steps.brewkey.outputs.key }}
+    - name: Install dependencies
+      run: |
+        brew install cmake gcc coreutils wget gengetopt root pythia openmotif libx11
+    - name: Virtual X display for the jadez tests
+      # The display tests run only on a virtual display (JADEZ_TEST_DISPLAY, see test/jadez_test.sh);
+      # macOS has no xvfb-run, but XQuartz ships Xvfb.  Without it the display tests are skipped.
+      run: |
+        # no "|| true": a missing Xvfb must stop the job here with a clear message, instead of
+        # skipping the display tests later
+        brew install --cask xquartz
+        # The restored Homebrew prefix contains the xquartz Caskroom entry, but /opt/X11 is outside the
+        # prefix and is not restored: brew then says "already installed" and does nothing.
+        [ -x /opt/X11/bin/Xvfb ] || brew reinstall --cask xquartz
+        brew install ghostscript pillow || true
+        if [ ! -x /opt/X11/bin/Xvfb ]; then
+          echo "::error::No /opt/X11/bin/Xvfb after installing xquartz"; ls /opt/X11/bin 2>&1 | head -30; exit 1
+        fi
+        nohup /opt/X11/bin/Xvfb :99 -screen 0 1280x1024x24 -nolisten tcp > "$RUNNER_TEMP/Xvfb.log" 2>&1 &
+        for i in 1 2 3 4 5 6 7 8 9 10; do [ -S /tmp/.X11-unix/X99 ] && break; sleep 1; done
+        ls -la /tmp/.X11-unix || true
+        if ! pgrep -x Xvfb >/dev/null; then
+          echo "::error::Xvfb is not running"; cat "$RUNNER_TEMP/Xvfb.log"; exit 1
+        fi
+        echo "JADEZ_TEST_DISPLAY=:99" >> "$GITHUB_ENV"
+    - name: Install cernlib and hepmc3 from the JADE tap
+      # bottles from ghcr.io, see .github/homebrew/
+      run: bash .github/homebrew/install.sh cernlib hepmc3
+    - name: Save the Homebrew prefix
+      # saved right after the installs, so a later failure of the build or the tests does not lose it
+      if: steps.brewcache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: /opt/homebrew
+        key: ${{ steps.brewkey.outputs.key }}
+    - name: Compile
+      # On macOS only the versioned GNU-NN toolchains set the compilers (Homebrew gcc-16, gfortran-16).
+      run: sh jadeinstall.sh --toolchain=GNU-16
+    - name: Test
+      # fails if a test fails, or is skipped (e.g. no Xvfb): see JADE_FAIL_ON_SKIP in jadetest.sh
+      env:
+        JADE_FAIL_ON_SKIP: 1
+      run: sh jadetest.sh --toolchain=GNU-16
+    - name: Diagnose crashes
+      # The Apple linker merges COMMON block sizes comparing only the low 16 bits, so a COMMON larger
+      # than 64 KiB can be linked with the size of a smaller declaration (see AGENTS.md, "Apple linker
+      # bug").  JADE gives the large COMMONs a real definition (BLOCK DATA); a crash in ZEBRA/HBOOK
+      # (SIGSEGV/SIGBUS) or "KLREAD ERROR: EVENT TIME = 0" usually means one is missing or too small.
+      # Print the linked sizes of the large COMMONs and a debugger backtrace of superv.
+      if: failure()
+      run: |
+        ld -v 2>&1 | head -1
+        for p in superv mcjade jadez; do
+          exe=$PWD/installedGNU-1664/bin/$p
+          echo "== $p"
+          nm -n -m "$exe" | grep -A1 -E " _(pawc|calibr|cwork|bcs)_$" || true
+        done
+        exe=$PWD/installedGNU-1664/bin/superv
+        cd buildGNU-1664/test
+        export GFORTRAN_CONVERT_UNIT='big_endian;native:2'
+        lldb -b -o "process launch -i $PWD/../../test/cards/supervfile006.card" -k "bt" -k "register read" -k "disassemble -p -c 6" -k "quit" -- "$exe" || true

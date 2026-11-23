@@ -15,6 +15,8 @@ export HOME="$(pwd)/home_higz"; mkdir -p "$HOME"
 for f in superv1.bos aupdat1.b; do
   [ -f "$f" ] || { echo "missing input $f (SUPERV_MC_1 must run first)"; exit 1; }
 done
+# macOS has no `timeout` unless coreutils' gnubin is on PATH; Homebrew coreutils gives `gtimeout`
+TMO=timeout; command -v timeout >/dev/null 2>&1 || TMO=gtimeout
 RUN=""
 if command -v xvfb-run >/dev/null 2>&1; then
   XVFB_ERR="$(pwd)/xvfb_err.log"; RUN="xvfb-run -a -e $XVFB_ERR"
@@ -40,7 +42,7 @@ export FORT_CONVERT_UNIT=big_endian   # and for NVIDIA Fortran
 ( printf 'superv1.bos\n\n'; sleep 2
   for c in "OPT 13" "OPT 14" "OPT 16" "OPT 17" "RB1" "DEDX -4"; do echo "$c"; sleep 1.5; done
   echo H; sleep 2
-  echo END; sleep 2 ) | timeout 600 $RUN "$JADEZ" > ../jadez_rphi_test.log 2>&1
+  echo END; sleep 2 ) | $TMO 600 $RUN "$JADEZ" > ../jadez_rphi_test.log 2>&1
 rc=$?
 if [ $rc -ne 0 ]; then
   echo "--- diagnostics (jadez failed) ---"

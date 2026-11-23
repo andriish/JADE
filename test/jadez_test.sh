@@ -20,6 +20,8 @@ done
 cp aupdat1.b F11LHO.AUPDAT1
 cp "$HELP" F22BOW.HELP.DATASET
 
+# macOS has no `timeout` unless coreutils' gnubin is on PATH; Homebrew coreutils gives `gtimeout`
+TMO=timeout; command -v timeout >/dev/null 2>&1 || TMO=gtimeout
 RUN=""
 if command -v xvfb-run >/dev/null 2>&1; then
   XVFB_ERR="$(pwd)/xvfb_err.log"; RUN="xvfb-run -a -e $XVFB_ERR"
@@ -47,7 +49,7 @@ rm -f JADE.*.png JADE.*.ps fort.77
 ( printf 'file006.bos\n\n'; sleep 2
   for c in $DRAW; do echo "$c"; sleep 0.7; echo H; sleep 1; done
   for c in $TEXT; do echo "$c"; sleep 0.7; done
-  echo END; sleep 2 ) | timeout 600 $RUN "$JADEZ" > jadez_test.log 2>&1
+  echo END; sleep 2 ) | $TMO 600 $RUN "$JADEZ" > jadez_test.log 2>&1
 rc=$?
 if [ $rc -ne 0 ]; then
   echo "--- diagnostics (jadez failed) ---"

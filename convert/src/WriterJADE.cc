@@ -8,7 +8,7 @@
 #include <set>
 #include <stdlib.h>
 #include <algorithm>
-#include "PIDUtils.h"
+#include "AtlasPID.h"
 #include "HepMC3/Print.h"
 extern "C"
 {
@@ -104,7 +104,7 @@ void WriterJADE::write_event(const GenEvent &evt)
         auto particle = evt.particles().at(k);
         particles_to_fJ[particle->id()]=i+1;
         int KF = particle->pid();
-        int q = MCUtils::PID::charge3(KF)/3;
+        int q = AtlasPID::charge3(KF)/3;
         if (q == 0) {
             fJ->NN = fJ->NN + 1;
         }

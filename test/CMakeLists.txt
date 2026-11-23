@@ -1,4 +1,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.10) #Because of ROOT
+# CMP0219 (newer CMake than 4.3.0): macro arguments keep backslashes. The tests pass lists such as
+# "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" through jade_fortran_test and rely on the old
+# behaviour (the backslash escapes the semicolon). Older CMake has no such policy and behaves as OLD.
+if(POLICY CMP0219)
+  cmake_policy(SET CMP0219 OLD)
+endif()
 PROJECT(JADETEST Fortran CXX C)
 set(VERSION 2024.04)
 include("GNUInstallDirs")

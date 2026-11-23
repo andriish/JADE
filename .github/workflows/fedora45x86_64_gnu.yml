@@ -19,6 +19,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Compile
+      # jadetest.sh fails if a test fails, or is skipped (JADE_FAIL_ON_SKIP)
+      env:
+        JADE_FAIL_ON_SKIP: 1
       run: |
            sh jadeinstall.sh --bits=64
            sh jadetest.sh --bits=64

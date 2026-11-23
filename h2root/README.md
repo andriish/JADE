@@ -1,4 +1,4 @@
-# jade_h2root: ROOT's `h2root` with a 64 bit fix
+# jade_h2root: ROOT's `h2root` with the 64 bit fix
 
 `h2root` converts HBOOK files (the output of `jtjob`, `jzread`) into ROOT files; the
 tests `H2ROOT_*` use it. The `h2root` of ROOT 6.40.04 (Fedora `root-hbook`) crashes
@@ -18,21 +18,12 @@ from the truncated address and the full 64 bit address of `IQ`. The stored offse
 only correct when `(address >> 32) mod 4 == 0`, i.e. in about one run in four; in the
 other runs `HGNT2` stores the ntuple values through a wrong index and crashes.
 
-## The fix (`h2root-64bit-address.patch`, applies to ROOT 6.40.04)
+## The sources
 
-* `h2root.cxx`: the address is a `Long64_t` and `hbnam` takes `const Long64_t&`.
-* `hbook.f`: `ADDRES`, `IADD`, `IADDW`, `IBYOF` and `LOCF` are `INTEGER*8` in `HBNAM`
-  and `HNMADR`; the offset is checked to fit in 32 bits before it is stored (the
-  buffer is a static array next to the HBOOK store, so it does), with an error
-  message otherwise.
-
-With the fix 60 of 60 conversions of the test files succeed (upstream: 1 of 12), and
-the tests `H2ROOT_*` pass repeatedly (`ctest -R H2ROOT --repeat until-fail:15`).
-
-## Files
-
-`src/h2root.cxx` (ROOT `main/src`), `src/hbook.f`, `src/kernlib.f`, `src/zebra.f`,
-`src/cernlib.c` (ROOT `misc/minicern/src`): copies of ROOT 6.40.04 (LGPL 2.1,
-(c) the ROOT team, see https://root.cern), modified only as described. The patch is
-suitable for a bug report to ROOT/Fedora; when upstream is fixed this directory can
-be removed (the tests fall back to the `h2root` in the `PATH`).
+`src/` holds the unmodified sources of the ROOT branch `v6-40-00-patches` (commit `e1a6647c7b`, "[hbook] Pass the
+full 64 bit buffer address to HBNAM", the fix of https://github.com/root-project/root/issues/23628, backport of
+the fix in master): `src/h2root.cxx` (ROOT `main/src`) and `src/hbook.f`, `src/kernlib.f`, `src/zebra.f`,
+`src/cernlib.c` (ROOT `misc/minicern/src`). LGPL 2.1, (c) the ROOT team, see `src/LICENSE.root` and
+https://root.cern. With them 60 of 60 conversions of the test files succeed (ROOT 6.40.04: 1 of 12), and the
+tests `H2ROOT_*` pass repeatedly. When the distribution `root-hbook` contains the fix (it is not in
+6.40.04), this directory can be removed (the tests fall back to the `h2root` in the `PATH`).

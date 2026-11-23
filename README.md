@@ -160,14 +160,18 @@ This is a repository with software of JADE experiment.
     dnf -y copr enable averbyts/HEPrpms
     yum -y install  cernlib*
     ```
-   - For MacOSX the XCode and homebrew should be installed. The dependencies are in the homebrew default and homebrew-hep (davidchall/hep) repositories
+   - For MacOSX the XCode and homebrew should be installed. Most dependencies are in the homebrew default repository,
+     ``cernlib`` and ``hepmc3`` come from the recipes in this repository (``.github/homebrew/``, see its README):
     ```
-    brew install coreutils gcc cmake
-    brew tap davidchall/hep
-    brew install hepmc3
+    brew install coreutils gcc cmake gengetopt
     brew install --cask xquartz
     brew install openmotif
+    bash .github/homebrew/install.sh      # cernlib and hepmc3, run in the root of this repository
     ```
+     The last command creates the local tap ``jade/hep``, uses the prebuilt bottles from ghcr.io for Apple Silicon
+     when they exist for the current recipe (otherwise Homebrew builds from source) and installs
+     ``jade/hep/cernlib`` and ``jade/hep/hepmc3``. Use ``--toolchain=GNU-N`` with the version of the installed
+     ``gcc`` (e.g. ``sh jadeinstall.sh --toolchain=GNU-16``), the plain ``GNU`` toolchain does not set the compilers on macOS.
      Install ROOT, e.g. from ``https://root.cern/install/all_releases/``, and enable it.
      Motif (``openmotif``, not tested) is only needed for the event display ``jadez``.
      The git and LAPACK should be preinstalled on the newest MacOS.
@@ -216,14 +220,14 @@ To run some simple tests:
      (``yum -y install xorg-x11-server-Xvfb python3 python3-pillow ghostscript``); without ``xvfb-run`` these
      tests are skipped. The ``H2ROOT_*`` and ``ROOT_ANALYSIS_*`` tests need ``jade_h2root`` (see below)
      and are skipped without it. The memory-check tests run only if ``valgrind`` is installed (``yum -y install valgrind``).
-   - For MacOSX the dependencies are in the homebrew-hep repository (davidchall/hep)
+   - For MacOSX Pythia8 is in the homebrew default repository
      ```
-     brew install pythia8
+     brew install pythia
      ```
 
  - ``jade_h2root``: the tests convert the HBOOK files into ROOT files with ``h2root``. The ``h2root`` of ROOT 6.40.04 (package ``root-hbook``)
    crashes with a segmentation fault on 64-bit machines (it truncates the address of its ntuple buffer to 32 bits).
-   Therefore the repository contains a fixed copy (``h2root/``, see ``h2root/README.md``) that ``jadeinstall.sh`` builds and installs as ``jade_h2root``;
+   Therefore the repository contains a copy of the fixed sources (``h2root/``, see ``h2root/README.md``) that ``jadeinstall.sh`` builds and installs as ``jade_h2root``;
    the tests prefer it, and ``root-hbook`` is not needed. Without ``jade_h2root`` (and without a working ``h2root`` in ``PATH``) the tests are skipped.
 
  - Run the ``jadetest.sh`` script with exactly the same ``--prefix``, ``--toolchain`` and ``--bits`` options as the ``jadeinstall.sh`` script
@@ -243,8 +247,8 @@ are written by others and are either used as external dependencies or included i
 
 | Code | Used for | Link |
 |---|---|---|
-| CERNLIB (packlib, kernlib, mathlib, HIGZ/``libgrafX11``) | Optional (``JADE_USE_CERNLIB``), HBOOK, HIGZ graphics of the event display ``jadez`` | https://cernlib.web.cern.ch/ |
-| ROOT 6 | ``jtuple``, ``picocernlib``, ``h2root``, analysis tests | https://root.cern |
+| CERNLIB (packlib, kernlib, mathlib, HIGZ/``libgrafX11``) | Required: HBOOK, HIGZ graphics of the event display ``jadez`` | https://cernlib.web.cern.ch/ |
+| ROOT 6 | ``jtuple``, ``h2root``, analysis tests | https://root.cern |
 | HepMC3 | Event record read by ``convert`` and written by the tests | https://gitlab.cern.ch/hepmc/HepMC3 |
 | Pythia 8 | Generation of the MC test events | https://pythia.org |
 | LAPACK / BLAS | Linear algebra | https://www.netlib.org/lapack/ |
@@ -256,12 +260,10 @@ are written by others and are either used as external dependencies or included i
 
 | Location | Code | Origin / link |
 |---|---|---|
-| ``convert/src/PIDUtils.h``, ``PIDCodes.h`` | MCUtils (PDG ID utilities) | Andy Buckley, https://gitlab.com/hepcedar/mcutils |
-| ``convert/src/MathUtils.h`` | HEPUtils | Andy Buckley, https://gitlab.com/hepcedar/heputils |
+| ``convert/src/AtlasPID.h`` | AtlasPID (PDG ID utilities, PDG 2022 numbering) | Andrii Verbytskyi, https://gitlab.cern.ch/averbyts/atlaspid |
 | ``convert/cmdline.c``, ``cmdline.h`` | Output of gengetopt 2.23 from ``cmdline.ggo`` | https://www.gnu.org/software/gengetopt/ |
 | ``test/src/fjcore/`` | fjcore, the core of FastJet 3.5.3 | https://fastjet.fr |
-| ``picocernlib/`` | Selected routines and headers of CERNLIB (kernlib, mathlib, ``ffread``), rewritten equivalents based on ROOT | https://cernlib.web.cern.ch/ |
-| ``h2root/`` | Copy of ``h2root.cxx`` and of the minicern Fortran/C sources of ROOT 6.40.04 with a 64 bit fix (``h2root/README.md``) | https://github.com/root-project/root (``main/src/h2root.cxx``, ``misc/minicern``) |
+| ``h2root/`` | ``h2root.cxx`` and the minicern Fortran/C sources of the ROOT branch ``v6-40-00-patches`` (contain the 64 bit fix, ``h2root/README.md``) | https://github.com/root-project/root (``main/src/h2root.cxx``, ``misc/minicern``) |
 | ``jadesoft/util*/mcgen/src/`` | Monte Carlo generators used for historic JADE productions: JETSET 6.3 / 7.4 (``jetset63*.f``, ``jt74opal.f``), PYTHIA 5.7 (``pythia5722.f``, ``pystfu.f``, ``pymaxi.f``), HERWIG 5.8 / 5.9 (``herwig58d.f``, ``herwig59.f``), ARIADNE 4.08 (``ariadne408.f``), COJETS 6.23 (``coj623d.f``), the PX and CKERN jet clustering packages (``px113.f``, ``px114.f``, ``ckern104.f``, ``ckern105.f``) | https://www.lund.tp.se/ (Lund MC: JETSET, PYTHIA, ARIADNE), https://herwig.hepforge.org (HERWIG); original CMZ/CAR sources are kept in ``util/mcgen/src`` |
 | ``jadesoft/util/Rbin/``, ``Pbin/`` ``fsplit.c`` | ``fsplit`` Fortran file splitter, University of California (BSD licence) | https://www.freebsd.org |
 | ``jadesoft/src*/grafix/ellips.f``, ``disaxi.f`` | Mortran/Sheltran-generated sources carrying the "Copyright Stanford Mortran 3.1" notice | https://www.slac.stanford.edu |
@@ -278,8 +280,7 @@ it and its tests are described in ``doc/EventDisplay.md``.
 
 Some cmake scripts support the following options
   - ``JADE_OLD_MC:BOOL``  "Compile old MC executables" default is ``ON``
-  - ``JADE_FPE:BOOL``  "Trap floating point exceptions" default is  ``ON``
-  - ``JADE_USE_CERNLIB:BOOL`` "Attempt to use CERNLIB instead of buildin code (picocernlib)" default is  ``OFF``
+  - ``JADE_FPE:BOOL``  "Trap floating point exceptions" default is  ``OFF``
 
 
 

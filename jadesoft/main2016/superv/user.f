@@ -642,3 +642,29 @@ C---
 C
       END
 C
+C
+#ifdef __APPLE__
+      BLOCK DATA SVPAWC
+C     Real (initialised) definition of /PAWC/ with its full size.
+C     Without it the macOS linker can give /PAWC/ the size of one of
+C     the small declarations in CERNLIB (libpacklib.a) instead of the
+C     largest one, and HLIMIT then writes past the end of the common.
+      INTEGER NWPAW
+      PARAMETER (NWPAW=5000000)
+      INTEGER HMEMOR(NWPAW)
+      COMMON /PAWC/ HMEMOR
+      DATA HMEMOR(1) /0/
+      END
+#endif
+C
+#ifdef __APPLE__
+      BLOCK DATA SVCALB
+C     Real (initialised) definitions of the COMMON blocks larger than
+C     64 KiB with their largest size.  The macOS linker (ld-prime) merges
+C     COMMON sizes comparing only the low 16 bits and can keep a smaller
+C     declaration from another object or library (see AGENTS.md).
+      INTEGER NCAL(41860)
+      COMMON /CALIBR/ NCAL
+      DATA NCAL(1) /0/
+      END
+#endif
