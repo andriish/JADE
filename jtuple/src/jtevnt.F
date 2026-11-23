@@ -1,6 +1,9 @@
       subroutine jtevnt( ievt )
       implicit none
       integer ievt
+      integer jthw
+      logical ihwsw
+      common /jthwc/ ihwsw
 
 
 
@@ -44,9 +47,15 @@ C     Run and event number:
       nphead= iw( ibln( 'HEAD' ) )
       if( nphead.gt.0 ) then
          nph2= 2*nphead
-         irun= hw(nph2+10)
-         ievnt= hw(nph2+11)
-         ebeam= hw(nph2+29)
+C        Half-words of the HEAD bank: the order of the two half-words of a word depends on the
+C        machine that wrote the bank. The beam energy (half-word 29, in MeV) tells the order: the files of
+C        the real data come from big-endian machines, so that on a little-endian machine the neighbouring
+C        half-word has to be taken (the data), while the half-words of the Monte Carlo events of mcjade,
+C        written on the same machine, are in the order of the machine (see jthw below).
+         ihwsw= .not.( hw(nph2+29).ge.500 .and. hw(nph2+29).le.30000 )
+         irun= jthw(nph2+10)
+         ievnt= jthw(nph2+11)
+         ebeam= jthw(nph2+29)
          ebeam= ebeam/1000.0
       else
          print *, 'JTEVNT: BOS bank HEAD not present'
@@ -61,10 +70,10 @@ C     Message:
 
 C     Write selected BOS banks to file (a la ze4vjb):
       if( lbankw .and. icall.le.nbankw .and. nphead.gt.0 ) then
-         write( iobank, '(2x,a,6i8)' ) 'Date', (hw(nph2+i), i= 3, 8 )
-         write( iobank, '(3(2x,a,i8))' ) 'Run', hw(nph2+10)
-     &        , ' Event', hw(nph2+11), ' Type:', hw(nph2+12) 
-         write( iobank, '(2x,a,i8)' ) 'Ebeam', hw(nph2+29)
+         write( iobank, '(2x,a,6i8)' ) 'Date', (jthw(nph2+i), i= 3, 8 )
+         write( iobank, '(3(2x,a,i8))' ) 'Run', jthw(nph2+10)
+     &        , ' Event', jthw(nph2+11), ' Type:', jthw(nph2+12) 
+         write( iobank, '(2x,a,i8)' ) 'Ebeam', jthw(nph2+29)
          call showb( iobank, cbank )
       endif
 
@@ -666,4 +675,25 @@ C      call HLDIR('//QQJT200','T')
 
 C     The End:
  999  return
+      end
+
+      integer function jthw( n )
+C     The half-word number n of the BOS memory as numbered by the machine that wrote the bank:
+C     the half-word itself, or its neighbour in the same word (n+1 for odd and n-1 for even n)
+C     if the order of the half-words of the words is opposite (flag ihwsw, set by jtevnt).
+      implicit none
+      integer n
+#include "bos.inc"
+      logical ihwsw
+      common /jthwc/ ihwsw
+      if( ihwsw ) then
+         if( mod(n,2).eq.1 ) then
+            jthw= hw(n+1)
+         else
+            jthw= hw(n-1)
+         endif
+      else
+         jthw= hw(n)
+      endif
+      return
       end
