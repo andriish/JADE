@@ -129,6 +129,14 @@ jade_fortran_test(FPINFO_DATA_1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" "
 add_test(NAME INFO_COMPARE_DATA_1 COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/info_compare.sh $<TARGET_FILE:fpinfo> ${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006 $<TARGET_FILE:bosinfo> ${CMAKE_CURRENT_BINARY_DIR}/file006.bos ${CMAKE_CURRENT_BINARY_DIR})
 set_property( TEST INFO_COMPARE_DATA_1 PROPERTY DEPENDS FPTOBOS_DATA_1)
 
+# The bank names of the binary calibration files must have the byte order of the host, otherwise KLREAD
+# ignores every record and no calibration constants are applied (see jadesoft/CMakeLists.txt, calcheck.f).
+add_executable(calcheck ${CMAKE_CURRENT_SOURCE_DIR}/src/calcheck.f)
+foreach(calfile aupdat1 bupdat0 bupdat1)
+  add_test(NAME CALIB_NAMES_${calfile} COMMAND calcheck ${CMAKE_CURRENT_BINARY_DIR}/${calfile}.b)
+  jade_fortran_test(CALIB_NAMES_${calfile} "GFORTRAN_CONVERT_UNIT=big_endian" "F_UFMTENDIAN=big" " ")
+endforeach()
+
 # Event display. Needs a virtual X server (xvfb-run, or JADEZ_TEST_DISPLAY set); skipped otherwise.
 if (EXISTS ${JADESOFT_BIN_DIR}/jadez)
   add_test(NAME JADEZ_DATA_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_test.sh ${JADESOFT_BIN_DIR}/jadez
