@@ -42,12 +42,14 @@ cp ../aupdat1.b F11LHO.AUPDAT1
 cp "$HELP" F22BOW.HELP.DATASET
 LOG=../jadez_$NAME.log
 NCMD=$#
+# macOS has no `timeout` unless coreutils' gnubin is on PATH; Homebrew coreutils gives `gtimeout`
+TMO=timeout; command -v timeout >/dev/null 2>&1 || TMO=gtimeout
 ( printf '%s\n\n' "$BOS"; sleep 2
   for c in "$@"; do
     echo "$c"; sleep 1.5
     [ "$MODE" = draw ] && { echo H; sleep 1.5; }
   done
-  echo END; sleep 2 ) | timeout 300 $RUN "$JADEZ" > "$LOG" 2>&1
+  echo END; sleep 2 ) | $TMO 300 $RUN "$JADEZ" > "$LOG" 2>&1
 rc=$?
 echo "jadez exit code $rc, $NCMD commands ($MODE): $*"
 fail=0
