@@ -1,11 +1,12 @@
 name: Fedora 45 i686 on x86_64 (GNU)
+# TEMPORARILY DISABLED: the automatic triggers are commented out, the workflow can still be started by hand
 on:
- push:
- pull_request:
+# push:
+# pull_request:
  workflow_dispatch:
- schedule:
+# schedule:
 #Every 50 days at midnight 
-    - cron:  "0 0 1/600 * *"
+#    - cron:  "0 0 1/600 * *"
 
 
 jobs:

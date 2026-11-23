@@ -1,10 +1,12 @@
 name: macOS 27 arm64 (GNU)
+# TEMPORARILY DISABLED: the automatic triggers are commented out, the workflow can still be started by hand
 on:
- push:
- pull_request:
- schedule:
+# push:
+# pull_request:
+ workflow_dispatch:
+# schedule:
 #Every 50 days at midnight 
-    - cron:  "0 0 1/600 * *"
+#    - cron:  "0 0 1/600 * *"
 
 jobs:
   macos27arm64_gnu:
@@ -87,6 +89,6 @@ jobs:
           nm -n -m "$exe" | grep -A1 -E " _(pawc|calibr|cwork|bcs)_$" || true
         done
         exe=$PWD/installedGNU-1664/bin/superv
-        cd build/test
+        cd buildGNU-1664/test
         export GFORTRAN_CONVERT_UNIT='big_endian;native:2'
         lldb -b -o "process launch -i $PWD/../../test/cards/supervfile006.card" -k "bt" -k "register read" -k "disassemble -p -c 6" -k "quit" -- "$exe" || true
