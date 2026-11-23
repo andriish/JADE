@@ -136,7 +136,7 @@ C                                      ANGLE AT OUTER POINT
 C       IF(RRO.LT.1.) CALL PRPATR
 C     CALL CHECK(10)
 C                                      CALCULATE CHI**2
-        CH    =(DRI/.40)**2+(DRO/.40)**2+(DALFI/.010)**2+(DALFO/.010)**200013800
+        CH    =(DRI/.40)**2+(DRO/.40)**2+(DALFI/.010)**2+(DALFO/.010)**2
 C     IF(NPR.LE.5) PRINT 2002, ITR2,NAGR,IPTR2,
 C    ,     X2I,Y2I,X2O,Y2O,DRI,DRO,DALFI,DALFO,DALF1,CH,CHISQ
         IF(CH.GT.CHISQ) GOTO 198

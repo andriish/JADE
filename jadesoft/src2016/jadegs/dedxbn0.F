@@ -373,7 +373,7 @@ C ------------------------------------------ REMOVE HITS IN CELL CORNERS
                 IF(T.LT.90.) GOTO 21
                 IF(NL.EQ.15.AND.LRFL(J).EQ.1) GOTO 26
                 IF(NL.EQ. 0.AND.LRFL(J).EQ.0) GOTO 26
-         IF(NR.EQ.2.AND.NL.EQ.14.AND.LRFL(J).EQ.1.AND.T.GT.180.) GOTO 2600037500
+         IF(NR.EQ.2.AND.NL.EQ.14.AND.LRFL(J).EQ.1.AND.T.GT.180.) GOTO 26
    21           IF(XT.GT.0.97) GOTO 26
                 IF(T.LE.4.) GOTO 26
                 IF(IPERD.EQ.1 .AND. NC.EQ.9) GOTO 26
