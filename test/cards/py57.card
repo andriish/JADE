@@ -11,7 +11,7 @@ C   - extension .nt forces a HBOOK NTuple format (not yet supported!!!)
 C   - other extensions yield to a readable ascii format (for test purposes)
 C
 MCEVFILE 'py57.cprod'
-MCNEVT 100
+MCNEVT 1000
 MCECMS 35.0
 MCNPRI 100
 MCTAB  OFF

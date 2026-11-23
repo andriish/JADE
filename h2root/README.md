@@ -5,7 +5,7 @@ tests `H2ROOT_*` use it. The `h2root` of ROOT 6.40.04 (Fedora `root-hbook`) cras
 with a segmentation fault on 64 bit machines (about 7 runs out of 8), in `hgnt2_`
 at `misc/minicern/src/hbook.f`. This directory contains a fixed copy that is built
 and installed as `jade_h2root` (by `jadeinstall.sh`, or
-`cmake -S h2root -B build/h2root`), and preferred by `test/CMakeLists.txt`.
+`cmake -S h2root -B buildGNU64/h2root`), and preferred by `test/CMakeLists.txt`.
 
 ## The bug
 

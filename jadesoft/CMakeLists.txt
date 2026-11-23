@@ -560,12 +560,15 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/JADESOFTConfig.cmake
               DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT devel)
 
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cal/aupdat1 
-              ${CMAKE_CURRENT_SOURCE_DIR}/cal/aupdat1.b 
-              ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat0 
-              ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat0.b 
-              ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat1 
-              ${CMAKE_CURRENT_SOURCE_DIR}/cal/bupdat1.b  DESTINATION ${CMAKE_INSTALL_DATADIR}/JADESOFT/cal )
+    set(JADE_CAL_DIR_NAME cal)
+set(JADE_CAL_DIR_NAME ${JADE_CAL_DIR_NAME} CACHE STRING "Calibration files directory of jadesoft (cal or cal2026)" FORCE)
+message(STATUS "JADE: calibration files from ${JADE_CAL_DIR_NAME}")
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${JADE_CAL_DIR_NAME}/aupdat1
+              ${CMAKE_CURRENT_SOURCE_DIR}/${JADE_CAL_DIR_NAME}/aupdat1.b
+              ${CMAKE_CURRENT_SOURCE_DIR}/${JADE_CAL_DIR_NAME}/bupdat0
+              ${CMAKE_CURRENT_SOURCE_DIR}/${JADE_CAL_DIR_NAME}/bupdat0.b
+              ${CMAKE_CURRENT_SOURCE_DIR}/${JADE_CAL_DIR_NAME}/bupdat1
+              ${CMAKE_CURRENT_SOURCE_DIR}/${JADE_CAL_DIR_NAME}/bupdat1.b  DESTINATION ${CMAKE_INSTALL_DATADIR}/JADESOFT/cal )
 
 install(TARGETS 
 ar48p

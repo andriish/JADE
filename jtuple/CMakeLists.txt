@@ -93,5 +93,7 @@ endif()
 
 ########################################################################
 INSTALL(TARGETS ${JTJOBEXE} ${JZREADEXE} ${TAKLUMIEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+# the table of the luminosity read by taklumi (the file lumi.dat in the working directory), next to the calibration files
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/share/lumi.dat DESTINATION ${CMAKE_INSTALL_DATADIR}/JADESOFT)
 INSTALL( TARGETS ${BOSLIB}  ${ZREAD}  ${NTUPLE} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT library )
 ########################################################################
