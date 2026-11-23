@@ -9,6 +9,7 @@ There are 49 tests; they depend on each other and have to be run as a chain (``s
  - ``PYTHIA8_PRODUCE_HEPMC3_MC_1`` produces events in HepMC format with Pythia8 (``src/pythia8_JADE.cc``).
  - ``HEPMC3_TO_CPROD_MC_1`` converts them into the CPROD format accepted by the JADE software.
  - ``MCJADE_MC_1`` produces BOS files from the CPROD file; ``SUPERV_MC_1``, ``ZE4V_MC_1``, ``JZREAD_MC_1``, ``JTJOB_MC_1``, ``H2ROOT_MC_1`` and the ROOT analyses follow.
+ - ``K0S_DATA_1``, ``K0S_MC_1``, ``K0S_MC_3`` run the Fortran analysis ``src/k0s.f`` (K0S -> pi+ pi- from pairs of tracks with close helices) on the output of ``superv``; the cuts are in ``cards/k0s.card`` (very loose track cuts), the mass histogram is printed and written to a text file.
  - ``PYTHIA8_PRODUCE_HEPMC3_MC_3`` ... ``ROOT_ANALYSIS2_MC_3`` repeat the Pythia8 chain at 43.8 GeV (``cards/testPythia2.input``, the detector configuration of 1985 in ``cards/mcjade3.card``).
  - ``PY57_MC_1_CLEANUP``, ``PY57_MC_1`` and the ``_MC_2`` chain use the old generator PYTHIA 5.7 of the JADE software.
 

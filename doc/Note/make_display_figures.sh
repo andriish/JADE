@@ -43,7 +43,7 @@ thrust $T/jtjob13.pdf.pdf        thrust_mc3
 # plotted with the ROOT macros k0s_plots.C
 # Run first:  cd <build directory>/test && ctest -R K0S
 root -l -b -q "k0s_plots.C(\"$T\",\"$F\")" >/dev/null 2>&1
-for n in k0s_mass k0s_cuts; do
+for n in k0s_mass k0s_cuts k0s_event; do
   pdfcrop --margins 5 $F/$n.pdf $F/$n.pdf >/dev/null
   pdftops -eps $F/$n.pdf $F/$n.eps 2>/dev/null
 done

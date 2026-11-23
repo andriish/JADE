@@ -109,7 +109,7 @@ if (EXISTS ${JADESOFT_BIN_DIR}/jadez)
   jade_fortran_test(JADEZ_DATA_1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " ")
 endif()
 
-add_test(NAME K0S_DATA_1 COMMAND k0s ${CMAKE_CURRENT_BINARY_DIR}/supervfile006.bos ${CMAKE_CURRENT_BINARY_DIR}/k0s_data_1.txt ${CMAKE_CURRENT_BINARY_DIR}/k0s_data_1_dist.txt)
+add_test(NAME K0S_DATA_1 COMMAND k0s ${CMAKE_CURRENT_BINARY_DIR}/supervfile006.bos ${CMAKE_CURRENT_BINARY_DIR}/k0s_data_1.txt ${CMAKE_CURRENT_BINARY_DIR}/k0s_data_1_dist.txt ${CMAKE_CURRENT_SOURCE_DIR}/cards/k0s.card)
 set_property( TEST K0S_DATA_1 PROPERTY  DEPENDS SUPERV_DATA_1)
 jade_fortran_test(K0S_DATA_1 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2" "F_UFMTENDIAN=big:2" "FORT_CONVERT2=big_ieee")
 
@@ -151,7 +151,7 @@ endif()
 if (ROOT_FOUND AND H2ROOT)
   add_test(NAME H2ROOT_DATA_1 COMMAND ${H2ROOT}  jtjobfile006.hbook  jtjobfile006.root)
   set_property( TEST H2ROOT_DATA_1 PROPERTY  DEPENDS JTJOB_DATA_1)   
-  add_test(NAME ROOT_ANALYSIS_DATA_1 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_1 jtjobfile006.root jtjobfile006_1.pdf)
+  add_test(NAME ROOT_ANALYSIS_DATA_1 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_1 jtjobfile006.root jtjobfile006_1.pdf "real data")
   set_property( TEST ROOT_ANALYSIS_DATA_1 PROPERTY  DEPENDS H2ROOT_DATA_1) 
   add_test(NAME ROOT_ANALYSIS_DATA_2 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_2 jtjobfile006.root jtjobfile006_2.pdf)
   set_property( TEST ROOT_ANALYSIS_DATA_2 PROPERTY  DEPENDS H2ROOT_DATA_1) 
@@ -183,7 +183,7 @@ else()
   jade_fortran_test(SUPERV_MC_1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " " ) 
   #NOTE: superv.stat needs a random number generator seeds. Otherwise it will use the same each time
    
-  add_test(NAME K0S_MC_1 COMMAND k0s ${CMAKE_CURRENT_BINARY_DIR}/superv1.bos ${CMAKE_CURRENT_BINARY_DIR}/k0s_mc_1.txt ${CMAKE_CURRENT_BINARY_DIR}/k0s_mc_1_dist.txt)
+  add_test(NAME K0S_MC_1 COMMAND k0s ${CMAKE_CURRENT_BINARY_DIR}/superv1.bos ${CMAKE_CURRENT_BINARY_DIR}/k0s_mc_1.txt ${CMAKE_CURRENT_BINARY_DIR}/k0s_mc_1_dist.txt ${CMAKE_CURRENT_SOURCE_DIR}/cards/k0s.card)
   set_property( TEST K0S_MC_1 PROPERTY  DEPENDS SUPERV_MC_1)
   jade_fortran_test(K0S_MC_1 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2" "F_UFMTENDIAN=big:2" "FORT_CONVERT2=big_ieee")
 
@@ -247,7 +247,7 @@ else()
   set_property( TEST SUPERV_MC_3 PROPERTY  DEPENDS MCJADE_MC_3)
   jade_fortran_test(SUPERV_MC_3 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " " )
 
-  add_test(NAME K0S_MC_3 COMMAND k0s ${CMAKE_CURRENT_BINARY_DIR}/superv3.bos ${CMAKE_CURRENT_BINARY_DIR}/k0s_mc_3.txt ${CMAKE_CURRENT_BINARY_DIR}/k0s_mc_3_dist.txt)
+  add_test(NAME K0S_MC_3 COMMAND k0s ${CMAKE_CURRENT_BINARY_DIR}/superv3.bos ${CMAKE_CURRENT_BINARY_DIR}/k0s_mc_3.txt ${CMAKE_CURRENT_BINARY_DIR}/k0s_mc_3_dist.txt ${CMAKE_CURRENT_SOURCE_DIR}/cards/k0s.card)
   set_property( TEST K0S_MC_3 PROPERTY  DEPENDS SUPERV_MC_3)
   jade_fortran_test(K0S_MC_3 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2" "F_UFMTENDIAN=big:2" "FORT_CONVERT2=big_ieee")
 
@@ -270,13 +270,13 @@ else()
     add_test(NAME H2ROOT_MC_2 COMMAND ${H2ROOT}  jtjob2.hbook  jtjob2.root)
     set_property( TEST H2ROOT_MC_2 PROPERTY  DEPENDS JTJOB_MC_2)   
 
-    add_test(NAME ROOT_ANALYSIS1_MC_1 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_1 jtjob1.root jtjob11.pdf)    
+    add_test(NAME ROOT_ANALYSIS1_MC_1 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_1 jtjob1.root jtjob11.pdf "Pythia8 hadronic events")    
     set_property( TEST ROOT_ANALYSIS1_MC_1 PROPERTY  DEPENDS H2ROOT_MC_1) 
     
     add_test(NAME ROOT_ANALYSIS2_MC_1 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_2 jtjob1.root jtjob21.pdf)
     set_property( TEST ROOT_ANALYSIS2_MC_1 PROPERTY  DEPENDS H2ROOT_MC_1) 
 
-    add_test(NAME ROOT_ANALYSIS1_MC_2 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_1 jtjob2.root jtjob12.pdf)
+    add_test(NAME ROOT_ANALYSIS1_MC_2 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_1 jtjob2.root jtjob12.pdf "PYTHIA 5.7 hadronic events")
     set_property( TEST ROOT_ANALYSIS1_MC_2 PROPERTY  DEPENDS H2ROOT_MC_2) 
 
     add_test(NAME ROOT_ANALYSIS2_MC_2 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_2 jtjob2.root jtjob22.pdf)
@@ -286,7 +286,7 @@ else()
     add_test(NAME H2ROOT_MC_3 COMMAND ${H2ROOT}  jtjob3.hbook  jtjob3.root)
     set_property( TEST H2ROOT_MC_3 PROPERTY  DEPENDS JTJOB_MC_3)
 
-    add_test(NAME ROOT_ANALYSIS1_MC_3 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_1 jtjob3.root jtjob13.pdf)
+    add_test(NAME ROOT_ANALYSIS1_MC_3 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_1 jtjob3.root jtjob13.pdf "Pythia8 hadronic events")
     set_property( TEST ROOT_ANALYSIS1_MC_3 PROPERTY  DEPENDS H2ROOT_MC_3)
 
     add_test(NAME ROOT_ANALYSIS2_MC_3 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_2 jtjob3.root jtjob23.pdf)
