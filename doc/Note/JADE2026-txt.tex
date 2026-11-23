@@ -1265,7 +1265,7 @@ file (Section~\ref{sec:programs}) that the script \texttt{wrapper.sh} gives to t
 that sets the byte order of the files is set for every test (Section~\ref{sec:endian}).
 
 The suite is run with the script of Section~\ref{sec:build}, which configures and builds the project in the directory of the toolchain and runs \texttt{ctest}
-with a time limit of 10 seconds per test (the display tests have their own limits of 300 to 700 seconds) and keeps the output of the run:
+with a time limit of 200 seconds per test (the display tests have their own limits of 300 to 700 seconds) and keeps the output of the run:
 \begin{lstlisting}
 sh jadetest.sh [--bits=32|64] [--toolchain=NAME] [--prefix=INSTALLDIR]
 \end{lstlisting}

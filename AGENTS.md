@@ -30,7 +30,7 @@ sh jadetest.sh    [--bits=32|64] [--toolchain=...] [--prefix=/abs/path]
 ```
 
 - Install goes to `installed<toolchain><bits>` (e.g. `installedGNU32`) in the repo root unless `--prefix` is given. `build<toolchain><bits>/` (e.g. `buildGNU32`) and install dirs are generated — never commit them.
-- `jadetest.sh` configures `test/`, builds, and runs `ctest` (10 s timeout). Tests are sequential and depend on one another (FPTOBOS → pythia8/HepMC3 → CPROD → MCJADE → SUPERV → ZE4V → JZREAD → JTJOB); run the whole chain rather than single tests. Pythia8 is required for the MC tests.
+- `jadetest.sh` configures `test/`, builds, and runs `ctest` (200 s timeout per test; the display tests have their own, longer limits). Tests are sequential and depend on one another (FPTOBOS → pythia8/HepMC3 → CPROD → MCJADE → SUPERV → ZE4V → JZREAD → JTJOB); run the whole chain rather than single tests. Pythia8 is required for the MC tests.
 - CMake options (jadesoft): `JADE_OLD_MC` (ON), `JADE_FPE` (OFF), `JADE_FORCE_32` (ON for `--bits=32`).
 - Dependencies: gfortran/gcc/g++, ROOT 6, cmake, HepMC3, LAPACK/BLAS, X11 + Motif, CERNLIB, gengetopt. These are rarely installed on a dev host.
 
