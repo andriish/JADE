@@ -1,10 +1,12 @@
 name: macOS 27 arm64 (GNU)
+# TEMPORARILY DISABLED: the automatic triggers are commented out, the workflow can still be started by hand
 on:
- push:
- pull_request:
- schedule:
+# push:
+# pull_request:
+ workflow_dispatch:
+# schedule:
 #Every 50 days at midnight 
-    - cron:  "0 0 1/600 * *"
+#    - cron:  "0 0 1/600 * *"
 
 jobs:
   macos27arm64_gnu:

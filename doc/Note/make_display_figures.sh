@@ -37,3 +37,13 @@ thrust $T/jtjobfile006_1.pdf.pdf thrust_data
 thrust $T/jtjob11.pdf.pdf        thrust_mc1
 thrust $T/jtjob12.pdf.pdf        thrust_mc2
 thrust $T/jtjob13.pdf.pdf        thrust_mc3
+
+# invariant mass of the pi+ pi- pairs of the Fortran analysis test/src/k0s.f (tests K0S_DATA_1, K0S_MC_1, K0S_MC_3) and
+# the distributions of the distances on which its cuts are made (K0S_MC_3): the files k0s_*.txt written by the tests are
+# plotted with the ROOT macros k0s_plots.C
+# Run first:  cd <build directory>/test && ctest -R K0S
+root -l -b -q "k0s_plots.C(\"$T\",\"$F\")" >/dev/null 2>&1
+for n in k0s_mass k0s_cuts; do
+  pdfcrop --margins 5 $F/$n.pdf $F/$n.pdf >/dev/null
+  pdftops -eps $F/$n.pdf $F/$n.eps 2>/dev/null
+done

@@ -1,6 +1,6 @@
 This directory contains a test suite for the JADE software. It is also the set of examples for the analysis of the JADE data
 (ntuple based): the cards in ``cards``, the programs in ``src`` and the scripts show how to process real data and simulated events.
-There are 46 tests; they depend on each other and have to be run as a chain (``sh jadetest.sh``):
+There are 49 tests; they depend on each other and have to be run as a chain (``sh jadetest.sh``):
  - ``CALIB_NAMES_aupdat1``, ``_bupdat0``, ``_bupdat1`` check that the names of the records of the calibration files are recognised by ``KLREAD`` (``src/calcheck.f``).
  - ``FPTOBOS_DATA_1_CLEANUP`` cleans up any remnants of the tests; ``FPTOBOS_DATA_1`` converts the JADE sample data into BOS format.
  - ``SUPERV_DATA_1``, ``ZE4V_DATA_1``, ``JZREAD_DATA_1``, ``JTJOB_DATA_1`` reconstruct the sample data, format the events and write HBOOK ntuples;
