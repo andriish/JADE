@@ -334,7 +334,7 @@ C
 * run number ranges with same cms energy, instead of the original
 * lumi per run files!
  1001 READ(IUNIT,END=1002,FMT='(2(I5,3X),F6.3,2E14.6)')
-     >     ADATA1(1),IDUM,ADATA1(2),ADATA1(3),ADATA1(4)
+     >     IDATA1(1),IDUM,ADATA1(2),ADATA1(3),ADATA1(4)
       ITEST = ITEST + 1
       IF(ITEST.LT.21) WRITE(6,1300) IDATA1(1),(ADATA1(I),I=2,4)
  1300 FORMAT(' LUMINT READ: ',I10,3F10.2)

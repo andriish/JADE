@@ -260,8 +260,9 @@ The source code of the software is in the \texttt{jadesoft} directory of the rep
 \url{https://github.com/andriish/JADE} (Section~\ref{sec:build}); the installed software is in the install
 prefix of the build (\texttt{installed<toolchain><bits>} in the repository directory by default): the programs in
 \texttt{bin}, the libraries in \texttt{lib} (\texttt{lib64} on Fedora and CentOS), and in \texttt{share/\allowbreak{}JADESOFT} the
-calibration files (\texttt{cal}, Section~\ref{sec:calfiles}), the example input cards of the programs and the CMake
-package configuration.
+calibration files (\texttt{cal}, Section~\ref{sec:calfiles}), the table of the luminosity \texttt{lumi.dat}, the data files that programs read from the working directory
+(the help dataset and the macros of \texttt{jadez}, the tables of COJETS), the example cards of the old job \texttt{jadesim} (\texttt{examples/\allowbreak{}jadesim}) and the CMake
+package configuration (variables such as \texttt{JADESOFT\_DATA\_DIR}, \texttt{JADESOFT\_CAL\_DIR} and \texttt{JADESOFT\_BIN\_DIR}).
 \subsubsection{Organisation}
 The directory \texttt{jadesoft} contains the software in its original form and the current versions:
 \begin{itemize}
@@ -466,7 +467,7 @@ P   & 2026/CI           &  PC, ARM                    &CI      &Fedora 45, CentO
 Q   & 2026/Runs, CI     &  Apple M1, many             &CI      &macOS 27~\cite{Wiki:macOS} & arm64(64le)         & 90/gfortran 16.2          &make, cmake 4, ld-prime       &HIGZ(XQuartz)  & revived 2026/gfortran/64bit     \\
 \hline
 \end{tabular}}
-\caption{Status of different platforms. The column ``tests'' gives the passed/total tests of the test suite (10 in 2016, 35 in 2026) for the configurations that were run for this note, ``CI'' means that the platform is built and tested by the continuous integration (GitHub Actions) and not checked here. The rows A--K are the historical entries (2016); the ppc64 rows F and G are kept as the only big-endian ports, they were not repeated after 2016. The rows L--Q are the 2026 situation: the compilers Intel \texttt{ifx} and NVIDIA \texttt{nvfortran} (rows N and O) use the CERNLIB built with \texttt{gfortran}. Picocernlib is a small set of CERNLIB routines plus some ROOT backend for plotting. }
+\caption{Status of different platforms. The column ``tests'' gives the passed/total tests of the test suite (10 in 2016, 36 in 2026) for the configurations that were run for this note, ``CI'' means that the platform is built and tested by the continuous integration (GitHub Actions) and not checked here. The rows A--K are the historical entries (2016); the ppc64 rows F and G are kept as the only big-endian ports, they were not repeated after 2016. The rows L--Q are the 2026 situation: the compilers Intel \texttt{ifx} and NVIDIA \texttt{nvfortran} (rows N and O) use the CERNLIB built with \texttt{gfortran}. Picocernlib is a small set of CERNLIB routines plus some ROOT backend for plotting. }
 \label{tab:status}
 \end{sidewaystable}
 %\end{table}
@@ -482,7 +483,7 @@ The situation in 2026 (Table~\ref{tab:status}, rows L--Q) is:
 \begin{itemize}
 \item The whole processing chain, from the conversion of the raw data and the generation and the conversion of the
 Monte Carlo events to the simulation, the reconstruction, the analysis and the event display, runs in the 64-bit
-mode on little-endian machines, with the GNU, Intel and NVIDIA compilers; all 35 tests pass on rows L, N and O.
+mode on little-endian machines, with the GNU, Intel and NVIDIA compilers; all 36 tests pass on rows L, N and O.
 The 32-bit mode with the revived CERNLIB (row M) remains the best tested configuration of CERNLIB.
 \item Rows M, P and Q (the 32-bit build, aarch64 together with CentOS Stream, and macOS on Apple silicon) are built and tested by
 the continuous integration; macOS needs a workaround for a bug of the Apple linker (Section~\ref{sec:ai}).
@@ -800,7 +801,7 @@ Switching on the calibration groups of the other banks does not change the resul
 reconstruction. The muon filter views of the event display (\texttt{RC1}, \texttt{ZXC1}, \dots) now
 show the outlines of the muon chambers, which were missing before (the test event has no muon hits).
 
-With the corrected files all 35 tests of the test suite pass in the 64-bit builds with the GNU, Intel (\texttt{ifx}) and NVIDIA (\texttt{nvfortran}) Fortran compilers, including the event display tests.
+With the corrected files all 36 tests of the test suite pass in the 64-bit builds with the GNU, Intel (\texttt{ifx}) and NVIDIA (\texttt{nvfortran}) Fortran compilers, including the event display tests.
 
 The test suite checks the calibration at two levels. Three tests of the test suite (Section~\ref{sec:tests}; the program is \texttt{test/\allowbreak{}src/\allowbreak{}calcheck.f}) read the
 installed binary files in the way of \texttt{KLREAD}, count the records whose name is recognised and fail if
@@ -831,8 +832,8 @@ is given to the standard input of the program, e.g.
 cat mcjade1.card | mcjade
 \end{lstlisting}
 The names of the input and
-output files, the options and the numbers of the events are set in the card; examples of the cards for every
-program are in \texttt{share/\allowbreak{}JADESOFT} and in \texttt{test/cards}. The byte order of the files has to be set for the
+output files, the options and the numbers of the events are set in the card; examples of the cards are in
+\texttt{test/cards} for the programs of the test suite and, for the old job \texttt{jadesim}, in \texttt{share/\allowbreak{}JADESOFT/\allowbreak{}examples/\allowbreak{}jadesim}. The byte order of the files has to be set for the
 Fortran runtime (Section~\ref{sec:endian}).
 
 \subsection{mcjade: simulation of the detector response}
@@ -887,16 +888,19 @@ the Monte Carlo events are generated by external generators and converted with \
 by the test suite and the programs above. The script is kept for the correspondence between the centre-of-mass
 energy and the configuration of the detector that its cards use:
 \begin{table}[H]\centering
-\begin{tabular}{|c|c|c|c|c|}\hline
-Sample & CMS energy, GeV & Year & Month & Day \\\hline\hline
-14  & 14.0 & 81 & 07 & 17 \\
-22  & 22.0 & 81 & 06 & 17 \\
-35a & 34.6 & 82 & 05 & 17 \\
-44  & 43.8 & 85 & 05 & 17 \\
-38  & 38.3 & 85 & 10 & 01 \\
-35b & 35.0 & 86 & 05 & 17 \\\hline
+\begin{tabular}{|c|c|c|c|c|c|r@{\,$\pm$\,}l|}\hline
+Sample & CMS, GeV & Year & Month & Day & Data runs & \multicolumn{2}{c|}{Data lumi., nb$^{-1}$} \\\hline\hline
+14  & 14.0 & 81 & 07 & 17 &  7968--8692   & 1\,463  & 38  \\
+22  & 22.0 & 81 & 06 & 17 &  7592--7962   & 2\,406  & 49  \\
+35a & 34.6 & 82 & 05 & 17 & 10001--12518  & 37\,663 & 182 \\
+44  & 43.8 & 85 & 05 & 17 & 16803--23351  & 28\,821 & 170 \\
+38  & 38.3 & 85 & 10 & 01 & 23352--24187  & 8\,277  & 91  \\
+35b & 35.0 & 86 & 05 & 17 & 24214--30397  & 92\,320 & 304 \\\hline
 \end{tabular}
-\caption{Samples of the historic Monte Carlo production: centre-of-mass energy and date (year, month, day) used for the configuration of the detector.}
+\caption{Samples of the historic Monte Carlo production: centre-of-mass energy and date (year, month, day) used for the configuration of the detector, the range of the data runs (real data, not simulation)
+at the same energy and the barrel luminosity of these data runs (the unit is presumably nb$^{-1}$, Section~\ref{sec:lumi}). The data runs and the luminosities are those of the table of the centre-of-mass energy ranges
+printed by \texttt{taklumi} for all samples except 35a, for which the run range is the period of the beam energy of 17.3~GeV in \texttt{lumi.dat} and the luminosity
+is the sum printed by \texttt{taklumi} for it.}
 \label{tab:mcsamples}
 \end{table}
 The year, the month and the day are the values of the keys \texttt{YEAR}, \texttt{MONTH} and \texttt{DAY} of
@@ -997,9 +1001,9 @@ number of records (\texttt{MAXREC}) and the name of the ntuple file (\texttt{JTU
 \subsection{taklumi: luminosity of a range of runs}
 The program \texttt{taklumi} (source \texttt{jtuple/\allowbreak{}src/\allowbreak{}taklumi.f}) sums the luminosity of a range of runs (Section~\ref{sec:lumi}).
 \begin{description}
-\item[Input] the file \texttt{lumi.dat} in the working directory and the first and the last run number from the standard input.
+\item[Input] the file \texttt{lumi.dat} in the working directory (it is installed in \texttt{share/\allowbreak{}JADESOFT} next to the calibration files, and the test of the program uses this installed copy) and the first and the last run number from the standard input.
 \item[Output] the printout of the luminosity of every run period, the sum for the run range and the sums per energy range, with the errors, and the file \texttt{lumi.hist}
-with the histograms of the integrated luminosity.
+with the histograms of the integrated luminosity. The run number was read with an integer format into a real variable that overlays an integer; the Fortran runtime rejects this, and the program reads it into the integer now.
 \end{description}
 
 \subsection{jade\_h2root: conversion of HBOOK files to ROOT}
@@ -1193,13 +1197,16 @@ conceptually different and the HIGZ behaviour that the display relies on is not 
 \label{sec:tests}
 
 The software has a test suite, run with \texttt{ctest}, the testing tool of CMake~\cite{CMake:web}. It is the project \texttt{test} of the
-repository and the main means to see that a change of a compiler, a flag, a calibration file or the sources does not break another part. The suite has 35 tests
-(with Pythia8, ROOT and a virtual display available) in four groups that process small samples through the programs of the software:
+repository and the main means to see that a change of a compiler, a flag, a calibration file or the sources does not break another part.
+It is at the same time the set of \emph{examples for the analysis of the JADE data}, which is ntuple based (the events are written into HBOOK ntuples, converted to ROOT files and analysed from them): the tests run the complete chain of the processing of real data and of simulated events with
+small samples, so that the steering cards, the commands, the files exchanged between the programs and the programs for the final analysis (the directories \texttt{test/\allowbreak{}cards},
+\texttt{test/\allowbreak{}src} and the scripts of \texttt{test}) are the working examples of how to use the data, and a new analysis can start from them. Table~\ref{tab:testexamples} lists the examples.
+The suite has 36 tests (with Pythia8, ROOT and a virtual display available) in four groups that process small samples through the programs of the software:
 \begin{itemize}
 \item \textbf{Real data:} \texttt{FPTOBOS\_\allowbreak{}DATA\_\allowbreak{}1} converts the sample file of the tapes (\texttt{test/\allowbreak{}jadetapes/\allowbreak{}JAD073/\allowbreak{}file006}) into a BOS file;
 \texttt{SUPERV\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{ZE4V\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{JZREAD\_\allowbreak{}DATA\_\allowbreak{}1} and \texttt{JTJOB\_\allowbreak{}DATA\_\allowbreak{}1} follow it (reconstruction, ZE4V formatting, HBOOK ntuples);
 \texttt{H2ROOT\_\allowbreak{}DATA\_\allowbreak{}1} converts the ntuple to a ROOT file, which is read by two analysis programs (\texttt{ROOT\_\allowbreak{}ANALYSIS\_\allowbreak{}DATA\_\allowbreak{}1} and \texttt{\_2},
-the second uses the jet algorithm of FastJet~\cite{Cacciari:2011ma}). \texttt{JADEZ\_\allowbreak{}DATA\_\allowbreak{}1} runs the event display on the same events.
+the second uses the jet algorithm of FastJet~\cite{Cacciari:2011ma}). \texttt{JADEZ\_\allowbreak{}DATA\_\allowbreak{}1} runs the event display on the same events. \texttt{TAKLUMI\_\allowbreak{}LUMITABLE\_\allowbreak{}1} runs \texttt{taklumi} on the luminosity file and prints the table of the luminosity per range of the centre-of-mass energy (Section~\ref{sec:lumi}).
 \item \textbf{Monte Carlo with Pythia8:} \texttt{PYTHIA8\_\allowbreak{}PRODUCE\_\allowbreak{}HEPMC3\_\allowbreak{}MC\_\allowbreak{}1} generates events in the HepMC3 format,
 \texttt{HEPMC3\_\allowbreak{}TO\_\allowbreak{}CPROD\_\allowbreak{}MC\_\allowbreak{}1} converts them (Section~\ref{sec:convert}), \texttt{MCJADE\_\allowbreak{}MC\_\allowbreak{}1} simulates the detector, and the chain of the
 reconstruction, \texttt{ZE4V}, \texttt{JZREAD}, \texttt{JTJOB}, \texttt{H2ROOT} and the two ROOT analyses (\texttt{\_MC\_1}) follows;
@@ -1209,8 +1216,28 @@ the generator writing the CPROD file directly.
 \item \textbf{Calibration:} \texttt{CALIB\_\allowbreak{}NAMES\_\allowbreak{}aupdat1}, \texttt{\_bupdat0} and \texttt{\_bupdat1} check the binary calibration files
 (Section~\ref{sec:calfiles}).
 \end{itemize}
+\begin{table}[H]\centering\small
+\begin{tabular}{|p{2.9cm}|p{5.4cm}|p{6.0cm}|}\hline
+Task & Tests & Programs and inputs of the example \\\hline\hline
+Raw data to BOS & \texttt{FPTOBOS\_\allowbreak{}DATA\_\allowbreak{}1} & \texttt{fptobos}, \texttt{fptobos1.card} (the sample file of the tapes) \\
+Reconstruction & \texttt{SUPERV\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{SUPERV\_\allowbreak{}MC\_\allowbreak{}1}, \texttt{SUPERV\_\allowbreak{}MC\_\allowbreak{}2} & \texttt{superv}, \texttt{supervfile006.card}, \texttt{superv1.card}, \texttt{superv2.card} \\
+Compression to ZE4V & \texttt{ZE4V\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{ZE4V\_\allowbreak{}MC\_\allowbreak{}1}, \texttt{ZE4V\_\allowbreak{}MC\_\allowbreak{}2} & \texttt{ze4v}, \texttt{ze4vfile006.card}, \texttt{ze4v1.card}, \texttt{ze4v2.card} \\
+HBOOK ntuples & \texttt{JZREAD\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{JTJOB\_\allowbreak{}DATA\_\allowbreak{}1} (and the \texttt{\_MC\_1}, \texttt{\_MC\_2} tests) & \texttt{jzread}, \texttt{jtjob}, \texttt{jzreadfile006.card}, \texttt{jtjobfile006.card} \\
+ROOT analysis & \texttt{H2ROOT\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{ROOT\_\allowbreak{}ANALYSIS\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{ROOT\_\allowbreak{}ANALYSIS\_\allowbreak{}DATA\_\allowbreak{}2} (and the MC tests) & \texttt{jade\_\allowbreak{}h2root}; the programs \texttt{ROOT\_\allowbreak{}analysis\_\allowbreak{}1.cc} and \texttt{ROOT\_\allowbreak{}analysis\_\allowbreak{}2.cc} (with FastJet) in \texttt{test/src} \\
+Luminosity & \texttt{TAKLUMI\_\allowbreak{}LUMITABLE\_\allowbreak{}1} & \texttt{taklumi} and the installed \texttt{lumi.dat} \\
+Event display & \texttt{JADEZ\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{JADEZ\_\allowbreak{}MC\_\allowbreak{}1}, \texttt{JADEZ\_\allowbreak{}RPHI\_\allowbreak{}1} & \texttt{jadez}, the scripts \texttt{jadez\_\allowbreak{}test.sh}, \texttt{jadez\_\allowbreak{}mc\_\allowbreak{}test.sh}, \texttt{jadez\_\allowbreak{}rphi\_\allowbreak{}test.sh} \\
+Generation with Pythia8 & \texttt{PYTHIA8\_\allowbreak{}PRODUCE\_\allowbreak{}HEPMC3\_\allowbreak{}MC\_\allowbreak{}1} & the program \texttt{pythia8\_\allowbreak{}JADE.cc} in \texttt{test/src}, \texttt{testPythia1.input} \\
+Conversion to CPROD & \texttt{HEPMC3\_\allowbreak{}TO\_\allowbreak{}CPROD\_\allowbreak{}MC\_\allowbreak{}1} & \texttt{convert\_\allowbreak{}hepmc\_\allowbreak{}to\_\allowbreak{}jade} (Section~\ref{sec:convert}) \\
+Detector simulation & \texttt{MCJADE\_\allowbreak{}MC\_\allowbreak{}1}, \texttt{MCJADE\_\allowbreak{}MC\_\allowbreak{}2} & \texttt{mcjade}, \texttt{mcjade1.card}, \texttt{mcjade2.card} \\
+Old generator & \texttt{PY57\_\allowbreak{}MC\_\allowbreak{}1} & \texttt{py57}, \texttt{py57.card} (Section~\ref{sec:generators}) \\
+Calibration files & \texttt{CALIB\_\allowbreak{}NAMES\_\allowbreak{}aupdat1}, \texttt{\_bupdat0}, \texttt{\_bupdat1} & \texttt{calcheck.f} in \texttt{test/src} (Section~\ref{sec:calfiles}) \\
+\hline
+\end{tabular}
+\caption{The tests of the test suite as examples of the processing and analysis of the JADE data: the task, the tests and the programs and the input files (in \texttt{test/\allowbreak{}cards} unless noted) that they use.}
+\label{tab:testexamples}
+\end{table}
 The tests are connected through the files that they write into the test directory, and the dependencies between them are declared, so that the whole chain is run
-in this order (a single test is run only after the tests before it in its chain). The input of every program is a card
+in this order (a single test is run only after the tests before it in its chain). The tests with the suffix \texttt{\_CLEANUP} (for the raw data and for the old generator) remove the files of the earlier run first. The input of every program is a card
 file (Section~\ref{sec:programs}) that the script \texttt{wrapper.sh} gives to the standard input of the program; the environment variable of the compiler
 that sets the byte order of the files is set for every test (Section~\ref{sec:endian}).
 
@@ -1233,7 +1260,7 @@ Most of the tests check that the program runs to completion with the exit status
 Exceptions are the tests of the calibration files, which fail if a record is not recognised by \texttt{KLREAD}, and the tests of the display, which check that
 the event was read, that no command was rejected, that the calibration constants were used and that the pictures are coloured and contain the expected elements
 (Section~\ref{sec:display}). The suite is run for every platform and compiler of Table~\ref{tab:status}, by the maintainer and by the continuous
-integration (GitHub Actions on Fedora, CentOS, aarch64 and macOS), and all 35 tests pass with the compilers \texttt{gfortran}, \texttt{ifx} and
+integration (GitHub Actions on Fedora, CentOS, aarch64 and macOS), and all 36 tests pass with the compilers \texttt{gfortran}, \texttt{ifx} and
 \texttt{nvfortran}.
 
 \subsection{Validation of the reconstruction}
@@ -1336,7 +1363,7 @@ of that time are no longer used.
 \section{Summary and conclusions}
 The data, the software and the documentation of the JADE experiment are preserved at the Level~4 of the DPHEP classification and are open: the raw data, the documentation and
 a virtual machine are on the CERN Open Data Portal, and the software is developed publicly on GitHub. The software was ported from the IBM AIX systems
-to current Linux and macOS systems with three free or freely available Fortran compilers; it builds with CMake, passes the 35 tests of the test suite, and the corrected calibration files make
+to current Linux and macOS systems with three free or freely available Fortran compilers; it builds with CMake, passes the 36 tests of the test suite, and the corrected calibration files make
 the calibration, including that of the muon chambers, effective on little-endian machines. Modern generators can be used with the detector simulation through the
 HepMC3 converter, and the ntuples can be analysed with ROOT.
 The bit preservation is not an issue for the data of this size, and the tools that appeared in the last decades, from git and CI to containers and, most recently, AI assistants, made the

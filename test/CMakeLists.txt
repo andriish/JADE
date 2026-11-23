@@ -47,7 +47,7 @@ macro( jade_fortran_test testname gnuenv  intelenv nagenv)
 endmacro( jade_fortran_test )
 ########################################################################
 find_package(JADESOFT 2000.0.0 REQUIRED)
-message(STATUS "JADE test: JADESOFT_CAL_DIR=${JADESOFT_CAL_DIR}")
+message(STATUS "JADE test: JADESOFT_CAL_DIR=${JADESOFT_CAL_DIR} JADESOFT_DATA_DIR=${JADESOFT_DATA_DIR}")
 ########################################################################
 find_package(HepMC3  REQUIRED)
 message(STATUS "JADE test: HEPMC3_LIBRARIES=${HEPMC3_LIBRARIES}")
@@ -89,7 +89,7 @@ jade_fortran_test(SUPERV_DATA_1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_
 # Event display. Needs a virtual X server (xvfb-run, or JADEZ_TEST_DISPLAY set); skipped otherwise.
 if (EXISTS ${JADESOFT_BIN_DIR}/jadez)
   add_test(NAME JADEZ_DATA_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_test.sh ${JADESOFT_BIN_DIR}/jadez
-           ${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/main2016/jadez/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR})
+           ${JADESOFT_DATA_DIR}/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR})
   set_property( TEST JADEZ_DATA_1 PROPERTY DEPENDS FPTOBOS_DATA_1)
   set_property( TEST JADEZ_DATA_1 PROPERTY SKIP_RETURN_CODE 77)
   set_property( TEST JADEZ_DATA_1 PROPERTY TIMEOUT 700)
@@ -104,6 +104,13 @@ add_test(NAME JZREAD_DATA_1 COMMAND  sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh $
 set_property( TEST JZREAD_DATA_1 PROPERTY  DEPENDS ZE4V_DATA_1) 
 jade_fortran_test(JZREAD_DATA_1 PROPERTY ENVIRONMENT "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " ") 
 
+# the table of the luminosity: the installed file lumi.dat (next to the calibration files, installed by jtuple)
+unset(JADE_LUMI_DAT CACHE)
+find_file(JADE_LUMI_DAT lumi.dat PATHS ${JADESOFT_DATA_DIR} NO_DEFAULT_PATH)
+message(STATUS "JADE test: JADE_LUMI_DAT=${JADE_LUMI_DAT}")
+if (EXISTS ${JADESOFT_BIN_DIR}/taklumi AND JADE_LUMI_DAT)
+  add_test(NAME TAKLUMI_LUMITABLE_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/taklumi_test.sh ${JADESOFT_BIN_DIR}/taklumi ${JADE_LUMI_DAT} ${CMAKE_CURRENT_BINARY_DIR})
+endif()
 add_test(NAME JTJOB_DATA_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/jtjobfile006.card  ${JADESOFT_BIN_DIR}/jtjob)
 set_property( TEST JTJOB_DATA_1 PROPERTY  DEPENDS JZREAD_DATA_1) 
 jade_fortran_test(JTJOB_DATA_1 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22" "F_UFMTENDIAN=big:2,22" "FORT_CONVERT2=big_ieee FORT_CONVERT22=big_ieee") 
@@ -234,7 +241,7 @@ endif()
 # orthogonal projections ON, on the Monte Carlo event reconstructed by SUPERV_MC_1.
 if (TEST SUPERV_MC_1 AND EXISTS ${JADESOFT_BIN_DIR}/jadez)
   add_test(NAME JADEZ_MC_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_mc_test.sh ${JADESOFT_BIN_DIR}/jadez
-           ${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/main2016/jadez/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR})
+           ${JADESOFT_DATA_DIR}/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR})
   set_property( TEST JADEZ_MC_1 PROPERTY DEPENDS SUPERV_MC_1)
   set_property( TEST JADEZ_MC_1 PROPERTY SKIP_RETURN_CODE 77)
   set_property( TEST JADEZ_MC_1 PROPERTY TIMEOUT 400)
@@ -244,7 +251,7 @@ endif()
 # insets and the small dE/dx plot, without bank listing.
 if (TEST SUPERV_MC_1 AND EXISTS ${JADESOFT_BIN_DIR}/jadez)
   add_test(NAME JADEZ_RPHI_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_rphi_test.sh ${JADESOFT_BIN_DIR}/jadez
-           ${CMAKE_CURRENT_SOURCE_DIR}/../jadesoft/main2016/jadez/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR})
+           ${JADESOFT_DATA_DIR}/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR})
   set_property( TEST JADEZ_RPHI_1 PROPERTY DEPENDS SUPERV_MC_1)
   set_property( TEST JADEZ_RPHI_1 PROPERTY SKIP_RETURN_CODE 77)
   set_property( TEST JADEZ_RPHI_1 PROPERTY TIMEOUT 300)

@@ -585,6 +585,18 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${JADE_CAL_DIR_NAME}/aupdat1
               ${CMAKE_CURRENT_SOURCE_DIR}/${JADE_CAL_DIR_NAME}/bupdat1
               ${CMAKE_CURRENT_SOURCE_DIR}/${JADE_CAL_DIR_NAME}/bupdat1.b  DESTINATION ${CMAKE_INSTALL_DATADIR}/JADESOFT/cal )
 
+# Data files that the programs read from the working directory: the help dataset and the macros of the event
+# display (jadez), the tables of the generator COJETS (cj623), and the example cards of the old job jadesim
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/main2016/jadez/F22BOW.HELP.DATASET
+              ${CMAKE_CURRENT_SOURCE_DIR}/main2016/jadez/F11OLS.GRAPHICS.PROFILE.MACROS
+              ${CMAKE_CURRENT_SOURCE_DIR}/job2016/jadesim/cj623inp.dat
+              ${CMAKE_CURRENT_SOURCE_DIR}/job2016/jadesim/cj623tab.dat DESTINATION ${CMAKE_INSTALL_DATADIR}/JADESOFT )
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/job2016/jadesim/GEN.CARD
+              ${CMAKE_CURRENT_SOURCE_DIR}/job2016/jadesim/GEN_JT63.CARD
+              ${CMAKE_CURRENT_SOURCE_DIR}/job2016/jadesim/MC.CARD
+              ${CMAKE_CURRENT_SOURCE_DIR}/job2016/jadesim/SV.CARD
+              ${CMAKE_CURRENT_SOURCE_DIR}/job2016/jadesim/ZE.CARD DESTINATION ${CMAKE_INSTALL_DATADIR}/JADESOFT/examples/jadesim )
+
 install(TARGETS 
 ar48p
 cj623
