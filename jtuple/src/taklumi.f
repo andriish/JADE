@@ -333,6 +333,12 @@ C
 * Changed to read Olssons output files (fax), sorted by consecutive 
 * run number ranges with same cms energy, instead of the original
 * lumi per run files!
+* Note: the run number is read into IDATA1(1), the INTEGER view of
+* ADATA1(1) (EQUIVALENCE above). It was read into ADATA1(1) with the
+* I5 descriptor, which the old IBM compiler accepted but the Fortran
+* runtimes of current compilers (gfortran, NVIDIA) reject at run time
+* ("Expected INTEGER ... got REAL"), so that the program stopped at the
+* first line of lumi.dat. The values read are the same.
  1001 READ(IUNIT,END=1002,FMT='(2(I5,3X),F6.3,2E14.6)')
      >     IDATA1(1),IDUM,ADATA1(2),ADATA1(3),ADATA1(4)
       ITEST = ITEST + 1
