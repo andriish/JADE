@@ -1,7 +1,7 @@
 ########################################################################
 # jade_h2root: ROOT's h2root (HBOOK -> ROOT converter) with the 64 bit
 # address fix, see README.md. Build:
-#   cmake -S h2root -B build/h2root [-DJADE_FORCE_32=ON] && cmake --build build/h2root
+#   cmake -S h2root -B buildGNU64/h2root [-DJADE_FORCE_32=ON] && cmake --build buildGNU64/h2root
 ########################################################################
 CMAKE_MINIMUM_REQUIRED(VERSION 3.10) #Because of ROOT
 PROJECT(JADEH2ROOT Fortran CXX C)

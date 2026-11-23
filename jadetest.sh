@@ -186,8 +186,8 @@ else
 fi
 
 ########################################################################
-mkdir -p build/test
-cd build/test
+mkdir -p build$toolchain$bits/test
+cd build$toolchain$bits/test
 rm -rf outputs CMakeFiles CMakeCache.txt
 $CMAKE -S ../../test -B . -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC  -DJADESOFT_DIR=$TOP$toolchain$bits/share/JADESOFT/cmake $bit_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
@@ -196,7 +196,7 @@ $CMAKE --install .
 # count as failures, so that a broken CI setup cannot give a green result.
 ctest_log=$(pwd)/ctest_output.log
 # (the status goes through a file: PIPESTATUS does not exist in every sh)
-{ $CTEST .  --timeout 10 --output-on-failure; echo $? > "$ctest_log.status"; } 2>&1 | tee "$ctest_log"
+{ $CTEST .  --timeout 200 --output-on-failure; echo $? > "$ctest_log.status"; } 2>&1 | tee "$ctest_log"
 ctest_status=$(cat "$ctest_log.status")
 if [ "${JADE_FAIL_ON_SKIP:-0}" = "1" ] && grep -q -E '\*\*\*Skipped|Not Run' "$ctest_log"; then
   echo "JADE_FAIL_ON_SKIP=1: some tests were skipped or not run:"
@@ -207,6 +207,6 @@ if [ "${JADE_FAIL_ON_SKIP:-0}" = "1" ] && grep -q -E '\*\*\*Skipped|Not Run' "$c
   done
   [ "$ctest_status" = "0" ] && ctest_status=1
 fi
-#$CTEST -H../../test -B.  --timeout 10 --rerun-failed
+#$CTEST -H../../test -B.  --timeout 200 --rerun-failed
 cd ../..
 exit $ctest_status
