@@ -205,6 +205,39 @@ else()
   set_property( TEST JTJOB_MC_2 PROPERTY  DEPENDS JZREAD_MC_2) 
   jade_fortran_test(JTJOB_MC_2 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22" "F_UFMTENDIAN=big:2,22" "FORT_CONVERT2=big_ieee FORT_CONVERT22=big_ieee") 
 
+  # The same chain at another energy: Pythia8 events at 43.8 GeV (card testPythia2.input), the detector
+  # configuration of 1985 (card mcjade3.card), second example of the analysis of simulated events
+  add_test(NAME PYTHIA8_PRODUCE_HEPMC3_MC_3 COMMAND pythia8_JADE
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/cards/testPythia2.input
+                                         ${CMAKE_CURRENT_BINARY_DIR}/testPythia2.output )
+
+  add_test(NAME HEPMC3_TO_CPROD_MC_3 COMMAND ${JADESOFT_BIN_DIR}/convert_hepmc_to_jade -i hepmc3 -o jade
+                                          ${CMAKE_CURRENT_BINARY_DIR}/testPythia2.output
+                                          ${CMAKE_CURRENT_BINARY_DIR}/testConvert2.cprod
+                                          -e Mode=0 )
+  set_property( TEST HEPMC3_TO_CPROD_MC_3 PROPERTY DEPENDS PYTHIA8_PRODUCE_HEPMC3_MC_3)
+  set_property( TEST HEPMC3_TO_CPROD_MC_3 PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${ROOT_DIR}/../lib:${ROOT_DIR}/../lib64:$ENV{LD_LIBRARY_PATH}")
+
+  add_test(NAME MCJADE_MC_3 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/mcjade3.card  ${JADESOFT_BIN_DIR}/mcjade )
+  set_property( TEST MCJADE_MC_3 PROPERTY DEPENDS HEPMC3_TO_CPROD_MC_3)
+  jade_fortran_test(MCJADE_MC_3 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " " )
+
+  add_test(NAME SUPERV_MC_3 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/superv3.card  ${JADESOFT_BIN_DIR}/superv )
+  set_property( TEST SUPERV_MC_3 PROPERTY  DEPENDS MCJADE_MC_3)
+  jade_fortran_test(SUPERV_MC_3 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " " )
+
+  add_test(NAME ZE4V_MC_3 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/ze4v3.card  ${JADESOFT_BIN_DIR}/ze4v)
+  set_property( TEST ZE4V_MC_3 PROPERTY  DEPENDS SUPERV_MC_3)
+  jade_fortran_test(ZE4V_MC_3 "GFORTRAN_CONVERT_UNIT=big_endian" "F_UFMTENDIAN=big" " ")
+
+  add_test(NAME JZREAD_MC_3 COMMAND  sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/jzread3.card  ${JADESOFT_BIN_DIR}/jzread )
+  set_property( TEST JZREAD_MC_3 PROPERTY  DEPENDS ZE4V_MC_3)
+  jade_fortran_test(JZREAD_MC_3 PROPERTY ENVIRONMENT "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " ")
+
+  add_test(NAME JTJOB_MC_3 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/jtjob3.card  ${JADESOFT_BIN_DIR}/jtjob)
+  set_property( TEST JTJOB_MC_3 PROPERTY  DEPENDS JZREAD_MC_3)
+  jade_fortran_test(JTJOB_MC_3 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22" "F_UFMTENDIAN=big:2,22" "FORT_CONVERT2=big_ieee FORT_CONVERT22=big_ieee")
+
   if (ROOT_FOUND AND H2ROOT)
     add_test(NAME H2ROOT_MC_1 COMMAND ${H2ROOT}  jtjob1.hbook  jtjob1.root)
     set_property( TEST H2ROOT_MC_1 PROPERTY  DEPENDS JTJOB_MC_1)   
@@ -224,6 +257,15 @@ else()
     add_test(NAME ROOT_ANALYSIS2_MC_2 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_2 jtjob2.root jtjob22.pdf)
     set_property( TEST ROOT_ANALYSIS2_MC_2 PROPERTY  DEPENDS H2ROOT_MC_2) 
 
+
+    add_test(NAME H2ROOT_MC_3 COMMAND ${H2ROOT}  jtjob3.hbook  jtjob3.root)
+    set_property( TEST H2ROOT_MC_3 PROPERTY  DEPENDS JTJOB_MC_3)
+
+    add_test(NAME ROOT_ANALYSIS1_MC_3 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_1 jtjob3.root jtjob13.pdf)
+    set_property( TEST ROOT_ANALYSIS1_MC_3 PROPERTY  DEPENDS H2ROOT_MC_3)
+
+    add_test(NAME ROOT_ANALYSIS2_MC_3 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ROOT_analysis_2 jtjob3.root jtjob23.pdf)
+    set_property( TEST ROOT_ANALYSIS2_MC_3 PROPERTY  DEPENDS H2ROOT_MC_3)
   endif()
 endif()
 

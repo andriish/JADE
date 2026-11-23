@@ -1,7 +1,7 @@
 #
-# Process: ee -> Z -> tau+ tau- @ 34.6GeV
+# Process: ee -> gamma*/Z -> hadrons @ 34.6GeV
 #
-Main:numberOfEvents = 200
+Main:numberOfEvents = 2000
 
 WeakSingleBoson:ffbar2gmZ = on
 

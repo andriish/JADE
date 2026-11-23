@@ -467,7 +467,7 @@ P   & 2026/CI           &  PC, ARM                    &CI      &Fedora 45, CentO
 Q   & 2026/Runs, CI     &  Apple M1, many             &CI      &macOS 27~\cite{Wiki:macOS} & arm64(64le)         & 90/gfortran 16.2          &make, cmake 4, ld-prime       &HIGZ(XQuartz)  & revived 2026/gfortran/64bit     \\
 \hline
 \end{tabular}}
-\caption{Status of different platforms. The column ``tests'' gives the passed/total tests of the test suite (10 in 2016, 36 in 2026) for the configurations that were run for this note, ``CI'' means that the platform is built and tested by the continuous integration (GitHub Actions) and not checked here. The rows A--K are the historical entries (2016); the ppc64 rows F and G are kept as the only big-endian ports, they were not repeated after 2016. The rows L--Q are the 2026 situation: the compilers Intel \texttt{ifx} and NVIDIA \texttt{nvfortran} (rows N and O) use the CERNLIB built with \texttt{gfortran}. Picocernlib is a small set of CERNLIB routines plus some ROOT backend for plotting. }
+\caption{Status of different platforms. The column ``tests'' gives the passed/total tests of the test suite (10 in 2016, 46 in 2026) for the configurations that were run for this note, ``CI'' means that the platform is built and tested by the continuous integration (GitHub Actions) and not checked here. The rows A--K are the historical entries (2016); the ppc64 rows F and G are kept as the only big-endian ports, they were not repeated after 2016. The rows L--Q are the 2026 situation: the compilers Intel \texttt{ifx} and NVIDIA \texttt{nvfortran} (rows N and O) use the CERNLIB built with \texttt{gfortran}. Picocernlib is a small set of CERNLIB routines plus some ROOT backend for plotting. }
 \label{tab:status}
 \end{sidewaystable}
 %\end{table}
@@ -483,7 +483,7 @@ The situation in 2026 (Table~\ref{tab:status}, rows L--Q) is:
 \begin{itemize}
 \item The whole processing chain, from the conversion of the raw data and the generation and the conversion of the
 Monte Carlo events to the simulation, the reconstruction, the analysis and the event display, runs in the 64-bit
-mode on little-endian machines, with the GNU, Intel and NVIDIA compilers; all 36 tests pass on rows L, N and O.
+mode on little-endian machines, with the GNU, Intel and NVIDIA compilers; all 46 tests pass on rows L, N and O.
 The 32-bit mode with the revived CERNLIB (row M) remains the best tested configuration of CERNLIB.
 \item Rows M, P and Q (the 32-bit build, aarch64 together with CentOS Stream, and macOS on Apple silicon) are built and tested by
 the continuous integration; macOS needs a workaround for a bug of the Apple linker (Section~\ref{sec:ai}).
@@ -603,6 +603,7 @@ changed. The cases that were found are:
 \item the integers that overlay pairs of half-words in the muon calibration bank (Section~\ref{sec:calfiles});
 \item the packed bytes of the character strings of the display (\texttt{GRTEXT}, \texttt{EOUTST}), which were garbled for strings whose length is not a multiple of four,
 and of the stroke font (\texttt{HEMSYM}), whose numbers were not drawn at all;
+\item the half-words of the HEAD bank (run and event number, beam energy) that \texttt{jtjob} reads: the two half-words of a word are in the order of the big-endian machine in the files of the real data, but in the order of the little-endian machine in the Monte Carlo files written by \texttt{mcjade}. The program read the half-words of the real data in the wrong order, so that the ntuple had the run 24, the event 1 and the beam energy $-4.2$~GeV for every event (the correct values are the run 18008, the increasing event numbers and 22.1~GeV, i.e.\ the energy of the sample 44); the order is now found from the beam energy;
 \end{itemize}
 
 
@@ -801,7 +802,7 @@ Switching on the calibration groups of the other banks does not change the resul
 reconstruction. The muon filter views of the event display (\texttt{RC1}, \texttt{ZXC1}, \dots) now
 show the outlines of the muon chambers, which were missing before (the test event has no muon hits).
 
-With the corrected files all 36 tests of the test suite pass in the 64-bit builds with the GNU, Intel (\texttt{ifx}) and NVIDIA (\texttt{nvfortran}) Fortran compilers, including the event display tests.
+With the corrected files all 46 tests of the test suite pass in the 64-bit builds with the GNU, Intel (\texttt{ifx}) and NVIDIA (\texttt{nvfortran}) Fortran compilers, including the event display tests.
 
 The test suite checks the calibration at two levels. Three tests of the test suite (Section~\ref{sec:tests}; the program is \texttt{test/\allowbreak{}src/\allowbreak{}calcheck.f}) read the
 installed binary files in the way of \texttt{KLREAD}, count the records whose name is recognised and fail if
@@ -1201,7 +1202,7 @@ repository and the main means to see that a change of a compiler, a flag, a cali
 It is at the same time the set of \emph{examples for the analysis of the JADE data}, which is ntuple based (the events are written into HBOOK ntuples, converted to ROOT files and analysed from them): the tests run the complete chain of the processing of real data and of simulated events with
 small samples, so that the steering cards, the commands, the files exchanged between the programs and the programs for the final analysis (the directories \texttt{test/\allowbreak{}cards},
 \texttt{test/\allowbreak{}src} and the scripts of \texttt{test}) are the working examples of how to use the data, and a new analysis can start from them. Table~\ref{tab:testexamples} lists the examples.
-The suite has 36 tests (with Pythia8, ROOT and a virtual display available) in four groups that process small samples through the programs of the software:
+The suite has 46 tests (with Pythia8, ROOT and a virtual display available) in five groups that process small samples through the programs of the software:
 \begin{itemize}
 \item \textbf{Real data:} \texttt{FPTOBOS\_\allowbreak{}DATA\_\allowbreak{}1} converts the sample file of the tapes (\texttt{test/\allowbreak{}jadetapes/\allowbreak{}JAD073/\allowbreak{}file006}) into a BOS file;
 \texttt{SUPERV\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{ZE4V\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{JZREAD\_\allowbreak{}DATA\_\allowbreak{}1} and \texttt{JTJOB\_\allowbreak{}DATA\_\allowbreak{}1} follow it (reconstruction, ZE4V formatting, HBOOK ntuples);
@@ -1211,6 +1212,10 @@ the second uses the jet algorithm of FastJet~\cite{Cacciari:2011ma}). \texttt{JA
 \texttt{HEPMC3\_\allowbreak{}TO\_\allowbreak{}CPROD\_\allowbreak{}MC\_\allowbreak{}1} converts them (Section~\ref{sec:convert}), \texttt{MCJADE\_\allowbreak{}MC\_\allowbreak{}1} simulates the detector, and the chain of the
 reconstruction, \texttt{ZE4V}, \texttt{JZREAD}, \texttt{JTJOB}, \texttt{H2ROOT} and the two ROOT analyses (\texttt{\_MC\_1}) follows;
 \texttt{JADEZ\_\allowbreak{}MC\_\allowbreak{}1} and \texttt{JADEZ\_\allowbreak{}RPHI\_\allowbreak{}1} show the reconstructed event in the display (Section~\ref{sec:display}).
+\item \textbf{Monte Carlo with Pythia8 at another energy:} the same chain as in the previous group, from \texttt{PYTHIA8\_\allowbreak{}PRODUCE\_\allowbreak{}HEPMC3\_\allowbreak{}MC\_\allowbreak{}3}
+to the ROOT analyses (\texttt{\_MC\_3}), for the centre-of-mass energy of 43.8~GeV (the card \texttt{testPythia2.input}; the first group uses 34.6~GeV, \texttt{testPythia1.input}). The cards of the
+programs differ from those of the first group by the names of the files and by the detector configuration of \texttt{mcjade} (\texttt{YEAR 85}, \texttt{MONTH 05}, \texttt{DAY 17}, the configuration of the sample 44 of Table~\ref{tab:mcsamples}, instead of the year 86).
+The two groups show how to run the simulation at a different energy and the dependence of the results on it.
 \item \textbf{Monte Carlo with the old generator PYTHIA 5.7:} the same chain from \texttt{PY57\_MC\_1} to the ROOT analyses (\texttt{\_MC\_2}), with
 the generator writing the CPROD file directly.
 \item \textbf{Calibration:} \texttt{CALIB\_\allowbreak{}NAMES\_\allowbreak{}aupdat1}, \texttt{\_bupdat0} and \texttt{\_bupdat1} check the binary calibration files
@@ -1229,6 +1234,7 @@ Event display & \texttt{JADEZ\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{JADEZ
 Generation with Pythia8 & \texttt{PYTHIA8\_\allowbreak{}PRODUCE\_\allowbreak{}HEPMC3\_\allowbreak{}MC\_\allowbreak{}1} & the program \texttt{pythia8\_\allowbreak{}JADE.cc} in \texttt{test/src}, \texttt{testPythia1.input} \\
 Conversion to CPROD & \texttt{HEPMC3\_\allowbreak{}TO\_\allowbreak{}CPROD\_\allowbreak{}MC\_\allowbreak{}1} & \texttt{convert\_\allowbreak{}hepmc\_\allowbreak{}to\_\allowbreak{}jade} (Section~\ref{sec:convert}) \\
 Detector simulation & \texttt{MCJADE\_\allowbreak{}MC\_\allowbreak{}1}, \texttt{MCJADE\_\allowbreak{}MC\_\allowbreak{}2} & \texttt{mcjade}, \texttt{mcjade1.card}, \texttt{mcjade2.card} \\
+Second energy (43.8~GeV) & \texttt{PYTHIA8\_\allowbreak{}PRODUCE\_\allowbreak{}HEPMC3\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{HEPMC3\_\allowbreak{}TO\_\allowbreak{}CPROD\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{MCJADE\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{SUPERV\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{ZE4V\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{JZREAD\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{JTJOB\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{H2ROOT\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{ROOT\_\allowbreak{}ANALYSIS1\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{ROOT\_\allowbreak{}ANALYSIS2\_\allowbreak{}MC\_\allowbreak{}3} & \texttt{testPythia2.input}, \texttt{mcjade3.card}, \texttt{superv3.card}, \texttt{ze4v3.card}, \texttt{jzread3.card}, \texttt{jtjob3.card} \\
 Old generator & \texttt{PY57\_\allowbreak{}MC\_\allowbreak{}1} & \texttt{py57}, \texttt{py57.card} (Section~\ref{sec:generators}) \\
 Calibration files & \texttt{CALIB\_\allowbreak{}NAMES\_\allowbreak{}aupdat1}, \texttt{\_bupdat0}, \texttt{\_bupdat1} & \texttt{calcheck.f} in \texttt{test/src} (Section~\ref{sec:calfiles}) \\
 \hline
@@ -1236,6 +1242,23 @@ Calibration files & \texttt{CALIB\_\allowbreak{}NAMES\_\allowbreak{}aupdat1}, \t
 \caption{The tests of the test suite as examples of the processing and analysis of the JADE data: the task, the tests and the programs and the input files (in \texttt{test/\allowbreak{}cards} unless noted) that they use.}
 \label{tab:testexamples}
 \end{table}
+The analysis program \texttt{ROOT\_analysis\_1} (\texttt{test/\allowbreak{}src/\allowbreak{}ROOT\_analysis\_1.cc}) is the minimal example of the analysis of the ROOT ntuple that \texttt{jade\_h2root} writes: it reads the tree \texttt{h10}
+with the class of the ntuple (\texttt{jadeanalysis.h}), fills a histogram of the variable \texttt{Tdtc}, the thrust variable $1-T$ calculated from the tracks and the clusters, in 20 bins between 0 and 1, normalises it to the unit integral, and draws it with the statistical uncertainties in the logarithmic scale into a PDF file. The legend gives the centre-of-mass energy, calculated as twice the mean beam energy of the events (the variable \texttt{Ebeam} of the ntuple) and the number of events.
+Figure~\ref{fig:thrust} shows its output for the real data sample and for the three Monte Carlo samples of the test suite. The comparison is only an example of the result of the programs:
+the data sample has few events and the Monte Carlo samples have simple settings (Pythia8 without the initial and final state radiation, \texttt{testPythia1.input} and \texttt{testPythia2.input}), so that the distributions are not expected to agree.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.48\textwidth]{Figures/thrust_data}\hfill
+\includegraphics[width=0.48\textwidth]{Figures/thrust_mc1}\\[1ex]
+\includegraphics[width=0.48\textwidth]{Figures/thrust_mc2}\hfill
+\includegraphics[width=0.48\textwidth]{Figures/thrust_mc3}
+\caption{Output of the analysis program \texttt{ROOT\_analysis\_1} for the tests of the test suite: the distribution of the thrust variable $1-T$ (\texttt{Tdtc}), normalised to the unit integral, with the statistical uncertainties, for the real data sample (top left, 44.2~GeV, 353 events),
+the Pythia8 events at 34.6~GeV (top right, 2000 events), the PYTHIA 5.7 events at 35~GeV (bottom left, 100 events) and the Pythia8 events at 43.8~GeV (bottom right, 2000 events). The energy in the legend is calculated from the beam energy of the events. The pictures are written by the tests; the script
+\texttt{doc/Note/make\_display\_figures.sh} prepares them for the note.}
+\label{fig:thrust}
+\end{figure}
+\FloatBarrier
+
 The tests are connected through the files that they write into the test directory, and the dependencies between them are declared, so that the whole chain is run
 in this order (a single test is run only after the tests before it in its chain). The tests with the suffix \texttt{\_CLEANUP} (for the raw data and for the old generator) remove the files of the earlier run first. The input of every program is a card
 file (Section~\ref{sec:programs}) that the script \texttt{wrapper.sh} gives to the standard input of the program; the environment variable of the compiler
@@ -1260,7 +1283,7 @@ Most of the tests check that the program runs to completion with the exit status
 Exceptions are the tests of the calibration files, which fail if a record is not recognised by \texttt{KLREAD}, and the tests of the display, which check that
 the event was read, that no command was rejected, that the calibration constants were used and that the pictures are coloured and contain the expected elements
 (Section~\ref{sec:display}). The suite is run for every platform and compiler of Table~\ref{tab:status}, by the maintainer and by the continuous
-integration (GitHub Actions on Fedora, CentOS, aarch64 and macOS), and all 36 tests pass with the compilers \texttt{gfortran}, \texttt{ifx} and
+integration (GitHub Actions on Fedora, CentOS, aarch64 and macOS), and all 46 tests pass with the compilers \texttt{gfortran}, \texttt{ifx} and
 \texttt{nvfortran}.
 
 \subsection{Validation of the reconstruction}
@@ -1363,7 +1386,7 @@ of that time are no longer used.
 \section{Summary and conclusions}
 The data, the software and the documentation of the JADE experiment are preserved at the Level~4 of the DPHEP classification and are open: the raw data, the documentation and
 a virtual machine are on the CERN Open Data Portal, and the software is developed publicly on GitHub. The software was ported from the IBM AIX systems
-to current Linux and macOS systems with three free or freely available Fortran compilers; it builds with CMake, passes the 36 tests of the test suite, and the corrected calibration files make
+to current Linux and macOS systems with three free or freely available Fortran compilers; it builds with CMake, passes the 46 tests of the test suite, and the corrected calibration files make
 the calibration, including that of the muon chambers, effective on little-endian machines. Modern generators can be used with the detector simulation through the
 HepMC3 converter, and the ntuples can be analysed with ROOT.
 The bit preservation is not an issue for the data of this size, and the tools that appeared in the last decades, from git and CI to containers and, most recently, AI assistants, made the
