@@ -676,7 +676,7 @@
       ELSE
               LBREG = 0
               IF(LBGOOD.LT.IWRK(IPCO+7)) LBREG = 1
-            IF(LBGOOD.GE.4 .AND. ABS(DF).LT.ABS(WRK(IPCO+13))) LBREG = 100082400
+            IF(LBGOOD.GE.4 .AND. ABS(DF).LT.ABS(WRK(IPCO+13))) LBREG = 1
       ENDIF
       IF(
      - LBREG.NE.0

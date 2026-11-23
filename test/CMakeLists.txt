@@ -99,6 +99,36 @@ set_property( TEST SUPERV_DATA_1 PROPERTY  DEPENDS FPTOBOS_DATA_1)
 jade_fortran_test(SUPERV_DATA_1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " ") 
 #NOTE: superv.stat needs a random number generator seeds. Otherwise it will use the same each time
 
+# Prints the runs, the numbers of events and the CM energy of a BOS file (src/bosinfo.f)
+set(BOSINFO_LIBS ${JADESOFT_LIBRARIES_STATIC} ${CERNLIB_PACKLIB_STATIC} ${CERNLIB_KERNLIB_STATIC} ${CERNLIB_MATHLIB_STATIC})
+add_executable(bosinfo ${CMAKE_CURRENT_SOURCE_DIR}/src/bosinfo.f)
+if (APPLE)
+  target_link_libraries(bosinfo ${BOSINFO_LIBS})
+else()
+  target_link_libraries(bosinfo -Wl,--start-group ${BOSINFO_LIBS} -Wl,--end-group)
+endif()
+add_test(NAME BOSINFO_DATA_1 COMMAND bosinfo ${CMAKE_CURRENT_BINARY_DIR}/file006.bos)
+set_property( TEST BOSINFO_DATA_1 PROPERTY  DEPENDS FPTOBOS_DATA_1)
+set_property( TEST BOSINFO_DATA_1 PROPERTY  PASS_REGULAR_EXPRESSION "mean CM energy")
+jade_fortran_test(BOSINFO_DATA_1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:2" "FORT_CONVERT2=big_ieee")
+
+# The same for the raw FPACK file, read directly with the unpacking routines of fptobos (src/fpinfo.f)
+set(FPINFO_UNP unpjad.f unpaff.f bytswp.f chasci.f cnvibm3e.f chebcd.f twoin1.f pripatr.f prihead.f prizvtx.f prizehd.f prize4v.f prilgcl.f prigvtx.f primur1.f primur2.f pritpev.f pritptr.f pritpvx.f pritagg.f)
+list(TRANSFORM FPINFO_UNP PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/../fptobos/src/")
+add_executable(fpinfo ${CMAKE_CURRENT_SOURCE_DIR}/src/fpinfo.f ${FPINFO_UNP})
+if (APPLE)
+  target_link_libraries(fpinfo ${BOSINFO_LIBS})
+else()
+  target_link_libraries(fpinfo -Wl,--start-group ${BOSINFO_LIBS} -Wl,--end-group)
+endif()
+add_test(NAME FPINFO_DATA_1 COMMAND fpinfo ${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006)
+set_property( TEST FPINFO_DATA_1 PROPERTY PASS_REGULAR_EXPRESSION "mean CM energy")
+jade_fortran_test(FPINFO_DATA_1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " ")
+
+# the same chain: the output of fpinfo (FPACK file) and bosinfo (BOS file made from it) must be equal
+add_test(NAME INFO_COMPARE_DATA_1 COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/info_compare.sh $<TARGET_FILE:fpinfo> ${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006 $<TARGET_FILE:bosinfo> ${CMAKE_CURRENT_BINARY_DIR}/file006.bos ${CMAKE_CURRENT_BINARY_DIR})
+set_property( TEST INFO_COMPARE_DATA_1 PROPERTY DEPENDS FPTOBOS_DATA_1)
+
 # Event display. Needs a virtual X server (xvfb-run, or JADEZ_TEST_DISPLAY set); skipped otherwise.
 if (EXISTS ${JADESOFT_BIN_DIR}/jadez)
   add_test(NAME JADEZ_DATA_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_test.sh ${JADESOFT_BIN_DIR}/jadez

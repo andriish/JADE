@@ -251,10 +251,8 @@ C**************************************
 *--------
  8000 CONTINUE
 *  End of Input file, no more events,  perform last action
-       IF(IWRITE.EQ.0) THEN
-         CALL BMLT(0,NDUM)
-         CALL BWRITE(JUNIT)
-       ENDIF        
+       CALL BMLT(0,NDUM)
+       CALL BWRITE(JUNIT)        
 *
        WRITE(6,4051) NEVIN,NEVOUT
  4051  FORMAT(' END OF Input, Nr. of events in/out ',2I7)

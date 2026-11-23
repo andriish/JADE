@@ -48,6 +48,19 @@ files have not been recovered. The original raw data were copied from the IBM co
 with the FPACK program into a machine independent word format (format \texttt{B32}), in which the data of the
 banks are copied word by word as 32-bit patterns; the program \texttt{fptobos} converts these files back into BOS banks.
 
+\subsubsection{FPACK}
+FPACK is the file packaging system of the DESY IBM computers, in which the raw data of the experiments were stored on tape.
+A file is a sequence of physical records of a fixed maximum length, which contain the logical records (here: the events) with their own headers
+and the data words in the format of the machine that wrote them. For the JADE data, the files of the tapes were copied in 1997 as
+FPACK files in a machine independent word format (\texttt{B32}): each event is a set of banks whose data are the 32-bit patterns of the original words
+(integers, floating point numbers in the IBM format, EBCDIC or ASCII text). The files have a fixed record length (27720 bytes in the files of the repository)
+and are read as files with direct access, in the byte order of the IBM machines (big-endian), with the conversion of the words, the names of the banks and the
+IBM floating point numbers done by the unpacking routine \texttt{UNPJAD} of the directory \texttt{fptobos} (Section~\ref{sec:fptobos}). It puts each event
+into a buffer with pointers to its banks, and \texttt{fptobos} copies the banks into BOS.
+The test suite contains the program \texttt{fpinfo}, which uses \texttt{UNPJAD} to read an FPACK file directly, without conversion to BOS, and prints the run numbers, the numbers of events
+and the centre-of-mass energy found from the beam energy in the bank \texttt{HEAD}; for the sample file of the tapes it finds 354 events of the run 18008 at 44.2~GeV.
+The program \texttt{bosinfo} does the same for BOS files (real data or Monte Carlo).
+
 \subsubsection{BOS records}
 In BOS all event data and analysis information are structured in banks of variable length. A JADE event record is a
 dynamically arranged set of standardised BOS banks that represent the subsystems of the detector (the raw jet chamber data,
@@ -1397,8 +1410,8 @@ The first line has the seven integers of the program (Section~\ref{sec:fptobos})
 \item \texttt{Beams:idA = 11}, \texttt{Beams:idB = -11}: the beams are electrons and positrons.
 \item \texttt{Beams:eCM = 34.6}: the centre-of-mass energy in GeV (43.8 in \texttt{testPythia2.input}).
 \item \texttt{HadronLevel:all = on}, \texttt{HadronLevel:Hadronize = on}: the hadronisation and the decays of the hadrons are switched on.
-\item \texttt{SpaceShower:QEDshowerByL = off}, \texttt{SpaceShower:QEDshowerByQ = off}: no photon radiation from the leptons and the quarks.
-\item \texttt{PartonLevel:ISR = off}, \texttt{PartonLevel:FSR = off}: no initial and final state parton showers; the events are as simple as possible.
+\item \texttt{PDF:lepton = on}, \texttt{PartonLevel:ISR = on}, \texttt{SpaceShower:QEDshowerByL = on}: photon initial state radiation from the beam electrons.
+\item \texttt{PartonLevel:FSR = on}, \texttt{TimeShower:QEDshowerByQ = on}, \texttt{TimeShower:QEDshowerByL = off}, \texttt{TimeShower:QCDshower = off}: photon final state radiation from the quarks; the QCD parton shower is off, so the events are as simple as possible apart from the photons.
 \item \texttt{23:onMode = off}, \texttt{23:onIfAny = 1,2,3,4,5}: the $Z$ (the $\gamma^*/Z$ system) decays only into quarks, $d$, $u$, $s$, $c$ and $b$.
 \item \texttt{15:mayDecay = on}, \texttt{-15:mayDecay = on}: the $\tau$ leptons may decay.
 \end{itemize}

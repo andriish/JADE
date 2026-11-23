@@ -138,7 +138,12 @@
             DSC =  DS - DDS + DS0
             Y1   = SWDEPL
             IF(IAND(ILAY,1).NE.0) Y1 =-Y1
-            Y1   = (7.5-ILAY)*(CCST52*Z1+CCST51) - CCST62*Z1-CCST61 + Y100039200
+C NOTE: this line ended with "+ Y1" in column 72 and the card sequence
+C number (00046600) in columns 73-80, which the compiler (fixed line length
+C none) read as part of the name: Y100046600, an undefined variable (zero),
+C so that the term Y1 (the wire stagger SWDEPL) was missing. Fixed by
+C cutting the line at column 72.
+            Y1   = (7.5-ILAY)*(CCST52*Z1+CCST51) - CCST62*Z1-CCST61 + Y1
             X    = X1*CSROT0 - Y1*SNROT0
             Y    = X1*SNROT0 + Y1*CSROT0 - DGR
       IF(

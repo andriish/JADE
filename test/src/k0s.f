@@ -124,6 +124,9 @@ C Tracks
       NTRIAL=0
 C Event loop
    10 CONTINUE
+C Drop the banks of the previous event, else /BCS/ fills up and the
+C reading stops early
+      CALL BDLG
       CALL BREAD(2,*900,*900)
       NPHEAD=IW(IBLN('HEAD'))
       IF (NPHEAD.LE.0) GO TO 10
