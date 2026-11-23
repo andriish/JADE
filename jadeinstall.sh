@@ -188,29 +188,29 @@ else
 fi
 jade_arguments=" -DJADESOFT_DIR=$TOP$toolchain$bits/share/JADESOFT/cmake "
 ########################################################################
-mkdir -p build/jadesoft
-cd build/jadesoft
+mkdir -p build$toolchain$bits/jadesoft
+cd build$toolchain$bits/jadesoft
 $CMAKE -S ../../jadesoft -B .  $arguments $bit_arguments
 $CMAKE --build  . -j 2 --verbose || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install . || { echo 'cmake install failed' ; exit 1; }
 cd ../..
 ########################################################################
-mkdir -p build/convert
-cd build/convert
+mkdir -p build$toolchain$bits/convert
+cd build$toolchain$bits/convert
 $CMAKE -S ../../convert -B . $arguments $bit_arguments   -DCMAKE_CXX_COMPILER=$CXX 
 $CMAKE --build  . -j 2 --verbose || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install . || { echo 'cmake install failed' ; exit 1; }
 cd ../..
 ########################################################################
-mkdir -p build/jtuple
-cd build/jtuple
+mkdir -p build$toolchain$bits/jtuple
+cd build$toolchain$bits/jtuple
 $CMAKE -S ../../jtuple -B .  $arguments $bit_arguments  $jade_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install . || { echo 'cmake install failed' ; exit 1; }
 cd ../..
 ########################################################################
-mkdir -p build/fptobos
-cd build/fptobos
+mkdir -p build$toolchain$bits/fptobos
+cd build$toolchain$bits/fptobos
 rm -rf outputs CMakeFiles CMakeCache.txt
 $CMAKE -S ../../fptobos -B . $arguments $bit_arguments  $jade_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
@@ -218,8 +218,8 @@ $CMAKE --install . || { echo 'cmake install failed' ; exit 1; }
 cd ../..
 ########################################################################
 # h2root with the 64 bit address fix (HBOOK -> ROOT converter used by the tests)
-mkdir -p build/h2root
-cd build/h2root
+mkdir -p build$toolchain$bits/h2root
+cd build$toolchain$bits/h2root
 rm -rf outputs CMakeFiles CMakeCache.txt
 $CMAKE -S ../../h2root -B . $arguments $bit_arguments  -DCMAKE_CXX_COMPILER=$CXX
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
