@@ -1,7 +1,7 @@
 #
-# Process: ee -> Z -> tau+ tau- @ 34.6GeV
+# Process: ee -> gamma*/Z -> hadrons @ 34.6GeV
 #
-Main:numberOfEvents = 200
+Main:numberOfEvents = 2000
 
 WeakSingleBoson:ffbar2gmZ = on
 
@@ -9,19 +9,23 @@ Beams:idA =  11
 Beams:idB = -11
 Beams:eCM =  34.6
 
-# Simplify event as much as possible
+# Photon radiation: ISR from the beam electrons (photon emission off the leptons)
+# and FSR from the quarks; the QCD parton shower stays off
 HadronLevel:all = on
 HadronLevel:Hadronize = on
-SpaceShower:QEDshowerByL = off
-SpaceShower:QEDshowerByQ = off
-PartonLevel:ISR = off
-PartonLevel:FSR = off
+PDF:lepton = on
+PartonLevel:ISR = on
+PartonLevel:FSR = on
+SpaceShower:QEDshowerByL = on
+TimeShower:QEDshowerByQ = on
+TimeShower:QEDshowerByL = off
+TimeShower:QCDshower = off
 
 # Set Z properties
 23:onMode = off
 23:onIfAny = 1,2,3,4,5
 
-# Leave tau undecayed (tau decays are very slow in Pythia 8.185)
+# Let the tau decay (the decays were very slow in Pythia 8.185, not any more)
 15:mayDecay  = on
 -15:mayDecay = on
 

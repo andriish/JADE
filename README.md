@@ -205,7 +205,7 @@ Please note that JADE software consists of multiple packages that can be compile
 without invocation of the ``jadeinstall.sh``.
 
 The ``jadeinstall.sh`` script will create the ``/build`` directory, where the data files are
-converted into ``.root`` files (among other things), which can be found in the ``/build/test`` directory.
+converted into ``.root`` files (among other things), which can be found in the ``build<toolchain><bits>/test`` directory (e.g. ``buildGNU64/test``).
 
 ## Testing
 
