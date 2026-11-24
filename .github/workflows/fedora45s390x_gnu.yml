@@ -5,9 +5,6 @@ name: Fedora 45 s390x (GNU, big-endian, QEMU)
 # and that does not fail the workflow. It runs on request and on a schedule.
 on:
  workflow_dispatch:
- # so that it can be started from this branch before the file is on master (remove after the merge)
- push:
-   branches: [docker-s390x]
  schedule:
     - cron:  "0 0 1/600 * *"
 
