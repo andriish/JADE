@@ -1,175 +1,165 @@
 ---
 stages:
+  - images
   - test
 variables:
-  FREL: 0
+  # jadetest.sh fails if a test fails, or is skipped
+  JADE_FAIL_ON_SKIP: "1"
 ########################################################################
-.Fedora: &Fedora
-  only:
-    variables:
-      - $CI_SERVER_HOST=="gitlab.cern.ch"
+# Fedora 45 images and tests: the same logic as the GitHub workflows
+# .github/workflows/fedora45*_gnu.yml. Each image is built from Dockerfile_fedora45<arch>_gnu
+# with Kaniko (as in the CI of Sherpa) and pushed to the registry of the project as
+# $CI_REGISTRY_IMAGE:fedora45<arch>_gnu: on a schedule, by hand (web) and on a push to any
+# branch or a merge request that changes the Dockerfile. All branches publish the same
+# tags (no suffixes), the last push wins. The test jobs run
+#   sh jadeinstall.sh --bits=N && sh jadetest.sh --bits=N
+# in that image. aarch64 jobs need a runner with the tag arm64.
+########################################################################
+.Fedora45image: &Fedora45image
+  stage: images
+  # Kaniko is archived upstream, so its last release is pinned
+  image:
+    name: gcr.io/kaniko-project/executor:v1.24.0-debug
+    entrypoint: [""]
+  variables:
+    GIT_DEPTH: "1"
+  retry: 2
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile Dockerfile_$IMG --destination $CI_REGISTRY_IMAGE:${IMG}
+########################################################################
+.Fedora45test: &Fedora45test
   stage: test
+  image: $CI_REGISTRY_IMAGE:${IMG}
 ########################################################################
-.CentOS: &CentOS
-  only:
-    variables:
-      - $CI_SERVER_HOST=="gitlab.cern.ch"
+image-fedora45x86_64_gnu:
+  <<: *Fedora45image
+  variables:
+    IMG: fedora45x86_64_gnu
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|web)$/'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - Dockerfile_fedora45x86_64_gnu
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - Dockerfile_fedora45x86_64_gnu
+########################################################################
+fedora45x86_64_gnu:
+  <<: *Fedora45test
+  variables:
+    IMG: fedora45x86_64_gnu
+  needs:
+    - job: image-fedora45x86_64_gnu
+      optional: true
+  rules:
+    - when: on_success
+  script:
+    - sh jadeinstall.sh --bits=64
+    - sh jadetest.sh --bits=64
+########################################################################
+image-fedora45x86_64i686_gnu:
+  <<: *Fedora45image
+  variables:
+    IMG: fedora45x86_64i686_gnu
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|web)$/'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - Dockerfile_fedora45x86_64i686_gnu
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - Dockerfile_fedora45x86_64i686_gnu
+########################################################################
+# 32 bit (i686) on x86_64. As on GitHub, the default seccomp profile of Docker rejects the
+# 32 bit socket() syscall of the current glibc, so that a 32 bit X11 client (jadez) cannot
+# connect to the X server: the runner has to run the job container with
+# --security-opt seccomp=unconfined (runner configuration), otherwise the display tests fail.
+# Like on GitHub this job is started by hand (the automatic run is disabled there).
+fedora45x86_64i686_gnu:
+  <<: *Fedora45test
+  variables:
+    IMG: fedora45x86_64i686_gnu
+  needs:
+    - job: image-fedora45x86_64i686_gnu
+      optional: true
+  rules:
+    - when: manual
+      allow_failure: true
+  script:
+    - sh jadeinstall.sh --bits=32
+    - sh jadetest.sh --bits=32
+########################################################################
+image-fedora45aarch64_gnu:
+  <<: *Fedora45image
+  tags:
+    - arm64
+  variables:
+    IMG: fedora45aarch64_gnu
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|web)$/'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - Dockerfile_fedora45aarch64_gnu
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - Dockerfile_fedora45aarch64_gnu
+########################################################################
+fedora45aarch64_gnu:
+  <<: *Fedora45test
+  tags:
+    - arm64
+  variables:
+    IMG: fedora45aarch64_gnu
+  needs:
+    - job: image-fedora45aarch64_gnu
+      optional: true
+  rules:
+    - when: on_success
+  script:
+    - sh jadeinstall.sh --bits=64
+    - sh jadetest.sh --bits=64
+########################################################################
+# s390x (big-endian) emulated with QEMU, see Dockerfile_fedora45s390x_gnu and
+# .github/workflows/fedora45s390x_gnu.yml. Kaniko cannot build for another architecture, so
+# docker-in-docker is used here. Slow (hours), failures are allowed. It needs a runner that
+# allows privileged docker-in-docker (the binfmt handlers are installed with
+# tonistiigi/binfmt) and is started by a schedule, by hand, or by hand after a change of the
+# Dockerfile.
+.Fedora45s390x: &Fedora45s390x
+  image: docker:27
+  services:
+    - docker:27-dind
+  timeout: 6h
+  allow_failure: true
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - docker run --privileged --rm tonistiigi/binfmt --install s390x
+########################################################################
+image-fedora45s390x_gnu:
+  <<: *Fedora45s390x
+  stage: images
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|web)$/'
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - Dockerfile_fedora45s390x_gnu
+      when: manual
+  script:
+    - docker build --platform linux/s390x . -f Dockerfile_fedora45s390x_gnu --tag $CI_REGISTRY_IMAGE:fedora45s390x_gnu
+    - docker push $CI_REGISTRY_IMAGE:fedora45s390x_gnu
+########################################################################
+fedora45s390x_gnu:
+  <<: *Fedora45s390x
   stage: test
-########################################################################
-.Ubuntu: &Ubuntu
-  only:
-    variables:
-      - $CI_SERVER_HOST=="gitlab.cern.ch"
-  stage: test
-########################################################################
-.fullbuild-generic: &fullbuild-generic
-  - bash CI/build.sh imake tarball GNU nodebug
-########################################################################
-.fullbuild-rpm: &fullbuild-rpm
-  - sh CI/build.sh imake rpm  GNU nodebug
-########################################################################
-.fullbuild-cmake: &fullbuild-cmake
-  - sed -i 's/CMAKE_VERBOSE_MAKEFILE ON/CMAKE_VERBOSE_MAKEFILE OFF/g' CMakeLists.txt
-  - sh CI/build.sh  cmake tarball GNU nodebug
-########################################################################
-.fullbuild-cmake-rpm: &fullbuild-cmake-rpm
-  - sed -i 's/CMAKE_VERBOSE_MAKEFILE ON/CMAKE_VERBOSE_MAKEFILE OFF/g' CMakeLists.txt
-  - sh CI/build.sh  cmake rpm GNU nodebug
-########################################################################
-.heprpmsinstall9: &heprpmsinstall9
-  - uname -a
-  - cat /etc/issue
-  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL dnf*plu*  > rpm.log || (cat rpm.log && exit 1)
-    #for xbae
-  - dnf -y copr enable averbyts/JADE epel-9-x86_64
-  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL libnsl  libnsl2-devel > rpm.log || (cat rpm.log && exit 1)
-########################################################################
-.commoninstall: &commoninstall
-  - uname -a
-  - cat /etc/issue
-  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL dnf*plu*  --exclude=*uploa* --exclude=*product* --exclude=*subscr* > rpm.log || (cat rpm.log && exit 1)
-  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL openssh-server make binutils sed gawk grep rpm rpmdevtools imake git gcc gcc-c++ gcc-gfortran gzip > rpm.log || (cat rpm.log && exit 1)
-  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL lapack-devel blas-devel imake  libX11 libX11-devel libXaw-devel libXau-devel  xbae xbae-devel tcsh   > rpm.log || (cat rpm.log && exit 1)
-  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL lapack blas desktop-file-utils which wget bc automake  glibc-devel > rpm.log || (cat rpm.log && exit 1)
-  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL "libnsl*"  > rpm.log || (cat rpm.log && exit 1)
-  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL environment-modules  || true
-########################################################################
-.gccinstall: &gccinstall
-  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL  gcc gcc-c++ gcc-gfortran  > rpm.log || (cat rpm.log && exit 1)
-########################################################################
-.cmakeinstall: &cmakeinstall
-  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL  epel-release || true
-  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL  cmake3 || true
-  - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL  cmake python3 openssl-libs openssl-devel chrpath  > rpm.log || (cat rpm.log && exit 1)
-########################################################################
-.devel32: &devel32
-    - yum -y install xbae-devel.i686 || true
-    - rpm -e openssl-devel --nodeps|| true
-    - yum -y install lapack.i686 blas.i686 > rpm.log || (cat rpm.log && exit 1)
-    - yum -y install lapack-devel.i686 blas-devel.i686 libgcc.i686  > rpm.log || (cat rpm.log && exit 1)
-    - yum -y install libnsl.i686 libXpm-devel.i686 libnsl2-devel.i686 libXfont2-devel.i686 libX11-devel.i686 libXft-devel.i686 motif-devel.i686 libXaw-devel.i686 libXau-devel.i686 glibc-devel.i686 libgfortran.i686 freetype-devel.i686   openssl-devel.i686 > rpm.log || (cat rpm.log && exit 1)
-#With appropriate privileges in docker, the RPM installation is
-#    - wget https://dl.fedoraproject.org/pub/epel/7/SRPMS/Packages/x/xbae-4.60.4-17.el7.src.rpm || true
-#    - CC='gcc -m32' CXX='g++ -m32' setarch i686 --32bit  rpmbuild --target=i686  --rebuild xbae-4.60.4-17.el7.src.rpm || true
-#    - rpm -e xbae xbae-devel || true
-#    - rpm -Uvh ~/rpmbuild/RPMS/i686/xbae*i686.rpm || true
-#Otherwise:
-#    - wget http://downloads.sourceforge.net/xbae/xbae-4.60.4.tar.gz 
-#    - ls -alh
-    - cp CI/xbae-4.60.4.tar.gz ./
-    - tar -zxf  xbae-4.60.4.tar.gz 
-    - cd  xbae-4.60.4 
-    - CC='gcc -m32' CXX='g++ -m32' ./configure --prefix=/usr --libdir=/usr/lib --disable-static --disable-dependency-tracking ||true
-    - make -j 2 || true
-    - make -j 2 install || true
-    - cd ..
-
-
-########################################################################
-Fedora35-gcc-imake-rpm-64bit:
-  image: fedora:35
-  variables:
-    FREL: 35
-  extends: .Fedora
-  before_script:
-    - *commoninstall
-    - *gccinstall
-    - *cmakeinstall
+  needs:
+    - job: image-fedora45s390x_gnu
+      optional: true
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|web)$/'
+    - when: manual
   script:
-    - sh CI/build.sh imake rpm GNU nodebug
-  cache:
-    key: yum-cache-$FREL
-    paths:
-      - yum-cache-$FREL/
-  artifacts:
-    paths:
-      - rpmbuild/RPMS
-#######################################################################
-Centos9-gcc-imake-gen-64bit:
-  image: gitlab-registry.cern.ch/linuxsupport/rpmci/builder-cs9
-  variables:
-    FREL: C9
-  extends: .CentOS
-  before_script:
-    - *heprpmsinstall9
-    - *commoninstall
-    - *gccinstall
-  script:
-    - sh CI/build.sh imake tarball GNU nodebug
-  allow_failure: false
-  artifacts:
-    paths:
-      - cern
-#######################################################################
-Centos9-gcc-cmake-gen-32bit:
-  image: gitlab-registry.cern.ch/linuxsupport/rpmci/builder-cs9
-  variables:
-    FREL: C9
-  extends: .CentOS
-  before_script:
-    - *heprpmsinstall9
-    - *commoninstall
-    - *gccinstall
-    - *devel32
-  script:
-    - sh CI/build.sh cmake tarball32bit GNU nodebug
-  allow_failure:  false
-  artifacts:
-    paths:
-      - cern
+    - docker create --platform linux/s390x --name jadetest $CI_REGISTRY_IMAGE:fedora45s390x_gnu sh -c 'cd /home && uname -m && lscpu | grep -i "byte order" ; sh jadeinstall.sh --bits=64 ; sh jadetest.sh --bits=64'
+    - docker cp . jadetest:/home
+    - docker start -a jadetest
 ########################################################################
-Fedora35-gcc-cmake-gen-64bit:
-  image: fedora:35
-  variables:
-    FREL: 35
-  extends: .Fedora
-  before_script:
-    - *commoninstall
-    - *gccinstall
-    - *cmakeinstall
-  script:
-    - sh CI/build.sh cmake tarball GNU nodebug
-  cache:
-    key: yum-cache-$FREL
-    paths:
-      - yum-cache-$FREL/
-########################################################################
-Fedora35-gcc-cmake-rpm-64bit:
-  image: fedora:35
-  variables:
-    FREL: 35
-  extends: .Fedora
-  before_script:
-    - *commoninstall
-    - *gccinstall
-    - *cmakeinstall
-  script:
-    - sh CI/build.sh cmake rpm GNU nodebug
-  cache:
-    key: yum-cache-$FREL
-    paths:
-      - yum-cache-$FREL/
-  artifacts:
-    paths:
-      - rpmbuildcmake/RPMS
-#######################################################################
