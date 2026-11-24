@@ -1,3 +1,141 @@
+\section{Introduction}
+
+This section largely remains the same as in the Note 103.
+However, with the new available data from LEP, the JADE data 
+obtained more importance as a case of successful data preservation.
+
+
+
+
+\section{Description of the programs}
+
+
+
+\subsection{The tracking simulation}
+This section describes the program  mcjade.
+
+
+
+\subsection{The JADE supervisor}
+
+
+
+
+\subsection{The ZE4V Formatting}
+
+
+
+\subsection{The JADE Event Display}
+
+
+\section{Description of the JADE Data}
+
+
+\subsection{Data Formats}
+
+
+\subsubsection{BOS Records}
+
+
+\subsubsection{ZE4V Records}
+
+\subsection{DATA Preprocessing History}
+
+
+\subsection{Currentrly Usable Files}
+
+
+
+\subsubsection{Available ZE4V Versions of Real Data}
+
+
+\subsubsection{Available ZE4V Versions of MC Data}
+
+
+\subsubsection{Available BOS Versions of MC Data}
+
+
+\subsection{Calibrarion Files}
+
+
+
+\section{JADE Program Libraries}
+
+
+\subsection{Location}
+
+
+\subsection{Oraganisation}
+
+
+\subsection{Installation}
+
+
+
+\section{Handling the main programs}
+
+
+\subsection{mcjade}
+
+
+
+\subsection{superv}
+
+
+
+\subsection{ze4v}
+
+
+\subsection{jadesim}
+
+
+\subsection{jadez}
+
+To start jadez one should use the sv files.
+The Binary calibration files should be copied or linked to the expected names.
+
+
+\section{Utility programs}
+
+
+
+\subsection{QCD Event Generator Package and CPROD Interface}
+
+
+\subsection{Example Program for Processing ZE4V Data}
+
+
+\subsection{Conversion tool for JADE calibration files}
+
+
+\section{Reactivation of the JADE software}
+
+
+
+
+\section{Reamaining tasks}
+This section of the original note is obsolete.
+
+The straightforward modifications considered in the original note
+\begin{itemize}
+\item As of 2022, it makes sense to
+have the routines for event analysis that use external libraries, e.g. ROOT, so their 
+implementation in JADE software is not considered.
+\item The JADE events can now be written into HBOOk n-Tuples using the codes written 
+for the analyses in Ref.~\cite{}. Se {\sc jtjob}.
+
+\end{itemize}
+
+The more complex modifications:
+
+
+\begin{itemize}
+\item The JADE raw data can be easily converted into BOS banks with a {\sc fptobos} utility.
+\item The calibration -- TBD.
+\item The JADE data is present now in multiple storages.
+\end{itemize}
+
+
 \section{Introduction to JADE experiment}
 The description of JADE experiment can be found elsewhere.\cite{Bartel:1986ua}
 Physics cases for the available JADE data can be discussed elsewhere\cite{Bartel:1986ua}.
@@ -325,8 +463,53 @@ The case of JADE data preservation was studied.
 \item fix this document, 5h
 \item Do testst on different platforms with MC, 10h
 \item Fix the webpage, 5h
-\item Provide VMS., 10h
+\end{itemize}
+
+boslib/phist.for -- interesting write statement
+boslib/uwp.for -- character*8 vs. real
+
+graflib/cdst.for -- new variables
+graflib/cirdis.F -- Commented ARCMIN(A)
+graflib/credit.F -- new variables
+graflib/croax.F -- dangerous junk EOL
+graflib/defmac.f -- changes in the equivalence
+graflib/disaxi.f -- new variables
+graflib/drthcv.f -- change name of symbol
+graflib/drthcv1.f -- change name of symbol
+graflib/fwdisp.F -- Mix of inat and H in DATA
+graflib/fyrint.F -- FIXME
+graflib/grblock.F -- DAT removed
+graflib/hemsym.f -- a lot of bad code added
+graflib/idfun.f -- new variables
+graflib/koord.f -- INTADE function removed
+graflib/realnm.f -- integer or integer*8
+graflib/scannr.f -- FIXME
+graflib/vcdo.f -- new variables
+graflib/vxt.f -- VTXS entry commented out
+
+interface/plot10.f -- a lot
+jadegs/akop.f -- a lot
+jadegs/jegain.f -- WTF?
+jadegs/klread.f -- WTF?
+jadegs/ktmcon.f -- WTF?
+jadegs/rdmerg.f -- WTF?
+jadegs/rdrdmh.f -- WTF?
+jadegs/rdtrg2.f -- WTF?
+jademus/mufini.f  FIXME
+patrecsr/backtr.F -- WTF
+patrecsr/ftrkel.f -- WTF
+tagg/ggclus.f -- WTF
+tagg/tagadc.f -- WTF
+
+\section{Fortran}
+\begin{itemize}
+replace the  \& in calls with \*
+
 \end{itemize}
 
 
 
+\section*{Acknowledgements}
+The author thanks Siegfried Bethke, Richard Hildebrandt, Stefan Kluth, J.~Olsson, Matthias Schr\"oder,
+Ulrich Schwickerath and Tibor \v{S}imko for their help, advice and support of the preservation
+of the JADE data and software.

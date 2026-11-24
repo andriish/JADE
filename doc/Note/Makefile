@@ -1,8 +1,8 @@
-latexfile=JADE2022
+latexfile=JADE2026
 newname?=FFC
 STYLE?=draft
 
-LATEX=latex -halt-on-error -shell-escape
+LATEX=pdflatex -halt-on-error -shell-escape
 BIBTEX=bibtex
 
 
@@ -78,7 +78,7 @@ constanttables=
  #              ConstantTables/av_David.txt ConstantTables/pp_CDF_2TeV.txt
 #
 
-$(latexfile)-$(STYLE).dvi :  $(figures) $(constanttables) $(tables) $(latexfile).bst\
+$(latexfile)-$(STYLE).pdf :  $(figures) $(constanttables) $(tables) $(latexfile).bst\
                     $(latexfile).bib $(latexfile)-abs.tex $(latexfile)-txt.tex $(latexfile)-tab.tex\
                      $(latexfile)-fig.tex   $(STYLE_SPECIFIC_FILES)
 	
@@ -95,14 +95,7 @@ endif
 	$(LATEX) $(latexfile)-$(STYLE)
 	$(LATEX) $(latexfile)-$(STYLE)
 
-$(latexfile)-$(STYLE).pdf : $(latexfile)-$(STYLE).ps
-	ps2pdf -dUseCIEColor -dPDFSETTINGS=/printer -sPAPERSIZE=a4  $(latexfile)-$(STYLE).ps $(latexfile)-$(STYLE).pdf
-
-ps : $(latexfile)-$(STYLE).ps 
-
 pdf : $(latexfile)-$(STYLE).pdf
-$(latexfile)-$(STYLE).ps : $(latexfile)-$(STYLE).dvi
-	dvips -Ppdf -t a4 $(latexfile)-$(STYLE)
 
 
 $(latexfile).rws: $(latexfile)-dict.txt
