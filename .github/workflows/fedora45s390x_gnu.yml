@@ -58,4 +58,4 @@ jobs:
       run: |
            docker run --rm --platform linux/s390x -v "$PWD":/home -w /home \
                ghcr.io/andriish/fedora45s390x_gnu:latest \
-               sh -c 'uname -m; lscpu | grep -i "byte order"; sh jadeinstall.sh --bits=64; sh jadetest.sh --bits=64'
+               sh -c 'uname -m; python3 -c "import sys; print(sys.byteorder)"; sh jadeinstall.sh --bits=64; sh jadetest.sh --bits=64 --timeout-factor=20'

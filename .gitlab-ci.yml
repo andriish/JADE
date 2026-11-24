@@ -159,7 +159,7 @@ fedora45s390x_gnu:
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|web)$/'
     - when: manual
   script:
-    - docker create --platform linux/s390x --name jadetest $CI_REGISTRY_IMAGE:fedora45s390x_gnu sh -c 'cd /home && uname -m && lscpu | grep -i "byte order" ; sh jadeinstall.sh --bits=64 ; sh jadetest.sh --bits=64'
+    - docker create --platform linux/s390x --name jadetest $CI_REGISTRY_IMAGE:fedora45s390x_gnu sh -c 'cd /home && uname -m && python3 -c "import sys; print(sys.byteorder)" ; sh jadeinstall.sh --bits=64 ; sh jadetest.sh --bits=64 --timeout-factor=20'
     - docker cp . jadetest:/home
     - docker start -a jadetest
 ########################################################################
