@@ -18,12 +18,27 @@
 \usepackage{authblk}
 \usepackage{lineno}
 \usepackage{hyperref}
+\makeatletter
+\g@addto@macro\UrlBreaks{\do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j\do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t\do\u\do\v\do\w\do\x\do\y\do\z\do\0\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9\do\-\do\_\do\:\do\=\do\?\do\&}
+\makeatother
+\emergencystretch=3em
+\vfuzz=3pt
+\Urlmuskip=0mu plus 2mu
+\DeclareUrlCommand\url{\urlstyle{tt}}
+\def\UrlBigBreaks{\do\/}
+
 \usepackage[centertags,intlimits]{amsmath}
 \usepackage{amssymb,amscd}
 \usepackage{calc}
 %\usepackage{showframe}
 \usepackage{supertabular}
 \usepackage{graphicx}
+\usepackage{adjustbox}
+\usepackage{float}
+\usepackage{listings}
+\lstset{captionpos=b,basicstyle=\ttfamily\small,breaklines=true,columns=fullflexible,keepspaces=true,
+  frame=lines,backgroundcolor=\color{black!4},showstringspaces=false,upquote=true,
+  xleftmargin=1em,xrightmargin=1em,aboveskip=0.8em,belowskip=0.8em}
 \usepackage{multicol}
 \usepackage{multirow}
 \usepackage{ifthen}
@@ -48,13 +63,13 @@
 
 
 \renewcommand{\arraystretch}{1.20}
-\title{JADE preserved data in 2022}
+\title{JADE preserved data in 2026}
 \author[b]{Andrii Verbytskyi\thanks{andrii.verbytskyi@mpp.mpg.de}}
 \affil[b]{Max-Planck-Institut f\"{u}r Physik}
 \prepnum{MPP-2022-XXX, JADE-CN-104}
 \renewcommand\Authands{\\and\\}
 \abstract{
-\input{JADE2022-abs}
+\input{JADE2026-abs}
 }
 
 
@@ -106,8 +121,8 @@
 \begin{document}
 \maketitle
 \tableofcontents
-\include{JADE2022-txt}
-{\bibliographystyle{./JADE2022}{\raggedright\bibliography{JADE2022.bib}}}\vfill\eject
+\include{JADE2026-txt}
+{\bibliographystyle{./JADE2026}{\raggedright\bibliography{JADE2026.bib}}}\vfill\eject
 \clearpage
 
 

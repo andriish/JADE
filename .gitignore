@@ -3,3 +3,15 @@
 # is not matched.
 /build*/
 /install*/
+doc/Note/work/
+doc/Note/*.aux
+doc/Note/*.bbl
+doc/Note/*.blg
+doc/Note/*.fdb_latexmk
+doc/Note/*.fls
+doc/Note/*.log
+doc/Note/*.out
+doc/Note/*.toc
+doc/Note/*.failed
+test/src/Testing/
+doc/Note/JADE2026-draft.pdf
