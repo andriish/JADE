@@ -126,18 +126,20 @@ The full description (interface, all code changes, the three display tests) is i
 
 ## Big-endian check: s390x under QEMU
 
-`Dockerfile_fedora45s390x_gnu` and `.github/workflows/fedora45s390x_gnu.yml` run the software on a big-endian machine (s390x) emulated with QEMU on x86_64. It is untested so far; CERNLIB comes from the copr `averbyts/JADE` (chroot `fedora-45-s390x`; it is not in Fedora). The emulation is slow (the image build can take hours; the tests have 200 s timeouts). Build and run locally on a Fedora x86_64 host (needs sudo for the install and binfmt; the worktree is a clean checkout of `HEAD`, so commit first to test uncommitted changes, and its build directories stay separate from the native `buildGNU64`; the `:Z` label is for SELinux, drop it with Docker):
+`Dockerfile_fedora45s390x_gnu` and `.github/workflows/fedora45s390x_gnu.yml` run the software on a big-endian machine (s390x) emulated with QEMU on x86_64. It is partly tested (see below); CERNLIB comes from the copr `averbyts/JADE` (chroot `fedora-45-s390x`; it is not in Fedora). The emulation is slow (the image build can take hours); all test time limits are multiplied with `jadetest.sh --timeout-factor=20` (CMake option `JADE_TEST_TIMEOUT_FACTOR`, default 1). Build and run locally on a Fedora x86_64 host (needs sudo for the install and binfmt; the worktree is a clean checkout of `HEAD`, so commit first to test uncommitted changes, and its build directories stay separate from the native `buildGNU64`; the `:Z` label is for SELinux, drop it with Docker):
 
 ```
 sudo dnf install -y qemu-user-static podman && sudo systemctl restart systemd-binfmt && ls /proc/sys/fs/binfmt_misc/ | grep s390x
 cd /home/andriish/Projects/JADE
 podman build --platform linux/s390x -f Dockerfile_fedora45s390x_gnu -t fedora45s390x_gnu .
-podman run --rm --platform linux/s390x fedora45s390x_gnu sh -c 'uname -m; lscpu | grep -i "byte order"'
+podman run --rm --platform linux/s390x fedora45s390x_gnu sh -c 'uname -m; python3 -c "import sys; print(sys.byteorder)"'
 git worktree add ../JADE_s390x HEAD
-podman run -it --rm --platform linux/s390x -v "$PWD/../JADE_s390x":/home:Z -w /home fedora45s390x_gnu sh -c 'sh jadeinstall.sh --bits=64 && sh jadetest.sh --bits=64'
+podman run -it --rm --platform linux/s390x -v "$PWD/../JADE_s390x":/home:Z -w /home fedora45s390x_gnu sh -c 'sh jadeinstall.sh --bits=64 && sh jadetest.sh --bits=64 --timeout-factor=20'
 ```
 
-With Docker use `docker buildx build --platform linux/s390x -f Dockerfile_fedora45s390x_gnu -t fedora45s390x_gnu --load .` for the build. The expected output of the second command is `s390x` and `Big Endian`. s390x is 64-bit only (no `--bits=32`); `-fsigned-char` is added for s390x and PowerPC as for aarch64.
+With Docker use `docker buildx build --platform linux/s390x -f Dockerfile_fedora45s390x_gnu -t fedora45s390x_gnu --load .` for the build. The expected output of the second command is `s390x` and `big` (`lscpu` is no good here: under `qemu-user` it reports the host). s390x is 64-bit only (no `--bits=32`); `-fsigned-char` is added for s390x and PowerPC as for aarch64.
+
+Findings so far (local run in the image, Nov 2026): `fptobos` needs no byte swapping on s390x, so the test card of `FPTOBOS_DATA_1` is written for the byte order of the host (`test/CMakeLists.txt`), and `fpinfo` chooses the byte swapping of `UNPJAD` at run time; with these the FPACK chain (`FPTOBOS_DATA_1`, `BOSINFO_DATA_1`, `FPINFO_DATA_1`) gives the native results (354 events, run 18008, 44.2 GeV). `SUPERV_DATA_1` and everything that starts HBOOK fail in `HLIMIT` -> `MZFORM` -> `MZIOCH` (ZEBRA cannot parse `4H -I`): the CERNLIB CMake build defines `CERNLIB_QMLXIA64` (little-endian) for every 64-bit Linux and never `CERNLIB_PPC`, the flag with which ~110 places (`izbcdt`, `ublow`, `ubunch`, `rz*`, `fzcvhlnx`, zebra `pilot.h`) select the big-endian code. Proposed fix in the CERNLIB package (copr): on big-endian Linux `SET(CERNLIB_PPC 1)` and `add_definitions(-DCERNLIB_PPC)`; not tried yet. Debugging under `qemu-user` (no `ptrace`): start the program with `QEMU_GDB=1234` (in `sh -c`, so that only it sees the variable) and connect with `gdb -batch -ex "set sysroot /" -ex "target remote :1234" -ex "break zfatal_" -ex continue -ex "bt 12" <program>` from the same container (install `cernlib-debuginfo`/`cernlib-debugsource` from the copr in the container for line numbers).
 
 ## macOS (Apple Silicon, Homebrew)
 

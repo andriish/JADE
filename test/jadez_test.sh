@@ -1,6 +1,6 @@
 #!/bin/bash
 # Smoke test of the JADE event display (jadez) on the sample data file.
-# usage: jadez_test.sh <jadez executable> <help dataset> <work dir>
+# usage: jadez_test.sh <jadez executable> <help dataset> <work dir> [<factor for the time limit>]
 #
 # The display needs an X server. To avoid opening windows on a desktop the test
 # only runs on a virtual display: xvfb-run if available, or the display given in
@@ -10,6 +10,8 @@ SCRIPTDIR=$(cd "$(dirname "$0")" && pwd)
 JADEZ=$1
 HELP=$2
 WORK=$3
+# factor for the time limit of jadez (4th argument, JADE_TEST_TIMEOUT_FACTOR of the CMake configuration)
+FACTOR=${4:-1}
 cd "$WORK" || exit 1
 # HIGZ reads (and creates) $HOME/higz_windows.dat; use a private HOME so the result does not
 # depend on the user's home directory (and nothing is left in it)
@@ -49,7 +51,7 @@ rm -f JADE.*.png JADE.*.ps fort.77
 ( printf 'file006.bos\n\n'; sleep 2
   for c in $DRAW; do echo "$c"; sleep 0.7; echo H; sleep 1; done
   for c in $TEXT; do echo "$c"; sleep 0.7; done
-  echo END; sleep 2 ) | $TMO 600 $RUN "$JADEZ" > jadez_test.log 2>&1
+  echo END; sleep 2 ) | $TMO $((600*FACTOR)) $RUN "$JADEZ" > jadez_test.log 2>&1
 rc=$?
 if [ $rc -ne 0 ]; then
   echo "--- diagnostics (jadez failed) ---"
