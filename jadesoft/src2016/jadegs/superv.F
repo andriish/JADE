@@ -396,9 +396,6 @@ C                            SET FLAG TO PREVENT PHILOSOPHY 2 ANALYSIS.
 C
       IMUARG = 1
       IF(IDATA(IPATR).LT.1) IMUARG = 0
-C                            TOY SIMULATION OF THE MUON CHAMBERS FOR MC
-C                            (ONLY IF JADE_MUMC=1)
-      CALL MUMCEV
       CALL MUANA(IMUARG)
       GO TO 200
 C

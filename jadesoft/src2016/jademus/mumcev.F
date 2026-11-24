@@ -5,9 +5,9 @@ C Monte Carlo event from the true muons of the bank VECT.
 C
 C The original muon simulation (the job #PRODMU, see JMC/MCNEWS) is not in
 C the preserved sources, and the Monte Carlo events have no bank MUEV. This
-C routine is called by SUPERV (step 9) before the muon analysis MUANA, only
-C if the environment variable JADE_MUMC is 1, and only for events with
-C a run number below 100 (Monte Carlo). It does the following:
+C routine is called by MUORDR (library JMC) at the end of the tracking of an
+C event in MCJADE, before WRTMCB writes the bank, if the control card
+C MUMC ON is given. It does the following:
 C   - the muons (type 3 of the bank VECT) with a momentum above PMUMIN
 C     are followed in the solenoid field (helix) up to the coil, then on a
 C     straight line up to the yoke and in the field of the yoke (BYOKE of
@@ -29,7 +29,8 @@ C     the chamber/hit words (4*chamber + hit - 1, the hits of a chamber in
 C     the order of decreasing hit number) each followed by the drift time
 C     and the longitudinal time, and the end-of-crate word 3840.
 C The half-words have the order of this machine (as for any Monte Carlo
-C bank). With JADE_MUMC_DUMP=1 the geometry of the chambers is printed once.
+C bank). The simulation is steered by the control cards MUMC, MUDUMP, MUSMEAR
+C and MUSIGN of MCJADE (subroutine MUMCST sets the parameters).
 C-----------------------------------------------------------------------
       IMPLICIT INTEGER*2 (H)
 #include "cmubcs.for"
@@ -37,64 +38,49 @@ C-----------------------------------------------------------------------
       INTEGER MAXC
       PARAMETER (MAXC=634)
       INTEGER NHC(MAXC), ITDC(4,MAXC), ITLC(4,MAXC)
-      INTEGER IPH, IRUN, IPV, L0, L1, NV, IPART, J, IPM, NWORDS, NHW
+      EXTERNAL MUMCBD
+      INTEGER MUGEO(4185), IW0
+      COMMON /MUMCGE/ MUGEO
+      REAL BKGAUS, AVFOO
+      COMMON /CGEO1/ BKGAUS, AVFOO(65)
+      INTEGER IPV, L0, L1, NV, IPART, J, IPM, NWORDS, NHW
       INTEGER IC, IFR, IOR, ISECT, IX, K, KK, ICR, NHCR, ITYPE, ICH
       INTEGER IER, ISWP, IT, N, IPRT
       REAL B, BT, PX, PY, PZ, P, PT, X0, Y0, Z0, Q, R, DPHI, PXN
       REAL XS, YS, ZS, UX, UY, UZ, S, T, PLN, XP, YP, ZP
       REAL RAND1, GAUSS1, DRIFT, XLONG, WIRE, CEN, CLLO, CLHI, TD, TL
       REAL VDR, DTP, TLP, XLSF, BY, XN, YN, ZN, F0, F1, RCOILI
-      REAL RYOKE, DSTEP, RMAXD, ZMAXD, YSIGN, CSIGN, BL, DELTA
+      REAL RYOKE, DSTEP, RMAXD, ZMAXD, BL, DELTA
       REAL R0, R1, DR
       REAL RY1, RY2, RIRON, DEDX, XRAD, PSTOP, PNEW, TH0, T1, T2,
      +  E1X, E1Y
       REAL E2X, E2Y, E2Z, UN
       INTEGER KSTEP
-      REAL PMUMIN, DRIMAX, EFFCH, SIGTD, SIGTL
-      LOGICAL LDUMP, LFIRST, LENV
-      CHARACTER*8 CVAL
-      INTEGER LVAL, ISTAT
+      REAL PMUMIN, DRIMAX, EFFCH
+      LOGICAL LFIRST
+      REAL SIGTD, SIGTL, YSIGN, CSIGN
+      LOGICAL LDUMP, LACT
+      COMMON /MUMCCM/ SIGTD, SIGTL, YSIGN, CSIGN, LDUMP, LACT
       INTEGER*8 ISEED
-      LOGICAL LACT
       DATA PMUMIN /1.5/, DRIMAX /155./, EFFCH /0.95/
       DATA RCOILI /968./, RYOKE /1500./, DSTEP /10./
       DATA RY1 /1760./, RY2 /1910./
       DATA RIRON /1760./, DEDX /1.16E-3/, XRAD /17.6/, PSTOP /0.3/
-      DATA RMAXD /4300./, ZMAXD /5000./, YSIGN /1./, CSIGN /1./
-      DATA SIGTD /1.0/, SIGTL /3.0/
-      DATA LFIRST /.TRUE./, ISEED /123457/, LACT /.FALSE./
+      DATA RMAXD /4300./, ZMAXD /5000./
+      DATA LFIRST /.TRUE./, ISEED /123457/
 C-----------------------------------------------------------------------
-      IF(LFIRST) THEN
-        CALL GET_ENVIRONMENT_VARIABLE('JADE_MUMC',CVAL,LVAL,ISTAT)
-        LACT=(ISTAT.EQ.0 .AND. CVAL(1:1).EQ.'1')
-      ENDIF
       IF(.NOT.LACT) RETURN
-      IPH=IDATA(IBLN('HEAD'))
-      IF(IPH.LE.0) RETURN
-      IRUN=HDATA(2*IPH+10)
-      IF(IRUN.GE.100) RETURN
-C the muon calibration must have been read
+C the geometry of the block data MUMCBD (MCJADE reads no calibration)
+      IF(LFIRST) THEN
+        DO 1 IW0=1,4185
+    1   MUCAL(IW0)=MUGEO(IW0)
+      ENDIF
       IF(IZOEP1.EQ.0 .AND. IZOEP3.EQ.0) RETURN
 C the bank exists already
       IF(IDATA(IBLN('MUEV')).GT.0) RETURN
 C
       IF(LFIRST) THEN
         LFIRST=.FALSE.
-        CALL GET_ENVIRONMENT_VARIABLE('JADE_MUMC_DUMP',CVAL,LVAL,ISTAT)
-        LDUMP=(ISTAT.EQ.0 .AND. CVAL(1:1).EQ.'1')
-C optional: the sign of the yoke field (JADE_MUMC_YSIGN=-1 reverses it)
-        CALL GET_ENVIRONMENT_VARIABLE('JADE_MUMC_YSIGN',CVAL,LVAL,ISTAT)
-        IF(ISTAT.EQ.0 .AND. CVAL(1:2).EQ.'-1') YSIGN=-1.
-C optional: the smearing of the drift time and of the longitudinal time
-C (clock pulses, JADE_MUMC_SIGD, JADE_MUMC_SIGL)
-        CALL GET_ENVIRONMENT_VARIABLE('JADE_MUMC_SIGD',CVAL,LVAL,ISTAT)
-        IF(ISTAT.EQ.0) READ(CVAL,*,ERR=1) SIGTD
-    1   CALL GET_ENVIRONMENT_VARIABLE('JADE_MUMC_SIGL',CVAL,LVAL,ISTAT)
-        IF(ISTAT.EQ.0) READ(CVAL,*,ERR=2) SIGTL
-    2   CONTINUE
-C optional: the sign of the solenoid field (JADE_MUMC_CSIGN=-1)
-        CALL GET_ENVIRONMENT_VARIABLE('JADE_MUMC_CSIGN',CVAL,LVAL,ISTAT)
-        IF(ISTAT.EQ.0 .AND. CVAL(1:2).EQ.'-1') CSIGN=-1.
         IF(LDUMP) THEN
           WRITE(6,'(A)') ' MUMCEV geometry: ICHAM ICRATE IFRAME IOR'//
      +      ' NORMAL WIRE LONGLO LONGHI TRANSLO TRANSHI VDRIFT DTP'//
@@ -116,7 +102,7 @@ C-----------------------------------------------------------------------
         NHC(IC)=0
    10 CONTINUE
 C magnetic field (kG) of the event
-      B=0.001*HDATA(2*IPH+30)
+      B=BKGAUS
       IF(ABS(B).LT.1.) B=-4.85
       BT=0.1*B*CSIGN
 C-----------------------------------------------------------------------
@@ -384,5 +370,26 @@ C Gaussian random number (sum of 12 uniform numbers) for MUMCEV
         S=S+FLOAT(ISEED)/2147483647.
    10 CONTINUE
       GAUSS1=S
+      RETURN
+      END
+C-----------------------------------------------------------------------
+      SUBROUTINE MUMCST(LON,LDMP,SD,SL,YS,CS)
+C Sets the parameters of the toy simulation of the muon chambers (the
+C control cards of SUPERV): LON switches the simulation on, LDMP prints
+C the geometry once, SD and SL are the smearing of the drift time and of
+C the longitudinal time (clock pulses), YS and CS the signs of the yoke
+C and of the solenoid field (1. or -1.).
+C-----------------------------------------------------------------------
+      LOGICAL LON, LDMP
+      REAL SD, SL, YS, CS
+      REAL SIGTD, SIGTL, YSIGN, CSIGN
+      LOGICAL LDUMP, LACT
+      COMMON /MUMCCM/ SIGTD, SIGTL, YSIGN, CSIGN, LDUMP, LACT
+      LACT=LON
+      LDUMP=LDMP
+      SIGTD=SD
+      SIGTL=SL
+      YSIGN=YS
+      CSIGN=CS
       RETURN
       END

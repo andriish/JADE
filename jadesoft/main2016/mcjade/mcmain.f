@@ -86,6 +86,9 @@ C Misc
       CHARACTER CSEEDF*11
       DATA CSEEDF / 'mcjade.stat' /
       INTEGER I,LENOCC,IERR
+C Toy simulation of the muon chambers (jademus/mumcev.F, called by MUORDR)
+      LOGICAL LMUMC,LMUDMP
+      REAL SMUMC(2),SGMUMC(2)
       COMMON /MYIO/ NEVT
 C
 *------------------------------------------------------------------------
@@ -140,12 +143,27 @@ C File names
       CALL FFKEY('MCBANK',BANKF,NWNAM,'MIXED')
       CALL VBLANK(BOSF,NWNAM)
       CALL FFKEY('MCBOS',BOSF,NWNAM,'MIXED')
+C Muon chambers: toy simulation (MUMC ON); the geometry is compiled in
+C (block data MUMCBD), no calibration data are read
+      LMUMC=.FALSE.
+      CALL FFKEY('MUMC',LMUMC,1,'LOGI')
+      LMUDMP=.FALSE.
+      CALL FFKEY('MUDUMP',LMUDMP,1,'LOGI')
+      SMUMC(1)=1.0
+      SMUMC(2)=3.0
+      CALL FFKEY('MUSMEAR',SMUMC,2,'REAL')
+      SGMUMC(1)=1.0
+      SGMUMC(2)=1.0
+      CALL FFKEY('MUSIGN',SGMUMC,2,'REAL')
       CALl FFGO
 C... Convert hollerith to character
       CALL UHTOC(VECTF,NBYTEW,CVECTF,NAMLEN)
       CALL UHTOC(BOSF,NBYTEW,CBOSF,NAMLEN)
       CALL UHTOC(BANKF,NBYTEW,CBANKF,NAMLEN)
       CALL UHTOC(HISTF,NBYTEW,CHISTF,NAMLEN)
+C
+C... Muon chamber simulation parameters
+      CALL MUMCST(LMUMC,LMUDMP,SMUMC(1),SMUMC(2),SGMUMC(1),SGMUMC(2))
 C
 C... Output file with tracked events in binary BOS format
       OPEN(UNIT=IOBOS,FILE=CBOSF,STATUS='UNKNOWN',FORM='UNFORMATTED')

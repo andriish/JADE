@@ -5,7 +5,7 @@ C each event the hits of the bank MUR1 and the muons found by the routine
 C MUONS (the muon candidates selected by MUCUTS, types 1, 5 and 9) are
 C counted. Used for the toy simulation of the muon chambers (the raw
 C bank MUEV made by MUMCEV from the true muons, SUPERV run with the
-C environment variable JADE_MUMC=1) and for the real data.
+C control card MUMC ON of MCJADE) and for the real data.
 C
 C usage: mucheck <BOS file of superv>
 C Exit code 0 if there are events with hits in the bank MUR1.

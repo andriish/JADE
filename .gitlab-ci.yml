@@ -41,7 +41,7 @@ variables:
   - cat /etc/issue
   - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL dnf*plu*  > rpm.log || (cat rpm.log && exit 1)
     #for xbae
-  - dnf -y copr enable averbyts/HEPrpms epel-9-x86_64
+  - dnf -y copr enable averbyts/JADE epel-9-x86_64
   - yum -y  install --setopt=keepcache=1 --setopt=cachedir=`pwd`/yum-cache-$FREL libnsl  libnsl2-devel > rpm.log || (cat rpm.log && exit 1)
 ########################################################################
 .commoninstall: &commoninstall

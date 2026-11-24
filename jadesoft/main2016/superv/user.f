@@ -100,8 +100,7 @@ C
 C USER Parameters
 C - I/O options
       INTEGER IOHIST,IOBANK
-      CHARACTER*8 CVLMU
-      INTEGER LVLMU,ISTMU
+      LOGICAL LMUON
       LOGICAL LBANK,LHIST
       DATA IOBANK/41/, IOHIST/42/
 C - Misc
@@ -184,6 +183,10 @@ C     - Perform zs refit
 C     - Perform vertex fit
       LVTX=.FALSE.
       CALL FFKEY('VTXFIT',LVTX,1,'LOGI')
+C Muon analysis (level 8; the raw muon bank MUEV of Monte Carlo events
+C comes from the toy simulation in MCJADE, card MUMC ON)
+      LMUON=.FALSE.
+      CALL FFKEY('MUON',LMUON,1,'LOGI')
 C Calibrations constants reading options
       CALL FFKEY('MUCA',LLBMC(1),1,'LOGI')
       CALL FFKEY('LGMA',LLBMC(2),1,'LOGI')
@@ -553,15 +556,8 @@ C------------------
 C
  8000 CONTINUE
       IF( LHIST ) CALL HSTFLL(INDX) ! Histos combined from different levels
-C     The muon analysis is skipped, unless the environment variable
-C     JADE_MUON is 1 (or JADE_MUMC, the toy simulation of the muon chambers)
-      CALL GET_ENVIRONMENT_VARIABLE('JADE_MUON',CVLMU,LVLMU,ISTMU)
-      IF( ISTMU.EQ.0 .AND. CVLMU(1:1).EQ.'1' ) THEN
-         INDX=INDX+1
-         RETURN
-      ENDIF
-      CALL GET_ENVIRONMENT_VARIABLE('JADE_MUMC',CVLMU,LVLMU,ISTMU)
-      IF( ISTMU.EQ.0 .AND. CVLMU(1:1).EQ.'1' ) THEN
+C     The muon analysis is skipped, unless the control card MUON ON is given
+      IF( LMUON ) THEN
          INDX=INDX+1
          RETURN
       ENDIF

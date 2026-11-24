@@ -36,6 +36,6 @@ RUN         dnf -y install --enablerepo=fedora-debuginfo --enablerepo=updates-de
 # rpm transaction fails with file conflicts between root-core.i686 and root-core.x86_64.
 # CERNLIB (32 bit, with the static libraries), from the HEP copr. Explicit list: the glob
 # cernlib*.i686 would also install ~270 packages with debug info.
-RUN         dnf -y copr enable averbyts/HEPrpms && \
+RUN         dnf -y copr enable averbyts/JADE && \
             dnf -y install cernlib-devel.i686 cernlib-static.i686 cernlib-packlib-gfortran.i686 && \
             dnf -y clean all
