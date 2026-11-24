@@ -8,6 +8,8 @@ SCRIPTDIR=$(cd "$(dirname "$0")" && pwd)
 JADEZ=$1
 HELP=$2
 WORK=$3
+# factor for the time limit of jadez (4th argument, JADE_TEST_TIMEOUT_FACTOR of the CMake configuration)
+FACTOR=${4:-1}
 cd "$WORK" || exit 1
 # HIGZ reads (and creates) $HOME/higz_windows.dat; use a private HOME so the result does not
 # depend on the user's home directory (and nothing is left in it)
@@ -41,7 +43,7 @@ VIEWS="RB1 RC1 ZXB1 ZYB1 ZXC1 ZYC1 FW1 RU1 CYL1 DEDX-2"
 NV=$(echo $VIEWS | wc -w)
 ( printf 'superv1.bos\n\n'; sleep 2; echo "OPT 16"; sleep 1; echo "OPT 17"; sleep 1
   for c in $VIEWS; do echo "$c"; sleep 1; echo H; sleep 1.5; done
-  echo END; sleep 2 ) | $TMO 600 $RUN "$JADEZ" > ../jadez_mc_test.log 2>&1
+  echo END; sleep 2 ) | $TMO $((600*FACTOR)) $RUN "$JADEZ" > ../jadez_mc_test.log 2>&1
 rc=$?
 if [ $rc -ne 0 ]; then
   echo "--- diagnostics (jadez failed) ---"

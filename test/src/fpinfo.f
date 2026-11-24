@@ -32,6 +32,7 @@ C-----------------------------------------------------------------------
       COMMON /CBUGGY/ IPZ
       CHARACTER*4 CHASCI
       INTEGER NRUN, IRUNS(MRUN), NEVR(MRUN), IMEV(MRUN)
+      INTEGER IBYTSW
       INTEGER IOS, NEVT, IRUN, IBM, I, J, LB, IPOS, IUNPFL, IHEAD
       INTEGER NHEAD
       CHARACTER*256 FNAME
@@ -49,11 +50,16 @@ C-----------------------------------------------------------------------
         WRITE(*,*) 'fpinfo: cannot open ',FNAME(1:LEN_TRIM(FNAME))
         STOP 2
       ENDIF
+C The words of the FPACK file are big-endian: UNPJAD swaps the bytes on a
+C little-endian host (IBYTSW=1) and must not on a big-endian one (the first
+C byte in memory of the integer 1 is 1 on a little-endian host)
+      IBYTSW=0
+      IF (TRANSFER(1,1_1).EQ.1_1) IBYTSW=1
       NRUN=0
       NEVT=0
       ESUM=0.D0
    10 CONTINUE
-      CALL UNPJAD(IUNPFL,1,1000000,0,0,0)
+      CALL UNPJAD(IUNPFL,IBYTSW,1000000,0,0,0)
       IF (IUNPFL.EQ.-1) GO TO 900
 C Find the bank HEAD of the event
       IHEAD=0

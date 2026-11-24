@@ -1,11 +1,13 @@
 #!/bin/bash
-#Options: --bits=32|64 --toolchain=NAME --prefix=/abs/path, in any order
-tmpprefix=""; tmptoolchain=""; tmpbits=""
+#Options: --bits=32|64 --toolchain=NAME --prefix=/abs/path --timeout-factor=N, in any order
+# (--timeout-factor=N multiplies the time limits of the tests, 20 for slow machines, e.g. s390x under QEMU)
+tmpprefix=""; tmptoolchain=""; tmpbits=""; timeout_factor=1
 for arg in "$@"; do
   case "$arg" in
     --prefix=*) tmpprefix="${arg#*=}" ;;
     --toolchain=*) tmptoolchain="${arg#*=}" ;;
     --bits=*) tmpbits="${arg#*=}" ;;
+    --timeout-factor=*) timeout_factor="${arg#*=}" ;;
   esac
 done
 if [ "$(uname)" == "Darwin" ]; then
@@ -189,7 +191,7 @@ fi
 mkdir -p build$toolchain$bits/test
 cd build$toolchain$bits/test
 rm -rf outputs CMakeFiles CMakeCache.txt
-$CMAKE -S ../../test -B . -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC  -DJADESOFT_DIR=$TOP$toolchain$bits/share/JADESOFT/cmake $bit_arguments
+$CMAKE -S ../../test -B . -DCMAKE_Fortran_COMPILER=$FC  -DCMAKE_CXX_COMPILER=$CXX  -DCMAKE_C_COMPILER=$CC  -DJADESOFT_DIR=$TOP$toolchain$bits/share/JADESOFT/cmake -DJADE_TEST_TIMEOUT_FACTOR=$timeout_factor $bit_arguments
 $CMAKE --build  . -j 2 || { echo 'cmake build failed' ; exit 1; }
 $CMAKE --install .
 # JADE_FAIL_ON_SKIP=1 (used by CI): tests that are skipped or not run (missing Xvfb, h2root, ...)

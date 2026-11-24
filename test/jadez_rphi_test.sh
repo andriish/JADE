@@ -8,6 +8,8 @@ SCRIPTDIR=$(cd "$(dirname "$0")" && pwd)
 JADEZ=$1
 HELP=$2
 WORK=$3
+# factor for the time limit of jadez (4th argument, JADE_TEST_TIMEOUT_FACTOR of the CMake configuration)
+FACTOR=${4:-1}
 cd "$WORK" || exit 1
 # HIGZ reads (and creates) $HOME/higz_windows.dat; use a private HOME so the result does not
 # depend on the user's home directory (and nothing is left in it)
@@ -42,7 +44,7 @@ export FORT_CONVERT_UNIT=big_endian   # and for NVIDIA Fortran
 ( printf 'superv1.bos\n\n'; sleep 2
   for c in "OPT 13" "OPT 14" "OPT 16" "OPT 17" "RB1" "DEDX -4"; do echo "$c"; sleep 1.5; done
   echo H; sleep 2
-  echo END; sleep 2 ) | $TMO 600 $RUN "$JADEZ" > ../jadez_rphi_test.log 2>&1
+  echo END; sleep 2 ) | $TMO $((600*FACTOR)) $RUN "$JADEZ" > ../jadez_rphi_test.log 2>&1
 rc=$?
 if [ $rc -ne 0 ]; then
   echo "--- diagnostics (jadez failed) ---"

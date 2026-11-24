@@ -68,6 +68,13 @@ configure_file(${JADESOFT_CAL_DIR}/bupdat0.b    ${CMAKE_CURRENT_BINARY_DIR}/bupd
 configure_file(${JADESOFT_CAL_DIR}/bupdat1      ${CMAKE_CURRENT_BINARY_DIR}/bupdat1 COPYONLY)
 configure_file(${JADESOFT_CAL_DIR}/bupdat1.b    ${CMAKE_CURRENT_BINARY_DIR}/bupdat1.b COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006    ${CMAKE_CURRENT_BINARY_DIR}/jadetapes/JAD073/file006 COPYONLY)
+# Factor for all time limits of the tests (default 200 s per test, the display tests have longer limits,
+# and the timeout of jadez inside their scripts), for slow machines, e.g. 20 for the s390x image emulated
+# with QEMU: cmake -DJADE_TEST_TIMEOUT_FACTOR=20 (jadetest.sh --timeout-factor=20)
+set(JADE_TEST_TIMEOUT_FACTOR 1 CACHE STRING "Factor for the time limits of the tests")
+math(EXPR JADE_TIMEOUT_700 "700*${JADE_TEST_TIMEOUT_FACTOR}")
+math(EXPR JADE_TIMEOUT_400 "400*${JADE_TEST_TIMEOUT_FACTOR}")
+math(EXPR JADE_TIMEOUT_300 "300*${JADE_TEST_TIMEOUT_FACTOR}")
 set(JADE_SAMPLE_TAPE ${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006)
 
 
@@ -91,7 +98,27 @@ endif()
 
 add_TEST(NAME FPTOBOS_DATA_1_CLEANUP COMMAND rm -f ${CMAKE_CURRENT_BINARY_DIR}/file006.bos)
 
-add_test(NAME FPTOBOS_DATA_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/fptobos1.card  ${JADESOFT_BIN_DIR}/fptobos)
+# The first field of the card of fptobos (IBYTSW) switches the byte swapping of the words of the FPACK
+# file (big-endian words) on: right for a little-endian host, on a big-endian host (s390x) the words must
+# not be swapped. The card of the test is made for the byte order of the host.
+include(TestBigEndian)
+if(DEFINED CMAKE_C_BYTE_ORDER)
+  if(CMAKE_C_BYTE_ORDER STREQUAL "BIG_ENDIAN")
+    set(JADE_BIG_ENDIAN TRUE)
+  else()
+    set(JADE_BIG_ENDIAN FALSE)
+  endif()
+else()
+  test_big_endian(JADE_BIG_ENDIAN)
+endif()
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/cards/fptobos1.card JADE_FPTOBOS_CARD)
+if(JADE_BIG_ENDIAN)
+  string(SUBSTRING "${JADE_FPTOBOS_CARD}" 10 -1 JADE_FPTOBOS_CARD_REST)
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/fptobos1.card "         0${JADE_FPTOBOS_CARD_REST}")
+else()
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/fptobos1.card "${JADE_FPTOBOS_CARD}")
+endif()
+add_test(NAME FPTOBOS_DATA_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_BINARY_DIR}/fptobos1.card  ${JADESOFT_BIN_DIR}/fptobos)
 jade_fortran_test(FPTOBOS_DATA_1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " ") 
 set_property( TEST FPTOBOS_DATA_1 PROPERTY  DEPENDS FPTOBOS_DATA_1_CLEANUP)
 
@@ -133,10 +160,10 @@ set_property( TEST INFO_COMPARE_DATA_1 PROPERTY DEPENDS FPTOBOS_DATA_1)
 # Event display. Needs a virtual X server (xvfb-run, or JADEZ_TEST_DISPLAY set); skipped otherwise.
 if (EXISTS ${JADESOFT_BIN_DIR}/jadez)
   add_test(NAME JADEZ_DATA_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_test.sh ${JADESOFT_BIN_DIR}/jadez
-           ${JADESOFT_DATA_DIR}/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR})
+           ${JADESOFT_DATA_DIR}/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR} ${JADE_TEST_TIMEOUT_FACTOR})
   set_property( TEST JADEZ_DATA_1 PROPERTY DEPENDS FPTOBOS_DATA_1)
   set_property( TEST JADEZ_DATA_1 PROPERTY SKIP_RETURN_CODE 77)
-  set_property( TEST JADEZ_DATA_1 PROPERTY TIMEOUT 700)
+  set_property( TEST JADEZ_DATA_1 PROPERTY TIMEOUT ${JADE_TIMEOUT_700})
   jade_fortran_test(JADEZ_DATA_1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " ")
 endif()
 
@@ -445,18 +472,29 @@ endif()
 # orthogonal projections ON, on the Monte Carlo event reconstructed by SUPERV_MC_1.
 if (TEST SUPERV_MC_1 AND EXISTS ${JADESOFT_BIN_DIR}/jadez)
   add_test(NAME JADEZ_MC_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_mc_test.sh ${JADESOFT_BIN_DIR}/jadez
-           ${JADESOFT_DATA_DIR}/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR})
+           ${JADESOFT_DATA_DIR}/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR} ${JADE_TEST_TIMEOUT_FACTOR})
   set_property( TEST JADEZ_MC_1 PROPERTY DEPENDS SUPERV_MC_1)
   set_property( TEST JADEZ_MC_1 PROPERTY SKIP_RETURN_CODE 77)
-  set_property( TEST JADEZ_MC_1 PROPERTY TIMEOUT 400)
+  set_property( TEST JADEZ_MC_1 PROPERTY TIMEOUT ${JADE_TIMEOUT_400})
 endif()
 
 # Event display matching the reference R-phi picture (doc/eventdisplayreferences/): hardware, tables,
 # insets and the small dE/dx plot, without bank listing.
 if (TEST SUPERV_MC_1 AND EXISTS ${JADESOFT_BIN_DIR}/jadez)
   add_test(NAME JADEZ_RPHI_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_rphi_test.sh ${JADESOFT_BIN_DIR}/jadez
-           ${JADESOFT_DATA_DIR}/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR})
+           ${JADESOFT_DATA_DIR}/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR} ${JADE_TEST_TIMEOUT_FACTOR})
   set_property( TEST JADEZ_RPHI_1 PROPERTY DEPENDS SUPERV_MC_1)
   set_property( TEST JADEZ_RPHI_1 PROPERTY SKIP_RETURN_CODE 77)
-  set_property( TEST JADEZ_RPHI_1 PROPERTY TIMEOUT 300)
+  set_property( TEST JADEZ_RPHI_1 PROPERTY TIMEOUT ${JADE_TIMEOUT_300})
 endif()
+
+# Time limit of the other tests: 200 s times the factor (as `ctest --timeout 200` in jadetest.sh, which
+# a TIMEOUT property of a test overrides)
+get_property(JADE_ALL_TESTS DIRECTORY PROPERTY TESTS)
+math(EXPR JADE_TIMEOUT_DEFAULT "200*${JADE_TEST_TIMEOUT_FACTOR}")
+foreach(JADE_T ${JADE_ALL_TESTS})
+  get_test_property(${JADE_T} TIMEOUT JADE_T_TIMEOUT)
+  if(JADE_T_TIMEOUT STREQUAL "NOTFOUND")
+    set_property(TEST ${JADE_T} PROPERTY TIMEOUT ${JADE_TIMEOUT_DEFAULT})
+  endif()
+endforeach()
