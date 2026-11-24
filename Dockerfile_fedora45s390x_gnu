@@ -2,8 +2,7 @@
 # (docker buildx --platform linux/s390x, see .github/workflows/fedora45s390x_gnu.yml):
 #   sh jadeinstall.sh --bits=64 && sh jadetest.sh --bits=64
 # Same package set as Dockerfile_fedora45aarch64_gnu; its purpose is to run the software on a
-# big-endian machine. Packages that do not exist for s390x (ROOT parts, CERNLIB from the copr)
-# are skipped or may fail without stopping the image build. Built and pushed to
+# big-endian machine. Packages that do not exist for s390x (some ROOT parts) are skipped. Built and pushed to
 # ghcr.io/andriish/fedora45s390x_gnu by .github/workflows/fedora45s390x_gnu.yml.
 FROM fedora:45
 # Basic tools; the tests are run with ctest and bash scripts
@@ -23,23 +22,7 @@ RUN         dnf -y install openssl-devel libnsl2-devel blas-devel lapack-devel l
             dnf -y install root-core root-cling root-hbook root-hist root-tree root-io root-gui root-graf root-graf-gpad \
                            root-graf-postscript root-graf3d root-mathcore root-matrix root-net root-physics \
                            root-minuit2 root-mathmore root-tree-player --skip-unavailable
-# CERNLIB (with the static libraries): from the copr averbyts/JADE (chroot fedora-45-s390x) or from
-# Fedora; if the packages are not available for s390x, the source package of the copr (the URL
-# is fixed here, cernlib is not in Fedora 45) is rebuilt: the build dependencies are installed
-# and the binary packages (cernlib-devel, cernlib-static, cernlib-packlib-gfortran, ...) are
-# installed from rpmbuild --rebuild. The rebuild is long under emulation.
-RUN         dnf -y copr enable averbyts/JADE ; \
-            dnf -y install cernlib-devel cernlib-static cernlib-packlib-gfortran || true ; \
-            if ! rpm -q cernlib-devel cernlib-static cernlib-packlib-gfortran >/dev/null 2>&1 ; then \
-              echo "CERNLIB packages not available for $(uname -m): rebuilding from the source package" ; \
-              dnf -y install rpm-build rpmdevtools dnf-utils dnf-plugins-core ; \
-              mkdir -p /tmp/cernlib-src && cd /tmp/cernlib-src ; \
-              curl -s -m 600 -O https://download.copr.fedorainfracloud.org/results/averbyts/JADE/srpm-builds/11387188/cernlib-2026.11.01.1-2.src.rpm ; \
-              ls -la ; \
-              dnf -y builddep ./cernlib-*.src.rpm && \
-              rpmbuild --rebuild ./cernlib-*.src.rpm && \
-              dnf -y install $(find /root/rpmbuild/RPMS -name 'cernlib-devel-*.rpm' -o -name 'cernlib-static-*.rpm' -o -name 'cernlib-packlib-gfortran-*.rpm' -o -name 'cernlib-[0-9]*.rpm' -o -name 'cernlib-packlib-[0-9]*.rpm' -o -name 'cernlib-g77_gfortran-*.rpm' | tr '\n' ' ') ; \
-              cd / && rm -rf /tmp/cernlib-src ; \
-            fi ; \
-            true
+# CERNLIB (with the static libraries), from the copr averbyts/JADE (chroot fedora-45-s390x)
+RUN         dnf -y copr enable averbyts/JADE && \
+            dnf -y install cernlib-devel cernlib-static cernlib-packlib-gfortran
 RUN         dnf -y clean all
