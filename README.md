@@ -146,7 +146,7 @@ This is a repository with software of JADE experiment.
 ### Installing the dependencies
 
    - For CentOS Stream 9 and 10 the dependencies are in the default, CRB and EPEL repositories,
-     and CERNLIB is in the COPR repository ``averbyts/HEPrpms`` (this is what the CI images do, see ``Dockerfile_centos9x86_64_gnu`` and ``Dockerfile_centos10x86_64_gnu``)
+     and CERNLIB is in the COPR repository ``averbyts/JADE`` (this is what the CI images do, see ``Dockerfile_centos9x86_64_gnu`` and ``Dockerfile_centos10x86_64_gnu``)
     ```
     yum -y install epel-release dnf-plugins-core
     dnf config-manager --set-enabled crb
@@ -157,7 +157,7 @@ This is a repository with software of JADE experiment.
     yum -y install  libXcursor  libSM-devel libSM libICE libICE-devel libXext-devel libXext
     yum -y install  libXt-devel motif-devel --skip-broken
     yum -y install  root-*6* --exclude=*doc* --exclude=*debug* --skip-broken
-    dnf -y copr enable averbyts/HEPrpms
+    dnf -y copr enable averbyts/JADE
     yum -y install  cernlib*
     ```
    - For MacOSX the XCode and homebrew should be installed. Most dependencies are in the homebrew default repository,

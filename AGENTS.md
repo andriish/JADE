@@ -43,7 +43,7 @@ docker run -dit --name jade_soft -v $(pwd):/home ghcr.io/andriish/fedora45x86_64
 docker attach jade_soft   # then run jadeinstall.sh / jadetest.sh with --bits=32 inside
 ```
 
-Dockerfiles for Fedora 45 are in the repo root (`Dockerfile_fedora45x86_64i686_gnu` for 32-bit, `Dockerfile_fedora45x86_64_gnu` for 64-bit, `Dockerfile_fedora45aarch64_gnu` for aarch64, built natively by `.github/workflows/fedora45aarch64_gnu.yml` on `ubuntu-24.04-arm`; the scripts reject `--bits=32` on non-x86 hosts and CMake adds `-fsigned-char` for C/C++ on aarch64/arm because the legacy code assumes signed `char`; they install the tools needed by `jadetest.sh`, including `xvfb-run`, Python with Pillow and ghostscript for the display tests); CentOS Stream 9 and 10 have the same kind of images (`Dockerfile_centos9x86_64_gnu`, `Dockerfile_centos10x86_64_gnu`, workflows `centos9x86_64_gnu.yml`, `centos10x86_64_gnu.yml`); CI definitions are in `.github/workflows/` (one file per image, named like its Dockerfile, e.g. `fedora45x86_64_gnu.yml` for `Dockerfile_fedora45x86_64_gnu`, plus `macos27arm64_gnu.yml` for macOS) and `.gitlab-ci.yml`. If a build tool is missing locally, don't try to install the toolchain on the host — say so, or use the container.
+Dockerfiles for Fedora 45 are in the repo root (`Dockerfile_fedora45x86_64i686_gnu` for 32-bit, `Dockerfile_fedora45x86_64_gnu` for 64-bit, `Dockerfile_fedora45aarch64_gnu` for aarch64, built natively by `.github/workflows/fedora45aarch64_gnu.yml` on `ubuntu-24.04-arm`; the scripts reject `--bits=32` on non-x86 hosts and CMake adds `-fsigned-char` for C/C++ on aarch64/arm because the legacy code assumes signed `char`; they install the tools needed by `jadetest.sh`, including `xvfb-run`, Python with Pillow and ghostscript for the display tests); `Dockerfile_fedora45s390x_gnu` is a big-endian s390x image, built and run under QEMU on an x86_64 runner by `.github/workflows/fedora45s390x_gnu.yml` (on request and on a schedule; slow, commands may fail, e.g. no CERNLIB for s390x; nothing has been run there yet; `-fsigned-char` is added for s390x and PowerPC as for aarch64); CentOS Stream 9 and 10 have the same kind of images (`Dockerfile_centos9x86_64_gnu`, `Dockerfile_centos10x86_64_gnu`, workflows `centos9x86_64_gnu.yml`, `centos10x86_64_gnu.yml`); CI definitions are in `.github/workflows/` (one file per image, named like its Dockerfile, e.g. `fedora45x86_64_gnu.yml` for `Dockerfile_fedora45x86_64_gnu`, plus `macos27arm64_gnu.yml` for macOS) and `.gitlab-ci.yml`. If a build tool is missing locally, don't try to install the toolchain on the host — say so, or use the container.
 
 ## Fortran compilers available for testing
 
@@ -123,6 +123,21 @@ The full description (interface, all code changes, the three display tests) is i
 - Result: all 52 tests pass (including the three display tests with a virtual display, see below), with `jade_h2root`.
 - `h2root` of ROOT 6.40.04 segfaults on 64 bit (address truncated to 32 bit in `h2root.cxx` and `hbook.f`). `h2root/` holds the unmodified sources of the ROOT branch `v6-40-00-patches` (commit `e1a6647c7b`, contains the upstream fix), built and installed as `jade_h2root` by `jadeinstall.sh`; `test/CMakeLists.txt` prefers it. See `h2root/README.md`.
 - Debugging ROOT code: the debug packages must match the installed version, from the `updates-debuginfo` repository (`sudo dnf --enablerepo=updates-debuginfo install root-hbook-debuginfo-6.40.04-7.fc45 root-debugsource-6.40.04-7.fc45`); the sources are then under `/usr/src/debug/root-6.40.04-7.fc45.x86_64`.
+
+## Big-endian check: s390x under QEMU
+
+`Dockerfile_fedora45s390x_gnu` and `.github/workflows/fedora45s390x_gnu.yml` run the software on a big-endian machine (s390x) emulated with QEMU on x86_64. It is untested so far. If the `averbyts/JADE` copr (or Fedora) has no s390x CERNLIB, the Dockerfile rebuilds it from the source package (`rpmbuild --rebuild`, build dependencies by `dnf builddep`; the source package is downloaded from a fixed URL in the Dockerfile, the copr build `srpm-builds/11387188/cernlib-2026.11.01.1-2.src.rpm` of `averbyts/JADE`; update it for a newer build; cernlib is not in the Fedora 45 source repositories); the rebuild is long under emulation and the list of binary packages that are installed afterwards is a guess. The emulation is slow (the image build can take hours; the tests have 200 s timeouts). Build and run locally on a Fedora x86_64 host (needs sudo for the install and binfmt; the worktree is a clean checkout of `HEAD`, so commit first to test uncommitted changes, and its build directories stay separate from the native `buildGNU64`; the `:Z` label is for SELinux, drop it with Docker):
+
+```
+sudo dnf install -y qemu-user-static podman && sudo systemctl restart systemd-binfmt && ls /proc/sys/fs/binfmt_misc/ | grep s390x
+cd /home/andriish/Projects/JADE
+podman build --platform linux/s390x -f Dockerfile_fedora45s390x_gnu -t fedora45s390x_gnu .
+podman run --rm --platform linux/s390x fedora45s390x_gnu sh -c 'uname -m; lscpu | grep -i "byte order"'
+git worktree add ../JADE_s390x HEAD
+podman run -it --rm --platform linux/s390x -v "$PWD/../JADE_s390x":/home:Z -w /home fedora45s390x_gnu sh -c 'sh jadeinstall.sh --bits=64 && sh jadetest.sh --bits=64'
+```
+
+With Docker use `docker buildx build --platform linux/s390x -f Dockerfile_fedora45s390x_gnu -t fedora45s390x_gnu --load .` for the build. The expected output of the second command is `s390x` and `Big Endian`. s390x is 64-bit only (no `--bits=32`); `-fsigned-char` is added for s390x and PowerPC as for aarch64.
 
 ## macOS (Apple Silicon, Homebrew)
 

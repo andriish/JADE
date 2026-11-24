@@ -1,0 +1,45 @@
+# JADE build environment, Fedora 45, s390x (64 bit, BIG-ENDIAN), emulated with QEMU on an x86_64 host
+# (docker buildx --platform linux/s390x, see .github/workflows/fedora45s390x_gnu.yml):
+#   sh jadeinstall.sh --bits=64 && sh jadetest.sh --bits=64
+# Same package set as Dockerfile_fedora45aarch64_gnu; its purpose is to run the software on a
+# big-endian machine. Packages that do not exist for s390x (ROOT parts, CERNLIB from the copr)
+# are skipped or may fail without stopping the image build. Built and pushed to
+# ghcr.io/andriish/fedora45s390x_gnu by .github/workflows/fedora45s390x_gnu.yml.
+FROM fedora:45
+# Basic tools; the tests are run with ctest and bash scripts
+RUN         dnf -y install dnf-plugins-core dnf5-plugins && \
+            dnf -y install bc make ninja-build cmake binutils git wget diffutils file sed gawk grep which procps-ng findutils && \
+            dnf -y install gcc-gfortran gcc-c++ gengetopt valgrind
+# Tools used by the tests of the event display (jadez): a virtual X server (xvfb-run,
+# without it these tests are skipped), Mesa for GL, Python with Pillow and ghostscript
+# to check and convert the pictures
+RUN         dnf -y install xorg-x11-server-Xvfb xorg-x11-xauth mesa-dri-drivers mesa-libGL \
+                           python3 python3-pillow ghostscript
+# Development packages
+RUN         dnf -y install openssl-devel libnsl2-devel blas-devel lapack-devel liburing-devel && \
+            dnf -y install libX11-devel libXau-devel libxcb-devel libXdmcp-devel libXt-devel \
+                           libXmu-devel libXext-devel libXaw-devel xbae-devel motif-devel && \
+            (dnf -y install --skip-unavailable pythia8-devel pythia8 HepMC3-devel HepMC3-search-devel) && \
+            dnf -y install root-core root-cling root-hbook root-hist root-tree root-io root-gui root-graf root-graf-gpad \
+                           root-graf-postscript root-graf3d root-mathcore root-matrix root-net root-physics \
+                           root-minuit2 root-mathmore root-tree-player --skip-unavailable
+# CERNLIB (with the static libraries): from the copr averbyts/JADE (chroot fedora-45-s390x) or from
+# Fedora; if the packages are not available for s390x, the source package of the copr (the URL
+# is fixed here, cernlib is not in Fedora 45) is rebuilt: the build dependencies are installed
+# and the binary packages (cernlib-devel, cernlib-static, cernlib-packlib-gfortran, ...) are
+# installed from rpmbuild --rebuild. The rebuild is long under emulation.
+RUN         dnf -y copr enable averbyts/JADE ; \
+            dnf -y install cernlib-devel cernlib-static cernlib-packlib-gfortran || true ; \
+            if ! rpm -q cernlib-devel cernlib-static cernlib-packlib-gfortran >/dev/null 2>&1 ; then \
+              echo "CERNLIB packages not available for $(uname -m): rebuilding from the source package" ; \
+              dnf -y install rpm-build rpmdevtools dnf-utils dnf-plugins-core ; \
+              mkdir -p /tmp/cernlib-src && cd /tmp/cernlib-src ; \
+              curl -s -m 600 -O https://download.copr.fedorainfracloud.org/results/averbyts/JADE/srpm-builds/11387188/cernlib-2026.11.01.1-2.src.rpm ; \
+              ls -la ; \
+              dnf -y builddep ./cernlib-*.src.rpm && \
+              rpmbuild --rebuild ./cernlib-*.src.rpm && \
+              dnf -y install $(find /root/rpmbuild/RPMS -name 'cernlib-devel-*.rpm' -o -name 'cernlib-static-*.rpm' -o -name 'cernlib-packlib-gfortran-*.rpm' -o -name 'cernlib-[0-9]*.rpm' -o -name 'cernlib-packlib-[0-9]*.rpm' -o -name 'cernlib-g77_gfortran-*.rpm' | tr '\n' ' ') ; \
+              cd / && rm -rf /tmp/cernlib-src ; \
+            fi ; \
+            true
+RUN         dnf -y clean all
