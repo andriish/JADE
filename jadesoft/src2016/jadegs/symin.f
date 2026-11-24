@@ -2,11 +2,32 @@
 *     Since the original subroutine SYMIN4 was not found
 *     in the JADE library, try SYMINV which has probably
 *     the same functionality as SYMIN4 (Jan Olsson's suggestion!)
-      SUBROUTINE SYMIN4(A,L,M,N,IFAIL)
-      IMPLICIT REAL*8(A-H,O-Z)
-      DIMENSION A(L,M)
+*** 24/11/26
+*     The call in MUFMAT is  CALL SYMIN4(G,20,NDFT,MWORK,IER): the matrix
+*     G(20,20) is of SINGLE precision, the third argument is the order of the
+*     matrix and the fourth one is a work variable. The wrapper forwarded the
+*     arguments to SYMINV(A,L,M,N,IFAIL), where the order is the FOURTH
+*     argument (here the work variable, i.e. 0) and the matrix is REAL*8: the
+*     matrix was not inverted at all, and all chi**2 of the muon hits with a
+*     number of degrees of freedom other than 2 (for which MUFMAT has its own
+*     formula) were 1.E5 to 1.E8. SYMIN4(A,L,N,W,IFAIL) inverts now the
+*     N x N matrix (at most 30 x 30, single precision) in double precision.
+      SUBROUTINE SYMIN4(A,L,N,W,IFAIL)
+      IMPLICIT NONE
+      INTEGER L,N,IFAIL,I,J
+      REAL A(L,L), W
+      DOUBLE PRECISION AD(30,30)
 C
-      CALL SYMINV(A,L,M,N,IFAIL)
+      IFAIL=1
+      IF(N.GT.30 .OR. L.LT.N .OR. N.LT.1) RETURN
+      DO 10 I=1,N
+        DO 10 J=1,N
+   10 AD(I,J)=A(I,J)
+      CALL SYMINV(AD,30,30,N,IFAIL)
+      IF(IFAIL.NE.0) RETURN
+      DO 20 I=1,N
+        DO 20 J=1,N
+   20 A(I,J)=AD(I,J)
 C
       RETURN
       END

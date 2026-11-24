@@ -1,0 +1,25 @@
+#
+# Process: ee -> gamma*/Z -> mu+ mu- @ 34.6GeV
+#
+Main:numberOfEvents = 1000
+
+WeakSingleBoson:ffbar2gmZ = on
+
+Beams:idA =  11
+Beams:idB = -11
+Beams:eCM =  34.6
+
+# Photon radiation: ISR from the beam electrons (photon emission off the leptons)
+# and FSR from the muons
+HadronLevel:all = on
+PDF:lepton = on
+PartonLevel:ISR = on
+PartonLevel:FSR = on
+SpaceShower:QEDshowerByL = on
+TimeShower:QEDshowerByQ = off
+TimeShower:QEDshowerByL = on
+TimeShower:QCDshower = off
+
+# Set Z properties: only the decay to a pair of muons
+23:onMode = off
+23:onIfAny = 13

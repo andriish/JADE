@@ -829,9 +829,13 @@ The muon chamber calibration is now available, but the muon system remains large
 The simulation of the muon system was never available in the preserved sources: the routines of the Monte Carlo
 \texttt{MURTNE} (tracking through the muon system), \texttt{MUORDR} and \texttt{MUCONM} are empty dummies in all the versions of the sources, including the original of 1982, and
 the libraries of the muon Monte Carlo of the thesis~\cite{Bowdery:1982thesis} could not be retrieved, as stated in ``A Guide to the Resurrected JADE Data and Software''~\cite{JCN:103}.
-No muon chamber hits are therefore simulated, the muon banks \texttt{MUEV} are not created in the Monte Carlo events, and enabling the simulation would need a new
-implementation, not the activation of existing code. In the Supervisor the muon analysis step is skipped
-(level 8 is marked ``unused'' in \texttt{main2016/\allowbreak{}superv/\allowbreak{}user.f}). The documentation of the
+No muon chamber hits are therefore simulated and the raw muon banks \texttt{MUEV} are not created in the Monte Carlo events.
+In the Supervisor the muon analysis step is skipped
+(the user routine \texttt{main2016/\allowbreak{}superv/\allowbreak{}user.f} jumps over it at level 8), unless the environment variable \texttt{JADE\_MUON=1} is set.
+A \emph{toy} simulation was written to test the reconstruction (\texttt{jademus/mumcev.F}, switched on with \texttt{JADE\_MUMC=1}): for each Monte Carlo event it makes the bank \texttt{MUEV} from the true muons of the bank \texttt{VECT}
+(a helix in the field of the coil, a straight line to the yoke, the bend in the yoke as in \texttt{MUFFLE}, no multiple scattering and no energy loss), intersects them with the 634 chambers of the muon calibration, and writes the
+drift and longitudinal times that \texttt{MUCOOR} converts back, with the chamber efficiency and a small smearing, in the half-word format of the real data.
+The real muon analysis reads this bank without errors and finds hits in 90\,\% of the muon pair events. At first it accepted only about 6\,\% of the muons, for both the real data and the toy simulation: the $\chi^2$ of the muon hits was $10^5$ to $10^8$ for every track with a number of degrees of freedom other than two. The reason was a mistake of the port of 1999: the error matrix of the track fit is inverted in \texttt{MUFMAT} with \texttt{CALL SYMIN4(G,20,NDFT,MWORK,IER)} (single precision, the order of the matrix is the third argument), but the replacement of the missing routine \texttt{SYMIN4} by \texttt{SYMINV} forwarded the arguments to a routine of double precision whose order is the fourth argument, i.e.\ the unset work variable: the matrix was not inverted at all (\texttt{MUFMAT} has its own formula for two degrees of freedom, which is why those tracks were fine). After the correction of \texttt{jadegs/symin.f} the muon analysis identifies 82\,\% of the simulated muons of 7~GeV (1632 of 2000, nearly all of the best quality, type 9) and 67\,\% of those of 17~GeV, and finds 3568 muon candidates in the 47\,484 events of the real data (most of them cosmic ray muons, which dominate the raw data). The bank \texttt{MUEV} of the real data has the half-words swapped like \texttt{HEAD} and \texttt{JETC}, which the routine \texttt{HEADFX} now corrects. The tests \texttt{SUPERV\_MUMC\_MC\_4} and \texttt{MUCHECK\_MC\_4} run the toy simulation for the muon pairs. The documentation of the
 muon system is in the JADE Computing Notes on the muon graphics commands~\cite{JCN:52}, the muon Monte Carlo at DESY~\cite{JCN:55}, the JADE Monte Carlo~\cite{JCN:67} and the muon track finding algorithm \textsc{mutana}~\cite{JCN:82}; they are scanned images, available on the CERN Open Data Portal
 (Section~\ref{sec:opendata}), where each note has a record number.
 
@@ -1264,65 +1268,134 @@ Figure~\ref{fig:thrust} shows its output for the real data sample and for the th
 the data sample has few events, of which only a fraction are hadronic events (the data are all the recorded events, the Monte Carlo samples are hadronic events), and the Monte Carlo samples have simple settings (Pythia8 without the initial and final state radiation, \texttt{testPythia1.input} and \texttt{testPythia2.input}), so that the distributions are not expected to agree.
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.48\textwidth]{Figures/thrust_data}\hfill
-\includegraphics[width=0.48\textwidth]{Figures/thrust_mc1}\\[1ex]
-\includegraphics[width=0.48\textwidth]{Figures/thrust_mc2}\hfill
-\includegraphics[width=0.48\textwidth]{Figures/thrust_mc3}
-\caption{Output of the analysis program \texttt{ROOT\_analysis\_1} for the tests of the test suite: the distribution of the thrust variable $1-T$ (\texttt{Tdtc}), normalised to the unit integral and divided by the bin width, $1/N\,\mathrm{d}N/\mathrm{d}(1-T)$, with the statistical uncertainties (the vertical range is 0.012 to 12, so that the first bin of the two Pythia8 samples, whose values are about 15, is outside of the plot), for the real data sample (top left, 44.2~GeV, 353 events),
-the simulated hadronic events of Pythia8 at 34.6~GeV (top right, 2000 events), of PYTHIA 5.7 at 35~GeV (bottom left, 1000 events) and of Pythia8 at 43.8~GeV (bottom right, 2000 events); all the Monte Carlo samples are hadronic events, $e^+e^-\to\gamma^*/Z\to q\bar q$ with the detector simulation and reconstruction. The energy in the legend is calculated from the beam energy of the events. The pictures are written by the tests; the script
-\texttt{doc/Note/make\_display\_figures.sh} prepares them for the note.}
+\adjincludegraphics[trim={0 0 {.085\width} 0},clip,width=0.48\textwidth]{Figures/thrust_data}\hfill
+\adjincludegraphics[trim={0 0 {.085\width} 0},clip,width=0.48\textwidth]{Figures/thrust_mc1}\\[1ex]
+\adjincludegraphics[trim={0 0 {.085\width} 0},clip,width=0.48\textwidth]{Figures/thrust_mc2}\hfill
+\adjincludegraphics[trim={0 0 {.085\width} 0},clip,width=0.48\textwidth]{Figures/thrust_mc3}
+\caption{Output of the analysis program \texttt{ROOT\_analysis\_1} for the tests of the test suite: the distribution of the thrust variable $1-T$ (\texttt{Tdtc}), normalised to the unit integral and divided by the bin width, $1/N\,\mathrm{d}N/\mathrm{d}(1-T)$, with the statistical uncertainties (the vertical range is 0.012 to 12, so that the first bin of the two Pythia8 samples, whose values are about 15, is outside of the plot), for the real data (top left, the large file \texttt{JAD146/file001} of the tapes, 35.0~GeV, 47\,484 events, see below),
+the simulated hadronic events of Pythia8 at 34.6~GeV (top right, 2000 events), of PYTHIA 5.7 at 35~GeV (bottom left, 1000 events) and of Pythia8 at 43.8~GeV (bottom right, 2000 events); all the Monte Carlo samples are hadronic events, $e^+e^-\to\gamma^*/Z\to q\bar q$ with the detector simulation and reconstruction. The energy in the legend is calculated from the beam energy of the events. The pictures are written by the tests; \texttt{make figures} in \texttt{doc/Note} makes them for the note.}
 \label{fig:thrust}
+\end{figure}
+
+The same program also writes a picture of the sum of the energies of the tracks of an event (the pion mass assumed for every track) and of the sum of the energies of the clusters of the lead glass of an event, from the variables
+\texttt{Ptrk} and \texttt{Pclus} of the ntuple, in bins of 1.5~GeV (the same variables as in the analysis \texttt{k0s} below, Figure~\ref{fig:ntenergy}).
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.02\width} 0},clip,width=0.65\textwidth]{Figures/energy_data}\\[1ex]
+\adjincludegraphics[trim={0 0 {.02\width} 0},clip,width=0.65\textwidth]{Figures/energy_mc1}\\[1ex]
+\adjincludegraphics[trim={0 0 {.02\width} 0},clip,width=0.65\textwidth]{Figures/energy_mc2}\\[1ex]
+\adjincludegraphics[trim={0 0 {.02\width} 0},clip,width=0.65\textwidth]{Figures/energy_mc3}
+\caption{Sum of the energies of the tracks (left) and of the clusters of the lead glass (right) of an event, from the ntuples of the tests (\texttt{ROOT\_analysis\_1}), for the real data sample, the simulated hadronic events of Pythia8 at 34.6~GeV, of PYTHIA 5.7 at 35~GeV and of Pythia8 at 43.8~GeV (from top to bottom).}
+\label{fig:ntenergy}
 \end{figure}
 \FloatBarrier
 
 The program \texttt{k0s} is an example of an analysis in Fortran. It reads the BOS file of \texttt{superv} with the routines of the BOS library, takes the tracks of the \texttt{PATR} bank with very loose cuts (the card \texttt{k0s.card}, Listing~\ref{lst:cardk0s}: at least 4 hits in the $r$-$\phi$ plane,
 a distance of the closest approach to the beam of at least 1~mm; the momentum of a track at the vertex must be at least 0.04~GeV) and combines the pairs of tracks of opposite charges with close helices: the projections of the helices on the plane perpendicular to the beam are circles, and their distance
-(zero if they intersect) has to be smaller than 10~mm. The point of the closest approach, an intersection point or the point between the circles, is the candidate vertex. The tracks must go away from the beam at the vertex (the momentum of each track at the vertex has a positive component along the direction from the beam to the vertex; this selects the intersection of the circles that the tracks pass, the other one is usually on the side that a track coming from the beam does not reach). The two tracks are then fitted together to a common vertex (the key \texttt{FITVTX} of the card): a least squares fit of the position in the plane perpendicular to the beam, with the residuals of the distance of the vertex from each of the two circles (divided by the assumed error \texttt{SIGXY}, 2~mm) and of the difference of the $z$ coordinates of the two tracks at the vertex (divided by the assumed error \texttt{SIGZ}, 20~mm, and by $\sqrt2$), which is a fit with three residuals and two parameters; the $z$ coordinate of the vertex is the mean of the two. The start values are those of the candidate point, the iteration is a damped Gauss-Newton one with numerical derivatives, and the covariance matrices of the tracks are not used, since the errors are assumed. The fitted vertex is used for the rest of the analysis, i.e.\ for the cuts and for the momenta of the tracks, and the $\chi^2$ of the fit (one degree of freedom, see the figure) is cut with \texttt{CHIMAX}: the pairs with a $\chi^2$ above 10 are rejected. The primary vertex of the event has the $z$ coordinate of the bank \texttt{ZVTX} of the Supervisor (when the flag of the bank says that the vertex was found) and $x=y=0$, the position of the beam; the events without a vertex, and the events with $|z|$ of the vertex above 20~cm, are rejected. The vertex has to be displaced from the primary vertex by at least 0.5~cm (the distance in three dimensions; there is no upper limit, and no cut on the difference of the $z$ coordinates of the two tracks at the vertex, whose distribution is shown), and the momentum of the pair must point away from the primary vertex, i.e.\ the cosine of the angle between the momentum and the direction from the primary vertex to the vertex, in three dimensions, is above 0.8, and the momentum of the pair is at least 0.1~GeV.
+(zero if they intersect) has to be smaller than 10~mm. The point of the closest approach, an intersection point or the point between the circles, is the candidate vertex. The tracks must go away from the beam at the vertex (the momentum of each track at the vertex has a positive component along the direction from the beam to the vertex; this selects the intersection of the circles that the tracks pass, the other one is usually on the side that a track coming from the beam does not reach). The two tracks are then fitted together to a common vertex (the key \texttt{FITVTX} of the card): a least squares fit of the position in the plane perpendicular to the beam, with the residuals of the distance of the vertex from each of the two circles (divided by the assumed error \texttt{SIGXY}, 2~mm) and of the difference of the $z$ coordinates of the two tracks at the vertex (divided by the assumed error \texttt{SIGZ}, 20~mm, and by $\sqrt2$), which is a fit with three residuals and two parameters; the $z$ coordinate of the vertex is the mean of the two. The start values are those of the candidate point, the iteration is a damped Gauss-Newton one with numerical derivatives, and the covariance matrices of the tracks are not used, since the errors are assumed. The fitted vertex is used for the rest of the analysis, i.e.\ for the cuts and for the momenta of the tracks, and the $\chi^2$ of the fit (one degree of freedom, see the figure) is cut with \texttt{CHIMAX}: the pairs with a $\chi^2$ above 6 are rejected. The primary vertex of the event has the $z$ coordinate of the bank \texttt{ZVTX} of the Supervisor (when the flag of the bank says that the vertex was found) and $x=y=0$, the position of the beam; the events without a vertex, and the events with $|z|$ of the vertex above 15~cm, are rejected. The vertex has to be displaced from the primary vertex by at least 0.5~cm (the distance in three dimensions; there is no upper limit, and no cut on the difference of the $z$ coordinates of the two tracks at the vertex, whose distribution is shown), and the momentum of the pair must point away from the primary vertex, i.e.\ the cosine of the angle between the momentum and the direction from the primary vertex to the vertex, in three dimensions, is above 0.8, and the momentum of the pair is at least 0.1~GeV.
 The momenta of the tracks at the vertex are calculated from the circles with the magnetic field of the \texttt{HEAD} bank and the invariant mass of the pair is calculated with the pion mass.
 The mass is filled into a histogram, which is printed and written to a text file. The cuts are not optimised; the loose cuts of the card give many pairs and a weak peak, and the stricter track cuts of the defaults of the program (10 hits, 5~mm) used without a card give a cleaner peak.
-Figure~\ref{fig:k0s} shows the histograms made by the tests: in the Monte Carlo samples the peak at the mass of $K^0_S$ (0.4976~GeV, dashed line) is seen over the combinatorial background; the real data sample does not show it. The reason is that only a fraction of the events of the real data sample are hadronic events: the sample is a part of the tape with all the recorded events, which include the Bhabha scattering, the cosmic rays, the beam-gas events and other events of low multiplicity, while the Monte Carlo samples contain only hadronic events. The sample has 337 events, of which 251 have a primary vertex (the bank \texttt{ZVTX}) and 171 have a vertex with $|z|<20$~cm, the cut \texttt{ZPMAX} on the events (an event without a vertex is rejected; the Monte Carlo sample at 43.8~GeV keeps 1854 of 1858 events). The 171 events have 766 tracks in the \texttt{PATR} bank (4.5 tracks per event, against 11 in the Monte Carlo samples), and only 62 of them have five or more selected tracks, which is a rough measure of the hadronic events (1795 of 1854 in the Monte Carlo sample). 4 pairs pass all the cuts and are in the range of the histogram, none of them in the mass window of $K^0_S$ (0.47 to 0.52~GeV), with 1 in the sidebands of twice the width, i.e.\ no significant excess. The Monte Carlo samples give about 0.06 pairs above the background per event with five or more tracks, i.e.\ about four in the data sample, so that the absence of a peak is not significant. A comparison of the data with the simulation needs a selection of the hadronic events first. The program prints these numbers. Table~\ref{tab:k0sflow} shows how the number of pairs falls with the cuts (the program prints it): the largest losses are the requirement of close helices (most pairs of tracks have helices far from each other), the requirement that the tracks go away from the beam at the vertex (the intersection of the circles of a pair is often on the side that the tracks do not pass), and the cut on the $\chi^2$ of the fit of the vertex. The pointing of the momentum of the pair from the primary vertex, in three dimensions, removes about a third of the remaining pairs of the simulation (and 4 of 10 of the data). There is no upper cut on the distance of the vertex from the primary vertex and no cut on the difference of $z$ of the two tracks.
+For debugging the reconstruction and the analysis the test suite has a dummy generator of HepMC3 events (\texttt{test/src/dummy\_gen.cc}) that produces $e^+e^-\to$ two particles of the same energy back to back, which go through the same chain as the Pythia8 events
+(the tests \texttt{*\_MC\_5} for $\pi^+\pi^-$ and \texttt{*\_MC\_6} for $K^0_SK^0_S$). The $K^0_S$ decays to $\pi^+\pi^-$ after its flight with the lifetime ($c\tau=26.8$~mm), i.e. the sample has displaced vertices and known $K^0_S$.
+At 14~GeV the program \texttt{k0s} finds a clear peak at the mass of the $K^0_S$ in this sample (277 pairs in the window of 0.47 to 0.52~GeV, with 113 expected from the sidebands, where 225 pairs are found in two windows of the same width, i.e.\ about 165 above the background; the width of the peak is of the order of 40~MeV); at 34.6~GeV the momentum of the $K^0_S$ is 17~GeV, the opening angle of the pions is small and the peak is washed out.
+So the analysis can find $K^0_S$ at this energy; the real data sample has too few hadronic events for a peak (see below).
+Figure~\ref{fig:k0s} shows the histograms made by the tests: in the Monte Carlo samples the peak at the mass of $K^0_S$ (0.4976~GeV, dashed line) is seen over the combinatorial background; the real data sample does not show it. Only a small fraction of the events of the real data sample are hadronic events (this explains the missing peak, see below): the sample is a part of the tape with all the recorded events, which include the Bhabha scattering, the cosmic rays, the beam-gas events and other events of low multiplicity, while the Monte Carlo samples contain only hadronic events. The real data are the large file \texttt{JAD146/file001} of the tapes (1986, beam energy 17.5~GeV, 47\,484 events, not in the repository: it is copied to \texttt{test/jadetapes/JAD146}; the sample file of the repository, 354 events, is used by the Makefile of the note if it is not there). 47\,431 of the events have a primary vertex (the bank \texttt{ZVTX}) and 46\,201 have a vertex with $|z|<15$~cm, the cut \texttt{ZPMAX} on the events (an event without a vertex is rejected; the Monte Carlo sample at 43.8~GeV keeps 1994 of 2000 events). The events have 131\,291 tracks in the \texttt{PATR} bank, of which 117\,806 pass the track selection of the card (Listing~\ref{lst:cardk0s}), i.e.\ 2.6 selected tracks per event, against 10.0 in the Monte Carlo sample; only 3848 of the events (8\,\%) have five or more selected tracks, which is a rough measure of the hadronic events (1898 of 1994, 95\,\%, in the Monte Carlo sample). 2331 pairs pass all the cuts and 1480 are in the range of the histogram, 180 of them in the mass window of $K^0_S$ (0.47 to 0.52~GeV) with 159 expected from the sidebands (318 pairs in two windows of the same width), i.e.\ an excess of $21\pm 17$ pairs, while the Monte Carlo sample at 43.8~GeV gives about 0.05 pairs above the background per event, i.e.\ about 190 for 3848 events. Most of the events of the real data with five or more selected tracks are not hadronic events, however: the mean sum of their track energies is 11~GeV, against 30 to 42~GeV in the simulation. With a hadronic-like selection, a sum of the track energies of at least 20~GeV (the key \texttt{EMIN} of the card, run by hand), the real data have only 245 events, for which the rate of the simulation (0.054 pairs per event) predicts about 13 pairs above the background, and 11 pairs are found in the window with 19.5 expected from the sidebands ($-8\pm 7$): the real data sample is too small to show the peak, and it is not in contradiction with the simulation. Redoing the pattern recognition of the real data (the environment variable \texttt{JADE\_REDO\_PATR=1} makes \texttt{superv} delete the banks \texttt{PATR} and \texttt{JHTL} of the tape and run \texttt{PATREC}) gives about the same number of tracks (131\,990 against 131\,291) and the same picture. A comparison of the data with the simulation needs a selection of the hadronic events first. The program prints these numbers; the mean beam energy of the events is in the titles of the plots of the real data. Table~\ref{tab:k0sflow} shows how the number of pairs falls with the cuts (the program prints it): the largest losses are the requirement that the tracks go away from the beam at the vertex (the intersection of the circles of a pair is often on the side that the tracks do not pass), the cut on the $\chi^2$ of the fit of the vertex and, in the simulation, the requirement of close helices (most pairs of tracks of a hadronic event have helices far from each other). The pointing of the momentum of the pair from the primary vertex, in three dimensions, removes about half of the remaining pairs of the simulation. There is no upper cut on the distance of the vertex from the primary vertex and no cut on the difference of $z$ of the two tracks.
 \begin{table}[H]\centering
 \begin{tabular}{|p{7.6cm}|r|r|}\hline
 Cut & Real data & Pythia8, 43.8~GeV \\\hline\hline
-events with a primary vertex, \texttt{ZPMAX} (events) & 171 of 337 & 1854 of 1858 \\
-events with at least 2 selected tracks, \texttt{NTMIN} & 156 & 1852 \\\hline
-opposite charges, \texttt{D0MIN} of the tracks & 1221 & 62334 \\
-circles with different centres & 1194 & 26857 \\
-distance of the helices, \texttt{DXYMAX} & 162 & 22603 \\
-the tracks go away from the beam at the vertex & 58 & 9681 \\
-fit of the vertex, \texttt{CHIMAX} & 26 & 5456 \\
-distance of the vertex from the primary vertex, \texttt{RVMIN} (no upper cut) & 26 & 5405 \\
-difference of $z$, \texttt{DZMAX} (no cut) & 26 & 5405 \\
-momentum of the tracks, \texttt{PMIN} & 10 & 5333 \\
-pointing of the pair from the primary vertex, \texttt{CPMIN} & 6 & 3687 \\
-momentum of the pair, \texttt{PKMIN} & 6 & 3684 \\
-mass in the range of the histogram & 4 & 2421 \\\hline
+events with a primary vertex, \texttt{ZPMAX} (events) & 46\,201 of 47\,484 & 1994 of 2000 \\
+events with at least 5 selected tracks, \texttt{NTMIN} & 3848 & 1898 \\\hline
+opposite charges, \texttt{D0MIN} of the tracks & 32\,654 & 54\,431 \\
+circles with different centres & 24\,488 & 20\,106 \\
+distance of the helices, \texttt{DXYMAX} & 23\,200 & 18\,800 \\
+the tracks go away from the beam at the vertex & 10\,114 & 8246 \\
+fit of the vertex, \texttt{CHIMAX} & 3338 & 4287 \\
+distance of the vertex from the primary vertex, \texttt{RVMIN} (no upper cut) & 3307 & 4239 \\
+difference of $z$, \texttt{DZMAX} (no cut) & 3307 & 4239 \\
+momentum of the tracks, \texttt{PMIN} & 3307 & 4239 \\
+pointing of the pair from the primary vertex, \texttt{CPMIN} & 2331 & 3300 \\
+momentum of the pair, \texttt{PKMIN} & 2331 & 3300 \\
+mass in the range of the histogram & 1480 & 2156 \\\hline
 \end{tabular}
-\caption{Number of events with a primary vertex in the range and number of pairs of tracks of opposite charges after each cut of the program \texttt{k0s} with the cuts of \texttt{k0s.card}, for the real data sample (337 events) and for the simulated hadronic events of Pythia8 at 43.8~GeV (1858 events).}
+\caption{Number of events with a primary vertex in the range and number of pairs of tracks of opposite charges after each cut of the program \texttt{k0s} with the cuts of \texttt{k0s.card}, for the real data (47\,484 events) and for the simulated hadronic events of Pythia8 at 43.8~GeV (2000 events).}
 \label{tab:k0sflow}
 \end{table}
 
 The test passes if events are read and at least one pair of tracks is combined.
-The plots of the cuts are in two groups of three. Figure~\ref{fig:k0sevent} shows the variables of the events and the first variable of the pairs: the $z$ coordinate of the primary vertex (the bank \texttt{ZVTX}; the events without a vertex are not in it; the cut $|z|<20$~cm is shown), the number of the selected tracks of the event (the cut is at least two, \texttt{NTMIN}; the events with fewer than two tracks in the bank \texttt{PATR} are in the bins 0 and 1) and the distance of the helices of the two tracks of a pair (before the cut; most pairs have intersecting circles, i.e.\ the distance zero, as the circles of the tracks of high momentum are large). The primary vertex of the simulated events is distributed around zero with an r.m.s.\ of about 27~mm, the one of the real data sample is much broader (the r.m.s.\ is about 120~mm for the 174 of the 251 events with a vertex that are in the range of the plot of 80 cm, and 77 are outside of it), which agrees with the data sample having many events that are not from the collisions at the interaction point (beam-gas events, cosmic rays), whose vertex is spread along the beam. The simulated hadronic events have 11 selected tracks on average, the real data sample has mostly events with two or three tracks.
+The plots of the cuts are in two groups of three. Figure~\ref{fig:k0sevent} shows the variables of the events and the first variable of the pairs: the $z$ coordinate of the primary vertex (the bank \texttt{ZVTX}; the events without a vertex are not in it; the cut $|z|<15$~cm is shown), the number of the selected tracks of the event (the cut is at least five, \texttt{NTMIN}; the events with fewer than two tracks in the bank \texttt{PATR} are in the bins 0 and 1) and the distance of the helices of the two tracks of a pair (before the cut; most pairs have intersecting circles, i.e.\ the distance zero, as the circles of the tracks of high momentum are large). The primary vertex of the simulated events is distributed around zero with an r.m.s.\ of about 29~mm, the one of the real data is broader (the r.m.s.\ is about 58~mm for the events in the range of the plot of 80 cm), which agrees with the data sample having many events that are not from the collisions at the interaction point (beam-gas events, cosmic rays), whose vertex is spread along the beam. The simulated hadronic events have 10.0 selected tracks on average, the real data 2.6.
 Figure~\ref{fig:k0scuts} shows the variables of the vertex of the pairs: the distance of the vertex from the primary vertex (at least 5~mm, no upper cut), the difference of the $z$ coordinates of the two tracks at the vertex (no cut) and the $\chi^2$ of the fit of the vertex, in which the cut is shown. The program writes the distributions to the third argument of the command line, which the tests set.
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{Figures/k0s_mass}
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_mass}
 \caption{Invariant mass of the pairs of tracks of opposite charges with close helices (pion mass assumed) for the real data sample (left) and the simulated hadronic events of Pythia8 at 34.6~GeV (centre) and 43.8~GeV (right):
 the output of the Fortran program \texttt{k0s} in the tests of the test suite. The dashed line is the mass of $K^0_S$.}
 \label{fig:k0s}
 \end{figure}
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{Figures/k0s_event}
-\caption{First group of the plots of the cuts of the analysis \texttt{k0s}, for the real data sample (top row) and the simulated hadronic events of Pythia8 at 43.8~GeV (bottom row): the $z$ coordinate of the primary vertex (left, the cut $|z|<20$~cm), the number of the selected tracks of the event (centre, at least 2) and the distance of the helices of the two tracks of a pair in the plane perpendicular to the beam (right, log scale, below 10~mm). The dashed lines are the cuts, the shaded regions are accepted.}
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_event}
+\caption{First group of the plots of the cuts of the analysis \texttt{k0s}, for the real data sample (top row) and the simulated hadronic events of Pythia8 at 43.8~GeV (bottom row): the $z$ coordinate of the primary vertex (left, the cut $|z|<15$~cm), the number of the selected tracks of the event (centre, at least 5) and the distance of the helices of the two tracks of a pair in the plane perpendicular to the beam (right, log scale, below 10~mm). The dashed lines are the cuts, the shaded regions are accepted.}
 \label{fig:k0sevent}
 \end{figure}
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{Figures/k0s_cuts}
-\caption{Second group of the plots of the cuts of the analysis \texttt{k0s}, for the real data sample (top row) and the simulated hadronic events of Pythia8 at 43.8~GeV (bottom row, log scale): the distance of the vertex from the primary vertex (left, at least 5~mm, no upper cut), the difference of $z$ of the two tracks at the vertex (centre, no cut) and the $\chi^2$ of the fit of the vertex (right, below 10). The dashed lines are the cuts, the shaded regions are accepted.}
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_cuts}
+\caption{Second group of the plots of the cuts of the analysis \texttt{k0s}, for the real data sample (top row) and the simulated hadronic events of Pythia8 at 43.8~GeV (bottom row), log scale: the distance of the vertex from the primary vertex (left, at least 5~mm, no upper cut), the difference of $z$ of the two tracks at the vertex (centre, no cut) and the $\chi^2$ of the fit of the vertex (right, below 6). The dashed lines are the cuts, the shaded regions are accepted.}
 \label{fig:k0scuts}
+\end{figure}
+
+The program also adds up the energies of all the selected tracks of an event (the momentum of each track from the circle, the pion mass assumed) and fills the sum into a
+histogram, separately for the events with five or more selected tracks and for those with fewer (Figure~\ref{fig:k0senergy}). The events with at least two tracks in the bank
+\texttt{PATR} are counted. The hadronic events of the simulation have a broad distribution of the sum: the mean is 29.7~GeV at 34.6~GeV and 42.4~GeV at 43.8~GeV (the pion mass is
+assumed for all the tracks), while the simulated events with fewer than five tracks have a mean of about 11~GeV. The picture of the real data is different: the 3848 events
+with five or more selected tracks have a mean sum of only 10.8~GeV, much lower than the 30 to 42~GeV of the simulated hadronic events, and the 42\,353 events with
+fewer tracks have a mean of 5.2~GeV, to which the Bhabha and muon pair events contribute with tracks of the momentum of the beam (17.5~GeV); most of the events are cosmic rays, beam-gas events and noise with low momentum tracks. The same is done for the sum of the energies of all the clusters of the lead glass calorimeter (the bank \texttt{LGCL}, the bottom row of the figure): the mean is 12.9~GeV and 16.1~GeV
+for the hadronic events at 34.6 and 43.8~GeV and only about 1~GeV for the muon pairs (the muons deposit little energy in the lead glass). The real data have 128\,449 clusters in the 47\,484 events; with
+the processing as it was (the energy smearing of the Monte Carlo applied to the data by \texttt{LGCDIR9}, see below) half of them had an energy that is not a number.
+This was a bug of the preserved code on little-endian machines. \texttt{LGCDIR9} decides from the run number whether the event is Monte Carlo (run number up to 500, energy smearing
+\texttt{LGESMR}) or data (energy correction \texttt{LGECOR}); the run number is stored in a half-word of the bank \texttt{HEAD} whose place depends on the machine that wrote the bank
+(Section~\ref{sec:endian}), so on a little-endian machine it was read from the wrong half-word, and the check was disabled in 2023, which smeared the data like Monte Carlo (a cluster of zero energy gave
+a NaN, \texttt{0/0} in the smearing formula). The run number is now taken from the half-word found with the beam energy, as in the ntuple program, and the check is restored; \texttt{LGESMR} does not
+smear clusters without energy and takes the part of the calorimeter from the first word of the cluster (the equivalence of the dummy argument was commented out, so that all the clusters were smeared
+like the barrel ones). The Monte Carlo events are not changed by this (the sums above are the same). The real data of the large file now have a mean sum of the cluster energies of 6.8~GeV for the events with
+five or more tracks and 2.1~GeV for the others, without any NaN.
+The program card has the key \texttt{EMIN} with
+the minimum of the sum for the selection of events (the default is no cut).
+With a minimum of the sum of the track energies of 10~GeV (the key \texttt{EMIN}, run by hand) 495 events of the real data are kept, which give 22 pairs in the window with 34 expected from the sidebands (68 pairs in two windows); for 20~GeV see above.
+
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_energy}
+\caption{Sum of the energies of the selected tracks of an event (pion mass assumed), for the events with five or more selected tracks (blue, filled) and with fewer (red), for the real data
+sample and the simulated hadronic events of Pythia8 at 34.6~GeV and 43.8~GeV (from left to right). Top row: the sum of the energies of the selected tracks; bottom row: the sum of the energies of the clusters of the lead glass.}
+\label{fig:k0senergy}
+\end{figure}
+
+Figures~\ref{fig:k0slept} to~\ref{fig:k0slenergy} show the same plots for the simulated samples without hadronic events: the muon pairs of Pythia8 at 34.6~GeV, the pion pairs $e^+e^-\to\pi^+\pi^-$ of the dummy generator at 34.6~GeV and the events
+$e^+e^-\to K^0_SK^0_S$ of the dummy generator at 14~GeV. The muon and pion pairs have two tracks in the event and almost no pairs of tracks with a common vertex; the sample of $K^0_S$ has a clear peak (see above).
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_mass_lept}
+\caption{Invariant mass of the pairs of tracks with close helices (pion mass assumed) for the simulated muon pairs at 34.6~GeV (left), the pion pairs at 34.6~GeV (centre) and the $K^0_SK^0_S$ events at 14~GeV (right); the dashed line is the mass of $K^0_S$.}
+\label{fig:k0slept}
+\end{figure}
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_event_lept}
+\caption{The variables of the events (the $z$ coordinate of the primary vertex, the number of the selected tracks, the distance of the helices) for the simulated muon pairs at 34.6~GeV (top row), the pion pairs at 34.6~GeV (middle row) and the $K^0_SK^0_S$ events at 14~GeV (bottom row).}
+\label{fig:k0slevent}
+\end{figure}
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_cuts_lept}
+\caption{The distance of the vertex from the primary vertex, the difference of $z$ of the two tracks and the $\chi^2$ of the fit of the vertex, for the same samples as in Figure~\ref{fig:k0slevent} (log scale).}
+\label{fig:k0slcuts}
+\end{figure}
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_energy_lept}
+\caption{Sum of the energies of the selected tracks (top row) and of the clusters of the lead glass (bottom row) for the simulated muon pairs, the pion pairs and the $K^0_SK^0_S$ events (from left to right), events with five or more selected tracks (blue, filled) and with fewer (red).}
+\label{fig:k0slenergy}
 \end{figure}
 \FloatBarrier
 
@@ -1377,7 +1450,7 @@ generator & --- & \texttt{testPythia1.input} & \texttt{py57.card} & \texttt{test
 
 \subsubsection{Short cards}
 \lstinputlisting[caption={The card of \texttt{fptobos} (\texttt{fptobos1.card}).},label={lst:cardfptobos},basicstyle=\ttfamily\small]{../../test/cards/fptobos1.card}
-The first line has the seven integers of the program (Section~\ref{sec:fptobos}): the byte swapping is on (1), at most 100 events are read (100), no events or records are selected for printing
+The first line has the seven integers of the program (Section~\ref{sec:fptobos}): the byte swapping is on (1), at most 1\,000\,000 events are read (1000000; the events above the limit would be written without the conversion of the floating point numbers of their banks, which was a hidden mistake of the card with the limit of 100), no events or records are selected for printing
 (0, 0), the print flag is 0, the debug flag is 0 and the writing of the BOS file is on (1). The second line is the FPACK file of the tapes, the sample of the repository, and the third is the BOS file to write
 (input of the Supervisor).
 
@@ -1419,17 +1492,18 @@ The first line has the seven integers of the program (Section~\ref{sec:fptobos})
 \lstinputlisting[caption={The cuts of the Fortran analysis \texttt{k0s} (\texttt{k0s.card}): the same card for the three tests.},label={lst:cardk0s},basicstyle=\ttfamily\small]{../../test/cards/k0s.card}
 The program (Section~\ref{sec:tests}) reads the cuts from a card of its own, not through FFREAD but with a simple reader of the lines \texttt{KEY value}; a key that is not in the card keeps the default of the program.
 \begin{itemize}
-\item \texttt{NHMIN 4}: a track must have at least 4 hits in the $r$-$\phi$ plane (the default is 10). The cuts on the tracks are very loose.
-\item \texttt{NTMIN 2}: the minimum number of selected tracks of an event; an event with fewer tracks is rejected (two tracks are the minimum for a pair).
+\item \texttt{NHMIN 4}: a track must have at least 4 hits in the $r$-$\phi$ plane (the default is 10). The cuts on the tracks are very loose: there is no cut on the hits in $z$ (\texttt{NZMIN}), on $z$ at the vertex (\texttt{ZTMAX}) and on the distance to the beam (\texttt{D0MAX}), which the program has as options.
+\item \texttt{PTMIN 0.1}: the minimum transverse momentum of a track, in GeV, from the radius of the circle (it suppresses the low momentum background; it is above the cut on the momentum).
+\item \texttt{NTMIN 5}: the minimum number of selected tracks of an event; an event with fewer tracks is rejected (two tracks are the minimum for a pair; the card asks for five, a rough selection of hadronic events).
 \item \texttt{D0MIN 1.0}: the distance of the closest approach of the track to the beam is at least 1~mm (the default is 5~mm), so that the tracks of the decay of a particle that flew away from the beam are selected.
 \item \texttt{PMIN 0.04}: the minimum momentum of a track at the vertex, in GeV (the pions of the decay can have a low momentum).
 \item \texttt{PKMIN 0.1}: the minimum momentum of the pair of tracks, the $K^0_S$ candidate, in GeV.
 \item \texttt{DXYMAX 10.0}: the maximum distance of the two helices in the plane perpendicular to the beam, in mm.
 \item \texttt{RVMIN 5.0}, \texttt{RVMAX 1.0E6}: the range of the distance of the candidate vertex from the primary vertex (in three dimensions), in mm; the upper limit is a very large value, i.e.\ there is no upper cut.
 \item \texttt{DZMAX 1.0E6}: the maximum difference of the $z$ coordinates of the two tracks at the vertex, in mm; a very large value, i.e.\ no cut.
-\item \texttt{CPMIN 0.8}: the minimum cosine of the angle between the momentum of the pair and the direction from the primary vertex to the vertex (in three dimensions). In the Pythia8 sample at 43.8~GeV the cosines 0.98, 0.8, 0.5 and 0 keep 2199, 3687, 4319 and 4763 pairs, and the excess in the mass window of $K^0_S$ over the sidebands is about 59, 105, 122 and 124 pairs.
-\item \texttt{ZPMAX 200.0}: the maximum $|z|$ of the primary vertex of the event, in mm (20~cm); an event without a primary vertex is rejected.
-\item \texttt{FITVTX 1}, \texttt{SIGXY 2.0}, \texttt{SIGZ 20.0}, \texttt{CHIMAX 10.0}: the fit of the vertex of the two tracks together is switched on, with the assumed errors of the position of the circles in the plane perpendicular to the beam and of $z$ in mm, and the maximum $\chi^2$ of the fit.
+\item \texttt{CPMIN 0.5}: the minimum cosine of the angle between the momentum of the pair and the direction from the primary vertex to the vertex (in three dimensions). In the Pythia8 sample at 43.8~GeV the cosines 0.98, 0.9, 0.8, 0.5 and 0 keep 1649, 2426, 2802, 3300 and 3754 pairs, and the excess in the mass window of $K^0_S$ over the sidebands is about 45, 69, 78, 93 and 100 pairs.
+\item \texttt{ZPMAX 150.0}: the maximum $|z|$ of the primary vertex of the event, in mm (15~cm); an event without a primary vertex is rejected.
+\item \texttt{FITVTX 1}, \texttt{SIGXY 2.0}, \texttt{SIGZ 20.0}, \texttt{CHIMAX 6.0}: the fit of the vertex of the two tracks together is switched on, with the assumed errors of the position of the circles in the plane perpendicular to the beam and of $z$ in mm, and the maximum $\chi^2$ of the fit.
 \item \texttt{STOP}: the end of the card.
 \end{itemize}
 

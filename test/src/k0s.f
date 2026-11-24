@@ -40,14 +40,16 @@ C BOS memory
       INTEGER IBLN
 C Cuts
       REAL DXYMAX, RVMIN, RVMAX, DZMAX, PMIN, MPI, D0MIN, CPMIN, PKMIN
-      REAL ZPMAX, FITV, SIGXY, SIGZ, CHIMAX
-      INTEGER NHMIN, NTMIN
+      REAL ZPMAX, FITV, SIGXY, SIGZ, CHIMAX, EMIN
+      REAL ZTMAX, D0MAX, PTMIN
+      INTEGER NHMIN, NTMIN, NZMIN
       PARAMETER (MPI=0.13957)
 C The cuts; the values are those of the card (see RDCARD), these are
 C the defaults if there is no card or a key is missing
       COMMON /CUTS/ DXYMAX, RVMIN, RVMAX, DZMAX, PMIN, D0MIN, CPMIN,
-     +              PKMIN, ZPMAX, FITV, SIGXY, SIGZ, CHIMAX,
-     +              NHMIN, NTMIN
+     +              PKMIN, ZPMAX, FITV, SIGXY, SIGZ, CHIMAX, EMIN,
+     +              ZTMAX, D0MAX, PTMIN,
+     +              NHMIN, NTMIN, NZMIN
 C Histogram
       INTEGER NB
       REAL XLO, XHI
@@ -67,6 +69,18 @@ C Tracks
       INTEGER NT, I, J, K, NPAIR, NEVT, NREC, NPHEAD, NPATR, NTR, NWORD
      +       ,IPSTRT, IP, IOS, IB, NH, NTRIAL
       REAL BKGAUS, EBEAM, CAPV, RMV, PHIV, SIGV
+C Sum of the energies of the selected tracks of an event (pion mass), in
+C bins of 1.5 GeV from 0 to 60 GeV: EHI events with 5 or more selected
+C tracks, ELO events with fewer
+      REAL EHI(NC), ELO(NC), ESUM, ESUMH, ESUML
+      REAL DC1, DC2, XA, YA, PA, PB, COSA, PCOL, EBSUM
+      INTEGER NCOL
+C Sum of the energies of all the clusters of the lead glass calorimeter
+C (bank LGCL) of an event, in bins of 1.5 GeV from 0 to 60 GeV, for the
+C events with 5 or more selected tracks (ECHI) and for the others (ECLO)
+      REAL ECHI(NC), ECLO(NC), ECAL, ECSUMH, ECSUML
+      INTEGER NPCL, IPC1, IPC3, NCLST, NWCL, IPCL, ICL, NCLNAN, NCLALL
+      INTEGER NEH, NEL
       INTEGER NTRTOT, NTSEL, NEV2, NEVPT, NEV5, NZHIT
       COMMON /STAT/ NTRTOT, NTSEL, NEV2, NEVPT, NEV5, NZHIT
       INTEGER NFLOW(11)
@@ -100,6 +114,10 @@ C Tracks
         HPV(I)=0.
         HCHI(I)=0.
         HNT(I)=0.
+        EHI(I)=0.
+        ELO(I)=0.
+        ECHI(I)=0.
+        ECLO(I)=0.
     2 CONTINUE
       CALL BINT(MBOS,MBOS/2,MBOS/8,0)
       OPEN(2,FILE=FNAME,STATUS='OLD',FORM='UNFORMATTED',IOSTAT=IOS)
@@ -111,6 +129,16 @@ C Tracks
       NPAIR=0
       NTRTOT=0
       NTSEL=0
+      NEH=0
+      NCOL=0
+      NCLNAN=0
+      NCLALL=0
+      ECSUMH=0.
+      ECSUML=0.
+      PCOL=0.
+      NEL=0
+      ESUMH=0.
+      ESUML=0.
       NEV2=0
       NEVPT=0
       NEV5=0
@@ -146,6 +174,7 @@ C one is not a beam energy
         BKGAUS=HW(NPHEAD*2+29)/1000.
       ENDIF
       IF (BKGAUS.EQ.0.) BKGAUS=-4.5
+      EBSUM=EBSUM+EBEAM
 C Primary vertex: z from the bank ZVTX (word 1, valid if the flag in word
 C 6 is positive), x and y are the position of the beam (0, 0)
       ZP=0.
@@ -190,6 +219,10 @@ C Tracks: circle in (x,y), dz/ds, z0, charge
         IF (IW(IP+33).GE.12) NZHIT=NZHIT+1
         CALL PRTOCI(IP,CAPV,RMV,PHIV,SIGV)
         IF (CAPV.LT.1.E-8) GO TO 20
+        IF (.3E-4*ABS(BKGAUS)/CAPV.LT.PTMIN) GO TO 20
+        IF (IW(IP+33).LT.NZMIN) GO TO 20
+        IF (ABS(RMV).GT.D0MAX) GO TO 20
+        IF (ABS(RW(IP+31)).GT.ZTMAX) GO TO 20
         NT=NT+1
         CAPT(NT)=CAPV
         RMT(NT)=RMV
@@ -207,7 +240,83 @@ C Tracks: circle in (x,y), dz/ds, z0, charge
 C Number of selected tracks of the event: histogram 0 - 40
       IC=NT+1
       IF (IC.GE.1 .AND. IC.LE.NC) HNT(IC)=HNT(IC)+1.
-C Cut on the number of selected tracks of the event
+C Sum of the energies of all selected tracks (momentum from the circle:
+C pt = .3E-4 |B| R, p = pt sqrt(1+(dz/ds)**2); pion mass), before the cut
+C on the number of tracks; separately for the events with 5 or more
+C selected tracks and for those with fewer
+      ESUM=0.
+      DO 21 I=1,NT
+        PTT=.3E-4*ABS(BKGAUS)*RAD(I)
+        ESUM=ESUM+SQRT(PTT*PTT*(1.+DZT(I)*DZT(I))+MPI*MPI)
+   21 CONTINUE
+      IC=INT(ESUM/1.5)+1
+      IF (NT.GE.5) THEN
+        NEH=NEH+1
+        ESUMH=ESUMH+ESUM
+        IF (IC.GE.1 .AND. IC.LE.NC) EHI(IC)=EHI(IC)+1.
+      ELSE
+        NEL=NEL+1
+        ESUML=ESUML+ESUM
+        IF (IC.GE.1 .AND. IC.LE.NC) ELO(IC)=ELO(IC)+1.
+      ENDIF
+C Sum of the energies of all the clusters of the lead glass (bank LGCL:
+C the pointer to the first cluster and the number of words per cluster are
+C in the general section, the energy is the word 2 of a cluster)
+      ECAL=0.
+      NPCL=IW(IBLN('LGCL'))
+      IF (NPCL.GT.0) THEN
+        IPC1=IW(NPCL+1)
+        IPC3=IW(NPCL+3)
+        NCLST=IW(NPCL+IPC1+2)
+        NWCL=IW(NPCL+IPC1+20)
+        IF (NCLST.GT.0 .AND. NCLST.LT.500 .AND. NWCL.GE.8 .AND.
+     +      NWCL.LT.100) THEN
+          DO 22 ICL=1,NCLST
+            IPCL=NPCL+IPC3-1+(ICL-1)*NWCL
+            NCLALL=NCLALL+1
+C a cluster energy can be NaN (zero energy in LGESMR): not added
+            IF (RW(IPCL+2).EQ.RW(IPCL+2)) THEN
+              ECAL=ECAL+RW(IPCL+2)
+            ELSE
+              NCLNAN=NCLNAN+1
+            ENDIF
+   22     CONTINUE
+        ENDIF
+      ENDIF
+      IC=INT(ECAL/1.5)+1
+      IF (NT.GE.5) THEN
+        ECSUMH=ECSUMH+ECAL
+        IF (IC.GE.1 .AND. IC.LE.NC) ECHI(IC)=ECHI(IC)+1.
+      ELSE
+        ECSUML=ECSUML+ECAL
+        IF (IC.GE.1 .AND. IC.LE.NC) ECLO(IC)=ECLO(IC)+1.
+      ENDIF
+C Events with two selected tracks of opposite charges that are back to
+C back (cos of the angle < -0.98): Bhabha events, muon pairs (and cosmic
+C rays); the momentum of the tracks at the point nearest to the beam is
+C a check of the momentum scale (the beam energy for e+e- -> mu+mu-)
+      IF (NT.EQ.2 .AND. CHG(1)*CHG(2).LT.0.) THEN
+        DC1=SQRT(CX(1)**2+CY(1)**2)
+        DC2=SQRT(CX(2)**2+CY(2)**2)
+        IF (DC1.GT.1.E-6 .AND. DC2.GT.1.E-6) THEN
+          XA=CX(1)*(1.-RAD(1)/DC1)
+          YA=CY(1)*(1.-RAD(1)/DC1)
+          CALL TRMOM(CX(1),CY(1),RAD(1),SIGT(1),DZT(1),BKGAUS,XA,YA,P1)
+          XA=CX(2)*(1.-RAD(2)/DC2)
+          YA=CY(2)*(1.-RAD(2)/DC2)
+          CALL TRMOM(CX(2),CY(2),RAD(2),SIGT(2),DZT(2),BKGAUS,XA,YA,P2)
+          PA=SQRT(P1(1)**2+P1(2)**2+P1(3)**2)
+          PB=SQRT(P2(1)**2+P2(2)**2+P2(3)**2)
+          COSA=(P1(1)*P2(1)+P1(2)*P2(2)+P1(3)*P2(3))/(PA*PB)
+          IF (COSA.LT.-0.98) THEN
+            NCOL=NCOL+1
+            PCOL=PCOL+PA+PB
+          ENDIF
+        ENDIF
+      ENDIF
+C Cut on the sum of the track energies (hadronic events), then on the
+C number of selected tracks of the event
+      IF (ESUM.LT.EMIN) GO TO 10
       IF (NT.LT.NTMIN) GO TO 10
       NEVNT=NEVNT+1
       IF (NT.GE.2) NEV2=NEV2+1
@@ -361,6 +470,29 @@ C End of file
       WRITE(*,'(A,I8)') ' events with |z| of the vertex < ZPMAX:',NEVPV
       WRITE(*,'(A,I8)') ' events with at least NTMIN selected tracks:',
      +  NEVNT
+      IF (NEH.GT.0) WRITE(*,'(A,I8,A,F8.2,A)')
+     +  ' events with 5 or more selected tracks:',NEH,
+     +  '  mean sum of the track energies:',ESUMH/NEH,' GeV'
+      IF (NEL.GT.0) WRITE(*,'(A,I8,A,F8.2,A)')
+     +  ' events with fewer selected tracks:    ',NEL,
+     +  '  mean sum of the track energies:',ESUML/NEL,' GeV'
+      WRITE(*,'(A,I8,A,I8)') ' lead glass clusters:',NCLALL,
+     +  '  with NaN energy (not added):',NCLNAN
+      IF (NEH.GT.0) WRITE(*,'(A,A,F8.2,A)')
+     +  ' events with 5 or more tracks: mean sum of the lead glass',
+     +  ' clusters:',ECSUMH/NEH,' GeV'
+      IF (NEL.GT.0) WRITE(*,'(A,A,F8.2,A)')
+     +  ' events with fewer tracks:     mean sum of the lead glass',
+     +  ' clusters:',ECSUML/NEL,' GeV'
+      IF (NCOL.GT.0) WRITE(*,'(A,I8,A,F8.2,A,F7.2,A)')
+     +  ' back-to-back pairs of two tracks:',NCOL,
+     +  '  mean momentum of the tracks:',PCOL/(2*NCOL),
+     +  ' GeV (beam energy',EBEAM,' GeV)'
+      WRITE(*,*) ' Sum of the track energies (GeV, bins of 1.5 GeV):',
+     +  ' >=5 tracks, <5 tracks'
+      DO 91 I=1,NC
+        WRITE(*,'(F8.2,2F10.0)') (I-0.5)*1.5,EHI(I),ELO(I)
+   91 CONTINUE
       CALL PRINTH(HIST,NB,XLO,BW,NEVT,NTRIAL,NPAIR,ONAME)
       IF (DNAME.NE.' ') THEN
 C Distributions of the distances (variables of the cuts): G the distance of
@@ -375,6 +507,8 @@ C centre in mm and contents
         WRITE(12,'(A,ES12.4)') '# cut Z (mm):',DZMAX
         WRITE(12,'(A,ES12.4)') '# cut ZP (mm):',ZPMAX
         WRITE(12,'(A,I6)') '# cut NT (tracks):',NTMIN
+C mean beam energy of the events (GeV), for the plots
+        IF (NEVT.GT.0) WRITE(12,'(A,F8.3)') '# Ebeam (GeV):',EBSUM/NEVT
         DO 3 I=1,NC
           WRITE(12,'(A,F8.2,F10.0)') 'G',(I-0.5)*0.5,HGAP(I)
     3   CONTINUE
@@ -394,6 +528,22 @@ C centre in mm and contents
         DO 9 I=1,NC
           WRITE(12,'(A,F8.2,F10.0)') 'T',I-0.5,HNT(I)
     9   CONTINUE
+C M, N: sum of the energies of the lead glass clusters of the events with
+C 5 or more selected tracks (M) and with fewer (N)
+        DO 14 I=1,NC
+          WRITE(12,'(A,F8.2,F10.0)') 'M',(I-0.5)*1.5,ECHI(I)
+   14   CONTINUE
+        DO 15 I=1,NC
+          WRITE(12,'(A,F8.2,F10.0)') 'N',(I-0.5)*1.5,ECLO(I)
+   15   CONTINUE
+C H, L: sum of the track energies (GeV) of the events with 5 or more
+C selected tracks (H) and with fewer (L)
+        DO 11 I=1,NC
+          WRITE(12,'(A,F8.2,F10.0)') 'H',(I-0.5)*1.5,EHI(I)
+   11   CONTINUE
+        DO 13 I=1,NC
+          WRITE(12,'(A,F8.2,F10.0)') 'L',(I-0.5)*1.5,ELO(I)
+   13   CONTINUE
         CLOSE(12)
       ENDIF
       IF (NEVT.EQ.0) THEN
@@ -504,6 +654,10 @@ C Pairs in the window of the K0S mass (0.47 - 0.52 GeV) and in the two sidebands
 C Read the cuts from a card file: the lines "KEY value", the lines
 C that start with "C " or * are comments. The keys:
 C   NHMIN  minimum number of hits in the r-phi plane of a track
+C   NZMIN  minimum number of hits in z of a track (default 0)
+C   ZTMAX  maximum |z| of the track at the point nearest to the beam (mm)
+C   D0MAX  maximum distance of the track from the beam (mm)
+C   PTMIN  minimum transverse momentum of a track (GeV, from the radius of the circle)
 C   NTMIN  minimum number of selected tracks of an event
 C   D0MIN  minimum distance of the track to the beam (mm)
 C   PMIN   minimum momentum at the vertex (GeV)
@@ -517,16 +671,20 @@ C   FITVTX 1: refit the two tracks together to a vertex (see VFIT)
 C   SIGXY, SIGZ  assumed errors of the circle position in (x,y) and of z
 C          (mm) in the fit of the vertex
 C   CHIMAX maximum chi2 of the fit of the vertex
+C   EMIN   minimum sum of the energies of the selected tracks of an
+C          event (GeV, pion mass; default 0): a selection of hadronic events
 C   ZPMAX  maximum |z| of the primary vertex (mm); an event without a
 C          primary vertex (bank ZVTX) is rejected
       IMPLICIT NONE
       CHARACTER*(*) CNAME
       REAL DXYMAX, RVMIN, RVMAX, DZMAX, PMIN, D0MIN, CPMIN, PKMIN
-      REAL ZPMAX, FITV, SIGXY, SIGZ, CHIMAX
-      INTEGER NHMIN, NTMIN
+      REAL ZPMAX, FITV, SIGXY, SIGZ, CHIMAX, EMIN
+      REAL ZTMAX, D0MAX, PTMIN
+      INTEGER NHMIN, NTMIN, NZMIN
       COMMON /CUTS/ DXYMAX, RVMIN, RVMAX, DZMAX, PMIN, D0MIN, CPMIN,
-     +              PKMIN, ZPMAX, FITV, SIGXY, SIGZ, CHIMAX,
-     +              NHMIN, NTMIN
+     +              PKMIN, ZPMAX, FITV, SIGXY, SIGZ, CHIMAX, EMIN,
+     +              ZTMAX, D0MAX, PTMIN,
+     +              NHMIN, NTMIN, NZMIN
       CHARACTER*200 LINE, KEY
       INTEGER IOS, L
       REAL V
@@ -546,6 +704,11 @@ C Defaults
       CHIMAX=1.E6
       NHMIN=10
       NTMIN=2
+      EMIN=0.
+      NZMIN=0
+      ZTMAX=1.E6
+      D0MAX=1.E6
+      PTMIN=0.
       IF (CNAME.EQ.' ') RETURN
       OPEN(13,FILE=CNAME,STATUS='OLD',IOSTAT=IOS)
       IF (IOS.NE.0) THEN
@@ -570,6 +733,16 @@ C can start with C (CPMIN, CHIMAX)
         NHMIN=NINT(V)
       ELSEIF (KEY.EQ.'NTMIN') THEN
         NTMIN=NINT(V)
+      ELSEIF (KEY.EQ.'EMIN') THEN
+        EMIN=V
+      ELSEIF (KEY.EQ.'NZMIN') THEN
+        NZMIN=NINT(V)
+      ELSEIF (KEY.EQ.'ZTMAX') THEN
+        ZTMAX=V
+      ELSEIF (KEY.EQ.'D0MAX') THEN
+        D0MAX=V
+      ELSEIF (KEY.EQ.'PTMIN') THEN
+        PTMIN=V
       ELSEIF (KEY.EQ.'D0MIN') THEN
         D0MIN=V
       ELSEIF (KEY.EQ.'PMIN') THEN
@@ -604,6 +777,11 @@ C can start with C (CPMIN, CHIMAX)
    90 CLOSE(13)
       WRITE(*,'(A,I4)') ' cut NHMIN  ',NHMIN
       WRITE(*,'(A,I4)') ' cut NTMIN  ',NTMIN
+      WRITE(*,'(A,F9.3)') ' cut EMIN   ',EMIN
+      WRITE(*,'(A,I4)') ' cut NZMIN  ',NZMIN
+      WRITE(*,'(A,F9.3)') ' cut ZTMAX  ',ZTMAX
+      WRITE(*,'(A,F9.3)') ' cut D0MAX  ',D0MAX
+      WRITE(*,'(A,F9.3)') ' cut PTMIN  ',PTMIN
       WRITE(*,'(A,F9.3)') ' cut D0MIN  ',D0MIN
       WRITE(*,'(A,F9.3)') ' cut PMIN   ',PMIN
       WRITE(*,'(A,F9.3)') ' cut DXYMAX ',DXYMAX

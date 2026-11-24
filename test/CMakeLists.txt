@@ -68,6 +68,7 @@ configure_file(${JADESOFT_CAL_DIR}/bupdat0.b    ${CMAKE_CURRENT_BINARY_DIR}/bupd
 configure_file(${JADESOFT_CAL_DIR}/bupdat1      ${CMAKE_CURRENT_BINARY_DIR}/bupdat1 COPYONLY)
 configure_file(${JADESOFT_CAL_DIR}/bupdat1.b    ${CMAKE_CURRENT_BINARY_DIR}/bupdat1.b COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006    ${CMAKE_CURRENT_BINARY_DIR}/jadetapes/JAD073/file006 COPYONLY)
+set(JADE_SAMPLE_TAPE ${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006)
 
 
 # The bank names of the binary calibration files must have the byte order of the host, otherwise KLREAD
@@ -121,12 +122,12 @@ if (APPLE)
 else()
   target_link_libraries(fpinfo -Wl,--start-group ${BOSINFO_LIBS} -Wl,--end-group)
 endif()
-add_test(NAME FPINFO_DATA_1 COMMAND fpinfo ${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006)
+add_test(NAME FPINFO_DATA_1 COMMAND fpinfo ${JADE_SAMPLE_TAPE})
 set_property( TEST FPINFO_DATA_1 PROPERTY PASS_REGULAR_EXPRESSION "mean CM energy")
 jade_fortran_test(FPINFO_DATA_1 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " ")
 
 # the same chain: the output of fpinfo (FPACK file) and bosinfo (BOS file made from it) must be equal
-add_test(NAME INFO_COMPARE_DATA_1 COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/info_compare.sh $<TARGET_FILE:fpinfo> ${CMAKE_CURRENT_SOURCE_DIR}/jadetapes/JAD073/file006 $<TARGET_FILE:bosinfo> ${CMAKE_CURRENT_BINARY_DIR}/file006.bos ${CMAKE_CURRENT_BINARY_DIR})
+add_test(NAME INFO_COMPARE_DATA_1 COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/info_compare.sh $<TARGET_FILE:fpinfo> ${JADE_SAMPLE_TAPE} $<TARGET_FILE:bosinfo> ${CMAKE_CURRENT_BINARY_DIR}/file006.bos ${CMAKE_CURRENT_BINARY_DIR})
 set_property( TEST INFO_COMPARE_DATA_1 PROPERTY DEPENDS FPTOBOS_DATA_1)
 
 # Event display. Needs a virtual X server (xvfb-run, or JADEZ_TEST_DISPLAY set); skipped otherwise.
@@ -281,6 +282,51 @@ else()
   set_property( TEST K0S_MC_3 PROPERTY  DEPENDS SUPERV_MC_3)
   jade_fortran_test(K0S_MC_3 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2" "F_UFMTENDIAN=big:2" "FORT_CONVERT2=big_ieee")
 
+  # e+ e- -> mu+ mu- (card testPythia3.input) with the same chain: the muons are back-to-back tracks of the momentum
+  # of the beam energy, a check of the magnetic field and of the momentum scale of the reconstruction (k0s prints the
+  # mean momentum of such pairs)
+  add_test(NAME PYTHIA8_PRODUCE_HEPMC3_MC_4 COMMAND pythia8_JADE
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/cards/testPythia3.input
+                                         ${CMAKE_CURRENT_BINARY_DIR}/testPythia3.output )
+
+  add_test(NAME HEPMC3_TO_CPROD_MC_4 COMMAND ${JADESOFT_BIN_DIR}/convert_hepmc_to_jade -i hepmc3 -o jade
+                                          ${CMAKE_CURRENT_BINARY_DIR}/testPythia3.output
+                                          ${CMAKE_CURRENT_BINARY_DIR}/testConvert4.cprod
+                                          -e Mode=0 )
+  set_property( TEST HEPMC3_TO_CPROD_MC_4 PROPERTY DEPENDS PYTHIA8_PRODUCE_HEPMC3_MC_4)
+  set_property( TEST HEPMC3_TO_CPROD_MC_4 PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${ROOT_DIR}/../lib:${ROOT_DIR}/../lib64:$ENV{LD_LIBRARY_PATH}")
+
+  add_test(NAME MCJADE_MC_4 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/mcjade4.card  ${JADESOFT_BIN_DIR}/mcjade )
+  set_property( TEST MCJADE_MC_4 PROPERTY DEPENDS HEPMC3_TO_CPROD_MC_4)
+  jade_fortran_test(MCJADE_MC_4 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " " )
+
+  add_test(NAME SUPERV_MC_4 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/superv4.card  ${JADESOFT_BIN_DIR}/superv )
+  set_property( TEST SUPERV_MC_4 PROPERTY  DEPENDS MCJADE_MC_4)
+  jade_fortran_test(SUPERV_MC_4 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " " )
+
+  add_test(NAME K0S_MC_4 COMMAND k0s ${CMAKE_CURRENT_BINARY_DIR}/superv4.bos ${CMAKE_CURRENT_BINARY_DIR}/k0s_mc_4.txt ${CMAKE_CURRENT_BINARY_DIR}/k0s_mc_4_dist.txt ${CMAKE_CURRENT_SOURCE_DIR}/cards/k0s.card)
+  set_property( TEST K0S_MC_4 PROPERTY DEPENDS SUPERV_MC_4)
+  set_property( TEST K0S_MC_4 PROPERTY PASS_REGULAR_EXPRESSION "back-to-back pairs of two tracks")
+  jade_fortran_test(K0S_MC_4 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2" "F_UFMTENDIAN=big:2" "FORT_CONVERT2=big_ieee")
+
+  # Toy simulation of the muon chambers (jademus/mumcev.F): SUPERV with JADE_MUMC=1 makes the raw muon bank MUEV
+  # from the true muons of the sample, and the muon analysis (step 9, JADE_MUON) reconstructs hits and muons
+  add_test(NAME SUPERV_MUMC_MC_4 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/superv4mu.card  ${JADESOFT_BIN_DIR}/superv )
+  set_property( TEST SUPERV_MUMC_MC_4 PROPERTY  DEPENDS MCJADE_MC_4)
+  jade_fortran_test(SUPERV_MUMC_MC_4 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2;JADE_MUMC=1" "F_UFMTENDIAN=big:1,3-100;JADE_MUMC=1" " " )
+
+  get_filename_component(JADE_LIBDIR ${JADESOFT_INTERFACE_STATIC} DIRECTORY)
+  add_executable(mucheck ${CMAKE_CURRENT_SOURCE_DIR}/src/mucheck.f)
+  set(MUCHECK_LIBS ${JADE_LIBDIR}/libjademus.a ${JADESOFT_LIBRARIES_STATIC} ${CERNLIB_PACKLIB_STATIC} ${CERNLIB_KERNLIB_STATIC} ${CERNLIB_MATHLIB_STATIC} ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    target_link_libraries(mucheck ${MUCHECK_LIBS})
+  else()
+    target_link_libraries(mucheck -Wl,--start-group ${MUCHECK_LIBS} -Wl,--end-group)
+  endif()
+  add_test(NAME MUCHECK_MC_4 COMMAND mucheck ${CMAKE_CURRENT_BINARY_DIR}/superv4mu.bos)
+  set_property( TEST MUCHECK_MC_4 PROPERTY DEPENDS SUPERV_MUMC_MC_4)
+  jade_fortran_test(MUCHECK_MC_4 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2" "F_UFMTENDIAN=big:2" "FORT_CONVERT2=big_ieee")
+
   add_test(NAME ZE4V_MC_3 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/ze4v3.card  ${JADESOFT_BIN_DIR}/ze4v)
   set_property( TEST ZE4V_MC_3 PROPERTY  DEPENDS SUPERV_MC_3)
   jade_fortran_test(ZE4V_MC_3 "GFORTRAN_CONVERT_UNIT=big_endian" "F_UFMTENDIAN=big" " ")
@@ -333,6 +379,62 @@ else()
   message(STATUS "JADE test: valgrind package not found or disabled.  memory check tests disabled.") 
 endif()
 ########################################################################
+
+# Dummy generator of HepMC3 events e+ e- -> pi+ pi- (src/dummy_gen.cc: two particles back to back, the momentum is the beam
+# energy), through the same chain as the other Monte Carlo samples: a simple sample for debugging (the momentum scale and the
+# magnetic field of the reconstruction; k0s prints the mean momentum of the back-to-back pairs of tracks). It needs HepMC3 only.
+if (HepMC3_FOUND)
+  add_executable(dummy_gen ${CMAKE_CURRENT_SOURCE_DIR}/src/dummy_gen.cc)
+  target_link_libraries(dummy_gen ${HEPMC3_LIB})
+  target_include_directories(dummy_gen PRIVATE ${HEPMC3_INCLUDE_DIR})
+  add_test(NAME DUMMYGEN_PRODUCE_HEPMC3_MC_5 COMMAND dummy_gen ${CMAKE_CURRENT_BINARY_DIR}/testDummy5.output 1000 34.6 211)
+  set_property( TEST DUMMYGEN_PRODUCE_HEPMC3_MC_5 PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${ROOT_DIR}/../lib:${ROOT_DIR}/../lib64:$ENV{LD_LIBRARY_PATH}")
+
+  add_test(NAME HEPMC3_TO_CPROD_MC_5 COMMAND ${JADESOFT_BIN_DIR}/convert_hepmc_to_jade -i hepmc3 -o jade
+                                          ${CMAKE_CURRENT_BINARY_DIR}/testDummy5.output
+                                          ${CMAKE_CURRENT_BINARY_DIR}/testConvert5.cprod
+                                          -e Mode=0 )
+  set_property( TEST HEPMC3_TO_CPROD_MC_5 PROPERTY DEPENDS DUMMYGEN_PRODUCE_HEPMC3_MC_5)
+  set_property( TEST HEPMC3_TO_CPROD_MC_5 PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${ROOT_DIR}/../lib:${ROOT_DIR}/../lib64:$ENV{LD_LIBRARY_PATH}")
+
+  add_test(NAME MCJADE_MC_5 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/mcjade5.card  ${JADESOFT_BIN_DIR}/mcjade )
+  set_property( TEST MCJADE_MC_5 PROPERTY DEPENDS HEPMC3_TO_CPROD_MC_5)
+  jade_fortran_test(MCJADE_MC_5 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " " )
+
+  add_test(NAME SUPERV_MC_5 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/superv5.card  ${JADESOFT_BIN_DIR}/superv )
+  set_property( TEST SUPERV_MC_5 PROPERTY  DEPENDS MCJADE_MC_5)
+  jade_fortran_test(SUPERV_MC_5 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " " )
+
+  add_test(NAME K0S_MC_5 COMMAND k0s ${CMAKE_CURRENT_BINARY_DIR}/superv5.bos ${CMAKE_CURRENT_BINARY_DIR}/k0s_mc_5.txt ${CMAKE_CURRENT_BINARY_DIR}/k0s_mc_5_dist.txt ${CMAKE_CURRENT_SOURCE_DIR}/cards/k0s.card)
+  set_property( TEST K0S_MC_5 PROPERTY DEPENDS SUPERV_MC_5)
+  set_property( TEST K0S_MC_5 PROPERTY PASS_REGULAR_EXPRESSION "back-to-back pairs of two tracks")
+  jade_fortran_test(K0S_MC_5 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2" "F_UFMTENDIAN=big:2" "FORT_CONVERT2=big_ieee")
+
+  # e+ e- -> K0S K0S at 14 GeV (a K0S decays to pi+ pi- after its flight, with the lifetime): the K0S analysis finds the peak at
+  # the mass of the K0S (at 34.6 GeV the momentum of the K0S is high and the resolution of the mass of the pair is poor)
+  add_test(NAME DUMMYGEN_PRODUCE_HEPMC3_MC_6 COMMAND dummy_gen ${CMAKE_CURRENT_BINARY_DIR}/testDummy6.output 1000 14 310)
+  set_property( TEST DUMMYGEN_PRODUCE_HEPMC3_MC_6 PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${ROOT_DIR}/../lib:${ROOT_DIR}/../lib64:$ENV{LD_LIBRARY_PATH}")
+
+  add_test(NAME HEPMC3_TO_CPROD_MC_6 COMMAND ${JADESOFT_BIN_DIR}/convert_hepmc_to_jade -i hepmc3 -o jade
+                                          ${CMAKE_CURRENT_BINARY_DIR}/testDummy6.output
+                                          ${CMAKE_CURRENT_BINARY_DIR}/testConvert6.cprod
+                                          -e Mode=0 )
+  set_property( TEST HEPMC3_TO_CPROD_MC_6 PROPERTY DEPENDS DUMMYGEN_PRODUCE_HEPMC3_MC_6)
+  set_property( TEST HEPMC3_TO_CPROD_MC_6 PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${ROOT_DIR}/../lib:${ROOT_DIR}/../lib64:$ENV{LD_LIBRARY_PATH}")
+
+  add_test(NAME MCJADE_MC_6 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/mcjade6.card  ${JADESOFT_BIN_DIR}/mcjade )
+  set_property( TEST MCJADE_MC_6 PROPERTY DEPENDS HEPMC3_TO_CPROD_MC_6)
+  jade_fortran_test(MCJADE_MC_6 "GFORTRAN_CONVERT_UNIT=native" "F_UFMTENDIAN=" " " )
+
+  add_test(NAME SUPERV_MC_6 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/superv6.card  ${JADESOFT_BIN_DIR}/superv )
+  set_property( TEST SUPERV_MC_6 PROPERTY  DEPENDS MCJADE_MC_6)
+  jade_fortran_test(SUPERV_MC_6 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " " )
+
+  add_test(NAME K0S_MC_6 COMMAND k0s ${CMAKE_CURRENT_BINARY_DIR}/superv6.bos ${CMAKE_CURRENT_BINARY_DIR}/k0s_mc_6.txt ${CMAKE_CURRENT_BINARY_DIR}/k0s_mc_6_dist.txt ${CMAKE_CURRENT_SOURCE_DIR}/cards/k0s.card)
+  set_property( TEST K0S_MC_6 PROPERTY DEPENDS SUPERV_MC_6)
+  set_property( TEST K0S_MC_6 PROPERTY PASS_REGULAR_EXPRESSION "pairs with 0.47 < m < 0.52 GeV")
+  jade_fortran_test(K0S_MC_6 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2" "F_UFMTENDIAN=big:2" "FORT_CONVERT2=big_ieee")
+endif()
 
 # Event display with the detector hardware (chamber boundary lines), result tables and
 # orthogonal projections ON, on the Monte Carlo event reconstructed by SUPERV_MC_1.

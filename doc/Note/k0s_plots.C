@@ -1,9 +1,12 @@
 // Plots of the Fortran analysis test/src/k0s.f (tests K0S_DATA_1, K0S_MC_1, K0S_MC_3) for the note:
 //  - the invariant mass of the pi+ pi- pairs (files k0s_data_1.txt, k0s_mc_1.txt, k0s_mc_3.txt:
 //    bin centre, contents, error)
+//  - the sum of the track energies of an event (the lines H for the events with 5 or more selected tracks and L for fewer
+//    in the files *_dist.txt of the three samples)
 //  - the distributions of the distances of the cuts (files k0s_data_1_dist.txt, k0s_mc_3_dist.txt: the lines G, R, Z with the bin
 //    centre in mm and the contents; the first lines have the cuts)
 // usage: root -l -b -q 'k0s_plots.C("<directory of the tests>","<output directory>")'
+#include <cstdio>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -15,19 +18,38 @@
 #include "TStyle.h"
 #include "TPad.h"
 #include "TLatex.h"
+#include "TLegend.h"
 
-static void mass(const std::string& dir, const std::string& out) {
-    const char* files[3] = {"k0s_data_1.txt", "k0s_mc_1.txt", "k0s_mc_3.txt"};
-    const char* titles[3] = {"real data sample", "Pythia8 hadronic events, 34.6 GeV", "Pythia8 hadronic events, 43.8 GeV"};
-    TCanvas c("kmass", "kmass", 1100, 330);
-    c.Divide(3, 1);
+// the samples: the tag of the files k0s_<tag>.txt and k0s_<tag>_dist.txt of the tests, and the title of the plots
+typedef std::vector<std::pair<std::string, std::string> > Samples;
+
+// title of a sample; for the real data the mean beam energy of the events (the line "# Ebeam" of the file *_dist.txt) is added
+static std::string title_of(const std::string& dir, const std::pair<std::string, std::string>& smp) {
+    if (smp.first.compare(0, 4, "data") != 0) return smp.second;
+    std::ifstream in(dir + "/k0s_" + smp.first + "_dist.txt");
+    std::string line;
+    while (std::getline(in, line)) {
+        if (line.rfind("# Ebeam", 0) == 0) {
+            double e = std::stod(line.substr(line.find(':') + 1));
+            char buf[64];
+            snprintf(buf, sizeof(buf), ", E_{beam} = %.1f GeV", e);
+            return smp.second + buf;
+        }
+    }
+    return smp.second;
+}
+
+static void mass(const std::string& dir, const std::string& out, const Samples& S, const std::string& suffix) {
+    const int ns = S.size();
+    TCanvas c(("kmass" + suffix).c_str(), "kmass", 367 * ns, 330);
+    c.Divide(ns, 1);
     std::vector<TH1D*> hs;
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < ns; i++) {
         c.cd(i + 1);
         gPad->SetLeftMargin(0.19);
         gPad->SetBottomMargin(0.16);
-        TH1D* h = new TH1D(Form("hm%d", i), titles[i], 40, 0.3, 0.7);
-        std::ifstream in(dir + "/" + files[i]);
+        TH1D* h = new TH1D(Form("hm%s%d", suffix.c_str(), i), title_of(dir, S[i]).c_str(), 40, 0.3, 0.7);
+        std::ifstream in(dir + "/k0s_" + S[i].first + ".txt");
         double x, n, e;
         int ib = 1;
         while (in >> x >> n >> e && ib <= 40) {
@@ -42,7 +64,7 @@ static void mass(const std::string& dir, const std::string& out) {
         h->SetLineColor(kBlue);
         h->SetMinimum(0);
         h->GetXaxis()->SetTitle("m(#pi^{+}#pi^{-}), GeV");
-        h->GetYaxis()->SetTitle("pairs per 10 MeV");
+        h->GetYaxis()->SetTitle("candidates per 10 MeV");
         h->GetXaxis()->SetTitleSize(0.055);
         h->GetYaxis()->SetTitleSize(0.055);
         h->GetXaxis()->SetLabelSize(0.05);
@@ -56,7 +78,7 @@ static void mass(const std::string& dir, const std::string& out) {
         l->Draw();
         hs.push_back(h);
     }
-    c.SaveAs((out + "/k0s_mass.pdf").c_str());
+    c.SaveAs((out + "/k0s_mass" + suffix + ".pdf").c_str());
 }
 
 // panels: 0 distance of the helices, 1 distance of the vertex from the primary vertex, 2 difference of z,
@@ -127,7 +149,10 @@ static void cutsrow(TCanvas& c, int row, int ncol, const std::vector<int>& panel
         h[j]->SetLineColor(kBlue);
         h[j]->SetMinimum(lin ? 0.0 : 0.5);
         h[j]->GetXaxis()->SetTitle(titles[j]);
-        h[j]->GetYaxis()->SetTitle(j == 3 || j == 5 ? "events" : "pairs");
+        // bin widths: 0.5 mm, 10 mm, 5 mm, 40 mm, 0.5 (chi2), 1 track
+        const char* ytitles[6] = {"candidates per 0.5 mm", "candidates per 10 mm", "candidates per 5 mm",
+                                  "events per 40 mm", "candidates per 0.5", "events per track"};
+        h[j]->GetYaxis()->SetTitle(ytitles[j]);
         h[j]->GetXaxis()->SetTitleSize(0.05);
         h[j]->GetYaxis()->SetTitleSize(0.055);
         h[j]->GetXaxis()->SetLabelSize(0.05);
@@ -188,28 +213,102 @@ static void cutsrow(TCanvas& c, int row, int ncol, const std::vector<int>& panel
 // plots each: the variables of the events and the first of the pairs (k0s_event: z of the primary vertex, number
 // of selected tracks, distance of the helices) and the variables of the vertex of the pairs (k0s_cuts: distance
 // of the vertex from the primary vertex, difference of z, chi2 of the fit)
-static void cuts(const std::string& dir, const std::string& out) {
-    const std::string fd = dir + "/k0s_data_1_dist.txt", fm = dir + "/k0s_mc_3_dist.txt";
+static void cuts(const std::string& dir, const std::string& out, const Samples& S, const std::string& suffix) {
+    const int nr = S.size();
     {
-        TCanvas c("kevent", "kevent", 1200, 700);
-        c.Divide(3, 2);
+        TCanvas c(("kevent" + suffix).c_str(), "kevent", 1200, 350 * nr);
+        c.Divide(3, nr);
         std::vector<int> p = {3, 5, 0};
-        cutsrow(c, 0, 3, p, fd, "real data sample");
-        cutsrow(c, 1, 3, p, fm, "Pythia8 hadronic events, 43.8 GeV");
-        c.SaveAs((out + "/k0s_event.pdf").c_str());
+        for (int r = 0; r < nr; r++) cutsrow(c, r, 3, p, dir + "/k0s_" + S[r].first + "_dist.txt", title_of(dir, S[r]).c_str());
+        c.SaveAs((out + "/k0s_event" + suffix + ".pdf").c_str());
     }
     {
-        TCanvas c("kcuts", "kcuts", 1200, 700);
-        c.Divide(3, 2);
+        TCanvas c(("kcuts" + suffix).c_str(), "kcuts", 1200, 350 * nr);
+        c.Divide(3, nr);
         std::vector<int> p = {1, 2, 4};
-        cutsrow(c, 0, 3, p, fd, "real data sample");
-        cutsrow(c, 1, 3, p, fm, "Pythia8 hadronic events, 43.8 GeV");
-        c.SaveAs((out + "/k0s_cuts.pdf").c_str());
+        for (int r = 0; r < nr; r++) cutsrow(c, r, 3, p, dir + "/k0s_" + S[r].first + "_dist.txt", title_of(dir, S[r]).c_str());
+        c.SaveAs((out + "/k0s_cuts" + suffix + ".pdf").c_str());
     }
+}
+
+// sum of the energies of the selected tracks of an event (pion mass), in bins of 1.5 GeV: the events with 5 or more
+// selected tracks (H, blue) and with fewer (L, red), for the real data sample and the two Monte Carlo samples
+static void energy(const std::string& dir, const std::string& out, const Samples& S, const std::string& suffix) {
+    const int ns = S.size();
+    // row 0: sum of the energies of the selected tracks (lines H and L), row 1: sum of the energies of the clusters of the
+    // lead glass (lines M and N)
+    const char* kh[2] = {"H", "M"};
+    const char* kl[2] = {"L", "N"};
+    const char* xt[2] = {"sum of the track energies, GeV", "sum of the lead glass cluster energies, GeV"};
+    TCanvas c(("cen" + suffix).c_str(), "cen", 400 * ns, 800);
+    c.Divide(ns, 2);
+    for (int row = 0; row < 2; row++)
+        for (int i = 0; i < ns; i++) {
+            c.cd(row * ns + i + 1);
+            gPad->SetLogy();
+            gPad->SetLeftMargin(0.19);
+            gPad->SetBottomMargin(0.16);
+            TH1D* hh = new TH1D(Form("eh%s%d%d", suffix.c_str(), row, i), title_of(dir, S[i]).c_str(), 40, 0, 60);
+            TH1D* hl = new TH1D(Form("el%s%d%d", suffix.c_str(), row, i), title_of(dir, S[i]).c_str(), 40, 0, 60);
+            std::ifstream in(dir + "/k0s_" + S[i].first + "_dist.txt");
+            std::string line;
+            int ih = 1, il = 1;
+            while (std::getline(in, line)) {
+                if (line.empty()) continue;
+                std::istringstream s(line);
+                std::string k;
+                double x, n;
+                s >> k >> x >> n;
+                if (k == kh[row]) hh->SetBinContent(ih++, n);
+                else if (k == kl[row]) hl->SetBinContent(il++, n);
+            }
+            hh->SetStats(0);
+            hh->SetLineColor(kBlue);
+            hh->SetFillColor(kAzure - 9);
+            hl->SetLineColor(kRed);
+            hl->SetLineWidth(2);
+            double mx = std::max(hh->GetMaximum(), hl->GetMaximum());
+            hh->SetMaximum(mx * 3);
+            hh->SetMinimum(0.5);
+            hh->GetXaxis()->SetTitle(xt[row]);
+            hh->GetYaxis()->SetTitle("events per 1.5 GeV");
+            hh->GetXaxis()->SetTitleSize(0.05);
+            hh->GetYaxis()->SetTitleSize(0.055);
+            hh->GetXaxis()->SetLabelSize(0.05);
+            hh->GetYaxis()->SetLabelSize(0.05);
+            hh->GetYaxis()->SetTitleOffset(1.5);
+            hh->Draw("HIST");
+            hl->Draw("HIST SAME");
+            TLegend* lg = new TLegend(0.45, 0.72, 0.93, 0.88);
+            lg->SetBorderSize(0);
+            lg->SetFillStyle(0);
+            lg->AddEntry(hh, Form("5 or more tracks (%.0f events)", hh->Integral()), "f");
+            lg->AddEntry(hl, Form("fewer tracks (%.0f events)", hl->Integral()), "l");
+            lg->Draw();
+        }
+    c.SaveAs((out + "/k0s_energy" + suffix + ".pdf").c_str());
 }
 
 void k0s_plots(const char* dir = "../../buildGNU64/test", const char* out = "Figures") {
     gStyle->SetOptStat(0);
-    mass(dir, out);
-    cuts(dir, out);
+    // the real data sample and the hadronic Monte Carlo (Pythia8)
+    Samples A;
+    A.push_back(std::make_pair("data_1", "real data sample"));
+    A.push_back(std::make_pair("mc_1", "Pythia8 hadronic events, 34.6 GeV"));
+    A.push_back(std::make_pair("mc_3", "Pythia8 hadronic events, 43.8 GeV"));
+    mass(dir, out, A, "");
+    energy(dir, out, A, "");
+    // the cuts: the real data sample and the Pythia8 events at 43.8 GeV
+    Samples A2;
+    A2.push_back(A[0]);
+    A2.push_back(A[2]);
+    cuts(dir, out, A2, "");
+    // the simulated muon pairs, pion pairs and K0S pairs (dummy generator)
+    Samples B;
+    B.push_back(std::make_pair("mc_4", "Pythia8 #mu^{+}#mu^{-}, 34.6 GeV"));
+    B.push_back(std::make_pair("mc_5", "e^{+}e^{-} #rightarrow #pi^{+}#pi^{-}, 34.6 GeV"));
+    B.push_back(std::make_pair("mc_6", "e^{+}e^{-} #rightarrow K^{0}_{S}K^{0}_{S}, 14 GeV"));
+    mass(dir, out, B, "_lept");
+    energy(dir, out, B, "_lept");
+    cuts(dir, out, B, "_lept");
 }

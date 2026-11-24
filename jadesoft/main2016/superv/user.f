@@ -100,6 +100,8 @@ C
 C USER Parameters
 C - I/O options
       INTEGER IOHIST,IOBANK
+      CHARACTER*8 CVLMU
+      INTEGER LVLMU,ISTMU
       LOGICAL LBANK,LHIST
       DATA IOBANK/41/, IOHIST/42/
 C - Misc
@@ -551,9 +553,19 @@ C------------------
 C
  8000 CONTINUE
       IF( LHIST ) CALL HSTFLL(INDX) ! Histos combined from different levels
+C     The muon analysis is skipped, unless the environment variable
+C     JADE_MUON is 1 (or JADE_MUMC, the toy simulation of the muon chambers)
+      CALL GET_ENVIRONMENT_VARIABLE('JADE_MUON',CVLMU,LVLMU,ISTMU)
+      IF( ISTMU.EQ.0 .AND. CVLMU(1:1).EQ.'1' ) THEN
+         INDX=INDX+1
+         RETURN
+      ENDIF
+      CALL GET_ENVIRONMENT_VARIABLE('JADE_MUMC',CVLMU,LVLMU,ISTMU)
+      IF( ISTMU.EQ.0 .AND. CVLMU(1:1).EQ.'1' ) THEN
+         INDX=INDX+1
+         RETURN
+      ENDIF
       GOTO 10                   ! Skip muon analysis
-CCC   INDX=INDX+1
-      RETURN
 C
 C---------------------------------------
 C  INDEX=9: MUON ANALYSIS HAS BEEN DONE 
