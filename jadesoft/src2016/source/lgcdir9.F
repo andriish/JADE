@@ -82,6 +82,13 @@ C............ PUT IN BKGAUSS ETC...1-11-79
           NPHD = IDATA(IPHD)
          CALL TPCNST ( NPHD )
          HRUN=HDATA(NPHD+NPHD+10)
+C        The order of the two half-words of a word of the bank HEAD is that
+C        of the machine that wrote it: real data come from big-endian
+C        machines, so on a little-endian host the run number is in the
+C        neighbouring half-word. The beam energy (half-word 29, MeV) tells
+C        the order: if it is not plausible, the other order is used.
+         IF(HDATA(NPHD+NPHD+29).LT.500.OR.HDATA(NPHD+NPHD+29).GT.30000)
+     +     HRUN=HDATA(NPHD+NPHD+9)
 C        USED TO DECIDE DATA OR MONTE CARLO
 C        IF HRUN=0 NO ENERGY CORRECTION IS DONE.
 C
@@ -212,9 +219,11 @@ C----   ENERGY CORRECTION FOR DATA, ENERGY SMEARING FOR MC.
    20   CONTINUE
         IF(LSTEP.GT.15) ADATA(NPCLS+16)=ADATA(NPCLS+2)
 C           SAVE UNCORRECTED OR UNSMEARED ENERGY (IF MC) IN TO #16.
-CAV MC/DATA distinction is broken?
-CAV        IF(HRUN-500) 212,212,213
-CAV        IF(HRUN-5) 212,212,213
+C       Monte Carlo (run number up to 500) or data. The check was disabled
+C       ("MC/DATA distinction is broken"), because on a little-endian host
+C       the run number of the real data was read from the wrong half-word
+C       (see above), so that the data were smeared like Monte Carlo.
+        IF(HRUN-500) 212,212,213
 C          MONTE CARLO
 212     CONTINUE
         NPGN=NPR+NPR+2

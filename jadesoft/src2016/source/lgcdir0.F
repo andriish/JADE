@@ -68,6 +68,13 @@ C............ PUT IN BKGAUSS ETC...1-11-79
           NPHD = IDATA(IPHD)
          CALL TPCNST ( NPHD )
          HRUN=HDATA(NPHD+NPHD+10)
+C        The order of the two half-words of a word of the bank HEAD is that
+C        of the machine that wrote it: real data come from big-endian
+C        machines, so on a little-endian host the run number is in the
+C        neighbouring half-word. The beam energy (half-word 29, MeV) tells
+C        the order: if it is not plausible, the other order is used.
+         IF(HDATA(NPHD+NPHD+29).LT.500.OR.HDATA(NPHD+NPHD+29).GT.30000)
+     +     HRUN=HDATA(NPHD+NPHD+9)
 C        USED TO DECIDE DATA OR MONTE CARLO
 C        IF HRUN=0 NO ENERGY CORRECTION IS DONE.
 C
