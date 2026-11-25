@@ -5,6 +5,8 @@ C     S.YAMADA   09-05-82   12:00      COPIED FROM F22YAM.PHANAL.S
 C                                      ON 27-05-82
 C---- LG-BARREL TOF
 C
+C     HDATA must be the array of half-words (INTEGER*2), see TPCNST
+      IMPLICIT INTEGER*2 (H)
 #include "cdata.for"
 C
       INTEGER *4 NRUNBN(4)/2010241,2010263,2010361,2010973/
