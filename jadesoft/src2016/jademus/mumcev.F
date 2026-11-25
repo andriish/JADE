@@ -39,8 +39,8 @@ C-----------------------------------------------------------------------
       PARAMETER (MAXC=634)
       INTEGER NHC(MAXC), ITDC(4,MAXC), ITLC(4,MAXC)
       EXTERNAL MUMCBD
-      INTEGER MUGEO(4185), IW0
-      COMMON /MUMCGE/ MUGEO
+      INTEGER MUGEO(4185), MUGEOB(4185), IW0
+      COMMON /MUMCGE/ MUGEO, MUGEOB
       REAL BKGAUS, AVFOO
       COMMON /CGEO1/ BKGAUS, AVFOO(65)
       INTEGER IPV, L0, L1, NV, IPART, J, IPM, NWORDS, NHW
@@ -72,8 +72,15 @@ C-----------------------------------------------------------------------
       IF(.NOT.LACT) RETURN
 C the geometry of the block data MUMCBD (MCJADE reads no calibration)
       IF(LFIRST) THEN
-        DO 1 IW0=1,4185
-    1   MUCAL(IW0)=MUGEO(IW0)
+C the words of a little-endian host or of a big-endian one (the first byte
+C in memory of the integer 1 is 1 on a little-endian host)
+        IF(TRANSFER(1,1_1).EQ.1_1) THEN
+          DO 1 IW0=1,4185
+    1     MUCAL(IW0)=MUGEO(IW0)
+        ELSE
+          DO 2 IW0=1,4185
+    2     MUCAL(IW0)=MUGEOB(IW0)
+        ENDIF
       ENDIF
       IF(IZOEP1.EQ.0 .AND. IZOEP3.EQ.0) RETURN
 C the bank exists already
