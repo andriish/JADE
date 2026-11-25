@@ -6,6 +6,11 @@ C---- LAST MODIFICATION   22-08-79  10:05  E.ELSEN
 C
 C---- FETCH EVENT CONSTANTS FOR ANALYSIS FROM THE 'HEAD'-BANK
 C
+C     HDATA must be the array of half-words (INTEGER*2): without the
+C     IMPLICIT statement it is a REAL array of words (the declaration is
+C     not in cdata.for) and the beam energy and the field are taken from
+C     other words of the bank space
+      IMPLICIT INTEGER*2 (H)
 #include "cdata.for"
 C
       COMMON /CTPCNS/ EBMGEV, BKGAUS, NORDFG(15)
