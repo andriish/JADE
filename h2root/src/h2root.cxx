@@ -901,17 +901,24 @@ void convert_cwn(Int_t id)
                }
             }
 
+            // The low-order bytes of the 4-byte integer written by Fortran are the first bytes in memory
+            // on a little-endian host and the last bytes on a big-endian one
+#ifdef R__BYTESWAP
+            const Int_t lowoff = 0;
+#else
+            const Int_t lowoff = (nBytesUsed < 4) ? isize - nBytesUsed : 0;
+#endif
             if(nBytesUsed == 1) {
                for(Int_t index = 0; index < ielem; index++) {
                   // shift all chars with data to be one after another
-                  bigbuf[bufpos + index*nBytesUsed ] =  bigbuf[bufpos + index * isize];
+                  bigbuf[bufpos + index*nBytesUsed ] =  bigbuf[bufpos + index * isize + lowoff];
                }
             } else {
                if(nBytesUsed == 2) {
                   for(Int_t index = 0; index < ielem; index++) {
                      // shift all shorts ( 2 chars) with data to be one after another
-                     bigbuf[bufpos + index*nBytesUsed ] =  bigbuf[bufpos + index * isize];
-                     bigbuf[bufpos + index*nBytesUsed+1 ] =  bigbuf[bufpos + index * isize+1];
+                     bigbuf[bufpos + index*nBytesUsed ] =  bigbuf[bufpos + index * isize + lowoff];
+                     bigbuf[bufpos + index*nBytesUsed+1 ] =  bigbuf[bufpos + index * isize + lowoff + 1];
                   }
                }
             }

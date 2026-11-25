@@ -32,6 +32,25 @@ typedef long off_t;
 #include <sys/types.h>
 #include <sys/stat.h>
 
+/* The byte inversion of the exchange format (big-endian words) is only needed on little-endian
+   hosts. Big-endian host: the byte order of the compiler (GCC, Clang), else the architecture macros
+   (s390/s390x, SPARC, PA-RISC, m68k, big-endian MIPS and ARM, PowerPC unless little-endian: ppc64le). */
+#if defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && defined(__ORDER_LITTLE_ENDIAN__)
+#  if (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+#    define MINICERN_BIG_ENDIAN_HOST 1
+#  else
+#    define MINICERN_BIG_ENDIAN_HOST 0
+#  endif
+#elif defined(__s390__) || defined(__s390x__) || defined(__sparc__) || defined(__sparc) || \
+      defined(__hppa__) || defined(__m68k__) || defined(__MIPSEB__) || defined(__ARMEB__) || \
+      defined(__AARCH64EB__) || defined(__BIG_ENDIAN__) || \
+      ((defined(__powerpc__) || defined(__powerpc64__) || defined(__ppc__) || defined(__ppc64__) || \
+        defined(__PPC__) || defined(__PPC64__)) && !defined(__LITTLE_ENDIAN__))
+#  define MINICERN_BIG_ENDIAN_HOST 1
+#else
+#  define MINICERN_BIG_ENDIAN_HOST 0
+#endif
+
 
 char *fchtak(char *ftext, int lgtext)
 {
@@ -74,6 +93,8 @@ void vxinvb_(int *ixv, int *n)
    int limit, jloop;
    int out;
    unsigned char *n1, *n2;
+   /* the words of the exchange format are big-endian: nothing to invert on a big-endian host */
+   if (MINICERN_BIG_ENDIAN_HOST) return;
    n2 = (unsigned char *) &out;
    limit = *n;
    for (jloop = 0; jloop < limit; jloop++) {
@@ -96,6 +117,10 @@ void vxinvc_ (int *iv, int *ixv, int *n)
    unsigned char *n1, *n2;
    n2 = (unsigned char *) &out;
    limit = *n;
+   if (MINICERN_BIG_ENDIAN_HOST) {   /* big-endian host: copy without inversion */
+      for (jloop = 0; jloop < limit; jloop++) ixv[jloop] = iv[jloop];
+      return;
+   }
    for (jloop = 0; jloop < limit; jloop++) {
       n1 = (unsigned char *) &iv[jloop];
       n2[0] = n1[3];
