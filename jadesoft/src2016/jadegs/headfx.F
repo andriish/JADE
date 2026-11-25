@@ -20,7 +20,7 @@ C-----------------------------------------------------------------------
 #include "cdata.for"
       INTEGER IP, N, I, K
       INTEGER*2 HT
-      INTEGER IPB, NJ, IB
+      INTEGER IPB, NJ, IB, I1, I2
 C
       IP=IDATA(IBLN('HEAD'))
       IF(IP.LE.0) RETURN
@@ -54,6 +54,25 @@ C gives up on a mismatch: no lead glass clusters at all).
    16     CONTINUE
         ENDIF
    18 CONTINUE
+C The lead glass cluster bank LGCL of the tape data mixes words and
+C half-words: the words from the pointer in word 2 up to the pointer to the
+C clusters (word 3) are pairs of half-words (first and last block of each
+C cluster, which LGCDIR9 reads with HDATA to get the number of blocks for
+C the energy correction); the other sections are words.
+      IPB=IDATA(IBLN('LGCL'))
+      IF(IPB.GT.0) THEN
+        NJ=IDATA(IPB)
+        I1=IDATA(IPB+2)
+        I2=IDATA(IPB+3)-1
+        IF(I1.GE.4 .AND. I2.GE.I1 .AND. I2.LE.NJ) THEN
+          DO 17 I=I1,I2
+            K=2*(IPB+I)-1
+            HT=HDATA(K)
+            HDATA(K)=HDATA(K+1)
+            HDATA(K+1)=HT
+   17     CONTINUE
+        ENDIF
+      ENDIF
    20 CONTINUE
       RETURN
       END
