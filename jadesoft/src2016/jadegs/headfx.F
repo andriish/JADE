@@ -12,15 +12,15 @@ C Carlo events of MCJADE are written on the same host and are in the right
 C order. The beam energy (half-word 29, MeV) tells the order: if it is
 C not plausible (500 to 30000) while half-word 30 would be, the two
 C half-words of each word of the bank are exchanged. The routine is
-C called after every BREAD of the events (EVREAD) and also swaps the muon
-C bank MUEV; the output of SUPERV has the right order, so that it does
-C nothing when it is called again.
+C called after every BREAD of the events (EVREAD) and also swaps the banks
+C MUEV, ALGL and ALGN of half-words; the output of SUPERV has the right
+C order, so that it does nothing when it is called again.
 C-----------------------------------------------------------------------
       IMPLICIT INTEGER*2 (H)
 #include "cdata.for"
       INTEGER IP, N, I, K
       INTEGER*2 HT
-      INTEGER IPB, NJ
+      INTEGER IPB, NJ, IB
 C
       IP=IDATA(IBLN('HEAD'))
       IF(IP.LE.0) RETURN
@@ -36,17 +36,24 @@ C or in the neighbouring half-word?
         HDATA(K)=HDATA(K+1)
         HDATA(K+1)=HT
    10 CONTINUE
-C The raw muon chamber bank MUEV is a stream of half-words as well.
-      IPB=IDATA(IBLN('MUEV'))
-      IF(IPB.GT.0) THEN
-        NJ=IDATA(IPB)
-        DO 16 I=1,NJ
-          K=2*(IPB+I)-1
-          HT=HDATA(K)
-          HDATA(K)=HDATA(K+1)
-          HDATA(K+1)=HT
-   16   CONTINUE
-      ENDIF
+C The banks of half-words of the tape data: the raw muon chambers MUEV,
+C and the raw lead glass bank ALGL and the calibrated one ALGN (LGDCPY
+C checks HDATA(NNP+3).EQ.1 and the pointers in the half-words 4 to 6 and
+C gives up on a mismatch: no lead glass clusters at all).
+      DO 18 IB=1,3
+        IF(IB.EQ.1) IPB=IDATA(IBLN('MUEV'))
+        IF(IB.EQ.2) IPB=IDATA(IBLN('ALGL'))
+        IF(IB.EQ.3) IPB=IDATA(IBLN('ALGN'))
+        IF(IPB.GT.0) THEN
+          NJ=IDATA(IPB)
+          DO 16 I=1,NJ
+            K=2*(IPB+I)-1
+            HT=HDATA(K)
+            HDATA(K)=HDATA(K+1)
+            HDATA(K+1)=HT
+   16     CONTINUE
+        ENDIF
+   18 CONTINUE
    20 CONTINUE
       RETURN
       END
