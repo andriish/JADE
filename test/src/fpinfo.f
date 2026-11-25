@@ -12,7 +12,13 @@ C HEAD. The order of the two half-words of a word is found from the beam
 C energy (500-30000 MeV), as in jtuple/src/jtevnt.F: if half-word 29 is
 C not a plausible beam energy, the neighbouring half-words are used.
 C
-C usage: fpinfo <FPACK file>
+C The words of the FPACK files are big-endian. UNPJAD swaps the bytes of
+C the words if its flag IBYTSW is 1; by default this is done on a
+C little-endian host only (the byte order of the host is found at run
+C time). The second argument sets the flag (0: no swapping, 1: swapping)
+C for files in another byte order.
+C
+C usage: fpinfo <FPACK file> [<byte swapping: 0 or 1>]
 C Exit code 0 if at least one event was read.
 C-----------------------------------------------------------------------
       IMPLICIT NONE
@@ -36,11 +42,13 @@ C-----------------------------------------------------------------------
       INTEGER IOS, NEVT, IRUN, IBM, I, J, LB, IPOS, IUNPFL, IHEAD
       INTEGER NHEAD
       CHARACTER*256 FNAME
+      CHARACTER*16 CSWAP
       DOUBLE PRECISION ESUM
 
       CALL GET_COMMAND_ARGUMENT(1,FNAME)
       IF (FNAME.EQ.' ') THEN
-        WRITE(*,*) 'usage: fpinfo <FPACK file>'
+        WRITE(*,*) 'usage: fpinfo <FPACK file> ',
+     $     '[<byte swapping: 0 or 1>]'
         STOP 2
       ENDIF
       IPZ=0
@@ -50,11 +58,19 @@ C-----------------------------------------------------------------------
         WRITE(*,*) 'fpinfo: cannot open ',FNAME(1:LEN_TRIM(FNAME))
         STOP 2
       ENDIF
-C The words of the FPACK file are big-endian: UNPJAD swaps the bytes on a
-C little-endian host (IBYTSW=1) and must not on a big-endian one (the first
-C byte in memory of the integer 1 is 1 on a little-endian host)
+C Byte swapping of the words of the FPACK file (big-endian): by default
+C on a little-endian host only (the first byte in memory of the integer 1
+C is 1 on a little-endian host), or as given by the second argument
       IBYTSW=0
       IF (TRANSFER(1,1_1).EQ.1_1) IBYTSW=1
+      CALL GET_COMMAND_ARGUMENT(2,CSWAP)
+      IF (CSWAP.NE.' ') THEN
+        READ(CSWAP,*,IOSTAT=IOS) IBYTSW
+        IF (IOS.NE.0 .OR. (IBYTSW.NE.0 .AND. IBYTSW.NE.1)) THEN
+          WRITE(*,*) 'fpinfo: the byte swapping flag must be 0 or 1'
+          STOP 2
+        ENDIF
+      ENDIF
       NRUN=0
       NEVT=0
       ESUM=0.D0
