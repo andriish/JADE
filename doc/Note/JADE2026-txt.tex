@@ -616,7 +616,7 @@ changed. The cases that were found are:
 \item the integers that overlay pairs of half-words in the muon calibration bank (Section~\ref{sec:calfiles});
 \item the packed bytes of the character strings of the display (\texttt{GRTEXT}, \texttt{EOUTST}), which were garbled for strings whose length is not a multiple of four,
 and of the stroke font (\texttt{HEMSYM}), whose numbers were not drawn at all;
-\item the half-words of the HEAD bank (run and event number, beam energy) that \texttt{jtjob} reads: the two half-words of a word are in the order of the big-endian machine in the files of the real data, but in the order of the little-endian machine in the Monte Carlo files written by \texttt{mcjade}. The program read the half-words of the real data in the wrong order, so that the ntuple had the run 24, the event 1 and the beam energy $-4.2$~GeV for every event (the correct values are the run 18008, the increasing event numbers and 22.1~GeV, i.e.\ the energy of the sample 44); the order is now found from the beam energy;
+\item the half-words of the HEAD bank (run and event number, beam energy) that \texttt{jtjob} reads: the two half-words of a word are in the order of the big-endian machine in the files of the real data, but in the order of the little-endian machine in the Monte Carlo files written by \texttt{mcjade}. The program read the half-words of the real data in the wrong order, so that the ntuple had the run 24, the event 1 and the beam energy $-4.2$~GeV for every event (the correct values are the run 18008, the increasing event numbers and 22.1~GeV, i.e.\ the energy of the sample 44); the order is now found from the beam energy, and the routine \texttt{HEADFX} (called after each read of an event in the supervisor) exchanges the half-words of the banks \texttt{HEAD}, \texttt{MUEV}, \texttt{ALGL}, \texttt{ALGN} and of the block map of \texttt{LGCL} of the real data, so that the lead glass analysis finds its data in the order it expects;
 \end{itemize}
 
 
@@ -1350,15 +1350,22 @@ histogram, separately for the events with five or more selected tracks and for t
 assumed for all the tracks), while the simulated events with fewer than five tracks have a mean of about 11~GeV. The picture of the real data is different: the 3848 events
 with five or more selected tracks have a mean sum of only 10.8~GeV, much lower than the 30 to 42~GeV of the simulated hadronic events, and the 42\,353 events with
 fewer tracks have a mean of 5.2~GeV, to which the Bhabha and muon pair events contribute with tracks of the momentum of the beam (17.5~GeV); most of the events are cosmic rays, beam-gas events and noise with low momentum tracks. The same is done for the sum of the energies of all the clusters of the lead glass calorimeter (the bank \texttt{LGCL}, the bottom row of the figure): the mean is 12.9~GeV and 16.1~GeV
-for the hadronic events at 34.6 and 43.8~GeV and only about 1~GeV for the muon pairs (the muons deposit little energy in the lead glass). The real data have 128\,449 clusters in the 47\,484 events; with
+for the hadronic events at 34.6 and 43.8~GeV and only about 1~GeV for the muon pairs (the muons deposit little energy in the lead glass). The real data have 124\,930 clusters in the 47\,484 events; with
 the processing as it was (the energy smearing of the Monte Carlo applied to the data by \texttt{LGCDIR9}, see below) half of them had an energy that is not a number.
 This was a bug of the preserved code on little-endian machines. \texttt{LGCDIR9} decides from the run number whether the event is Monte Carlo (run number up to 500, energy smearing
 \texttt{LGESMR}) or data (energy correction \texttt{LGECOR}); the run number is stored in a half-word of the bank \texttt{HEAD} whose place depends on the machine that wrote the bank
 (Section~\ref{sec:endian}), so on a little-endian machine it was read from the wrong half-word, and the check was disabled in 2023, which smeared the data like Monte Carlo (a cluster of zero energy gave
 a NaN, \texttt{0/0} in the smearing formula). The run number is now taken from the half-word found with the beam energy, as in the ntuple program, and the check is restored; \texttt{LGESMR} does not
 smear clusters without energy and takes the part of the calorimeter from the first word of the cluster (the equivalence of the dummy argument was commented out, so that all the clusters were smeared
-like the barrel ones). The Monte Carlo events are not changed by this (the sums above are the same). The real data of the large file now have a mean sum of the cluster energies of 6.8~GeV for the events with
-five or more tracks and 2.1~GeV for the others, without any NaN.
+like the barrel ones). The Monte Carlo events are not changed by this (the sums above are the same). The energies were still wrong for a second reason, also related to the half-words of the banks of the tape: the cluster bank \texttt{LGCL} of the tape
+contains, besides words, a block map of pairs of half-words (the first and the last lead glass block of each cluster), from which \texttt{LGCDIR9} gets the number of blocks of
+a cluster for the energy correction \texttt{LGECOR}, and the formatted bank \texttt{ALGN} (like the raw \texttt{ALGL}) is an array of half-words that \texttt{LGDCPY} checks before the
+cluster search (without a valid bank the search returns no clusters: only 12 of the 354 events of the sample file had clusters). On little-endian machines these half-words were in the wrong
+order. The routine \texttt{HEADFX}, which already exchanged the half-words of the \texttt{HEAD} bank and of the muon bank, now exchanges those of \texttt{ALGL}, \texttt{ALGN} and of the block map of
+\texttt{LGCL}, too. The result was checked against the processing on a big-endian machine (s390x, emulated with QEMU, which has no such problem): the mean sum of the cluster energies of the
+first 3000 events of the large file is 1.358~GeV per event on both (the tape has 1.414~GeV; it was 2.60~GeV before the correction), and the energies of all the clusters agree to $10^{-3}$ in 2962 of the
+3000 events (in the others by up to 8\%). The real data of the large file now have a mean sum of the cluster energies of 3.6~GeV for the events with
+five or more tracks and 1.2~GeV for the others, without any NaN; the sums of 6.8 and 2.1~GeV found before this correction were too high.
 The program card has the key \texttt{EMIN} with
 the minimum of the sum for the selection of events (the default is no cut).
 With a minimum of the sum of the track energies of 10~GeV (the key \texttt{EMIN}, run by hand) 495 events of the real data are kept, which give 22 pairs in the window with 34 expected from the sidebands (68 pairs in two windows); for 20~GeV see above.
