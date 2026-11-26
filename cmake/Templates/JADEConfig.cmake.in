@@ -4,7 +4,9 @@
 #
 # Imported targets: JADE::<name> for every installed executable and static library.
 # Variables:
-#   JADE_VERSION, JADE_PREFIX, JADE_BIN_DIR, JADE_LIB_DIR, JADE_DATA_DIR, JADE_CAL_DIR
+#   JADE_VERSION, JADE_PREFIX, JADE_BIN_DIR, JADE_LIB_DIR, JADE_DATA_DIR, JADE_CAL_DIR,
+#   JADE_TEST_DIR (the test project with cards, programs and sample data: documentation and example of the use),
+#   JADE_EXAMPLES_DIR (examples of analyses: a CMake project)
 #   JADE_TOOLCHAIN, JADE_BITS, JADE_FORCE_32, JADE_BIG_ENDIAN (byte order of the host), JADE_TOOLCHAIN_ENV (NAME=VALUE list), JADE_PARTS
 #   JADE_Fortran_COMPILER, JADE_C_COMPILER, JADE_CXX_COMPILER (and _ID, _VERSION)
 #   JADE_OLD_MC, JADE_FPE, JADE_CAL_DIR_NAME (options of the build)
@@ -18,7 +20,11 @@
 #   JADE_HEPMC3_LIBRARIES, JADE_ROOT_LIBRARIES: the external libraries that the parts were linked with,
 #   JADE_EXTERNAL_LIBRARIES: all of them
 # The variables of JADESOFTConfig.cmake (JADESOFT_*) are defined too.
-# The macro jade_fortran_test(<test> <GNU env> <Intel env> <NAG env>) sets the environment of a test per Fortran compiler.
+# Macros and functions: jade_use_toolchain() (before project(): compilers, environment), jade_use_flags() (after
+# project(): compiler and linker flags of the build), jade_link_group(<target> <libraries>...) (static libraries that
+# refer to each other), jade_fortran_test(<test> <GNU env> <Intel env> <NAG env>) (environment of a test per Fortran
+# compiler). After project(): the targets CERNLIB::packlib/kernlib/mathlib, LAPACK::LAPACK, BLAS::BLAS (found as
+# dependencies) and the lists JADE_CORE_TARGETS and JADE_CERNLIB_TARGETS.
 # With JADE_NO_TARGETS set only the variables and the macro are defined (usable before project()).
 
 @PACKAGE_INIT@
@@ -33,6 +39,8 @@ set_and_check(JADE_BIN_DIR  "@PACKAGE_CMAKE_INSTALL_BINDIR@")
 set_and_check(JADE_LIB_DIR  "@PACKAGE_CMAKE_INSTALL_LIBDIR@")
 set_and_check(JADE_DATA_DIR "@PACKAGE_CMAKE_INSTALL_DATADIR@/JADESOFT")
 set_and_check(JADE_CAL_DIR  "@PACKAGE_CMAKE_INSTALL_DATADIR@/JADESOFT/cal")
+set_and_check(JADE_TEST_DIR "@PACKAGE_CMAKE_INSTALL_DATADIR@/JADE/test")
+set_and_check(JADE_EXAMPLES_DIR "@PACKAGE_CMAKE_INSTALL_DATADIR@/JADE/examples")
 
 @JADE_CONFIG_INFO@
 
@@ -128,10 +136,78 @@ macro( jade_fortran_test testname gnuenv  intelenv nagenv)
   endif()
 endmacro( jade_fortran_test )
 
+# jade_use_toolchain(): call it before project(): the compilers of the installation (unless given), the environment of
+# the toolchain (setvars.sh of oneAPI, PATH of the vendor compilers, ...) for the configuration, and for the compilation
+# and linking through the launchers.
+macro(jade_use_toolchain)
+  foreach(_jade_l Fortran C CXX)
+    if(JADE_${_jade_l}_COMPILER AND NOT CMAKE_${_jade_l}_COMPILER)
+      set(CMAKE_${_jade_l}_COMPILER "${JADE_${_jade_l}_COMPILER}")
+    endif()
+  endforeach()
+  foreach(_jade_e ${JADE_TOOLCHAIN_ENV})
+    if(_jade_e MATCHES "^([A-Za-z_][A-Za-z0-9_]*)=(.*)$")
+      set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
+    endif()
+  endforeach()
+  if(JADE_TOOLCHAIN_ENV)
+    foreach(_jade_l Fortran C CXX)
+      set(CMAKE_${_jade_l}_COMPILER_LAUNCHER ${CMAKE_COMMAND} -E env ${JADE_TOOLCHAIN_ENV})
+      set(CMAKE_${_jade_l}_LINKER_LAUNCHER   ${CMAKE_COMMAND} -E env ${JADE_TOOLCHAIN_ENV})
+    endforeach()
+  endif()
+endmacro()
+
+# jade_use_flags(): call it after project(): the compiler flags (Fortran, C, C++) and the linker flags of the build of
+# the installation (-m32, the options for the old Fortran code), and the settings of a 32 bit build.
+macro(jade_use_flags)
+  set(CMAKE_Fortran_FLAGS "${JADE_Fortran_FLAGS}")
+  set(CMAKE_C_FLAGS "${JADE_C_FLAGS}")
+  set(CMAKE_CXX_FLAGS "${JADE_CXX_FLAGS}")
+  set(CMAKE_EXE_LINKER_FLAGS "${JADE_EXE_LINKER_FLAGS}")
+  if(JADE_FORCE_32)
+    list(PREPEND CMAKE_SYSTEM_LIBRARY_PATH "/usr/lib")
+    set(FIND_LIBRARY_USE_LIB32_PATHS ON)
+    set(FIND_LIBRARY_USE_LIB64_PATHS OFF)
+    set(CMAKE_SIZEOF_VOID_P 4)
+    if("${LIB_SUFFIX}" STREQUAL "64")
+      set(LIB_SUFFIX)
+    endif()
+  endif()
+endmacro()
+
+# jade_link_group(<target> <libraries>...): links static libraries that refer to each other (the JADE libraries, CERNLIB,
+# which calls back) as a group that the linker scans repeatedly (not on macOS, whose linker needs no group).
+function(jade_link_group target)
+  if(APPLE)
+    target_link_libraries(${target} PRIVATE ${ARGN})
+  else()
+    list(JOIN ARGN "," _jade_group)
+    target_link_libraries(${target} PRIVATE "$<LINK_GROUP:RESCAN,${_jade_group}>")
+  endif()
+endfunction()
+
 if(NOT JADE_NO_TARGETS AND NOT CMAKE_SCRIPT_MODE_FILE)
   include("${CMAKE_CURRENT_LIST_DIR}/JADETargets.cmake")
   if(EXISTS "${JADE_DATA_DIR}/cmake/JADESOFTConfig.cmake")
     include("${JADE_DATA_DIR}/cmake/JADESOFTConfig.cmake")
   endif()
+  # what the programs that use the libraries link besides them: CERNLIB (which has only variables: imported targets
+  # are made from them), LAPACK and BLAS. JADE_CORE_TARGETS and JADE_CERNLIB_TARGETS are the lists of targets,
+  # to be used as: jade_link_group(<target> ${JADE_CORE_TARGETS} ${JADE_CERNLIB_TARGETS}) and target_link_libraries(<target> PRIVATE LAPACK::LAPACK BLAS::BLAS)
+  include(CMakeFindDependencyMacro)
+  find_dependency(CERNLIB)
+  find_dependency(LAPACK)
+  find_dependency(BLAS)
+  foreach(_jade_l packlib kernlib mathlib)
+    string(TOUPPER ${_jade_l} _jade_lu)
+    if(NOT TARGET CERNLIB::${_jade_l})
+      add_library(CERNLIB::${_jade_l} STATIC IMPORTED)
+      set_target_properties(CERNLIB::${_jade_l} PROPERTIES IMPORTED_LOCATION "${CERNLIB_${_jade_lu}_STATIC}"
+                            IMPORTED_LINK_INTERFACE_LANGUAGES Fortran)
+    endif()
+  endforeach()
+  set(JADE_CORE_TARGETS JADE::interface JADE::jadegs JADE::boslib JADE::zlib)
+  set(JADE_CERNLIB_TARGETS CERNLIB::packlib CERNLIB::kernlib CERNLIB::mathlib)
 endif()
 set(JADE_FOUND TRUE)

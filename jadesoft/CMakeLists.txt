@@ -30,6 +30,8 @@ endif()
 include(JADE_compiler_setup)
 # the linker flags of the build (-m32, the libraries of the vendor compilers), for JADEConfig.cmake of the top-level project
 set(JADE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}" PARENT_SCOPE)
+set(JADE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}" PARENT_SCOPE)
+set(JADE_C_FLAGS "${CMAKE_C_FLAGS}" PARENT_SCOPE)
 set(CMAKE_POSITION_INDEPENDENT_CODE FALSE)
 ########################################################################
 find_package(BLAS REQUIRED)
