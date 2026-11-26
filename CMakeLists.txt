@@ -90,6 +90,13 @@ include(CMakePackageConfigHelpers)
 set(JADE_CONFIG_INSTALL_DIR ${CMAKE_INSTALL_DATADIR}/JADE/cmake)
 install(EXPORT JADETargets NAMESPACE JADE:: DESTINATION ${JADE_CONFIG_INSTALL_DIR})
 
+# the test project (CMakeLists.txt, cards, programs, sample data) as documentation and example of the use of the installed
+# software: <prefix>/share/JADE/test (JADE_TEST_DIR in JADEConfig.cmake)
+install(DIRECTORY test/ DESTINATION ${CMAKE_INSTALL_DATADIR}/JADE/test USE_SOURCE_PERMISSIONS)
+
+# the examples of analyses (a CMake project; the data are not installed with them) : <prefix>/share/JADE/examples
+install(DIRECTORY examples/ DESTINATION ${CMAKE_INSTALL_DATADIR}/JADE/examples USE_SOURCE_PERMISSIONS)
+
 # what the configuration records: toolchain, compilers, environment, options
 set(JADE_CONFIG_INFO "")
 foreach(JADE_L Fortran C CXX)
@@ -117,6 +124,9 @@ endforeach()
 list(REMOVE_DUPLICATES JADE_EXTERNAL_LIBRARIES)
 string(APPEND JADE_CONFIG_INFO "set(JADE_EXTERNAL_LIBRARIES [=[${JADE_EXTERNAL_LIBRARIES}]=])\n")
 string(APPEND JADE_CONFIG_INFO "set(JADE_EXE_LINKER_FLAGS [=[${JADE_EXE_LINKER_FLAGS}]=])\n")
+foreach(JADE_L Fortran C CXX)
+  string(APPEND JADE_CONFIG_INFO "set(JADE_${JADE_L}_FLAGS [=[${JADE_${JADE_L}_FLAGS}]=])\n")
+endforeach()
 string(APPEND JADE_CONFIG_INFO "set(JADE_PARTS ${JADE_PARTS})\n")
 string(APPEND JADE_CONFIG_INFO "set(JADE_TOOLCHAIN ${JADE_TOOLCHAIN})\n")
 string(APPEND JADE_CONFIG_INFO "set(JADE_BITS ${JADE_BITS})\n")
