@@ -26,7 +26,7 @@ jobs:
     - name: Compile
       run: |
            cmake -S . -B buildGNU32 -DJADE_BITS=32 && cmake --build buildGNU32 --parallel 2 && cmake --install buildGNU32
-           cmake -S test -B buildGNU32/test -DJADE_DIR=$PWD/installedGNU32 && cmake --build buildGNU32/test --parallel 2 && cd buildGNU32/test && ctest --timeout 200 --output-on-failure
+           cmake -S test -B buildGNU32/test -DCMAKE_PREFIX_PATH=$PWD/installedGNU32 && cmake --build buildGNU32/test --parallel 2 && cd buildGNU32/test && ctest --timeout 200 --output-on-failure
 
   build-JADE-docker-image-fedora45x86_64i686_gnu:
     runs-on: ubuntu-latest
