@@ -97,6 +97,8 @@ C
       CALL BDLG
       NRECS = NRECS + 1
       CALL BREAD(NUNIT,*60,*70)
+C                            half-words of the bank HEAD in the order of this machine
+      CALL HEADFX
       CALL USER(20)              ! PMF 07/07/99 added for additional checks
                                 !     14/06/00 set MC smearing veto in user routine
 C
