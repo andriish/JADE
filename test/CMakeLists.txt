@@ -63,22 +63,7 @@ include(JADE_compiler_setup)
 # the linker flags are those of the installation (JADEConfig.cmake)
 set(CMAKE_EXE_LINKER_FLAGS "${JADE_EXE_LINKER_FLAGS}")
 ########################################################################
-macro( jade_fortran_test testname gnuenv  intelenv nagenv)
-  if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "GNU")
-     set_property( TEST ${testname} PROPERTY ENVIRONMENT "${gnuenv}") 
-  endif()
-  if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "Intel")
-     set_property( TEST ${testname} PROPERTY ENVIRONMENT "${intelenv}") 
-  endif()
-  if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "NAG")
-     set_property( TEST ${testname} PROPERTY ENVIRONMENT "${nagenv}") 
-  endif()
-  if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "PGI|NVHPC")
-     # the NVIDIA runtime uses FORT_CONVERT_UNIT with the same syntax as GFORTRAN_CONVERT_UNIT
-     string(REPLACE "GFORTRAN_CONVERT_UNIT" "FORT_CONVERT_UNIT" nvenv "${gnuenv}")
-     set_property( TEST ${testname} PROPERTY ENVIRONMENT "${nvenv}")
-  endif()
-endmacro( jade_fortran_test )
+# jade_fortran_test(<test> <GNU env> <Intel env> <NAG env>) comes from JADEConfig.cmake
 ########################################################################
 # JADEConfig.cmake again, now with a project: the imported targets JADE::<executable> and JADE::<library>
 # and the variables of JADESOFTConfig.cmake
