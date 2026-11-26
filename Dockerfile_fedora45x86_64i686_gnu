@@ -30,6 +30,13 @@ RUN         dnf -y install --enablerepo=fedora-debuginfo --enablerepo=updates-de
                            glibc-debuginfo.i686 libX11-debuginfo.i686 libxcb-debuginfo.i686 libXau-debuginfo.i686 \
                            libXdmcp-debuginfo.i686 libXext-debuginfo.i686 libXt-debuginfo.i686 libXmu-debuginfo.i686 \
                            libXaw-debuginfo.i686 motif-debuginfo.i686 || true
+# CERNLIB from the dnf repository of this project on GitHub Pages (workflow cernlib-rpm.yml), before the copr:
+# if it is not published (yet) it is left out, and the copr below provides the packages;
+# the image installs only the i686 packages, so $basearch (x86_64) is replaced by i686
+RUN         curl -fsSL -o /tmp/JADE-cernlib.repo https://andriish.github.io/JADE/JADE-fedora.repo && \
+            sed 's/\$basearch/i686/g' /tmp/JADE-cernlib.repo > /etc/yum.repos.d/JADE-cernlib.repo && \
+            echo 'skip_if_unavailable=1' >> /etc/yum.repos.d/JADE-cernlib.repo ; \
+            true
 # NB: all i686 root packages must be named on the command line together with the exclude of 
 # the x86_64 ones. With an explicit shorter list dnf resolves the dependencies of root-core.i686
 # (root-vecops, root-multiproc, ...) to the x86_64 builds ("inferior architecture") and the
