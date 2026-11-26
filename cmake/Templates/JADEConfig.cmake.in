@@ -18,7 +18,8 @@
 #   JADE_HEPMC3_LIBRARIES, JADE_ROOT_LIBRARIES: the external libraries that the parts were linked with,
 #   JADE_EXTERNAL_LIBRARIES: all of them
 # The variables of JADESOFTConfig.cmake (JADESOFT_*) are defined too.
-# With JADE_NO_TARGETS set only the variables are defined (usable before project()).
+# The macro jade_fortran_test(<test> <GNU env> <Intel env> <NAG env>) sets the environment of a test per Fortran compiler.
+# With JADE_NO_TARGETS set only the variables and the macro are defined (usable before project()).
 
 @PACKAGE_INIT@
 
@@ -58,6 +59,41 @@ foreach(_e IN LISTS JADE_EXECUTABLES)
   list(APPEND JADE_EXECUTABLE_PATHS "${JADE_${_e}_EXECUTABLE}")
 endforeach()
 
+# the installation must be complete: every executable, jadez and jade_h2root, and the files of the parts that were built.
+# Otherwise the
+# package counts as not found (find_package(JADE REQUIRED) stops with the message).
+set(_jade_missing)
+foreach(_e IN LISTS JADE_EXECUTABLES)
+  if(NOT EXISTS "${JADE_${_e}_EXECUTABLE}")
+    list(APPEND _jade_missing "${JADE_${_e}_EXECUTABLE}")
+  endif()
+endforeach()
+set(_jade_files "${JADE_DATA_DIR}/F22BOW.HELP.DATASET")
+if("jtuple" IN_LIST JADE_PARTS)
+  list(APPEND _jade_files "${JADE_DATA_DIR}/lumi.dat")
+endif()
+foreach(_f IN LISTS _jade_files)
+  if(NOT EXISTS "${_f}")
+    list(APPEND _jade_missing "${_f}")
+  endif()
+endforeach()
+# jadez and jade_h2root (the h2root of ROOT 6.40 crashes on 64 bit machines) are always required
+set(_jade_required_exe jadez jade_h2root)
+if("jtuple" IN_LIST JADE_PARTS)
+  list(APPEND _jade_required_exe taklumi)
+endif()
+foreach(_p IN LISTS _jade_required_exe)
+  if(NOT _p IN_LIST JADE_EXECUTABLES)
+    list(APPEND _jade_missing "executable ${_p}")
+  endif()
+endforeach()
+if(_jade_missing)
+  string(REPLACE ";" "\n  " _jade_missing_text "${_jade_missing}")
+  set(${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
+  set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "The JADE installation in ${JADE_PREFIX} is incomplete, missing:\n  ${_jade_missing_text}")
+  return()
+endif()
+
 # programs and data files of the installation that are looked up often (empty if not installed)
 set(JADE_H2ROOT "")
 if(EXISTS "${JADE_BIN_DIR}/jade_h2root")
@@ -71,6 +107,26 @@ set(JADE_HELP_DATASET "")
 if(EXISTS "${JADE_DATA_DIR}/F22BOW.HELP.DATASET")
   set(JADE_HELP_DATASET "${JADE_DATA_DIR}/F22BOW.HELP.DATASET")
 endif()
+
+# jade_fortran_test(<test> <GNU environment> <Intel environment> <NAG environment>): sets the environment of a
+# test according to the Fortran compiler (the variables of the Fortran runtime that select the byte order of the
+# data files); the NVIDIA runtime uses FORT_CONVERT_UNIT with the same syntax as GFORTRAN_CONVERT_UNIT.
+# The lists with semicolons are passed as in "GFORTRAN_CONVERT_UNIT=big_endian\;native:2".
+macro( jade_fortran_test testname gnuenv  intelenv nagenv)
+  if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "GNU")
+     set_property( TEST ${testname} PROPERTY ENVIRONMENT "${gnuenv}")
+  endif()
+  if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "Intel")
+     set_property( TEST ${testname} PROPERTY ENVIRONMENT "${intelenv}")
+  endif()
+  if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "NAG")
+     set_property( TEST ${testname} PROPERTY ENVIRONMENT "${nagenv}")
+  endif()
+  if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "PGI|NVHPC")
+     string(REPLACE "GFORTRAN_CONVERT_UNIT" "FORT_CONVERT_UNIT" nvenv "${gnuenv}")
+     set_property( TEST ${testname} PROPERTY ENVIRONMENT "${nvenv}")
+  endif()
+endmacro( jade_fortran_test )
 
 if(NOT JADE_NO_TARGETS AND NOT CMAKE_SCRIPT_MODE_FILE)
   include("${CMAKE_CURRENT_LIST_DIR}/JADETargets.cmake")
