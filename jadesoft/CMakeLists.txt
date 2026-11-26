@@ -28,6 +28,8 @@ endif()
 
 ########################################################################
 include(JADE_compiler_setup)
+# the linker flags of the build (-m32, the libraries of the vendor compilers), for JADEConfig.cmake of the top-level project
+set(JADE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}" PARENT_SCOPE)
 set(CMAKE_POSITION_INDEPENDENT_CODE FALSE)
 ########################################################################
 find_package(BLAS REQUIRED)
@@ -574,9 +576,8 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/JADESOFTConfig.cmake
 # With the "cal" files on a little-endian machine KLREAD ignores all records, i.e. no calibration
 # constants (also none for the muon chambers) are applied. Select with -DJADE_CAL_DIR_NAME=cal|cal2026.
 if (NOT JADE_CAL_DIR_NAME)
-  include(TestBigEndian)
-  test_big_endian(JADE_HOST_BIG_ENDIAN)
-  if (JADE_HOST_BIG_ENDIAN)
+  # JADE_BIG_ENDIAN: the byte order of the host, from the top-level CMakeLists.txt
+  if (JADE_BIG_ENDIAN)
     set(JADE_CAL_DIR_NAME cal)
   else()
     set(JADE_CAL_DIR_NAME cal2026)

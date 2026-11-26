@@ -2,7 +2,7 @@
 # Tests of the installed JADE software. The work is done by the CMake project test/ (it reads the
 # JADEConfig.cmake of the installation: toolchain, bits, compilers); this script only translates the options.
 # Without it:
-#   cmake -S test -B buildGNU64/test -DJADE_DIR=<install prefix> && cmake --build buildGNU64/test && (cd buildGNU64/test && ctest --timeout 200 --output-on-failure)
+#   cmake -S test -B buildGNU64/test -DCMAKE_PREFIX_PATH=<install prefix> && cmake --build buildGNU64/test && (cd buildGNU64/test && ctest --timeout 200 --output-on-failure)
 #Options: --bits=32|64 --toolchain=NAME --prefix=/abs/path --timeout-factor=N, in any order
 # (--timeout-factor=N multiplies the time limits of the tests, 20 for slow machines, e.g. s390x under QEMU;
 #  --prefix as for jadeinstall.sh; JADE_FAIL_ON_SKIP=1 (used by CI): skipped tests count as failures)
@@ -41,7 +41,7 @@ SRC=$(cd "$(dirname "$0")" && pwd)
 build=build$toolchain$bits/test
 mkdir -p $build
 rm -rf $build/outputs $build/CMakeFiles $build/CMakeCache.txt
-$CMAKE -S "$SRC/test" -B $build -DJADE_DIR=$TOP$toolchain$bits -DJADE_TEST_TIMEOUT_FACTOR=$timeout_factor || { echo 'cmake configuration failed' ; exit 1; }
+$CMAKE -S "$SRC/test" -B $build -DCMAKE_PREFIX_PATH=$TOP$toolchain$bits -DJADE_TEST_TIMEOUT_FACTOR=$timeout_factor || { echo 'cmake configuration failed' ; exit 1; }
 $CMAKE --build $build -j 2 || { echo 'cmake build failed' ; exit 1; }
 cd $build
 $CTEST . --timeout 200 --output-on-failure

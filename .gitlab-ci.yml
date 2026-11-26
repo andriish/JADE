@@ -56,7 +56,7 @@ fedora45x86_64_gnu:
     - when: on_success
   script:
     - cmake -S . -B buildGNU64 -DJADE_BITS=64 && cmake --build buildGNU64 --parallel 2 && cmake --install buildGNU64
-    - cmake -S test -B buildGNU64/test -DJADE_DIR=$PWD/installedGNU64 && cmake --build buildGNU64/test --parallel 2 && cd buildGNU64/test && ctest --timeout 200 --output-on-failure
+    - cmake -S test -B buildGNU64/test -DCMAKE_PREFIX_PATH=$PWD/installedGNU64 && cmake --build buildGNU64/test --parallel 2 && cd buildGNU64/test && ctest --timeout 200 --output-on-failure
 ########################################################################
 image-fedora45x86_64i686_gnu:
   <<: *Fedora45image
@@ -88,7 +88,7 @@ fedora45x86_64i686_gnu:
       allow_failure: true
   script:
     - cmake -S . -B buildGNU32 -DJADE_BITS=32 && cmake --build buildGNU32 --parallel 2 && cmake --install buildGNU32
-    - cmake -S test -B buildGNU32/test -DJADE_DIR=$PWD/installedGNU32 && cmake --build buildGNU32/test --parallel 2 && cd buildGNU32/test && ctest --timeout 200 --output-on-failure
+    - cmake -S test -B buildGNU32/test -DCMAKE_PREFIX_PATH=$PWD/installedGNU32 && cmake --build buildGNU32/test --parallel 2 && cd buildGNU32/test && ctest --timeout 200 --output-on-failure
 ########################################################################
 image-fedora45aarch64_gnu:
   <<: *Fedora45image
@@ -118,7 +118,7 @@ fedora45aarch64_gnu:
     - when: on_success
   script:
     - cmake -S . -B buildGNU64 -DJADE_BITS=64 && cmake --build buildGNU64 --parallel 2 && cmake --install buildGNU64
-    - cmake -S test -B buildGNU64/test -DJADE_DIR=$PWD/installedGNU64 && cmake --build buildGNU64/test --parallel 2 && cd buildGNU64/test && ctest --timeout 200 --output-on-failure
+    - cmake -S test -B buildGNU64/test -DCMAKE_PREFIX_PATH=$PWD/installedGNU64 && cmake --build buildGNU64/test --parallel 2 && cd buildGNU64/test && ctest --timeout 200 --output-on-failure
 ########################################################################
 # s390x (big-endian) emulated with QEMU, see Dockerfile_fedora45s390x_gnu and
 # .github/workflows/fedora45s390x_gnu.yml. Kaniko cannot build for another architecture, so
@@ -159,7 +159,7 @@ fedora45s390x_gnu:
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|web)$/'
     - when: manual
   script:
-    - docker create --platform linux/s390x --name jadetest $CI_REGISTRY_IMAGE:fedora45s390x_gnu sh -c 'cd /home && uname -m && python3 -c "import sys; print(sys.byteorder)" ; cmake -S . -B buildGNU64 -DJADE_BITS=64 && cmake --build buildGNU64 --parallel 2 && cmake --install buildGNU64 ; cmake -S test -B buildGNU64/test -DJADE_DIR=$PWD/installedGNU64 -DJADE_TEST_TIMEOUT_FACTOR=20 && cmake --build buildGNU64/test --parallel 2 && cd buildGNU64/test && ctest --timeout 200 --output-on-failure'
+    - docker create --platform linux/s390x --name jadetest $CI_REGISTRY_IMAGE:fedora45s390x_gnu sh -c 'cd /home && uname -m && python3 -c "import sys; print(sys.byteorder)" ; cmake -S . -B buildGNU64 -DJADE_BITS=64 && cmake --build buildGNU64 --parallel 2 && cmake --install buildGNU64 ; cmake -S test -B buildGNU64/test -DCMAKE_PREFIX_PATH=$PWD/installedGNU64 -DJADE_TEST_TIMEOUT_FACTOR=20 && cmake --build buildGNU64/test --parallel 2 && cd buildGNU64/test && ctest --timeout 200 --output-on-failure'
     - docker cp . jadetest:/home
     - docker start -a jadetest
 ########################################################################

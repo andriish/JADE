@@ -223,7 +223,7 @@ converted into ``.root`` files (among other things), which can be found in the `
 The tests are the CMake project ``test/``. It uses the installed JADE software through its ``JADEConfig.cmake`` (the toolchain,
 the bits and the compilers are those of the installation):
 
-    cmake -S test -B buildGNU64/test -DJADE_DIR=<install prefix>
+    cmake -S test -B buildGNU64/test -DCMAKE_PREFIX_PATH=<install prefix>
     cmake --build buildGNU64/test --parallel 2
     cd buildGNU64/test && ctest --timeout 200 --output-on-failure
 
