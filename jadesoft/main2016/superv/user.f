@@ -100,6 +100,7 @@ C
 C USER Parameters
 C - I/O options
       INTEGER IOHIST,IOBANK
+      LOGICAL LMUON
       LOGICAL LBANK,LHIST
       DATA IOBANK/41/, IOHIST/42/
 C - Misc
@@ -182,6 +183,10 @@ C     - Perform zs refit
 C     - Perform vertex fit
       LVTX=.FALSE.
       CALL FFKEY('VTXFIT',LVTX,1,'LOGI')
+C Muon analysis (level 8; the raw muon bank MUEV of Monte Carlo events
+C comes from the toy simulation in MCJADE, card MUMC ON)
+      LMUON=.FALSE.
+      CALL FFKEY('MUON',LMUON,1,'LOGI')
 C Calibrations constants reading options
       CALL FFKEY('MUCA',LLBMC(1),1,'LOGI')
       CALL FFKEY('LGMA',LLBMC(2),1,'LOGI')
@@ -551,9 +556,12 @@ C------------------
 C
  8000 CONTINUE
       IF( LHIST ) CALL HSTFLL(INDX) ! Histos combined from different levels
+C     The muon analysis is skipped, unless the control card MUON ON is given
+      IF( LMUON ) THEN
+         INDX=INDX+1
+         RETURN
+      ENDIF
       GOTO 10                   ! Skip muon analysis
-CCC   INDX=INDX+1
-      RETURN
 C
 C---------------------------------------
 C  INDEX=9: MUON ANALYSIS HAS BEEN DONE 

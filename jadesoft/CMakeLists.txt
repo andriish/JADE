@@ -264,7 +264,7 @@ set(JADEMUS_src
  mu2pul.f muanab.F muanac.F muanaf.F muana.f  mucon.F  muconw.F mucoor.F mucuts.F 
  mudchk.F mudump.F muendp.F muerry.f mufflb.F muffle.F mufflr.F muffls.F mufflt.F 
  mufflx.F muffly.F mufflz.F mufini.F mufmat.F mufsta.F muhdsp.F muhit.F  muhits.F
- muloch.F mumess.f muons.F  mupic.F  muregm.f mureg.F  muregs.f muregy.F musafe.f 
+ muloch.F mumcbd.F mumcev.F mumess.f muons.F  mupic.F  muregm.f mureg.F  muregs.f muregy.F musafe.f 
  muwire.F tanthm.F xymud.F
 )
 list(TRANSFORM JADEMUS_src PREPEND "${SRCJADEMUS}/")
