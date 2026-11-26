@@ -1,12 +1,10 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.10) #Because of ROOT
-PROJECT(JADESOFT Fortran C)
-set(VERSION 2022.07)
-set(JADESOFT_VERSION_MAJOR 2022)
-set(JADESOFT_VERSION_MINOR 07)
-set(JADESOFT_VERSION_PATCH 1)
+set(VERSION 2026.11)
+set(JADESOFT_VERSION_MAJOR 2026)
+set(JADESOFT_VERSION_MINOR 11)
+set(JADESOFT_VERSION_PATCH 0)
 set(PROJECT_VERSION ${JADESOFT_VERSION_MAJOR}.${JADESOFT_VERSION_MINOR}.${JADESOFT_VERSION_PATCH})
 include("GNUInstallDirs")
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Modules")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 ########################################################################
 option(JADE_OLD_MC                     "Compile old MC executables" ON)
@@ -54,6 +52,12 @@ find_package(Motif REQUIRED)
 message(STATUS "JADE: MOTIF_LIBRARIES=${MOTIF_LIBRARIES}")
 set(JEXTERN_LIBRARIES  "${MOTIF_LIBRARIES};${CERNLIB_PACKLIB_STATIC};${CERNLIB_KERNLIB_STATIC};${CERNLIB_MATHLIB_STATIC};${CERNLIB_GRAFLIB_STATIC};${CERNLIB_GRAFX11_STATIC}")
 message(STATUS "JADE: JEXTERN_LIBRARIES    : ${JEXTERN_LIBRARIES}")
+# the external libraries, for JADEConfig.cmake of the top-level project
+set(JADE_CERNLIB_LIBRARIES "${CERNLIB_PACKLIB_STATIC};${CERNLIB_KERNLIB_STATIC};${CERNLIB_MATHLIB_STATIC};${CERNLIB_GRAFLIB_STATIC};${CERNLIB_GRAFX11_STATIC}" PARENT_SCOPE)
+set(JADE_MOTIF_LIBRARIES   "${MOTIF_LIBRARIES}" PARENT_SCOPE)
+set(JADE_X11_LIBRARIES     "${X11_LIBRARIES};${X11_xcb_LIB};${X11_Xau_LIB};${X11_Xdmcp_LIB}" PARENT_SCOPE)
+set(JADE_BLAS_LIBRARIES    "${BLAS_LIBRARIES}" PARENT_SCOPE)
+set(JADE_LAPACK_LIBRARIES  "${LAPACK_LIBRARIES}" PARENT_SCOPE)
 ########################################################################
 set(MCJADEEXE    mcjade)
 set(SUPERVEXE    superv)
@@ -78,11 +82,11 @@ set(WERTEX          wertex)
 set(ZLIB            zlib)
 
 # Define some directories
-set(SRC ${CMAKE_SOURCE_DIR}/src2016)
-set(UTIL ${CMAKE_SOURCE_DIR}/util2016)
-set(SRCMAIN ${CMAKE_SOURCE_DIR}/main2016)
-set(LIB ${CMAKE_SOURCE_DIR}/lib)
-set(BIN ${CMAKE_SOURCE_DIR}/bin)
+set(SRC ${CMAKE_CURRENT_SOURCE_DIR}/src2016)
+set(UTIL ${CMAKE_CURRENT_SOURCE_DIR}/util2016)
+set(SRCMAIN ${CMAKE_CURRENT_SOURCE_DIR}/main2016)
+set(LIB ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+set(BIN ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
 include_directories( ${SRC}/boslib 
                      ${SRC}/grafix 
@@ -181,7 +185,7 @@ bondec.f    brvect.f    compt.f     enelpo.f    fnpecero.f  inital.f
   lgcr56.f   lgecorz.f   
 lscctl20.f  mcin56.f    mctagepl.f  npecer.f    parst2.f    sf5fun.f    trkgam.f
 )
-list(TRANSFORM JADE56_src PREPEND "${CMAKE_SOURCE_DIR}/src2016/jade56/")
+list(TRANSFORM JADE56_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/src2016/jade56/")
 ADD_LIBRARY(${JADE56} STATIC ${JADE56_src})
 
 ########################################################################
@@ -198,7 +202,7 @@ ADD_LIBRARY(${JADE56} STATIC ${JADE56_src})
 ## lgeigk.f  r1mode.F  supvlb.F   trck82x.F usrepat.F
 ## #usreduc1.F #cutsr1.for #usred82.F #userx.F
 ## )
-## list(TRANSFORM JADESR_src PREPEND "${CMAKE_SOURCE_DIR}/src2016/jadesr/")
+## list(TRANSFORM JADESR_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/src2016/jadesr/")
 ## ADD_LIBRARY(${JADESR} STATIC ${JADESR_src})
 
 ########################################################################
@@ -410,12 +414,12 @@ target_link_libraries(${CONVEXE}  ${JEXTERN_LIBRARIES})
 add_executable(${RCONVEXE} ${UTIL}/ccal/rconv.f)
 target_link_libraries(${RCONVEXE}  ${JEXTERN_LIBRARIES})
 
-INSTALL(TARGETS ${CONVEXE} ${RCONVEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+INSTALL(TARGETS ${CONVEXE} ${RCONVEXE} EXPORT JADETargets RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 
 set(ZREADEXE      zread)
 add_executable(${ZREADEXE} ${UTIL}/zread/zread.f)
-INSTALL(TARGETS ${ZREADEXE}  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+INSTALL(TARGETS ${ZREADEXE} EXPORT JADETargets  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 target_link_libraries(${ZREADEXE}  ${JEXTERN_LIBRARIES})
 
 #####################################################################
@@ -427,6 +431,8 @@ foreach ( ml ${MCLIBS} )
  ADD_LIBRARY(${ml} STATIC ${UTIL}/mcgen/src/${ml}.f)
 endforeach (  ml ${MCLIBS} )
 ADD_LIBRARY(mc105j STATIC                        ${UTIL}/mcgen/mc/mc105j.f  )
+# the libraries of the old generators are installed too
+install(TARGETS ${MCLIBS} mc105j EXPORT JADETargets ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 if (${CMAKE_Fortran_COMPILER_ID}  MATCHES  "GNU")
  target_compile_options(jt74opal PRIVATE -Wno-integer-division)
@@ -523,8 +529,8 @@ target_link_libraries(py57    PRIVATE
 endif()
 ########################################################################
 
-INSTALL(TARGETS ${MCJADEEXE} ${JADEZEXE} ${SUPERVEXE}  ${ZE4VEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-INSTALL( TARGETS ${BOSLIB} 
+INSTALL(TARGETS ${MCJADEEXE} ${JADEZEXE} ${SUPERVEXE}  ${ZE4VEXE} EXPORT JADETargets RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+INSTALL( TARGETS ${BOSLIB} ${JADE56}
          ${GRAFIX} 
          ${INTERFACE} 
          ${JADEGS} 
@@ -537,7 +543,7 @@ INSTALL( TARGETS ${BOSLIB}
          ${TOFLIB} 
          ${VERTEX} 
          ${WERTEX} 
-         ${ZLIB} 
+         ${ZLIB} EXPORT JADETargets 
          ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT library )
 ########################################################################
 
@@ -605,4 +611,4 @@ hw58d
 jt63
 jt74
 lepton
-py57 DESTINATION ${CMAKE_INSTALL_BINDIR})
+py57 EXPORT JADETargets DESTINATION ${CMAKE_INSTALL_BINDIR})

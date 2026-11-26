@@ -5,6 +5,59 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.10) #Because of ROOT
 if(POLICY CMP0219)
   cmake_policy(SET CMP0219 OLD)
 endif()
+########################################################################
+# The tests use the installed JADE software, described by its JADEConfig.cmake (written by the build of
+# JADE into <prefix>/share/JADE/cmake, see the top-level CMakeLists.txt):
+#
+#   cmake -S test -B <build dir> -DJADE_DIR=<install prefix>
+#   cmake --build <build dir>
+#   ctest --test-dir <build dir> --timeout 200 --output-on-failure
+#
+# JADE_DIR is the install prefix or the directory with JADEConfig.cmake (default: installed<toolchain><bits>
+# next to this directory, -DJADE_TOOLCHAIN=GNU -DJADE_BITS=64 by default). The compilers, their environment
+# and the number of bits are those of the installation. With -DJADESOFT_DIR=<...>/share/JADESOFT/cmake and
+# the compilers on the command line, an installation of only jadesoft is used as before (jadetest.sh).
+# This has to be done before PROJECT(): the compilers are chosen here.
+if(NOT JADE_DIR AND NOT JADESOFT_DIR)
+  if(NOT JADE_TOOLCHAIN)
+    set(JADE_TOOLCHAIN GNU)
+  endif()
+  if(NOT JADE_BITS)
+    set(JADE_BITS 64)
+  endif()
+  set(JADE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../installed${JADE_TOOLCHAIN}${JADE_BITS}")
+endif()
+set(JADE_CONFIG_DIR "")
+foreach(JADE_C "${JADE_DIR}" "${JADE_DIR}/share/JADE/cmake")
+  if(NOT JADE_CONFIG_DIR AND EXISTS "${JADE_C}/JADEConfig.cmake")
+    get_filename_component(JADE_CONFIG_DIR "${JADE_C}" ABSOLUTE)
+  endif()
+endforeach()
+if(JADE_CONFIG_DIR)
+  set(JADE_DIR "${JADE_CONFIG_DIR}" CACHE PATH "Directory with JADEConfig.cmake of the installed JADE" FORCE)
+  # only the variables (JADE_NO_TARGETS): the targets need a project
+  set(JADE_NO_TARGETS ON)
+  include("${JADE_CONFIG_DIR}/JADEConfig.cmake")
+  unset(JADE_NO_TARGETS)
+  foreach(JADE_L Fortran C CXX)
+    if(JADE_${JADE_L}_COMPILER AND NOT CMAKE_${JADE_L}_COMPILER)
+      set(CMAKE_${JADE_L}_COMPILER "${JADE_${JADE_L}_COMPILER}")
+    endif()
+  endforeach()
+  # the environment of the toolchain (setvars.sh of oneAPI, PATH of the vendor compilers, ...): for this
+  # configuration, and for the compilation and linking through the launchers
+  foreach(JADE_E ${JADE_TOOLCHAIN_ENV})
+    if(JADE_E MATCHES "^([A-Za-z_][A-Za-z0-9_]*)=(.*)$")
+      set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
+    endif()
+  endforeach()
+  if(JADE_TOOLCHAIN_ENV)
+    foreach(JADE_L Fortran C CXX)
+      set(CMAKE_${JADE_L}_COMPILER_LAUNCHER ${CMAKE_COMMAND} -E env ${JADE_TOOLCHAIN_ENV})
+      set(CMAKE_${JADE_L}_LINKER_LAUNCHER   ${CMAKE_COMMAND} -E env ${JADE_TOOLCHAIN_ENV})
+    endforeach()
+  endif()
+endif()
 PROJECT(JADETEST Fortran CXX C)
 set(VERSION 2024.04)
 include("GNUInstallDirs")
@@ -46,7 +99,17 @@ macro( jade_fortran_test testname gnuenv  intelenv nagenv)
   endif()
 endmacro( jade_fortran_test )
 ########################################################################
-find_package(JADESOFT 2000.0.0 REQUIRED)
+# JADEConfig.cmake (found above, before PROJECT()) defines the imported targets JADE::<executable> and
+# JADE::<library> and the variables of JADESOFTConfig.cmake. With only a JADESOFT installation
+# (-DJADESOFT_DIR=...) that one is used.
+if(JADE_CONFIG_DIR)
+  find_package(JADE 2000.0.0 CONFIG REQUIRED PATHS ${JADE_CONFIG_DIR} NO_DEFAULT_PATH)
+endif()
+if(JADE_FOUND)
+  message(STATUS "JADE test: JADE ${JADE_VERSION} in ${JADE_PREFIX}, toolchain ${JADE_TOOLCHAIN}, ${JADE_BITS} bit, executables: ${JADE_EXECUTABLES}")
+else()
+  find_package(JADESOFT 2000.0.0 REQUIRED)
+endif()
 find_package(CERNLIB REQUIRED)
 find_package(LAPACK REQUIRED)
 find_package(BLAS REQUIRED)
@@ -58,6 +121,18 @@ message(STATUS "JADE test: HEPMC3_LIBRARIES=${HEPMC3_LIBRARIES}")
 find_package(Pythia8 8.300)
 message(STATUS "JADE test: PYTHIA8_FOUND=${PYTHIA8_FOUND} PYTHIA8_VERSION=${PYTHIA8_VERSION}") 
 ########################################################################
+# JADE_FAIL_ON_SKIP (also the environment variable of that name, used by CI): tests that would be skipped
+# (exit code 77 of the display tests: no X display) fail, so that a broken CI setup cannot give a green
+# result. Tests that are not run (a missing program) fail in any case.
+option(JADE_FAIL_ON_SKIP "Skipped tests count as failures" OFF)
+if("$ENV{JADE_FAIL_ON_SKIP}" STREQUAL "1")
+  set(JADE_FAIL_ON_SKIP ON)
+endif()
+macro(jade_skip_code testname)
+  if(NOT JADE_FAIL_ON_SKIP)
+    set_property(TEST ${testname} PROPERTY SKIP_RETURN_CODE 77)
+  endif()
+endmacro()
 ENABLE_TESTING()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/wrapper.sh.in      ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh)
@@ -162,7 +237,7 @@ if (EXISTS ${JADESOFT_BIN_DIR}/jadez)
   add_test(NAME JADEZ_DATA_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_test.sh ${JADESOFT_BIN_DIR}/jadez
            ${JADESOFT_DATA_DIR}/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR} ${JADE_TEST_TIMEOUT_FACTOR})
   set_property( TEST JADEZ_DATA_1 PROPERTY DEPENDS FPTOBOS_DATA_1)
-  set_property( TEST JADEZ_DATA_1 PROPERTY SKIP_RETURN_CODE 77)
+  jade_skip_code(JADEZ_DATA_1)
   set_property( TEST JADEZ_DATA_1 PROPERTY TIMEOUT ${JADE_TIMEOUT_700})
   jade_fortran_test(JADEZ_DATA_1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " ")
 endif()
@@ -193,7 +268,7 @@ jade_fortran_test(JTJOB_DATA_1 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22" "
 
 # jade_h2root (installed with JADESOFT, see h2root/README.md) is preferred: the h2root of
 # ROOT 6.40 crashes on 64 bit machines
-find_program(H2ROOT NAMES jade_h2root h2root HINTS ${JADESOFT_BIN_DIR})
+find_program(H2ROOT NAMES jade_h2root h2root HINTS ${JADESOFT_BIN_DIR} ${JADE_BIN_DIR})
 message(STATUS "JADE test: H2ROOT=${H2ROOT}")
 find_package(ROOT COMPONENTS Core RIO Tree)
 if (H2ROOT AND ROOT_FOUND)
@@ -474,7 +549,7 @@ if (TEST SUPERV_MC_1 AND EXISTS ${JADESOFT_BIN_DIR}/jadez)
   add_test(NAME JADEZ_MC_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_mc_test.sh ${JADESOFT_BIN_DIR}/jadez
            ${JADESOFT_DATA_DIR}/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR} ${JADE_TEST_TIMEOUT_FACTOR})
   set_property( TEST JADEZ_MC_1 PROPERTY DEPENDS SUPERV_MC_1)
-  set_property( TEST JADEZ_MC_1 PROPERTY SKIP_RETURN_CODE 77)
+  jade_skip_code(JADEZ_MC_1)
   set_property( TEST JADEZ_MC_1 PROPERTY TIMEOUT ${JADE_TIMEOUT_400})
 endif()
 
@@ -484,7 +559,7 @@ if (TEST SUPERV_MC_1 AND EXISTS ${JADESOFT_BIN_DIR}/jadez)
   add_test(NAME JADEZ_RPHI_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_rphi_test.sh ${JADESOFT_BIN_DIR}/jadez
            ${JADESOFT_DATA_DIR}/F22BOW.HELP.DATASET ${CMAKE_CURRENT_BINARY_DIR} ${JADE_TEST_TIMEOUT_FACTOR})
   set_property( TEST JADEZ_RPHI_1 PROPERTY DEPENDS SUPERV_MC_1)
-  set_property( TEST JADEZ_RPHI_1 PROPERTY SKIP_RETURN_CODE 77)
+  jade_skip_code(JADEZ_RPHI_1)
   set_property( TEST JADEZ_RPHI_1 PROPERTY TIMEOUT ${JADE_TIMEOUT_300})
 endif()
 

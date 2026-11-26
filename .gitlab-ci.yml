@@ -3,7 +3,7 @@ stages:
   - images
   - test
 variables:
-  # jadetest.sh fails if a test fails, or is skipped
+  # the tests fail if a test fails, or is skipped (JADE_FAIL_ON_SKIP, see test/CMakeLists.txt)
   JADE_FAIL_ON_SKIP: "1"
 ########################################################################
 # Fedora 45 images and tests: the same logic as the GitHub workflows
@@ -55,8 +55,8 @@ fedora45x86_64_gnu:
   rules:
     - when: on_success
   script:
-    - sh jadeinstall.sh --bits=64
-    - sh jadetest.sh --bits=64
+    - cmake -S . -B buildGNU64 -DJADE_BITS=64 && cmake --build buildGNU64 --parallel 2 && cmake --install buildGNU64
+    - cmake -S test -B buildGNU64/test -DJADE_DIR=$PWD/installedGNU64 && cmake --build buildGNU64/test --parallel 2 && cd buildGNU64/test && ctest --timeout 200 --output-on-failure
 ########################################################################
 image-fedora45x86_64i686_gnu:
   <<: *Fedora45image
@@ -87,8 +87,8 @@ fedora45x86_64i686_gnu:
     - when: manual
       allow_failure: true
   script:
-    - sh jadeinstall.sh --bits=32
-    - sh jadetest.sh --bits=32
+    - cmake -S . -B buildGNU32 -DJADE_BITS=32 && cmake --build buildGNU32 --parallel 2 && cmake --install buildGNU32
+    - cmake -S test -B buildGNU32/test -DJADE_DIR=$PWD/installedGNU32 && cmake --build buildGNU32/test --parallel 2 && cd buildGNU32/test && ctest --timeout 200 --output-on-failure
 ########################################################################
 image-fedora45aarch64_gnu:
   <<: *Fedora45image
@@ -117,8 +117,8 @@ fedora45aarch64_gnu:
   rules:
     - when: on_success
   script:
-    - sh jadeinstall.sh --bits=64
-    - sh jadetest.sh --bits=64
+    - cmake -S . -B buildGNU64 -DJADE_BITS=64 && cmake --build buildGNU64 --parallel 2 && cmake --install buildGNU64
+    - cmake -S test -B buildGNU64/test -DJADE_DIR=$PWD/installedGNU64 && cmake --build buildGNU64/test --parallel 2 && cd buildGNU64/test && ctest --timeout 200 --output-on-failure
 ########################################################################
 # s390x (big-endian) emulated with QEMU, see Dockerfile_fedora45s390x_gnu and
 # .github/workflows/fedora45s390x_gnu.yml. Kaniko cannot build for another architecture, so
@@ -159,7 +159,7 @@ fedora45s390x_gnu:
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|web)$/'
     - when: manual
   script:
-    - docker create --platform linux/s390x --name jadetest $CI_REGISTRY_IMAGE:fedora45s390x_gnu sh -c 'cd /home && uname -m && python3 -c "import sys; print(sys.byteorder)" ; sh jadeinstall.sh --bits=64 ; sh jadetest.sh --bits=64 --timeout-factor=20'
+    - docker create --platform linux/s390x --name jadetest $CI_REGISTRY_IMAGE:fedora45s390x_gnu sh -c 'cd /home && uname -m && python3 -c "import sys; print(sys.byteorder)" ; cmake -S . -B buildGNU64 -DJADE_BITS=64 && cmake --build buildGNU64 --parallel 2 && cmake --install buildGNU64 ; cmake -S test -B buildGNU64/test -DJADE_DIR=$PWD/installedGNU64 -DJADE_TEST_TIMEOUT_FACTOR=20 && cmake --build buildGNU64/test --parallel 2 && cd buildGNU64/test && ctest --timeout 200 --output-on-failure'
     - docker cp . jadetest:/home
     - docker start -a jadetest
 ########################################################################
