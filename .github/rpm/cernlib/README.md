@@ -19,6 +19,9 @@ and publishes the RPMs of all of them as one dnf repository on GitHub Pages (`fe
 
 (one-time setting of the GitHub repository: Settings -> Pages -> Source: "GitHub Actions"). The repository holds
 the packages of the last run, unsigned (`gpgcheck=0`). The workflow runs on every branch when `cernlib.spec` changes, and on request; only the default branch publishes the repository.
+Manual run (Actions -> "CERNLIB RPMs" -> Run workflow, the button needs the workflow file on the default branch):
+choose the distribution (`all`, `fedora-45`, `centos-9`, `centos-10`), the architecture (`all`, `x86_64`, `i686`, `aarch64`,
+`s390x`) and whether to publish from the chosen branch (this replaces the whole site by the selected builds).
 
 Local build of one architecture (the image of the distribution, e.g. `quay.io/centos/centos:stream9`):
 
