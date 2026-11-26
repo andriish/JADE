@@ -28,7 +28,8 @@ RUN         dnf -y copr enable averbyts/JADE && \
 # Debugging of CERNLIB on s390x: its debug symbols and sources (copr); they may be missing, which does not
 # stop the build
 RUN         dnf -y install gdb ; \
-            dnf -y install  cmake cernlib-debuginfo cernlib-debugsource ; \
+            dnf -y install cmake cernlib-debuginfo cernlib-debugsource ; \
+            dnf -y clean all ; \
             true
 RUN         dnf -y clean all
 
