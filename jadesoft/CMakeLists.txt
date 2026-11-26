@@ -244,7 +244,7 @@ endif()
 ########################################################################
 set(JADEGS_src
 akop.F alphan.F amps2z.F change.F cl2prc.f cnewid.F dedxbk.F dedxbn.F distxy.F drpipe.F drtrck.F 
-dserr.f dxmcsp.f dxmcss.f ebeam.F eigen.f ergtot.F errmom.F errprt.F evbkpr.F evrea1.f evread.F 
+dserr.f dxmcsp.f dxmcss.f ebeam.F eigen.f ergtot.F errmom.F errprt.F evbkpr.F evrea1.f evread.F headfx.F 
 evwrit9.F exjhtl.F fampco.F getds.f getint.f hprs.f idattm.f izt2rn.f jadebd.F jegain.f jetcal.F 
 jfetch.F jftnew.F jrecal.F kalibr.f klread.F ktmcon.F ldatyp.f linkds.f locfld.f loc.f mchtrb.F 
 mctr4v.F mctrcb.F messag.F mofrci.f momenp.F moment.F momgam.F n50sco.F numfun.f nvert.f opunit.F 
