@@ -18,7 +18,7 @@ and publishes the RPMs of all of them as one dnf repository on GitHub Pages (`fe
     sudo dnf config-manager addrepo --from-repofile=https://andriish.github.io/JADE/JADE-centos.repo   # CentOS
 
 (one-time setting of the GitHub repository: Settings -> Pages -> Source: "GitHub Actions"). The repository holds
-the packages of the last run, unsigned (`gpgcheck=0`). The workflow runs when `cernlib.spec` changes, and on request.
+the packages of the last run, unsigned (`gpgcheck=0`). The workflow runs on every branch when `cernlib.spec` changes, and on request; only the default branch publishes the repository.
 
 Local build of one architecture (the image of the distribution, e.g. `quay.io/centos/centos:stream9`):
 

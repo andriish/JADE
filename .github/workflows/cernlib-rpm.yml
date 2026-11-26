@@ -5,13 +5,13 @@ name: CERNLIB RPMs (Fedora 45, dnf repository)
 # and the repository files JADE-fedora.repo and JADE-centos.repo (copy the one of the distribution to /etc/yum.repos.d/)
 # One-time setting of the repository: Settings -> Pages -> Source: "GitHub Actions".
 # It runs when the spec file changes (a change of a patch comes with a new release in the spec file) and on request
-# (workflow_dispatch). The packages are published on pushes to the default branch and on request; pull requests
-# only build them.
+# (workflow_dispatch), on every branch and in pull requests. Everything is built everywhere; the repository is
+# published to GitHub Pages only from the default branch (the site is one repository, and the environment
+# github-pages normally accepts deployments only from the default branch).
 # s390x is emulated with QEMU: it is slow, and its time limit is long.
 on:
   workflow_dispatch:
   push:
-    branches: [ master ]
     paths:
       - '.github/rpm/cernlib/cernlib.spec'
   pull_request:
@@ -129,11 +129,11 @@ jobs:
            sudo chown -R "$USER" site
            find site -maxdepth 4 | sort | head -80
     - name: Upload the site
-      if: github.event_name != 'pull_request'
+      if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
       uses: actions/upload-pages-artifact@v3
       with:
         path: site
     - name: Deploy to GitHub Pages
-      if: github.event_name != 'pull_request'
+      if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
       id: deployment
       uses: actions/deploy-pages@v4
