@@ -25,4 +25,10 @@ RUN         dnf -y install openssl-devel libnsl2-devel blas-devel lapack-devel l
 # CERNLIB (with the static libraries), from the copr averbyts/JADE (chroot fedora-45-s390x)
 RUN         dnf -y copr enable averbyts/JADE && \
             dnf -y install cernlib-devel cernlib-static cernlib-packlib-gfortran
+# Debugging of CERNLIB: its debug symbols and sources (copr); they may be missing, which does not
+# stop the build
+RUN         dnf -y install gdb ; \
+            dnf -y install cernlib-debuginfo cernlib-debugsource ; \
+            dnf -y clean all ; \
+            true
 RUN         dnf -y clean all
