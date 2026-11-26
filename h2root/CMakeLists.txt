@@ -1,10 +1,7 @@
 ########################################################################
 # jade_h2root: ROOT's h2root (HBOOK -> ROOT converter) with the 64 bit
-# address fix, see README.md. Build:
-#   cmake -S h2root -B buildGNU64/h2root [-DJADE_FORCE_32=ON] && cmake --build buildGNU64/h2root
+# address fix, see README.md. A part of the top-level CMakeLists.txt (-DJADE_BUILD_H2ROOT=OFF to skip it).
 ########################################################################
-CMAKE_MINIMUM_REQUIRED(VERSION 3.10) #Because of ROOT
-PROJECT(JADEH2ROOT Fortran CXX C)
 include("GNUInstallDirs")
 option(JADE_FORCE_32 "Force build of 32 bit executables." OFF)
 if (JADE_FORCE_32)
@@ -50,4 +47,7 @@ target_compile_options(jade_h2root PRIVATE -w)
 target_link_libraries(jade_h2root PRIVATE
   ROOT::Core ROOT::RIO ROOT::Net ROOT::Hist ROOT::Graf ROOT::Graf3d ROOT::Gpad
   ROOT::Tree ROOT::Matrix ROOT::MathCore ROOT::Thread minicern_jade)
-install(TARGETS jade_h2root DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS jade_h2root EXPORT JADETargets DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS minicern_jade EXPORT JADETargets ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+set(JADE_ROOT_LIBRARIES "${ROOT_LIBRARIES}" PARENT_SCOPE)
+set(JADE_ROOT_VERSION "${ROOT_VERSION}" PARENT_SCOPE)

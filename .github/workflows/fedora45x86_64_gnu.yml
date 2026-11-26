@@ -19,12 +19,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Compile
-      # jadetest.sh fails if a test fails, or is skipped (JADE_FAIL_ON_SKIP)
+      # the tests fail if a test fails, or is skipped (JADE_FAIL_ON_SKIP, see test/CMakeLists.txt)
       env:
         JADE_FAIL_ON_SKIP: 1
       run: |
-           sh jadeinstall.sh --bits=64
-           sh jadetest.sh --bits=64
+           cmake -S . -B buildGNU64 -DJADE_BITS=64 && cmake --build buildGNU64 --parallel 2 && cmake --install buildGNU64
+           cmake -S test -B buildGNU64/test -DCMAKE_PREFIX_PATH=$PWD/installedGNU64 && cmake --build buildGNU64/test --parallel 2 && cd buildGNU64/test && ctest --timeout 200 --output-on-failure
 
   build-JADE-docker-image-fedora45x86_64_gnu:
     runs-on: ubuntu-latest

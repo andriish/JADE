@@ -201,13 +201,34 @@ This is a repository with software of JADE experiment.
      - **NAG** (might have problems)
      - **SUN** (might have problems)
 
-Please note that JADE software consists of multiple packages that can be compiled sequentially,
-without invocation of the ``jadeinstall.sh``.
+``jadeinstall.sh`` only translates these options for the top-level ``CMakeLists.txt``, which is one CMake project
+with the parts ``jadesoft``, ``convert``, ``jtuple``, ``fptobos`` and ``h2root`` as subdirectories. It can be used
+directly:
+
+    cmake -S . -B buildGNU64 -DJADE_TOOLCHAIN=GNU -DJADE_BITS=64 -DCMAKE_INSTALL_PREFIX=/full/path/to/desired/location
+    cmake --build buildGNU64 --parallel
+    cmake --install buildGNU64
+
+(the default prefix is ``installed<toolchain><bits>`` in the source directory; ``-DJADE_BUILD_CONVERT=OFF``,
+``-DJADE_BUILD_JTUPLE=OFF``, ``-DJADE_BUILD_FPTOBOS=OFF`` and ``-DJADE_BUILD_H2ROOT=OFF`` leave out parts).
+The installation contains ``share/JADE/cmake/JADEConfig.cmake``: ``find_package(JADE)`` gives the imported targets
+``JADE::<name>`` of all installed executables and libraries and the variables ``JADE_BIN_DIR``, ``JADE_LIB_DIR``,
+``JADE_DATA_DIR``, ``JADE_TOOLCHAIN``, ``JADE_BITS``, ``JADE_<lang>_COMPILER``, ``JADE_EXECUTABLES``, ``JADE_LIBRARIES``, ...
 
 The ``jadeinstall.sh`` script will create the ``/build`` directory, where the data files are
 converted into ``.root`` files (among other things), which can be found in the ``build<toolchain><bits>/test`` directory (e.g. ``buildGNU64/test``).
 
 ## Testing
+
+The tests are the CMake project ``test/``. It uses the installed JADE software through its ``JADEConfig.cmake`` (the toolchain,
+the bits and the compilers are those of the installation):
+
+    cmake -S test -B buildGNU64/test -DCMAKE_PREFIX_PATH=<install prefix>
+    cmake --build buildGNU64/test --parallel 2
+    cd buildGNU64/test && ctest --timeout 200 --output-on-failure
+
+``-DJADE_FAIL_ON_SKIP=ON`` (or the environment variable ``JADE_FAIL_ON_SKIP=1``) makes skipped tests (no X display, ...) fail,
+``-DJADE_TEST_TIMEOUT_FACTOR=N`` multiplies the time limits. ``jadetest.sh`` does the same with the options of ``jadeinstall.sh``.
 
 To run some simple tests:
 

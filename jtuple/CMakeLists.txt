@@ -1,9 +1,7 @@
 ########################################################################
-CMAKE_MINIMUM_REQUIRED(VERSION 3.10) #Because of ROOT
-PROJECT(JTUPLE Fortran CXX C)
-set(VERSION 2022.08)
+set(VERSION 2026.11)
 include("GNUInstallDirs")
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Modules")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 option(JADE_FORCE_32                   "Force build of 32 bit libraries." OFF)
 if (JADE_FORCE_32)
@@ -35,7 +33,12 @@ set(JEXTERN_LIBRARIES  "${MOTIF_LIBRARIES};${CERNLIB_PACKLIB_STATIC};${CERNLIB_K
 ########################################################################
 message(STATUS "JEXTERN libraries       : ${JEXTERN_LIBRARIES}")
 ########################################################################
-find_package(JADESOFT REQUIRED)
+if(TARGET interface AND TARGET jadegs AND TARGET boslib AND TARGET zlib)
+  # built together with jadesoft (top-level CMakeLists.txt): the libraries of this build
+  set(JADESOFT_LIBRARIES_STATIC interface jadegs boslib zlib)
+else()
+  find_package(JADESOFT REQUIRED)
+endif()
 message(STATUS "JADE JTUPLE: JADESOFT_LIBRARIES_STATIC=${JADESOFT_LIBRARIES_STATIC}")
 ########################################################################
 
@@ -47,12 +50,13 @@ set(TAKLUMIEXE taklumi)
 # Define the library name
 set(JTLIB jtlib)
 set(NTUPLE          ntuple)
-set(ZREAD         zread)
+# (the target zread is the executable of jadesoft)
+set(ZREAD         jtzread)
 
 # Define some directories
-set(SRC ${CMAKE_SOURCE_DIR}/src)
-set(LIB ${CMAKE_SOURCE_DIR}/lib)
-set(BIN ${CMAKE_SOURCE_DIR}/bin)
+set(SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(LIB ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+set(BIN ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 include_directories( ${SRC} )
 
 set(JTLIB_src 
@@ -92,8 +96,8 @@ else()
 endif()
 
 ########################################################################
-INSTALL(TARGETS ${JTJOBEXE} ${JZREADEXE} ${TAKLUMIEXE} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+INSTALL(TARGETS ${JTJOBEXE} ${JZREADEXE} ${TAKLUMIEXE} EXPORT JADETargets RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 # the table of the luminosity read by taklumi (the file lumi.dat in the working directory), next to the calibration files
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/share/lumi.dat DESTINATION ${CMAKE_INSTALL_DATADIR}/JADESOFT)
-INSTALL( TARGETS ${BOSLIB}  ${ZREAD}  ${NTUPLE} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT library )
+INSTALL( TARGETS ${JTLIB} ${ZREAD}  ${NTUPLE} EXPORT JADETargets ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT library )
 ########################################################################

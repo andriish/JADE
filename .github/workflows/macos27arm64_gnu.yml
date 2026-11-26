@@ -68,12 +68,12 @@ jobs:
         key: ${{ steps.brewkey.outputs.key }}
     - name: Compile
       # On macOS only the versioned GNU-NN toolchains set the compilers (Homebrew gcc-16, gfortran-16).
-      run: sh jadeinstall.sh --toolchain=GNU-16
+      run: cmake -S . -B buildGNU-1664 -DJADE_TOOLCHAIN=GNU-16 && cmake --build buildGNU-1664 --parallel 2 && cmake --install buildGNU-1664
     - name: Test
-      # fails if a test fails, or is skipped (e.g. no Xvfb): see JADE_FAIL_ON_SKIP in jadetest.sh
+      # fails if a test fails, or is skipped (e.g. no Xvfb): see JADE_FAIL_ON_SKIP in test/CMakeLists.txt
       env:
         JADE_FAIL_ON_SKIP: 1
-      run: sh jadetest.sh --toolchain=GNU-16
+      run: cmake -S test -B buildGNU-1664/test -DCMAKE_PREFIX_PATH=$PWD/installedGNU-1664 && cmake --build buildGNU-1664/test --parallel 2 && cd buildGNU-1664/test && ctest --timeout 200 --output-on-failure
     - name: Diagnose crashes
       # The Apple linker merges COMMON block sizes comparing only the low 16 bits, so a COMMON larger
       # than 64 KiB can be linked with the size of a smaller declaration (see AGENTS.md, "Apple linker

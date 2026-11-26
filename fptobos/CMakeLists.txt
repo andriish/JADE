@@ -1,8 +1,6 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.10) #Because of ROOT
-PROJECT(JTUPLE Fortran C)
-set(VERSION 2024.04)
+set(VERSION 2026.11)
 include("GNUInstallDirs")
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Modules")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 option(JADE_FORCE_32                   "Force build of 32 bit libraries." OFF)
 if (JADE_FORCE_32)
@@ -29,20 +27,25 @@ message(STATUS "JADE FPTOBOS: CERNLIB_MATHLIB_STATIC=${CERNLIB_MATHLIB_STATIC}")
 set(JEXTERN_LIBRARIES  "${CERNLIB_PACKLIB_STATIC};${CERNLIB_KERNLIB_STATIC};${CERNLIB_MATHLIB_STATIC}" )
 message(STATUS "JEXTERN libraries       : ${JEXTERN_LIBRARIES}")
 ########################################################################
-find_package(JADESOFT REQUIRED)
+if(TARGET interface AND TARGET jadegs AND TARGET boslib AND TARGET zlib)
+  # built together with jadesoft (top-level CMakeLists.txt): the libraries of this build
+  set(JADESOFT_LIBRARIES_STATIC interface jadegs boslib zlib)
+else()
+  find_package(JADESOFT REQUIRED)
+endif()
 message(STATUS "JADE FPTOBOS: JADESOFT_LIBRARIES_STATIC=${JADESOFT_LIBRARIES_STATIC}")
 ########################################################################
 set(FPTOBOSEXE fptobos)
 set(UNPJADEXE unpjad)
 ########################################################################
 # Define some directories
-include_directories( ${CMAKE_SOURCE_DIR}/src )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/src )
 
 set(FPTOBOS_src 
  fptobos.f unpjad.f  unpaff.f  bytswp.f  chasci.f  pripatr.f prihead.f 
  prizvtx.f prizehd.f prize4v.f prilgcl.f prigvtx.f primur1.f primur2.f 
  pritpev.f pritptr.f pritpvx.f pritagg.f twoin1.f cnvibm3e.f chebcd.f )
-list(TRANSFORM FPTOBOS_src PREPEND "${CMAKE_SOURCE_DIR}/src/")
+list(TRANSFORM FPTOBOS_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/src/")
 
 set(UNPJAD_src 
 unpjad1.f unpaff.f bytswp.f chasci.f pripatr.f prihead.f prizvtx.f prize4v.f 
@@ -51,7 +54,7 @@ twoin1.f cnvibm3e.f
 # pritpvx.f pritagg.f chebcd.f 
  mvcl.f   #ISNT IT IN BLAS?
 )
-list(TRANSFORM UNPJAD_src PREPEND "${CMAKE_SOURCE_DIR}/src/")
+list(TRANSFORM UNPJAD_src PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/src/")
 
 add_executable(${FPTOBOSEXE} ${FPTOBOS_src})
 add_executable(${UNPJADEXE} ${UNPJAD_src})
@@ -65,6 +68,6 @@ else()
 endif()
 
 ########################################################################
-INSTALL(TARGETS ${FPTOBOSEXE}  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-INSTALL(TARGETS ${UNPJADEXE}  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+INSTALL(TARGETS ${FPTOBOSEXE} EXPORT JADETargets  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+INSTALL(TARGETS ${UNPJADEXE} EXPORT JADETargets  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 ########################################################################

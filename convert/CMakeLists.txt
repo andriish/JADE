@@ -1,8 +1,6 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.10) #Because of ROOT
-PROJECT(JADECONVERT Fortran C CXX)
-set(VERSION 2022.08)
+set(VERSION 2026.11)
 include("GNUInstallDirs")
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Modules")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 
@@ -33,6 +31,7 @@ message(STATUS "JADE convert: LAPACK_LIBRARIES=${LAPACK_LIBRARIES}")
 ########################################################################
 find_package(HepMC3  REQUIRED) #The later is to test JADE with NAG on Cobra
 message(STATUS "JADE convert: HEPMC3_LIBRARIES=${HEPMC3_LIBRARIES}")
+set(JADE_HEPMC3_LIBRARIES "${HEPMC3_LIBRARIES}" PARENT_SCOPE)
 ########################################################################
 #include(JADE_ROOT_setup)
 ########################################################################
@@ -74,5 +73,5 @@ endif()
 add_dependencies( convert_hepmc_to_jade cmdline  )
 ########################################################################
 # installs 
-install(TARGETS convert_hepmc_to_jade RUNTIME DESTINATION bin)
+install(TARGETS convert_hepmc_to_jade EXPORT JADETargets RUNTIME DESTINATION bin)
 ########################################################################

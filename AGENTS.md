@@ -22,7 +22,7 @@ Software of the JADE experiment (legacy e+e- collider experiment): mostly old Fo
 
 ## Build and test
 
-Build order is fixed and driven by `jadeinstall.sh`: `jadesoft` → `convert` → `jtuple` → `fptobos`. Each is an independent CMake project configured out-of-tree in `build<toolchain><bits>/<name>` (e.g. `buildGNU64/jadesoft`; like the install directory, one build tree per toolchain and bits, so different compilers never reuse a CMake cache); the later ones find the installed JADESOFT via `-DJADESOFT_DIR=<prefix>/share/JADESOFT/cmake`.
+The top-level `CMakeLists.txt` is one CMake project with the parts `jadesoft` → `convert` → `jtuple` → `fptobos` → `h2root` as ordinary subdirectories (no `project()` of their own; `jtuple` and `fptobos` link the libraries of `jadesoft` as targets). It builds and installs all libraries and executables, selects the compilers from `JADE_TOOLCHAIN`/`JADE_BITS` (`cmake/Modules/JADE_toolchain.cmake`), and installs `share/JADE/cmake/JADEConfig.cmake` (imported targets `JADE::<name>` of all installed executables and libraries, directories, toolchain, compilers). `jadeinstall.sh` only translates its options for it; the build tree is `build<toolchain><bits>` (parts in `build<toolchain><bits>/<name>`), like the install directory one per toolchain and bits, so different compilers never reuse a CMake cache. `test/` is a CMake project of its own that uses the installed software through `JADEConfig.cmake` (`-DCMAKE_PREFIX_PATH=<prefix>`, the package is required; compilers, bits and linker flags are those of the installation; `jadetest.sh` translates the options for it).
 
 ```
 sh jadeinstall.sh [--bits=32|64] [--toolchain=GNU|Intel|XL|NAG|PGI|SUN|GNU-11..GNU-16] [--prefix=/abs/path]
@@ -30,7 +30,7 @@ sh jadetest.sh    [--bits=32|64] [--toolchain=...] [--prefix=/abs/path]
 ```
 
 - Install goes to `installed<toolchain><bits>` (e.g. `installedGNU32`) in the repo root unless `--prefix` is given. `build<toolchain><bits>/` (e.g. `buildGNU32`) and install dirs are generated — never commit them.
-- `jadetest.sh` configures `test/`, builds, and runs `ctest` (200 s timeout per test; the display tests have their own, longer limits). Tests are sequential and depend on one another (FPTOBOS → pythia8/HepMC3 → CPROD → MCJADE → SUPERV → ZE4V → JZREAD → JTJOB); run the whole chain rather than single tests. Pythia8 is required for the MC tests.
+- `jadetest.sh` (or `cmake -S test -B <dir> -DCMAKE_PREFIX_PATH=<prefix>`, `cmake --build <dir>`, `ctest` in `<dir>`) configures `test/`, builds, and runs `ctest` (200 s timeout per test; `JADE_FAIL_ON_SKIP=1` makes skipped tests fail; the display tests have their own, longer limits). Tests are sequential and depend on one another (FPTOBOS → pythia8/HepMC3 → CPROD → MCJADE → SUPERV → ZE4V → JZREAD → JTJOB); run the whole chain rather than single tests. Pythia8 is required for the MC tests.
 - CMake options (jadesoft): `JADE_OLD_MC` (ON), `JADE_FPE` (OFF), `JADE_FORCE_32` (ON for `--bits=32`).
 - Dependencies: gfortran/gcc/g++, ROOT 6, cmake, HepMC3, LAPACK/BLAS, X11 + Motif, CERNLIB, gengetopt. These are rarely installed on a dev host.
 
@@ -157,7 +157,7 @@ The Apple linker (`ld-prime`, seen with `ld-27106.1`; `-ld_classic` is no longer
 
 - Fix used (each block is wrapped in `#ifdef __APPLE__`, so only macOS builds get it; this relies on the Fortran preprocessor, which the compiler setup enables for all toolchains, and on the compiler predefining `__APPLE__`): a `BLOCK DATA` that initialises one element (`DATA X(1) /0/`) gives a **real** definition (zero-fill, no file size) with the largest size; a real definition always wins over tentative ones, on every linker. It must be in an object linked directly into the executable (a `BLOCK DATA` in a static library is not pulled in). Present in: `superv/user.f` (`SVPAWC` /PAWC/, `SVCALB` /CALIBR/), `mcjade/mcuser.f` (`MJPAWC`), `jadez/xuser.F` (`JZBIGC` /CALIBR/ /CWORK/ /PAWC/), `jtuple/src/jzread.F` (`JZPAWC`, `JZPWR4` /PAWCR4/), `jtjob.F` (`JTPAWC`), `taklumi.f` (`TLPAWC`), and the generators `mcpy57`, `mcjt63`, `mcjt74`, `mchw58d`, `mchw59`, `mcar48p`, `mccj623` (`*PAWC`/`*PAW6..8`).
 - Keep the sizes in these blocks equal to the largest declaration in the program (a real definition smaller than a tentative one would itself truncate). When adding a program, or enlarging/adding a COMMON larger than 64 KiB (also CERNLIB ones such as `/PAWC/`, `/PAWCR4/`), add or update the block.
-- How to check a program: relink with `-Wl,-map,<file>` (take the command from `build<toolchain><bits>/<proj>/CMakeFiles/<exe>.dir/link.txt`), read the linked size and the supplying object of each `_name_` from the map, and compare with the largest `(common)` size (`nm -m`) among the **linked** inputs listed in the map (not all archive members). `nm -n -m <exe>` plus the next symbol's address also shows the linked size.
+- How to check a program: relink with `-Wl,-map,<file>` (take the command from `build<toolchain><bits>/<part>/CMakeFiles/<exe>.dir/link.txt`), read the linked size and the supplying object of each `_name_` from the map, and compare with the largest `(common)` size (`nm -m`) among the **linked** inputs listed in the map (not all archive members). `nm -n -m <exe>` plus the next symbol's address also shows the linked size.
 
 ## Conventions and gotchas
 
