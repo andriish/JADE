@@ -1,6 +1,6 @@
 name: CERNLIB RPMs (Fedora 45, dnf repository)
-# Builds the CERNLIB RPMs of .github/rpm/cernlib in the default images of Fedora 45 (x86_64, i686, aarch64, s390x)
-# and CentOS Stream 9 and 10 (x86_64, aarch64, s390x; CentOS has no i686), and publishes them as a dnf repository
+# Builds the CERNLIB RPMs of .github/rpm/cernlib in the default images of Fedora 45 (x86_64, i686, aarch64)
+# and CentOS Stream 9 and 10 (x86_64, aarch64; CentOS has no i686), and publishes them as a dnf repository
 # on GitHub Pages: https://<owner>.github.io/<repository>/ with fedora/<release>/<arch>/ and centos/<release>/<arch>/
 # and the repository files JADE-fedora.repo and JADE-centos.repo (copy the one of the distribution to /etc/yum.repos.d/)
 # One-time setting of the repository: Settings -> Pages -> Source: "GitHub Actions".
@@ -10,7 +10,7 @@ name: CERNLIB RPMs (Fedora 45, dnf repository)
 # github-pages normally accepts deployments only from the default branch), or by a manual run with "publish".
 # A manual run can select the distribution and the architecture; publishing such a run replaces the whole site
 # by the selected builds.
-# s390x is emulated with QEMU: it is slow, and its time limit is long.
+# s390x (emulated with QEMU, slow) is disabled so far: see the list of the builds in the job 'plan'.
 on:
   workflow_dispatch:
     inputs:
@@ -23,7 +23,7 @@ on:
         description: 'Architecture to build (i686 only exists for Fedora)'
         type: choice
         default: all
-        options: [ all, x86_64, i686, aarch64, s390x ]
+        options: [ all, x86_64, i686, aarch64 ]
       publish:
         description: 'Publish the repository to GitHub Pages from this branch (it replaces the whole site by the selected builds)'
         type: boolean
@@ -63,9 +63,10 @@ jobs:
              'aarch64': ('ubuntu-24.04-arm', 'linux/arm64', '',      ''),
              's390x':   ('ubuntu-24.04',     'linux/s390x', 's390x', ''),
            }
-           builds = [('fedora', 45, fedora, a) for a in ('x86_64', 'i686', 'aarch64', 's390x')] \
-                  + [('centos', 9, c9, a) for a in ('x86_64', 'aarch64', 's390x')] \
-                  + [('centos', 10, c10, a) for a in ('x86_64', 'aarch64', 's390x')]
+           # s390x is disabled so far (emulated with QEMU it does not finish in time): add 's390x' to enable it again
+           builds = [('fedora', 45, fedora, a) for a in ('x86_64', 'i686', 'aarch64')] \
+                  + [('centos', 9, c9, a) for a in ('x86_64', 'aarch64')] \
+                  + [('centos', 10, c10, a) for a in ('x86_64', 'aarch64')]
            want_d, want_a = os.environ['DISTRO'], os.environ['ARCH']
            include = []
            for distro, release, image, arch in builds:
@@ -75,7 +76,7 @@ jobs:
                include.append(dict(distro=distro, release=release, image=image, arch=arch, runner=runner,
                                    platform=platform, qemu=qemu, docker_options=opts))
            if not include:
-               raise SystemExit('no build for distro=%s arch=%s (CentOS has no i686)' % (want_d, want_a))
+               raise SystemExit('no build for distro=%s arch=%s (CentOS has no i686, s390x is disabled)' % (want_d, want_a))
            with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
                out.write('matrix=' + json.dumps(dict(include=include)) + '\n')
            print(json.dumps(include, indent=1))

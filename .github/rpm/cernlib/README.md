@@ -8,8 +8,11 @@
 dependencies come from dnf, on CentOS with EPEL and CRB; the sources from spectool). The workflow
 `.github/workflows/cernlib-rpm.yml` runs it for
 
-- Fedora 45 (`fedora:45`): x86_64, i686 (mock in the x86_64 image: Fedora has no i686 image), aarch64, s390x (QEMU),
-- CentOS Stream 9 and 10 (`quay.io/centos/centos:stream9`, `stream10`): x86_64, aarch64, s390x (QEMU; CentOS has no i686),
+- Fedora 45 (`fedora:45`): x86_64, i686 (mock in the x86_64 image: Fedora has no i686 image), aarch64,
+- CentOS Stream 9 and 10 (`quay.io/centos/centos:stream9`, `stream10`): x86_64, aarch64 (CentOS has no i686),
+
+s390x (QEMU) is disabled so far: the emulated build is too slow. It is switched on again in the list of the builds of the
+job `plan` of the workflow (and in the choice of the architecture of the manual run).
 
 and publishes the RPMs of all of them as one dnf repository on GitHub Pages (`fedora/<release>/<arch>/`,
 `centos/<release>/<arch>/`, one repository file per distribution; `$releasever` and `$basearch` are those of the machine):
