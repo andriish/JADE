@@ -39,3 +39,9 @@ RUN         dnf -y install --enablerepo=fedora-debuginfo --enablerepo=updates-de
 RUN         dnf -y copr enable averbyts/JADE && \
             dnf -y install cernlib-devel.i686 cernlib-static.i686 cernlib-packlib-gfortran.i686 && \
             dnf -y clean all
+# Debugging of CERNLIB: its debug symbols and sources (copr); they may be missing, which does not
+# stop the build
+RUN         dnf -y install gdb ; \
+            dnf -y install cernlib-debuginfo.i686 cernlib-debugsource.i686 ; \
+            dnf -y clean all ; \
+            true
