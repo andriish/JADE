@@ -1,364 +1,698 @@
 \section{Introduction}
 
-This section largely remains the same as in the Note 103.
-However, with the new available data from LEP, the JADE data 
-obtained more importance as a case of successful data preservation.
-
-
-
-
-\section{Description of the programs}
-
-
-
-\subsection{The tracking simulation}
-This section describes the program  mcjade.
-
-
-
-\subsection{The JADE supervisor}
-
-
-
-
-\subsection{The ZE4V Formatting}
-
-
-
-\subsection{The JADE Event Display}
-
-
-\section{Description of the JADE Data}
-
-
-\subsection{Data Formats}
-
-
-\subsubsection{BOS Records}
-
-
-\subsubsection{ZE4V Records}
-
-\subsection{DATA Preprocessing History}
-
-
-\subsection{Currentrly Usable Files}
-
-
-
-\subsubsection{Available ZE4V Versions of Real Data}
-
-
-\subsubsection{Available ZE4V Versions of MC Data}
-
-
-\subsubsection{Available BOS Versions of MC Data}
-
-
-\subsection{Calibrarion Files}
-
-
-
-\section{JADE Program Libraries}
-
-
-\subsection{Location}
-
-
-\subsection{Oraganisation}
-
-
-\subsection{Installation}
-
-
-
-\section{Handling the main programs}
-
-
-\subsection{mcjade}
-
-
-
-\subsection{superv}
-
-
-
-\subsection{ze4v}
-
-
-\subsection{jadesim}
-
-
-\subsection{jadez}
-
-To start jadez one should use the sv files.
-The Binary calibration files should be copied or linked to the expected names.
-
-
-\section{Utility programs}
-
-
-
-\subsection{QCD Event Generator Package and CPROD Interface}
-
-
-\subsection{Example Program for Processing ZE4V Data}
-
-
-\subsection{Conversion tool for JADE calibration files}
-
-
-\section{Reactivation of the JADE software}
-
-
-
-
-\section{Reamaining tasks}
-This section of the original note is obsolete.
-
-The straightforward modifications considered in the original note
+JADE was one of the experiments at the electron-positron collider PETRA at DESY, which took data from 1979 to 1986 at
+centre-of-mass energies between 12 and 46.7~GeV~\cite{Bartel:1986ua}. The description of the experiment and its physics
+can be found in the publications of the collaboration; here only the preservation of its data, software and documentation is discussed.
+The data of JADE obtained a new importance when the data from LEP at higher energies became available, since the JADE data cover the lower energies and are a case of successful data preservation;
+at the same time the original software and the machines that it was written for were disappearing.
+The software was revived in 2003, which is described in the Note 103~\cite{JCN:103}, and has been kept running since.
+
+The data preservation in high energy physics is coordinated by the DPHEP collaboration (Data Preservation in High Energy Physics)~\cite{Akopov:2012dpHEP}.
+JADE was one of the first experiments that preserved its data, software and documentation and became a showcase, a poster child, of the
+DPHEP effort: the display of an event simulated and reconstructed with the revitalised software, more than ten years after the end of
+the experiment, illustrated the report of the DPHEP study group in the CERN Courier~\cite{Courier:2009datapres} (Section~\ref{sec:display}). The preservation consists of
+three parts: the data, the software and the documentation. Section~\ref{sec:data} describes the data and the documentation and Section~\ref{sec:software} the software;
+the porting of the software to modern platforms is described in Section~\ref{sec:porting}, the programs in Sections~\ref{sec:programs}, \ref{sec:utilities} and~\ref{sec:generators}.
+
+Several tools made the preservation of the data much simpler over the last one or two decades. The free compilers, first of all \texttt{gfortran}, and
+the free and open libraries replaced the commercial platforms of the past. The version control with git~\cite{Git:web} and its hosting on GitHub~\cite{GitHub:web}, with the
+continuous integration~\cite{GitHubActions:web}, make the changes traceable and the software tested on every change. The build system CMake~\cite{CMake:web} gives the
+software the same build on all platforms, and the emulation and virtualisation (QEMU~\cite{Bellard:2005qemu}, virtual machines and containers) allow
+the use of platforms that no longer exist as hardware. The revival of CERNLIB~\cite{Hahn:2022hrpms} and the package managers of the distributions and of macOS~\cite{Homebrew:web}
+make the old libraries easy to install, and the CERN Open Data Portal makes the data and documentation published and citable (Section~\ref{sec:opendata}).
+The crucial tools of the data preservation are now AI coding assistants~\cite{ClaudeCode:web}: in the last phase of the work described here they made the cleanup,
+the porting to new compilers and platforms, the tests and the documentation much faster than before (Section~\ref{sec:ai}).
+
+\section{JADE data and documentation}
+\label{sec:data}
+The JADE data, software and documentation are published as open data on the CERN Open Data Portal (Section~\ref{sec:opendata}), where
+the data set, the scanned computing notes and a virtual machine with the software can be found and cited; the data are also stored at MPCDF and can be
+accessed via various protocols (Section~\ref{sec:access}).
+
+The bit preservation, the safe long-term storage of the files, is not a problem for JADE: the whole raw data set is about 620~GB (Section~\ref{sec:opendata}),
+which is small by present standards, fits on a single disk and is easily kept in several copies at different sites (MPCDF and the CERN storage of the Open Data Portal).
+The effort of the preservation goes therefore into the other parts, the formats of the data, the software and the documentation.
+
+In the classification of the DPHEP collaboration~\cite{Akopov:2012dpHEP}, which defines four levels of data preservation
+(Level~1: documentation; Level~2: data in a simplified format for outreach and simple analyses; Level~3: analysis-level software and data;
+Level~4: the raw data together with the reconstruction and simulation software, which allow the full analysis of the data), the preservation of JADE is at Level~4: the raw data, the
+reconstruction (\texttt{superv}) and the detector simulation (\texttt{mcjade}) with the calibration constants, the analysis programs and the documentation are preserved,
+are open and can be run on current platforms, so that the whole chain from the generated events or the raw data to the analysis can be repeated.
+
+\subsection{Data formats: BOS, ZE4V and CPROD}
+The JADE data, the real data after the two data reduction steps~\cite{JCN:38,JCN:43} and the Monte Carlo data, are
+organised in the framework of the data management system BOS~\cite{Blobel:BOS} (version of 1979), which was introduced in the
+1970s for the online and offline data flow of the high energy physics experiments at DESY. Two further formats are used
+for the summarised events: ZE4V~\cite{JCN:99}, which is independent of BOS, and the BOS-based TP format~\cite{JCN:102}, whose
+files have not been recovered. The original raw data were copied from the IBM computers of DESY in 1997 and converted
+with the FPACK program into a machine independent word format (format \texttt{B32}), in which the data of the
+banks are copied word by word as 32-bit patterns; the program \texttt{fptobos} converts these files back into BOS banks.
+
+\subsubsection{FPACK}
+FPACK is the file packaging system of the DESY IBM computers, in which the raw data of the experiments were stored on tape.
+A file is a sequence of physical records of a fixed maximum length, which contain the logical records (here: the events) with their own headers
+and the data words in the format of the machine that wrote them. For the JADE data, the files of the tapes were copied in 1997 as
+FPACK files in a machine independent word format (\texttt{B32}): each event is a set of banks whose data are the 32-bit patterns of the original words
+(integers, floating point numbers in the IBM format, EBCDIC or ASCII text). The files have a fixed record length (27720 bytes in the files of the repository)
+and are read as files with direct access, in the byte order of the IBM machines (big-endian), with the conversion of the words, the names of the banks and the
+IBM floating point numbers done by the unpacking routine \texttt{UNPJAD} of the directory \texttt{fptobos} (Section~\ref{sec:fptobos}). It puts each event
+into a buffer with pointers to its banks, and \texttt{fptobos} copies the banks into BOS.
+The test suite contains the program \texttt{fpinfo}, which uses \texttt{UNPJAD} to read an FPACK file directly, without conversion to BOS, and prints the run numbers, the numbers of events
+and the centre-of-mass energy found from the beam energy in the bank \texttt{HEAD}; for the sample file of the tapes it finds 354 events of the run 18008 at 44.2~GeV.
+The program \texttt{bosinfo} does the same for BOS files (real data or Monte Carlo).
+
+\subsubsection{BOS records}
+In BOS all event data and analysis information are structured in banks of variable length. A JADE event record is a
+dynamically arranged set of standardised BOS banks that represent the subsystems of the detector (the raw jet chamber data,
+the lead glass ADC counts, \dots) or results of the event analysis (the tracks of the pattern recognition, the lead glass
+clusters, \dots); a complete event has about two dozen banks. A bank is identified by a name and a number. It has a header
+of four 32-bit words (the bank name, the bank number, a pointer to the next bank with the same name and the number of data
+words) followed by the data. Some of the most important banks are:
 \begin{itemize}
-\item As of 2022, it makes sense to
-have the routines for event analysis that use external libraries, e.g. ROOT, so their 
-implementation in JADE software is not considered.
-\item The JADE events can now be written into HBOOk n-Tuples using the codes written 
-for the analyses in Ref.~\cite{}. Se {\sc jtjob}.
-
+\item \texttt{JETC}, the raw jet chamber data~\cite{JCN:23}: a bank of 16-bit words. Its first part has pointers to the first
+hit of each of the 96 drift cells, in the second part every hit is a sequence of four 16-bit words (the wire and the hit number,
+the pulse amplitudes at the two ends of the wire and the drift time).
+\item \texttt{PATR}, the tracks of the pattern recognition~\cite{JCN:12}, with the curvature, the fit type and parameters and the
+fit quality of every track as 32-bit integers and floating point numbers, and \texttt{JHTL}, the hit label bank~\cite{JCN:21},
+with two 16-bit words per hit that relate the hits to the tracks. The results of different steps are marked by the bank number,
+e.g.\ \texttt{PATR/10} is usually the result of the standard pattern recognition.
+\item \texttt{ALGL}, the raw lead glass data (ADC counts and channel numbers of the hit blocks), \texttt{ALGN}, the pulse heights
+in MeV sorted by the clusters, and \texttt{LGCL}, the final lead glass clusters with their energies, directions, shower profiles
+and track correlations~\cite{JCN:14D}.
 \end{itemize}
+The banks are compact mixtures of 16-bit and 32-bit integers and of floating point numbers, because at the time of PETRA
+the data acquisition and processing were dominated by the need to save memory. For the present machines this layout is
+problematic: the access to a data word or to a bit of a bank depends on the byte order of the machine (Section~\ref{sec:endian}).
 
-The more complex modifications:
+\subsubsection{ZE4V records}
+The ZE4V format~\cite{JCN:99} is a compact format of the reconstructed events, which was introduced by a group of the
+collaboration for the studies of multihadronic final states. A ZE4V record can be handled without BOS (the software that
+produces and reads it works inside the BOS environment) and is a mixture of 16-bit and 32-bit words. It starts with a header
+with the structure of the record and global properties of the event. The particle section follows, with the measured
+quantities of the reconstructed charged particles and photons: every particle begins with a general part (the four-momentum,
+the charge, \dots), followed by a part specific to charged particles (e.g.\ the number of inner detector hits or the point of
+closest approach of the track) or to neutral particles (e.g.\ the uncorrected cluster energy and the number of lead glass blocks
+of the cluster). The record also has a Monte Carlo section with the four-vectors of the initial parton or hadron configuration of
+a simulated event. The ZE4V records are written by the program \texttt{ze4v} (Section~\ref{sec:ze4v}).
 
+\subsubsection{CPROD records}
+\label{sec:cprodformat}
+The events of the Monte Carlo generators are given to the JADE detector simulation \texttt{mcjade} in the CPROD format (the
+Fortran common block \texttt{/CPROD/}; the source code refers to the JADE Computing Note 69~\cite{JCN:69}, which describes the traceback of the
+Monte Carlo four-vectors through the simulation and the reconstruction). A file contains one record per event: a record of the Fortran unformatted sequential
+files that is written with a single \texttt{WRITE} statement, so that the byte order and the length words of the records are those of the Fortran runtime of the machine
+that wrote the file (the \texttt{convert} program writes the native, the little-endian or the big-endian form, or a text file of the same content, Section~\ref{sec:convert}). The record has two parts, the
+particles of the whole event record and the final-state particles that the detector simulation tracks (Table~\ref{tab:cprod}). Four-momenta are $(p_x,p_y,p_z,E)$ in GeV, the masses are in GeV, the vertex positions are in the
+units of the generator record. The maximum numbers of particles are 500 and 300. The names of the
+particles (16 characters per particle, the common block \texttt{/CHCPRD/}) are used by the programs for printing and are not written to the file.
+\begin{table}[H]\centering
+\begin{tabular}{|l|l|p{0.5\textwidth}|}\hline
+Variable & Type & Content \\\hline\hline
+\texttt{NEV} & integer & event number \\
+\texttt{BEAM} & real & beam energy \\
+\texttt{PT} & real & sum of the transverse momenta of the final-state particles \\
+\texttt{PHI}, \texttt{THETA} & real & azimuth and polar angle of the sphericity axis (degrees) \\
+\texttt{IFLAVR} & integer & flavour of the primary quark pair (0 if not found) \\
+\texttt{NP}, \texttt{NC}, \texttt{NN} & integer & number of all particles, of the charged and of the neutral ones \\\hline
+\multicolumn{3}{|l|}{for each of the \texttt{NP} particles:} \\\hline
+\texttt{PP(4)}, \texttt{XM} & real & four-momentum and mass \\
+\texttt{JCH}, \texttt{JTP} & integer & charge and JADE particle type code \\
+\texttt{JP(2)} & integer & index of the parent particle and of the parent parton \\\hline
+\texttt{NF}, \texttt{NCF}, \texttt{NNF} & integer & number of final-state particles, of the charged and of the neutral ones \\\hline
+\multicolumn{3}{|l|}{for each of the \texttt{NF} final-state particles:} \\\hline
+\texttt{PF(4)}, \texttt{XMF} & real & four-momentum and mass \\
+\texttt{ICF}, \texttt{ITF} & integer & charge and JADE particle type code \\
+\texttt{PSTRT(3)} & real & position of the production vertex \\\hline
+\end{tabular}
+\caption{Content of a record of the CPROD format, in the order in which it is written.}
+\label{tab:cprod}
+\end{table}
 
+\subsection{Data preprocessing history}
+The data passed through a multi-level trigger and filters: the first level trigger T1 (an energy trigger on the fast analogue
+signals of the lead glass), the track trigger T2 of the jet chamber and the third level trigger T3 on the drift data of the muon
+filter. Online filters rejected the background events (cosmic rays, beam-gas interactions, electronic noise), and the accepted events
+went from the data acquisition computers (NORD-10S and NORD-50 of Norsk Data~\cite{Wiki:Nord}) to the IBM mainframes of DESY~\cite{Wiki:IBM370}.
+Both the online and the offline flow of the data were managed within BOS. After a general reformatting the data were passed through the
+two reduction steps (REDUC1~\cite{JCN:38} and REDUC2~\cite{JCN:43}) that enrich the fraction of the signal events with cuts partly based on the
+reconstructed events (the banks \texttt{PATR} and \texttt{LGCL} of the Supervisor).
+
+\subsection{The luminosity table}
+\label{sec:lumi}
+
+The integrated luminosity of the data is not part of the event data; it is tabulated by run period in the directory
+\texttt{jadesoft/\allowbreak{}info} of the repository:
+\begin{description}
+\item[\texttt{lumi.dat}] the table of the luminosity of the barrel luminosity monitor, integrated over consecutive runs with
+the same beam energy (run periods). Each line has the first and the last run of the period, the beam energy in GeV, the
+integrated luminosity and its error (format \texttt{(2(I5,3X),F6.3,2E14.6)}); the unit is not written in the file (it is
+presumably nb$^{-1}$). The numbers were transferred by hand from a historic printout of the program
+\texttt{TAKLUMI} by J.~Olsson. The file \texttt{lumi.dat.ori} is that transcription; \texttt{lumi.dat} has the tabulators
+replaced by blanks, the zero entries brought to the format of the others and the missing run periods 540--564 and
+581--591 added from the first page of the printout (with four digits of accuracy).
+\item[\texttt{jaderuns.dat}] the overview of the beam energy against the data taking period and the run period (year, dates,
+first and last run, beam energy, period number), in a format that is easier to process than \texttt{jaderuns.dat.ori}, with two
+lines corrected in 1985.
+\item[\texttt{shutdown.dat}] the shutdown periods of the accelerator.
+\item[\texttt{taklumi.f}, \texttt{taklumi.dat}, \texttt{README}] the historic source of the program \texttt{TAKLUMI}, an example
+of its input and the description of the files.
+\end{description}
+The program \texttt{taklumi} (source \texttt{jtuple/\allowbreak{}src/\allowbreak{}taklumi.f}, installed with the other programs) sums the luminosity.
+It reads the file \texttt{lumi.dat} from the working directory and the first and the last run number from the standard
+input (the file \texttt{taklumi.dat} gives examples of run ranges), and prints the luminosity of each run period, the
+sum for the run range and the sums per centre-of-mass energy range, with the errors; the histograms of the integrated
+luminosity are written with HBOOK. The luminosity of a selection of the data is the sum over the run periods of the runs
+that it contains.
+
+\subsection{The JADE data on the CERN Open Data Portal}
+\label{sec:opendata}
+
+The JADE data and software are published on the CERN Open Data Portal (\url{https://opendata.cern.ch}, experiment
+JADE). The portal contains:
+\begin{description}
+\item[The data.] One dataset with the raw electron-positron collision data of the JADE detector at the PETRA
+accelerator of DESY~\cite{OpenData:JADE} (record 26999, published 2024, license CC0-1.0). It contains all data
+recorded from 1979 to 1986 with collision energies from 12 to 46.7~GeV, in the raw (FPACK) format as they were
+recovered from the archives: 2862 files with a total size of about 620~GB. The files are named as the files of
+the original tapes (\texttt{JAD001/\allowbreak{}file001}, \dots; the data of one tape directory are listed in an index file
+\texttt{JAD001\_\allowbreak{}file\_\allowbreak{}index.json}) and are accessed with the XRootD protocol~\cite{Dorigo:XRootD} from the CERN storage
+(\texttt{root:/\allowbreak{}/\allowbreak{}eospublic.cern.ch/\allowbreak{}/\allowbreak{}eos/\allowbreak{}opendata/\allowbreak{}jade/\allowbreak{}datasets/\allowbreak{}jadetapes/\allowbreak{}}). The data file used by the test suite of
+this repository, \texttt{test/\allowbreak{}jadetapes/\allowbreak{}JAD073/\allowbreak{}file006}, has the same naming. The raw data are converted to BOS
+banks with \texttt{fptobos} and processed with the reconstruction; the portal has no Monte Carlo samples, they
+are generated with the programs described in this note.
+\item[The software environment.] The JADE virtual machine image (record 26000~\cite{OpenData:JADEVM}, CentOS~7,
+VirtualBox format, 2.8~GB) with the reconstruction software of 2016, and the guides ``Getting started with JADE
+Open Data'' (installation of this software in a container with Docker or Podman and the test with
+\texttt{jadeinstall.sh} and \texttt{jadetest.sh}), ``JADE Virtual Machines: how to install'', ``Understanding
+JADE software'' and ``Understanding JADE MC generation''. The guides refer to the repository of this software
+and to the container images that were current at the time; the images and the commands of the present version are
+described in Section~\ref{sec:build} and in Section~\ref{sec:environment}.
+\item[The documentation.] The scanned JADE computing notes (117 records at the time of writing), the logbooks
+(21 records), the author lists of the collaboration and of the preserved data, and the page about the experiment
+(\url{https://opendata.cern.ch/docs/about-jade}).
+\end{description}
+The portal gives access to the unprocessed data only; the preserved software, with the calibration files and the tests
+described in this note, is what makes them usable.
+
+\subsection{Access to the data}
+\label{sec:access}
+
+The JADE data can be obtained from the CERN Open Data Portal (Section~\ref{sec:opendata}) and from the storage at MPCDF.
+The files of the portal are accessed from the page of the record (\url{https://opendata.cern.ch/record/26999}) and with the
+XRootD protocol from the CERN storage (\texttt{root:/\allowbreak{}/\allowbreak{}eospublic.cern.ch/\allowbreak{}/\allowbreak{}eos/\allowbreak{}opendata/\allowbreak{}jade/\allowbreak{}}); the files of the dataset
+are listed in index files, one per directory of the original tapes.
+
+\subsubsection{Conditions of use of the JADE open data}
+The conditions are given by the page ``About JADE'' of the portal, in particular its disclaimer, by the record of the dataset
+and by the terms of use of the portal~\cite{CERN:OpenDataTerms}:
 \begin{itemize}
-\item The JADE raw data can be easily converted into BOS banks with a {\sc fptobos} utility.
-\item The calibration -- TBD.
-\item The JADE data is present now in multiple storages.
+\item The JADE dataset, like all datasets and metadata of the portal, is released under the Creative Commons CC0
+waiver (the licence of the record is CC0-1.0). The other content of the portal, e.g.\ software, is under its own
+licence, and the portal gives its content ``as is''.
+\item Neither JADE nor CERN endorse any works, scientific or otherwise, produced with these data.
+\item The disclaimer states that all released data samples have a unique DOI that the users are requested to cite in
+applications and publications. The record 26999 had no DOI at the time of writing, so that the data are cited
+through the number of the record and its address.
+\item The record of the author list of the preserved data (record 26050, nine people who took part in the JADE data
+preservation after the end of the collaboration: S.~Bethke, O.~Biebel, M.~Blumenstengel, S.~Kluth, J.~Olsson,
+P.~Movilla Fernandez, C.~Pahl, J.~Schieck and A.~Verbytskyi) asks that analyses of JADE data from the portal cite this list
+together with the data and with the author list of the JADE Collaboration (record 26051, 127 authors, as given in Eur.\
+Phys.\ J.\ C73 (2013) 2332).
+\item The disclaimer also warns that the data remain complex: selection criteria have to be applied, some understanding
+of particle physics and of the detector is required, and the data cannot be viewed in simple tables for
+spreadsheet-based analyses.
 \end{itemize}
+The page ``About JADE'' describes the dataset as events in the BOS format, produced by the reconstruction software, while
+the record lists the format as raw; the files with the same names that are used in the test suite are in the FPACK
+format and are converted to BOS with \texttt{fptobos} (Section~\ref{sec:data}).
 
+\subsubsection{Policy of the JADE collaboration for the use of the data}
+The draft data preservation policy of the JADE collaboration (\texttt{doc/Policy} of the repository) requires that any
+publication that results from the analysis of the data by non-members of the collaboration contains an
+acknowledgement that the data were collected by JADE and a disclaimer that the collaboration takes no
+responsibility for the results, for example: \emph{``This paper is based on data obtained by the JADE experiment,
+but is analyzed independently, and has not been reviewed by the JADE collaboration.''} An analysis can be signed by the
+collaboration as a whole after an approval procedure, which consists of an invitation to all members of the
+collaboration to take part in the editorial process, and the time between the call and the submission of the
+results to a peer-reviewed journal must not be shorter than three months. If a member of the collaboration takes part
+in an analysis, it has to be stated whether an approval procedure took place and what its outcome was.
 
-\section{Introduction to JADE experiment}
-The description of JADE experiment can be found elsewhere.\cite{Bartel:1986ua}
-Physics cases for the available JADE data can be discussed elsewhere\cite{Bartel:1986ua}.
-The case of JADE data preservation can be found interesting as a mode of data preservation that can be used for other experiments.
-The main part of the preservation is the  software, data and documentation.
-\section{JADE software}
+\subsubsection{File catalog of the data files}
+As the amount of data is small, there is no big need in a complicated file catalogue.
+The list of files can be seen online.
+
+\subsection{Documentation of the experiment and of the software}
+Technical notes are available in hard copies and scanned version in MPP (and DESY library?).
+Papers are available on InSpire from CERN library or KEK.
+The data preservation documentation is available on the web pages of the JADE data preservation~\cite{JADE:web}.
+\section{The JADE software}
+\label{sec:software}
 JADE software description can be found in the JADE computing notes and elsewhere.
 Briefly it consists of approximately 50.000 lines of IBM Fortran77 and similar codes 
-that were compiled on AIX4.3 systems with IBM Fortran compiler and corresponding runtime.
-The dependencies include CERNLIB.
+that were compiled on AIX~\cite{Wiki:AIX} 4.3 systems with IBM Fortran compiler and corresponding runtime.
+The dependencies include CERNLIB~\cite{CERNLIB:web}, the library of the HEP programs and tools used by most of the pre-LHC experiments.
+
+\subsection{Content of the package}
+The reviewed JADE software from 2003 is described in the Note 103~\cite{JCN:103} and in the JADE Computing Notes that are available on the CERN Open Data Portal (Section~\ref{sec:opendata}).
+The repository contains, besides the software of 2003 in \texttt{jadesoft} (with the old Monte Carlo generators, which are built with the option \texttt{JADE\_\allowbreak{}OLD\_\allowbreak{}MC}),
+the following components that were added later:
+\begin{itemize}
+\item \texttt{convert}: the converter of the events of modern generators (HepMC3 format) to the JADE format (Section~\ref{sec:convert});
+\item \texttt{fptobos}: the converter of the raw data in the FPACK format to BOS (Section~\ref{sec:fptobos});
+\item \texttt{jtuple}: the analysis programs that produce the ntuples with the QCD observables and were used in the past~\cite{Schieck:2012mp};
+\item \texttt{h2root}: the converter of HBOOK ntuples to ROOT files;
+\item \texttt{test}: the test suite (Section~\ref{sec:tests}).
+\end{itemize}
+All of the projects use CMake as the build system (Section~\ref{sec:build}). The directory \texttt{jadesoft/\allowbreak{}job2016} contains the examples of the setups for the
+Monte Carlo production (external generators are needed), the simulation, the data reconstruction and the use of the event display.
+The directory \texttt{picocernlib}, which was part of the repository until 2026, is described in Section~\ref{sec:picocernlib}.
+
+\subsection{Location and organisation of the source code}
+\subsubsection{Location}
+The source code of the software is in the \texttt{jadesoft} directory of the repository
+\url{https://github.com/andriish/JADE} (Section~\ref{sec:build}); the installed software is in the install
+prefix of the build (\texttt{installed<toolchain><bits>} in the repository directory by default): the programs in
+\texttt{bin}, the libraries in \texttt{lib} (\texttt{lib64} on Fedora and CentOS), and in \texttt{share/\allowbreak{}JADESOFT} the
+calibration files (\texttt{cal}, Section~\ref{sec:calfiles}), the table of the luminosity \texttt{lumi.dat}, the data files that programs read from the working directory
+(the help dataset and the macros of \texttt{jadez}, the tables of COJETS), the example cards of the old job \texttt{jadesim} (\texttt{examples/\allowbreak{}jadesim}) and the CMake
+package configuration (variables such as \texttt{JADESOFT\_DATA\_DIR}, \texttt{JADESOFT\_CAL\_DIR} and \texttt{JADESOFT\_BIN\_DIR}).
+\subsubsection{Organisation}
+The directory \texttt{jadesoft} contains the software in its original form and the current versions:
+\begin{itemize}
+\item \texttt{src2016} the libraries of the current version (\texttt{boslib} BOS, \texttt{jadegs} reconstruction
+supervisor and calibration, \texttt{jmc} and \texttt{jade56} detector simulation, \texttt{patrecsr} and
+\texttt{vertex} pattern recognition, \texttt{jademus} muon analysis, \texttt{tagg} tagging system, \texttt{toflib} time of
+flight, \texttt{grafix} and \texttt{interface} event display, \texttt{zlib} ZE4V, \texttt{source} common routines,
+\dots), compiled into static libraries;
+\item \texttt{main2016} the main programs \texttt{mcjade}, \texttt{superv}, \texttt{ze4v} and \texttt{jadez};
+\item \texttt{util2016} the utilities: the calibration file converters (\texttt{ccal}), the old Monte Carlo generators
+(\texttt{mcgen}) and the programs that read the ZE4V data (\texttt{zread});
+\item \texttt{job2016} the example steering scripts and data of the programs; \texttt{cal} and \texttt{cal2026} the
+calibration files;
+\item \texttt{src}, \texttt{src0}, \texttt{main}, \texttt{job}, \texttt{util} the original and pre-2016 sources, which
+are kept for reference and are not used in the build.
+\end{itemize}
+The other programs of the repository are in their own directories: \texttt{convert} (Monte Carlo events to the JADE
+format), \texttt{fptobos} (raw data to BOS), \texttt{jtuple} (ntuples with the QCD observables) and \texttt{h2root}
+(HBOOK to ROOT).
+
+\subsection{Software dependencies}
+\label{sec:deps}
+
+The JADE software itself (Fortran 77, a few C and C++ files) needs only a Fortran compiler and CMake.
+The following external codes are used; the versions in brackets are those of the 2026 tests.
+\begin{description}
+\item[CERNLIB] (version 2026.11 of the revived library~\cite{Schwickerath:2023cernlib,CERNLIB:web}):
+HBOOK~\cite{Brun:1995hbook} histograms and ntuples (\texttt{libpacklib}), kernel and mathematical routines, and HIGZ~\cite{Couet:HIGZ} with the
+X11 driver (\texttt{libgrafX11}) for the event display. CERNLIB is required; the replacement of its routines based on
+ROOT, \texttt{picocernlib}, was never used and has been removed (Section~\ref{sec:picocernlib}). CERNLIB is the dependency that
+limits the 64-bit builds.
+\item[ROOT] (6.40)~\cite{Brun:1997pa,Antcheva:2009zz}: the ntuples of \texttt{jtuple}, the converter \texttt{h2root} from
+HBOOK to ROOT files and the ROOT analysis tests.
+\item[HepMC3] (3.3)~\cite{Buckley:2019xhk}: the event record read by the converter of Monte Carlo events
+to the JADE format (\texttt{convert}); its input/output system was inspired by the needs of the data preservation of JADE, OPAL and ZEUS (Section~\ref{sec:convert}).
+\item[Pythia8] (8.3)~\cite{Bierlich:2022pfr}: generation of the test events that are converted and processed
+by the JADE simulation and reconstruction.
+\item[FastJet] (the core, \texttt{fjcore}, of version 3.5)~\cite{Cacciari:2011ma}: jet clustering in the ROOT
+analysis tests; the source of \texttt{fjcore} is included in the repository.
+\item[LAPACK/BLAS]~\cite{lapack}: linear algebra in \texttt{convert} and \texttt{jtuple}.
+\item[X11 and Motif]: graphics libraries needed by HIGZ and the display \texttt{jadez}. The display tests
+use a virtual X server (\texttt{Xvfb}~\cite{Xvfb:web}, or XQuartz~\cite{XQuartz:web} on macOS), Python~\cite{Python:web} with Pillow~\cite{Pillow:web} and Ghostscript~\cite{Ghostscript:web}
+to convert and check the pictures.
+\item[gengetopt]~\cite{gengetopt:web}: generator of the command line parser of \texttt{convert}
+(optional, the generated files are included).
+\item[CMake]~\cite{CMake:web}: the build system, see Section~\ref{sec:build}.
+\end{description}
+The tools needed for the platform used are installed from the distribution packages (Fedora, CentOS
+Stream; CERNLIB from a COPR repository) or, on macOS, from Homebrew~\cite{Homebrew:web} (the recipes for CERNLIB and HepMC3
+are part of the repository). The container images and the continuous integration of the repository
+install the same packages. The PDG particle identification codes are handled by a single header file,
+\texttt{AtlasPID.h}~\cite{Verbytskyi:AtlasPID}, included in \texttt{convert}; the HBOOK to ROOT converter \texttt{h2root} is a copy of the
+corrected sources of ROOT~\cite{ROOT:hbookfix}.
+
+\subsection{Computing environment of the software}
+\label{sec:environment}
+JADE software does not need a special environment to run: it is built and used on ordinary Linux and macOS
+systems (Table~\ref{tab:status}), i.e.\ on bare metal, but the preferred way is to work in a container, which has all the tools installed and gives the same environment on every host. In 2016 a virtual machine with all software installed was provided at
+the web pages of the JADE data preservation~\cite{JADE:web} (the image is also published on the CERN Open Data Portal, Section~\ref{sec:opendata}); today the recommended way to get a tested environment are the container images
+(Fedora 45 on x86\_64, i686 and aarch64, CentOS Stream 9 and 10) that are built from the Dockerfiles in the
+repository and used by the continuous integration. They contain the tools below, so that
+\texttt{sh jadeinstall.sh} and \texttt{sh jadetest.sh} work in them without further preparation. The repository is mounted into the container
+(\texttt{/home} in the examples of the repository), the scripts are run in this directory and install into \texttt{/home/installed<toolchain><bits>}, e.g.\ \texttt{/home/installedGNU32}.
+
+The basic dependencies of the software (Section~\ref{sec:deps}) are
+\begin{itemize}
+\item CMake~\cite{CMake:web} 3.10 or newer for building (Section~\ref{sec:build}), and \texttt{make}.
+\item A Fortran compiler (the code is Fortran 77 with extensions, compiled in fixed form and preprocessed;
+tested with \texttt{gfortran}, Intel \texttt{ifx} and NVIDIA \texttt{nvfortran}) and a C/C++ compiler with C++14
+support.
+\item CERNLIB (Section~\ref{sec:cernlib}), required.
+\item ROOT 6~\cite{Brun:1997pa,Antcheva:2009zz} for \texttt{jtuple}, the converter from HBOOK, and the
+analysis tests.
+\item HepMC3~\cite{Buckley:2019xhk} and, for the generation of the test events, Pythia8~\cite{Bierlich:2022pfr}.
+\item LAPACK/BLAS~\cite{lapack}, X11 and Motif.
+\end{itemize}
+On the distributions these are installed as packages (Fedora and CentOS: the distribution packages and the
+CERNLIB packages of HEPrpms~\cite{Hahn:2022hrpms}; macOS: Homebrew~\cite{Homebrew:web}).
+
+For the tests, some more software is needed: a virtual X display (\texttt{Xvfb}~\cite{Xvfb:web}, on macOS XQuartz~\cite{XQuartz:web}), Ghostscript~\cite{Ghostscript:web}, and Python~\cite{Python:web}
+with the Pillow library~\cite{Pillow:web}; how the tests use them is described in Section~\ref{sec:tests}.
+
+Although the JADE software contains the Monte Carlo generators of the historic productions (\texttt{jadesoft/\allowbreak{}util*/\allowbreak{}mcgen}),
+the Monte Carlo HepMC files can be generated elsewhere as well, with Pythia8 or any other generator that writes
+HepMC3 files, and converted to the JADE format with the program \texttt{convert}.
 
 
-\subsection{Porting JADE software}
-This section describes the process of porting JADE software to modern systems.
-Please skip it if you are not interested.
-As of 2016 these systems are not available on the market\footnote{apart from few on e-Bay},
-therefor e the idea is to port the software on modern wide 
+\subsection{The build system}
+\label{sec:build}
+
+The build system based on CMake~\cite{CMake:web} is the most important part of the porting.
+The software of 1986--2000 was built with scripts and makefiles of the IBM platform (\texttt{make} with
+self-developed scripts in the Korn shell, Table~\ref{tab:status}); without a build system that finds the compilers, libraries and options of
+a platform, the software cannot be moved to new systems and its results cannot be tested. CMake has first-class
+Fortran support (since version 2) with decent dependency tracking of the Fortran modules and includes, which
+replaces the scripts, and the project files are the documentation of how the software is built: they are
+self-documenting, with the sources, libraries, options and tests of every part listed explicitly. The present build system has these properties:
+\begin{itemize}
+\item The software consists of independent CMake projects, \texttt{jadesoft} (libraries and programs),
+\texttt{convert}, \texttt{jtuple}, \texttt{fptobos}, \texttt{h2root} and \texttt{test}. They are built in this
+order by the scripts \texttt{jadeinstall.sh} and \texttt{jadetest.sh}, which choose the toolchain
+(\texttt{--toolchain=GNU|Intel|PGI|\dots}), the word size (\texttt{--bits=32|64}) and the install location;
+the later projects find the installed \texttt{jadesoft} with the exported package configuration
+(\texttt{JADESOFTConfig.cmake}). The build trees and the installation directories have the toolchain and
+the word size in the name (e.g.\ \texttt{buildGNU64}, \texttt{installedGNU64}), so that different compilers
+never reuse the same CMake cache.
+\item All compiler dependent decisions are in one module (\texttt{cmake/\allowbreak{}Modules/\allowbreak{}JADE\_\allowbreak{}compiler\_\allowbreak{}setup.cmake}):
+Fortran flags for GNU, Intel (\texttt{ifx}), NVIDIA, NAG, Sun and IBM compilers (fixed form without line length limit,
+static storage of the local variables, zero initialisation, preprocessing of the sources, no fused
+multiply-add and no denormals flushed to zero where the old code needs it, optional trapping of floating point
+exceptions), the C and C++ flags, the 32-bit mode (\texttt{-m32}) and the search of libraries (ROOT, HepMC3, Pythia,
+LAPACK, X11, Motif). The sources are listed explicitly in the project files.
+\item The variants are selected by four CMake options of the project \texttt{jadesoft} (\texttt{-D<option>=<value>} of the configuration; the installation script sets them):
+\begin{description}
+\item[\texttt{JADE\_OLD\_MC}] (default \texttt{ON}) builds the generators of the historic productions, the libraries of ARIADNE, COJETS, HERWIG, JETSET and PYTHIA and the programs \texttt{py57}, \texttt{jt63}, \texttt{jt74}, \texttt{hw58d},
+\texttt{hw59}, \texttt{ar48p} and \texttt{cj623} (Section~\ref{sec:generators}); with \texttt{OFF} they are not built.
+\item[\texttt{JADE\_FPE}] (default \texttt{OFF}) adds the compiler option that traps floating point exceptions (invalid operation, division by zero, overflow): \texttt{-ffpe-trap=invalid,\allowbreak{}zero,\allowbreak{}overflow} for \texttt{gfortran},
+\texttt{-fpe0} for Intel and \texttt{-Ktrap=fp} for NVIDIA. It is off by default because the old code handles bit patterns in real variables.
+\item[\texttt{JADE\_FORCE\_32}] (default \texttt{OFF}; \texttt{jadeinstall.sh --bits=32} switches it on, and the projects \texttt{fptobos}, \texttt{jtuple} and \texttt{h2root} have the same option) builds 32-bit objects: it adds \texttt{-m32} to the Fortran, C and C++ compile and link
+lines and puts \texttt{/usr/lib} before \texttt{/usr/lib64} in the search path of the libraries, so that the 32-bit CERNLIB and the other 32-bit libraries are found (Section~\ref{sec:cernlib}).
+\item[\texttt{JADE\_CAL\_DIR\_NAME}] (\texttt{cal} or \texttt{cal2026}) selects the directory of the calibration files that are installed. If it is not set, \texttt{cal2026} is used on little-endian hosts and \texttt{cal} on big-endian ones
+(Section~\ref{sec:calfiles}).
+\end{description}
+\item The test suite (\texttt{ctest}, project \texttt{test}) is part of the build system. It converts the raw data
+sample, produces and converts Monte Carlo events, runs the reconstruction, the formatting, the HBOOK and ROOT
+analysis and the event display and checks the results; the tests depend on each other in the order of the
+processing chain. It is used for every platform and compiler, locally and in the continuous integration
+(GitHub Actions on Fedora, CentOS, aarch64 and macOS), and was the only means to see that a change in
+one part (a compiler flag, a calibration file) does not break another.
+\item The projects work with the CMake versions from 3.10 (needed by ROOT) to 4.3; newer policies
+that change the behaviour (e.g.\ CMP0219) are set explicitly.
+\end{itemize}
+
+\subsection{Installation}
+The installation is done with the scripts of Section~\ref{sec:build} (Listing~\ref{lst:install}):
+\begin{lstlisting}[caption={Installation and test of the software with the scripts of the repository.},label={lst:install}]
+cd <repository>   # /home in the container
+sh jadeinstall.sh [--bits=32|64] [--toolchain=NAME] [--prefix=INSTALLDIR]
+sh jadetest.sh    [--bits=32|64] [--toolchain=NAME] [--prefix=INSTALLDIR]
+\end{lstlisting}
+The first script builds and installs the projects in the order \texttt{jadesoft}, \texttt{convert}, \texttt{jtuple},
+\texttt{fptobos}, \texttt{h2root}, and the second, with the same options, builds and runs the test suite. Everything is installed under the
+prefix \texttt{<repository>/installed<toolchain><bits>} (e.g.\ \texttt{/home/installedGNU64} in the container) unless \texttt{--prefix=INSTALLDIR} is given; the test script must be given the same prefix as the installation script. The dependencies are described in
+Section~\ref{sec:deps}; the simplest way to get them is a container image (Section~\ref{sec:environment}).
+
+\section{Porting to modern platforms}
+\label{sec:porting}
+This section describes the process of porting the JADE software to modern systems, in the order of the main problems, and the corrections that the porting required.
+As of 2026 these systems are no longer sold; the hardware of that kind is found only on the second-hand market\footnote{for example on online auction sites}.
+An AIX machine of the original type~\cite{Wiki:AIX} still existed until about 2016 (the rows B--E of the table below); it was of
+some use for the porting, but not of much. Therefore the idea is to port the software to modern, widely available systems.
 The main problems with the porting software to the modern systems are
 \begin{itemize}
 \item  compiler-specific Fortran features
-\item  big-little endianess for the calculi
-\item  big-little endianess for the I/O
+\item  big-little endianness for the calculi
+\item  big-little endianness for the I/O
 \item  build system 
 \item  porting CERNLIB
 \end{itemize}
 
-The following platforms were considered:
-\setlength{\tabcolsep}{0.0em}
+The porting was a gradual process, not a single step. Earlier work had already ported parts of the software to Linux, before the work described here started in 2014. The work used first the IBM XL Fortran and \texttt{gfortran} compilers
+on PowerPC and x86 machines, and it continued for years with newer versions of \texttt{gfortran}, the Intel and the NVIDIA
+compilers and a number of platforms (Table~\ref{tab:status}); each new compiler, platform or word size showed another group
+of problems of the old code, which then had to be understood and fixed, one after another. The key achievement that made this
+process possible was the build system: with CMake the compiler (the whole set of its options, the preprocessing, the libraries)
+is switched by changing one option of the installation script, and the complete chain of the tests (Section~\ref{sec:build})
+can then be repeated in minutes. In the old build with makefiles and scripts for the original platform a change of the compiler
+was a project of its own.
+
+Three other tools were important for the porting. The use of git~\cite{Git:web,Wiki:Git} was a step forward in the management of the
+software: the sources, which had been kept in the directories and archives of the old systems, got a complete history of every change (the repository was started in
+October 2016), so that the changes of the porting could be reviewed, tested and, when needed, undone. The hosting of the repository on
+GitHub~\cite{GitHub:web,Wiki:GitHub} was important as well: it gives the software a stable public place, the review of the changes
+in pull requests and the tracking of the issues. The use of the continuous integration of GitHub, GitHub Actions~\cite{GitHubActions:web}, was important
+too: the test suite (Section~\ref{sec:tests}) runs automatically for every change on the supported platforms and container images, so that a break
+of the software with one of the compilers or platforms is seen at once. Finally, no native big-endian hardware was available for
+the tests of the endianness problems (Section~\ref{sec:endian}), so that the PowerPC machines were emulated with QEMU~\cite{Bellard:2005qemu}
+(the rows F and G of Table~\ref{tab:status}).
+
+The following platforms were considered (the rows L--Q were added in 2026):
 %\begin{table}[htbp]\tiny\centering
-\begin{sidewaystable}[htbp]\scriptsize\centering
+\begin{sidewaystable}[htbp]\scriptsize\centering\setlength{\tabcolsep}{0.0em}
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}\hline
-    & Origin/Now        & Hardware, num               &        &OS             & arch(bits)               & Fortran/FC                &Build system              &GUI      & CERNLIB/runtime  \\\hline\hline
-A   & 198x/Dead         &  IBM/370,Nord?              & ?      &?              &   ?(32be)                & 77?/xlf?                  &?                         &NORD? & DESYLIB/?     \\
-B   & 2003/Not tried    &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/xlf 7.1                &make 3.78 and ksh scripts &HIGZ  & 2002/?/32bit     \\
+    & Origin/Now        & Hardware, num               &tests   &OS             & arch(bits)               & Fortran/FC                &Build system              &GUI      & CERNLIB/runtime  \\\hline\hline
+A   & 198x/Dead         &  IBM/370~\cite{Wiki:IBM370},Nord~\cite{Wiki:Nord}?              & ?      &?              &   ?(32be)                & 77?/xlf?                  &?                         &NORD? & DESYLIB/?     \\
+B   & 2003/Not tried    &  RS6000~\cite{Wiki:RS6000}, 1                  & ?      &AIX4.3~\cite{Wiki:AIX}         & ppc(32be)                & 77/xlf 7.1                &make 3.78 and ksh scripts &HIGZ  & 2002/?/32bit     \\
 C   &      Not tried    &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/g77 0.5 (gcc2.95)      &make 3.78 and ksh scripts &HIGZ      & 2002/?/32bit     \\
 D   &      Not avail.   &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/xlf 7.1                &make 3.78 and cmake?      &HIGZ      & 2002/?/32bit     \\
 E   &      Not avail.   &  RS6000, 1                  & ?      &AIX4.3         & ppc(32be)                & 77/g77 0.5 (gcc2.95)      &make 3.78 and cmake?      &HIGZ      & 2002/?/32bit     \\
-F   & 2016/Runs         &  pSeries\@QEMU2.7, many   & 3/10   &CentOS7.2 & ppc64+ppc(64be+32be)     & 90/xlf 15.1 (trial)       &make 3.81 and cmake 2.8.11       &HIGZ      & 2006/gfortran/32bit     \\
-G   & 2016/Runs         &  pSeries\@QEMU2.7, many   & 3/10   &CentOS7.2 & ppc64+ppc(64be+32be)     & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11       &HIGZ      & 2006/gfortran/32bit     \\
-H   & 2016/Runs         &  Intel/AMD, many            &10/10   &CentOS7.2 & x8664+i686(64le+32le)   & 90/gfortran 4.8.5         &make 3.81 and sh scripts        &HIGZ      & 2006/gfortran/32bit     \\
-I   & 2016/Runs         &  Intel/AMD, many            &10/10   &CentOS7.2 & x8664+i686(64le+32le)   & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11      &HIGZ      & 2006/gfortran/32bit     \\
-J   & 2016/Runs         &  Intel/AMD, many            &10/10   &CentOS7.2 & x8664+i686(64le+32le)   & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11      &ROOT/32bit& picocernlib/gfortran/32bit     \\
-K   & 2016/Runs         &  Intel/AMD, many            &10/10   &CentOS7.2 & x8664(64le)             & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11      &ROOT/64bit& picocernlib/gfortran/64bit\\
+F   & 2016/Runs         &  pSeries~\cite{Wiki:pSeries}\@QEMU2.7~\cite{Bellard:2005qemu}, many   & 3/10   &CentOS7.2~\cite{Wiki:CentOS} & ppc64+ppc(64be+32be)     & 90/xlf 15.1 (trial)       &make 3.81 and cmake 2.8.11       &HIGZ      & 2006/gfortran/32bit     \\
+G   & 2016/Runs         &  pSeries~\cite{Wiki:pSeries}\@QEMU2.7~\cite{Bellard:2005qemu}, many   & 3/10   &CentOS7.2 & ppc64+ppc(64be+32be)     & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11       &HIGZ      & 2006/gfortran/32bit     \\
+H   & 2016/Runs         &  PC, many                   &10/10   &CentOS7.2 & x8664+i686(64le+32le)   & 90/gfortran 4.8.5         &make 3.81 and sh scripts        &HIGZ      & 2006/gfortran/32bit     \\
+I   & 2016/Runs         &  PC, many                   &10/10   &CentOS7.2 & x8664+i686(64le+32le)   & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11      &HIGZ      & 2006/gfortran/32bit     \\
+J   & 2016/Runs         &  PC, many                   &10/10   &CentOS7.2 & x8664+i686(64le+32le)   & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11      &ROOT/32bit& picocernlib/gfortran/32bit     \\
+K   & 2016/Runs         &  PC, many                   &10/10   &CentOS7.2 & x8664(64le)             & 90/gfortran 4.8.5         &make 3.81 and cmake 2.8.11      &ROOT/64bit& picocernlib/gfortran/64bit\\\hline\hline
+L   & 2026/Runs         &  PC, many                   &35/35   &Fedora 45~\cite{Wiki:Fedora} & x8664(64le)             & 90/gfortran 16.2          &make 4.4, cmake 4.3, sh       &HIGZ(X11)      & revived 2026/gfortran/64bit     \\
+M   & 2026/Runs, CI     &  PC, many                   &CI      &Fedora 45 & x8664+i686(64le+32le)   & 90/gfortran 16            &make, cmake, sh       &HIGZ      & revived 2026/gfortran/32bit     \\
+N   & 2026/Runs         &  PC, many                   &35/35   &Fedora 45 & x8664(64le)             & 90/ifx 2026.2             &make 4.4, cmake 4.3, sh       &HIGZ      & revived 2026/gfortran/64bit     \\
+O   & 2026/Runs         &  PC, many                   &35/35   &Fedora 45 & x8664(64le)             & 90/nvfortran 26.11        &make 4.4, cmake 4.3, sh       &HIGZ      & revived 2026/gfortran/64bit     \\
+P   & 2026/CI           &  PC, ARM                    &CI      &Fedora 45, CentOS 9, 10 & x8664, aarch64(64le) & 90/gfortran (system)  &make, cmake, sh       &HIGZ      & revived 2026/gfortran/64bit     \\
+Q   & 2026/Runs, CI     &  Apple M1, many             &CI      &macOS 27~\cite{Wiki:macOS} & arm64(64le)         & 90/gfortran 16.2          &make, cmake 4, ld-prime       &HIGZ(XQuartz)  & revived 2026/gfortran/64bit     \\
 \hline
-\end{tabular}
-\caption{Status of different platforms.  Picocernlib is a small set of CERNLIB routines plus some ROOT backend fro plotting. }
+\end{tabular}}
+\caption{Status of different platforms. The column ``tests'' gives the passed/total tests of the test suite (10 in 2016, 49 in 2026) for the configurations that were run for this note, ``CI'' means that the platform is built and tested by the continuous integration (GitHub Actions) and not checked here. The rows A--K are the historical entries (2016); the ppc64 rows F and G are kept as the only big-endian ports, they were not repeated after 2016. The rows L--Q are the 2026 situation: the compilers Intel \texttt{ifx} and NVIDIA \texttt{nvfortran} (rows N and O) use the CERNLIB built with \texttt{gfortran}. Picocernlib is a small set of CERNLIB routines plus some ROOT backend for plotting. }
 \label{tab:status}
 \end{sidewaystable}
 %\end{table}
 
 
-Because of cernlib issues everything was tested in 32 bit mode.
-Maybe that would worth to copy the needed cernlib routines to have them separately?
-Will minicernlib work?The hardest part is graphics.
+In 2016 everything had to be tested in the 32-bit mode because of CERNLIB. An idea was to copy the needed CERNLIB
+routines to have them separately; this is \texttt{picocernlib}, which replaces the used kernel, mathematical and
+histogramming routines with equivalents based on ROOT, and an attempt to replace also the graphics of HIGZ with
+ROOT graphics was made (Section~\ref{sec:display}). The graphics was the hardest part and in the end it is
+solved by the revived CERNLIB (Section~\ref{sec:cernlib}), which makes the event display work with HIGZ.
 
-The MC generation can be done on any platform and put into HepMC3 format.
-Practically it is visible for G and H.
-The conversion to any be and le JADE MC formats can be done on any platform between F and J,
-as HepMC3 works only with gcc4 and compatible compilers. 
+The situation in 2026 (Table~\ref{tab:status}, rows L--Q) is:
+\begin{itemize}
+\item The whole processing chain, from the conversion of the raw data and the generation and the conversion of the
+Monte Carlo events to the simulation, the reconstruction, the analysis and the event display, runs in the 64-bit
+mode on little-endian machines, with the GNU, Intel and NVIDIA compilers; all 49 tests pass on rows L, N and O.
+The 32-bit mode with the revived CERNLIB (row M) remains the best tested configuration of CERNLIB.
+\item Rows M, P and Q (the 32-bit build, aarch64 together with CentOS Stream, and macOS on Apple silicon) are built and tested by
+the continuous integration; macOS needs a workaround for a bug of the Apple linker (Section~\ref{sec:ai}).
+\item The big-endian systems (rows A--G) were not tried again after 2016. The software can nevertheless
+be used on them as the byte order is handled by the runtime (Section~\ref{sec:endian}), but the
+platform-dependent files (e.g.\ the calibration files, Section~\ref{sec:calfiles}) would have to be taken from the
+set for big-endian machines.
+\item The Monte Carlo generation, with Pythia8 or any other generator that writes HepMC3 files, and the
+conversion to the JADE Monte Carlo format (Section~\ref{sec:convert}) can be done on any platform of the rows L--Q,
+as HepMC3 and Pythia8 are available for them and need a C++ compiler with C++14 support, not the old
+\texttt{gcc} 4 of 2016. The JADE Monte Carlo files can be converted between the big- and little-endian formats
+on any platform.
+\end{itemize}
 
+\subsection{CERNLIB: usage and impact on the build}
+\label{sec:cernlib}
+The JADE software uses the HBOOK, kernel and mathematical libraries of CERNLIB and, for the event display, HIGZ~\cite{Couet:HIGZ}
+with the X11 driver. When the porting started in 2014, CERNLIB was available only in the old version of 2006
+(\texttt{cernlib-2006} of the distributions). It had to be rebuilt from the CentOS~6 source packages for the
+\texttt{i686} and \texttt{ppc} architectures (with \texttt{mock} on x86\_64 and by hand on ppc, with wrapper scripts
+for \texttt{gfortran} and other tools to force the 32-bit mode). That work, and the lists of the 32-bit packages it
+needed, are obsolete and are not repeated here.
 
+The situation changed with the revival of CERNLIB~\cite{Schwickerath:2023cernlib}: updated releases, with the
+patches needed for modern compilers and systems, are published on the CERNLIB page~\cite{CERNLIB:web} since
+November 2022, and the packages of them are available from HEPrpms~\cite{Hahn:2022hrpms}.
+The builds of the JADE software for Fedora 45 (x86\_64, i686 and aarch64) and for CentOS Stream 9 and 10 install
+CERNLIB 2026.11 from there, including the static libraries (\texttt{cernlib-devel}, \texttt{cernlib-static},
+\texttt{cernlib-packlib-gfortran}); the container images used for the tests contain the same packages. On macOS the
+Homebrew recipe for CERNLIB (version 2026.11.01.1, based on the recipe of the \texttt{davidchall/\allowbreak{}homebrew-hep}
+tap) is part of the JADE repository, and the corresponding binary packages are built by the continuous integration.
 
-\subsubsection{CERNLIB}
-Compilation of cernlib for CentOS7 and especially in 32bit mode is an issue.
-CERNLIB is needed for i686 and ppc architectures.
-Both were build using CentOS7.2 64 machines (virtual or real).
+Remaining points of CERNLIB for the JADE software:
+\begin{itemize}
+\item The 32-bit mode (\texttt{i686} on x86\_64, \texttt{-m32}) is the preferred and the best tested configuration of the JADE software, because
+CERNLIB itself was written for 32-bit words and addresses: on 64-bit systems its packages mostly contain shared libraries only and some routines assume that an address fits into a 32-bit word. The 64-bit builds
+nevertheless pass all tests on x86\_64 with the GNU, Intel and NVIDIA compilers (Table~\ref{tab:status}).
+\item In the recommended setup (the packages of HEPrpms and Homebrew above) CERNLIB is built with \texttt{gfortran}. The Intel and NVIDIA compilers link to it with the GNU runtime
+(\texttt{-lgfortran}); HIGZ then writes the PostScript pictures through the unit 77 of the GNU runtime, so that with these
+compilers the pictures of the display tests are found in the file \texttt{fort.77}, which the tests split into the
+individual pictures.
+\item CERNLIB is required. The replacement of the used routines, \texttt{picocernlib}, built on top of
+ROOT~\cite{Brun:1997pa} (see the next subsection), was never used by the builds and has been removed from the repository.
+\end{itemize}
 
+\subsection{picocernlib: ROOT as the graphics backend}
+\label{sec:picocernlib}
+In 2016 CERNLIB was available only as the old packages of 2006, which were difficult to build for the platforms
+of the porting, especially in the 32-bit mode on CentOS~7. After a basic functionality of the software was achieved with these versions, an attempt to
+drop CERNLIB was made. A small set of the basic functions used from CERNLIB was identified, and the corresponding sources were
+extracted from \texttt{kernlib}, \texttt{packlib} and \texttt{ffread} to form a mini-library, \texttt{picocernlib} (the directory
+\texttt{picocernlib} of the repository, started in November 2016 and removed in 2026). The two big parts of CERNLIB, HBOOK and HIGZ, were not copied
+but emulated with ROOT~\cite{Brun:1997pa,Antcheva:2009zz}:
+\begin{itemize}
+\item the histograms and ntuples of HBOOK~\cite{Brun:1995hbook} with ROOT histograms and trees (about 300 lines, \texttt{JBOOK.cxx});
+\item the graphics of HIGZ~\cite{Couet:HIGZ}, on which the event display \texttt{jadez} is built, with ROOT graphics (canvases,
+pads, lines, markers and text; about 800 lines, \texttt{JHIGZ.cxx}). To embed the display into a ROOT application, the main program of the
+display is called as a routine inside the loop of the \texttt{TApplication}, and the program was built as \texttt{jadezroot}.
+\end{itemize}
+The aim was to avoid ZEBRA and the dependence on CERNLIB, which was rarely available on modern systems.
 
+The ROOT backend for the graphics turned out to be unreliable. The display relies on about 40 entry points of HIGZ and on
+their behaviour, which is largely undocumented, and the conceptual difference in the treatment of the geometry (the windows,
+viewports and transformations of HIGZ against the pads of ROOT) made every emulated call a source of differences:
+the pictures did not reach the quality and the completeness of the HIGZ display. The result was never good enough for the display to be used for the work, and the software is always built with the real CERNLIB. The installation scripts neither built nor linked \texttt{picocernlib};
+the option \texttt{JADE\_\allowbreak{}USE\_\allowbreak{}CERNLIB}, which was meant to switch between the two, had no effect in \texttt{jadesoft} (CERNLIB is always
+required) and in \texttt{jtuple} and \texttt{fptobos} switching it off left no replacement to link. The directory and the option
+were therefore removed from the repository in 2026; the code remains in its history.
 
-The missing packages for i686, cernlib and xbae, were recompiled from CentOS6 source rpms via mock on x8664
-\begin{verbatim}
-mock
-\end{verbatim}
+It is therefore great that CERNLIB was revived (Section~\ref{sec:cernlib}). With the revived library there is no need to replace
+anything: the display uses the real HIGZ and reproduces the historic pictures (Section~\ref{sec:display}), and the software is
+built against the same CERNLIB packages as on the other platforms. In fact, the revival of CERNLIB~\cite{Schwickerath:2023cernlib} was inspired by the work on JADE.
 
+\subsection{Endianness: byte order of the data and of the code}
+\label{sec:endian}
+The original software ran on IBM machines, which are big-endian: the most significant byte of a word has the lowest address. The x86 and ARM machines that
+are used today are little-endian. The difference matters for the JADE software in two ways. First, the \emph{files}: all binary files of the experiment
+(raw data, BOS banks, calibration constants, ZE4V and CPROD records) were written by big-endian machines, so a little-endian program has to swap
+the bytes of every word that it reads and writes. Second, the \emph{code}: the programs keep different kinds of data in the same words (four characters of a bank name in an integer,
+pairs of half-words, bytes packed into words, integers and reals that overlay each other), and these words have a different content in memory on the two kinds of machines.
+The first problem is solved by the Fortran runtime, the second one needs changes of the data or of the code. The ppc64 machines of the rows F and G of
+Table~\ref{tab:status} (emulated with QEMU), the only big-endian platforms of the ports, were used to test the endianness problems: a program that works on them but not on
+a little-endian machine has a problem of the second kind.
 
-
-For ppc the mock environment is not available, so the build was done manually.
-All needed 32 bit packages were installed from CentOS7 AltArch repository.
-The two missing packages, cernlib and xbae were recompiled from CentOS6 source rpms.
-\begin{Verbatim}[fontsize=\tiny]
-LDFLAGS=' -L/usr/lib   -Wl,-z -Wl,relro' CC='gcc -m32 ' CXX='g++ -m32 '   rpmbuild --target=ppc  --rebuild xbae-4.60.4-12.el6.src.rpm -D'_lib lib' -D'libdir /usr/lib'
-\end{Verbatim}
-The cernlib source rpm was patched, but still has some issues, with using user flags, so
-a brute force trick is to replace /usr/bin/gfortran with a wrapper with explicit -m32 -L/usr/lib flags.
-Same trick for /usr/bin/rm:   add -f option.
-
-The full list of used 32 bit rpms follows (geven for ppc architecture).
-
-
-\begin{minipage}{0.5\textwidth} 
-\begin{Verbatim}[fontsize=\tiny]
-blas-3.4.2-5.el7.ppc
-blas-devel-3.4.2-5.el7.ppc
-cernlib-2006-36.el7.centos.ppc
-cernlib-debuginfo-2006-36.el7.centos.ppc
-cernlib-devel-2006-36.el7.centos.ppc
-cernlib-packlib-gfortran-2006-36.el7.centos.ppc
-cernlib-static-2006-36.el7.centos.ppc
-cernlib-utils-2006-36.el7.centos.ppc
-compat-libstdc++-33-3.2.3-72.el7.ppc
-expat-2.1.0-8.el7.ppc
-fontconfig-2.10.95-7.el7.ppc
-freetype-2.4.11-11.el7.ppc
-geant321-2006-36.el7.centos.ppc
-glib2-2.42.2-5.el7.ppc
-glibc-2.17-106.el7_2.8.ppc
-glibc-devel-2.17-106.el7_2.8.ppc
-kuipc-2006-36.el7.centos.ppc
-lapack-3.4.2-5.el7.ppc
-lapack-devel-3.4.2-5.el7.ppc
-libffi-3.0.13-16.el7.ppc
-libgcc-4.8.5-4.el7.ppc
-libgfortran-4.8.5-4.el7.ppc
-libgfortran-static-4.8.5-4.el7.ppc
-libICE-1.0.9-2.el7.ppc
-libjpeg-turbo-1.2.90-5.el7.ppc
-libjpeg-turbo-devel-1.2.90-5.el7.ppc
-libpng-1.5.13-7.el7_2.ppc
-libpng-devel-1.5.13-7.el7_2.ppc
-libselinux-2.2.2-6.el7.ppc
-libSM-1.2.2-2.el7.ppc
-libstdc++-4.8.5-4.el7.ppc
-libstdc++-devel-4.8.5-4.el7.ppc
-libuuid-2.23.2-26.el7_2.3.ppc
-\end{Verbatim}
-\end{minipage}
-\begin{minipage}{0.5\textwidth} 
-\begin{Verbatim}[fontsize=\tiny]
-libX11-1.6.3-2.el7.ppc
-libX11-devel-1.6.3-2.el7.ppc
-libXau-1.0.8-2.1.el7.ppc
-libXau-devel-1.0.8-2.1.el7.ppc
-libXaw-1.0.12-5.el7.ppc
-libXaw-devel-1.0.12-5.el7.ppc
-libxcb-1.11-4.el7.ppc
-libXext-1.3.3-3.el7.ppc
-libXext-devel-1.3.3-3.el7.ppc
-libXft-2.3.2-2.el7.ppc
-libXft-devel-2.3.2-2.el7.ppc
-libXmu-1.1.2-2.el7.ppc
-libXmu-devel-1.1.2-2.el7.ppc
-libXp-1.0.2-2.1.el7.ppc
-libXp-devel-1.0.2-2.1.el7.ppc
-libXpm-3.5.11-3.el7.ppc
-libXpm-devel-3.5.11-3.el7.ppc
-libXrender-0.9.8-2.1.el7.ppc
-libXt-1.1.4-6.1.el7.ppc
-libXt-devel-1.1.4-6.1.el7.ppc
-motif-2.3.4-7.el7.ppc
-motif-devel-2.3.4-7.el7.ppc
-nss-softokn-freebl-3.16.2.3-14.2.el7_2.ppc
-nss-softokn-freebl-devel-3.16.2.3-14.2.el7_2.ppc
-patchy-gfortran-2006-36.el7.centos.ppc
-paw-gfortran-2006-36.el7.centos.ppc
-pcre-8.32-15.el7_2.1.ppc
-pkgconfig-0.27.1-4.el7.ppc
-xbae-4.60.4-12.el7.centos.ppc
-xbae-devel-4.60.4-12.el7.centos.ppc
-xz-libs-5.1.2-12alpha.el7.ppc
-zlib-1.2.7-15.el7.ppc
-zlib-devel-1.2.7-15.el7.ppc
-\end{Verbatim}
-\end{minipage}
-
-A similar list is needed for the i686 architecture.
-
-\subsubsection{CERNLIB replacement}
-After a basic functionality of the software was archieved with these versions of CERNLIB,
-a small set of basic  functions used from CERNLIB 
-was identified. The corresponding sources were extracted from kernlib and packlib to form picocernlib package.
-
-The histogramming routines that require a lot of HBOOK code were replaced with the ROOT code that emulates
-the functionality, see JBOOK.cxx  
-
-The graphics routines that require a lot of HIGZ code were replaced with the ROOT code that emulates
-the functionality, see JHIGZ.cxx To embedded the graphics display into a ROOT application,
-the main program grphmain is called as a routine inside TApplication loop.
-
-With these replacements it is possible to avoid complications with ZEBRA and drop dependence on CERNLIB, which is
-rarely available on modern systems.
-
-\subsubsection{Endianness}
-The I/O endianess  can be controled in gfortran runtime with the 
-GFORTRAN\_CONVERT\_UNIT environment variable, e.g.
-\begin{verbatim}
+The binary files of the JADE software (BOS banks, calibration constants, FPACK and CPROD data) are written in the
+byte order of the big-endian machines on which they were produced. The Fortran runtime library converts the byte order
+of the unformatted input and output per logical unit, controlled by an environment variable whose name depends
+on the compiler; all three compilers used (Table~\ref{tab:status}) have such a mechanism, and the test suite
+sets the variable of the compiler in use for every test (the macro \texttt{jade\_\allowbreak{}fortran\_\allowbreak{}test}):
+\begin{description}
+\item[GNU Fortran] \texttt{GFORTRAN\_\allowbreak{}CONVERT\_\allowbreak{}UNIT}, e.g.
+\begin{lstlisting}
 export GFORTRAN_CONVERT_UNIT='big_endian;native:2'
-\end{verbatim}
+\end{lstlisting}
+all units big-endian except unit 2 (the BOS file of the program), which is in the native order.
+\item[Intel Fortran] \texttt{F\_\allowbreak{}UFMTENDIAN} (the Intel runtime ignores \texttt{GFORTRAN\_\allowbreak{}CONVERT\_\allowbreak{}UNIT}),
+e.g.
+\begin{lstlisting}
+export F_UFMTENDIAN=big:1,3-100
+\end{lstlisting}
+the equivalent of the example above.
+\item[NVIDIA Fortran] \texttt{FORT\_\allowbreak{}CONVERT\_\allowbreak{}UNIT}, with the same syntax as \texttt{GFORTRAN\_\allowbreak{}CONVERT\_\allowbreak{}UNIT}, so that the
+string of the GNU example is used unchanged, e.g.
+\begin{lstlisting}
+export FORT_CONVERT_UNIT='big_endian;native:2'
+\end{lstlisting}
+\end{description}
+The order of the units of a program decides which files are converted: e.g.\ the files written by the Supervisor
+are big-endian on all units, while the BOS files from \texttt{fptobos} or \texttt{mcjade} are read in the native
+order. The conversion by the runtime does not help for words that mix data of different kinds. The
+bank names of the calibration files and the integers overlaid on pairs of half-words
+(Section~\ref{sec:calfiles}) had to be corrected in the files, and the code that treats packed bytes in an
+\texttt{INTEGER*2}/\texttt{INTEGER*4} \texttt{EQUIVALENCE} (e.g.\ the stroke font of the event display) had to be
+changed. The cases that were found are:
+\begin{itemize}
+\item the identification of the calibration records by the bank name in \texttt{KLREAD} (Section~\ref{sec:calfiles}), which made the whole calibration inactive;
+\item the integers that overlay pairs of half-words in the muon calibration bank (Section~\ref{sec:calfiles});
+\item the packed bytes of the character strings of the display (\texttt{GRTEXT}, \texttt{EOUTST}), which were garbled for strings whose length is not a multiple of four,
+and of the stroke font (\texttt{HEMSYM}), whose numbers were not drawn at all;
+\item the half-words of the HEAD bank (run and event number, beam energy) that \texttt{jtjob} reads: the two half-words of a word are in the order of the big-endian machine in the files of the real data, but in the order of the little-endian machine in the Monte Carlo files written by \texttt{mcjade}. The program read the half-words of the real data in the wrong order, so that the ntuple had the run 24, the event 1 and the beam energy $-4.2$~GeV for every event (the correct values are the run 18008, the increasing event numbers and 22.1~GeV, i.e.\ the energy of the sample 44); the order is now found from the beam energy, and the routine \texttt{HEADFX} (called after each read of an event in the supervisor) exchanges the half-words of the banks \texttt{HEAD}, \texttt{MUEV}, \texttt{ALGL}, \texttt{ALGN} and of the block map of \texttt{LGCL} of the real data, so that the lead glass analysis finds its data in the order it expects;
+\end{itemize}
 
-\subsubsection{cmake}
-The cmake file is self documented.
-Since version 2 cmake  has a first class Fortran support with descent dependency tracking.
-This replaces self developed scripts in kors shell.
 
-\subsubsection{Compiler specific issues}
+\subsection{Fortran compilers}
+\label{sec:fcompilers}
+The JADE software is written in Fortran 77~\cite{Wiki:Fortran} with many extensions of the IBM compiler of the time
+(Hollerith constants, \texttt{EQUIVALENCE} of data of different types, \texttt{INTEGER*2} and \texttt{INTEGER*4},
+\texttt{ENTRY} points, preprocessing of the sources), so that the choice of the compiler matters. Three free
+compilers are used for the builds and tests of the software in 2026 (Table~\ref{tab:status}):
+\begin{description}
+\item[GNU Fortran, \texttt{gfortran}] (16.2)~\cite{GFortran:web,Wiki:GFortran}, part of the GNU Compiler
+Collection and free software. It is the default compiler of the build scripts, of the container images and of the continuous
+integration, and the compiler with which CERNLIB is built in the recommended setup.
+\item[Intel Fortran, \texttt{ifx}] (oneAPI 2026.2)~\cite{Intel:ifx,Wiki:IntelFortran}, the LLVM-based compiler that has
+replaced \texttt{ifort} (removed from oneAPI in 2025), available free of charge.
+\item[NVIDIA Fortran, \texttt{nvfortran}] (HPC SDK 26.11)~\cite{NVIDIA:HPCSDK}, the successor of the PGI
+compilers~\cite{Wiki:PGI}, available free of charge.
+\end{description}
+Three other compilers were used only briefly, and \texttt{g77} played a role earlier:
+\begin{itemize}
+\item \textbf{IBM XL Fortran} (\texttt{xlf})~\cite{Wiki:XLFortran}: the compiler of the original AIX platform (version 7.1) and a trial
+version 15.1 on PowerPC in 2016. It is a proprietary compiler, and the classic XL Fortran line is out of support (version 15.1 on AIX
+since 2022); IBM replaced it by the LLVM-based Open XL Fortran~\cite{IBM:OpenXL}.
+\item \textbf{SunPro / Sun Studio Fortran}: the compiler of Sun and Oracle, which changed its name several times (Sun Studio, Oracle Solaris
+Studio, Oracle Developer Studio~\cite{Wiki:OracleDevStudio}); its last release line is 12.6~\cite{Oracle:DevStudioMatrix}. The flags for it exist
+in the build scripts, but it was not tested for years, and the present status of the product is unclear.
+\item \textbf{NAG Fortran}~\cite{Wiki:NAG}: a commercial compiler with a licence (a 30 day trial is available)~\cite{NAG:Fortran}; it is
+supported by the compiler flags and was used for a test on a computing cluster.
+\end{itemize}
+For all three, the problems with the runtime library and with the control of the byte order of the unformatted files (every compiler has its own
+mechanism, different from the environment variables of the compilers above) made them less suitable for the work. Two of them, the XL and
+NAG compilers, are not free, and the classic XL Fortran has been discontinued. \texttt{g77}~\cite{Wiki:G77} was replaced by \texttt{gfortran}.
+The Fortran front-end of LLVM, Flang~\cite{LLVM:Flang}, was not tried.
+
+The availability of several free Fortran compilers is important for the preservation of the software. Each compiler
+accepts different non-standard constructs and finds different problems in the old code. The problems found with
+\texttt{ifx} and \texttt{nvfortran}, which \texttt{gfortran} had accepted without a message, include the handling of
+NaN values in \texttt{MAX} (Intel), fused multiply-add that turns a difference of equal squares into a small negative
+number (NVIDIA), denormal numbers treated as zero where the BOS library compares bit patterns kept in real variables
+(NVIDIA), the preprocessor, which breaks Hollerith constants (NVIDIA), the use of the dummy arguments of \texttt{ENTRY}
+points (Intel), the extension \texttt{ISNAN}, and the output of real numbers with integer edit descriptors (details in
+Section~\ref{sec:ai}); a program that passes the whole test suite with all three compilers is much less likely to depend
+on an accident of one of them. The old proprietary compilers of the original platform are no longer available at all, and a
+vendor can stop the support of its compiler, as it happened to \texttt{ifort} and to the PGI compilers; with free compilers
+the software can be built, tested and archived by anybody, on any platform, and without a dependence on a single vendor.
+
+\subsection{Compiler-specific issues of the Fortran code}
 Few changes were needed after the porting in   was done.
-In many places the types were changed from LOGICAL to CHARCTER
-and from INTEGER to CHARECTER.
+In many places the types were changed from LOGICAL to CHARACTER
+and from INTEGER to CHARACTER.
 
 As the line length is not limited, some symbols were removed in the end of lines.
 
 Some specials symbols in the line continuation positions  were replaced with plus sign, etc.
 
 HOLLERITH constants are represented in IBM Fortran via
-\begin{verbatim}
+\begin{lstlisting}
 'ABCD'
-\end{verbatim}
+\end{lstlisting}
 were replaced with
-\begin{verbatim}
+\begin{lstlisting}
 4HABCD
-\end{verbatim}
+\end{lstlisting}
 for GNU fortran. This format is also accepted by the IBM compilers.
-Similar issue was with the hexademical constants, which are in the form 
-\begin{verbatim}
+Similar issue was with the hexadecimal constants, which are in the form 
+\begin{lstlisting}
 Z1000
-\end{verbatim}
+\end{lstlisting}
 in IBM fortran. These were replaced with 
-\begin{verbatim}
+\begin{lstlisting}
 Z'1000'
-\end{verbatim}
-The form is accepted by GNU Fortran and IBM compiuller.
+\end{lstlisting}
+The form is accepted by GNU Fortran and IBM compiler.
 One compiler specific routine was added: hfix (gfortran is missing it.)
 
-\subsubsection{Sources treatment}
+\subsection{Treatment of the sources}
 The modified  sources were put into a separate directory src2016 and main2016.
 Some used scripts are in the directory scripts2016.
  While porting two bugs were found in the software.
@@ -367,147 +701,956 @@ Some used scripts are in the directory scripts2016.
  However, this bug had no influence on the results produced previously~\cite{Schieck:2012mp}, as these were using the 
  data reconstructed with original software. The bug does not affect Monte Carlo.
 
-\subsection{JADE software content}
-The reviewed JADE software from 2003 is described elsewhere.
-In the presented package the MC generator codes are dropped (not ported) and 
-three more components are added:
+\subsection{Changes of the sources since the reactivation of 1998--2003}
+\label{sec:srcchanges}
+The software was reactivated in 1998--2003 on AIX; the sources of that time are in the directory \texttt{jadesoft/\allowbreak{}src} of the repository, the current ones in \texttt{jadesoft/\allowbreak{}src2016}. A comparison of the two sets shows the extent of the changes that the porting needed. The current set has 1654 files
+and about 314\,000 lines; 1549 file names exist in both versions, 1073 of these files are identical and 476 (31\%) differ. The
+differences are small: about 2\,000 lines of the current sources, less than one per cent, replace or extend lines of the old ones,
+and no line was deleted in the files that both versions contain. The files of the old set that have no counterpart in the current one
+(about 600) are not sources but intermediate files that the old build scripts wrote to the \texttt{TMP} directories of the libraries
+(preprocessed copies of the sources), and the new files are those of the detector simulation library \texttt{jade56} (99 files). The physics code was not restructured or modernised;
+the changes are those needed to make the code acceptable to modern compilers and platforms. The main general
+changes, with the number of the changed lines and of the files that they touch, are:
+\begin{table}[H]\centering
+\begin{tabular}{|p{0.75\textwidth}|r|r|}\hline
+Change & lines & files \\\hline\hline
+Alternate returns \texttt{\&100} $\to$ \texttt{*100} in calls & 770 & 223 \\
+Quoted character constants in integer data $\to$ Hollerith (\texttt{'ABCD'} $\to$ \texttt{4HABCD}) & 360 & 95 \\
+Continuation characters in column 6 (mostly \texttt{\#}) $\to$ \texttt{+} & 305 & 21 \\
+Statements and code switched off with comments & 150 & 74 \\
+Hexadecimal constants \texttt{Z1F} $\to$ \texttt{Z'1F'} & 115 & 37 \\
+Sequence numbers or text after column 72 removed & 90 & 27 \\
+\texttt{LOGICAL*1} used for characters $\to$ \texttt{CHARACTER*1} & 30 & 22 \\\hline
+\end{tabular}
+\caption{The main general changes of the sources, with the number of changed lines and of the files they touch.}
+\label{tab:srcchanges}
+\end{table}
 \begin{itemize}
-\item directory convert: the convert utility to produce .cprod files from moders forma tMC records. The current (prerelease) version of HepMC3 is added as well.
-\item directory picocernlib to replace the CERNLIB routines
-\item directory jtuple package that performs the analysis and was used in the past~\cite{Schieck:2012mp}. 
-\end{itemize} 
-All of the packages above use the cmake as a build system.
+\item \textbf{Alternate returns.} The IBM compiler accepted the label arguments of the alternate returns as \texttt{\&label}; the
+standard and the modern compilers need \texttt{*label}. This is the most frequent change.
+\item \textbf{Hollerith constants.} Integer variables that hold four characters were initialised with quoted strings; this
+is written with the Hollerith form \texttt{4HABCD}, which \texttt{gfortran} and the IBM compilers both accept, so that the
+bank names and the other texts compare in the way of the original code.
+\item \textbf{Formatting of the fixed form.} The old sources use card images: the columns 73--80 contain sequence numbers, which
+the old compilers ignored and a compiler without a limit of the line length takes as part of the statement, and the continuation lines use a character (mostly \texttt{\#}) that the scripts of the old build converted. The sequence numbers were removed and the continuation characters replaced
+with a plus sign. The compilers are told not to limit the length of the lines.
+\item \textbf{Constants and types.} Hexadecimal constants got the quotes of the standard form; one-byte \texttt{LOGICAL*1} data
+used as characters became \texttt{CHARACTER*1}; the non-standard declarations of the IBM compiler (e.g.\
+\texttt{CHARACTER TEXT*80(3)}, \texttt{REAL FUNCTION F*8}) were written in the standard form; variables that hold addresses
+or bit patterns were widened where the 64-bit mode needs it (\texttt{INTEGER*8}).
+\item \textbf{Consistency of the common blocks.} The same \texttt{COMMON} block was declared with different lengths in
+different routines, which the IBM linker accepted; the declarations were made equal where it was found
+(e.g.\ \texttt{COMMON /\allowbreak{}CJTRIG/\allowbreak{}} got the same variables in every routine), because modern linkers take one of the sizes
+(Section~\ref{sec:ai}).
+\item \textbf{Code switched off.} Calls of the routines that no longer exist and statements that are specific to the IBM
+system were commented out.
+\item \textbf{Small additions.} A few declarations and data statements (e.g.\ explicit \texttt{.FALSE.} initialisation of
+arrays, the year limit in the time conversion, which stopped at 1999) were added; about 200 lines in total.
+\end{itemize}
+Most of the semantics that the old code relies on (static storage of the local variables, the zero initialisation, the unlimited
+line length, the mismatch of the argument types) is not changed in the sources but is requested from the compiler by its
+options, set in the one module of the build system (Section~\ref{sec:build}).
 
-The directory examples contains the setups for MC production (external generators are needed) and simulation, data reconstruction,
-event display usage.
+\subsection{Calibration files: byte order and the muon constants}
+\label{sec:calfiles}
+
+The calibration constants are kept in the ASCII files \texttt{aupdat1}, \texttt{bupdat0} and
+\texttt{bupdat1} and in their binary counterparts \texttt{aupdat1.b}, \texttt{bupdat0.b} and
+\texttt{bupdat1.b}, which are the files read by the programs. The calibration scheme is described in
+``The JADE Calibration Scheme''~\cite{JCN:68}. The records of the files
+are read by the routine \texttt{KLREAD}, which copies the constants valid for the time of the event
+into the common block \texttt{/CALIBR/}.
+
+\subsubsection{Calibration records skipped on little-endian hosts}
+
+While checking why the muon chamber outlines were missing in the event display and why the muon
+analysis reported \texttt{NO CALIBRATION FOUND}, it was found that on a little-endian machine the
+routine \texttt{KLREAD} did not apply \emph{any} record of the calibration files, not only the muon
+chamber constants (\texttt{MUCA}). The cause is the identification of the records. \texttt{KLREAD}
+applies a record only if the bank name in the second word of the record is equal to one of the
+Hollerith constants of its list (\texttt{4HMUCA}, \texttt{4HLGMA}, \texttt{4HTAGS}, \dots,
+\texttt{IF(NAMEBN.EQ.NAME(I))}). The numbers of the binary files are converted by the Fortran
+runtime (\texttt{GFORTRAN\_\allowbreak{}CONVERT\_\allowbreak{}UNIT=big\_\allowbreak{}endian} etc.), but the name is stored in the same kind of
+integer word and has to agree with the constant of the program. The binary files that were shipped
+had the names in the byte order of the big-endian machine on which they were produced, so on
+little-endian hosts no name matched and every record was skipped silently. This was seen with a
+debugger: the code that applies a bank was never reached while 1151 records were read, \texttt{/CALIBR/}
+stayed empty (\texttt{NVERSN=0}, \texttt{IZOEP1=IZOEP3=0}), and the same program with the name list
+byte-swapped in memory loaded the muon calibration (\texttt{NVERSN=4}, \texttt{IZOEP1=1960},
+\texttt{IZOEP3=2150}).
+
+\subsubsection{Corrected binary files}
+
+The ASCII files, which were not changed, were converted again with the program \texttt{conv} on a
+little-endian machine (Section~\ref{sec:calconv}). Two sets of the files are present in the source tree:
+\begin{description}
+\item[\texttt{jadesoft/\allowbreak{}cal}] the original binary files, made on a big-endian machine (not modified).
+\item[\texttt{jadesoft/\allowbreak{}cal2026}] the ASCII files and the binary files converted for little-endian machines.
+\end{description}
+The build (\texttt{jadesoft/\allowbreak{}CMakeLists.txt}) installs the set that fits the byte order of the host
+into \texttt{share/\allowbreak{}JADESOFT/\allowbreak{}cal}, from where all tests and scripts take the files: \texttt{cal} on
+big-endian and \texttt{cal2026} on little-endian machines. The choice can be forced with
+\texttt{-DJADE\_\allowbreak{}CAL\_\allowbreak{}DIR\_\allowbreak{}NAME=cal} or \texttt{cal2026}.
+
+The muon calibration needed one more correction. Some \texttt{INTEGER*4} variables of the muon
+calibration (\texttt{NFRAMS}, \texttt{NCHAMS}, \texttt{IFCIND(1..6)} in \texttt{jademus/\allowbreak{}cmucalib.for})
+are \texttt{EQUIVALENCE}d to pairs of half-words, which \texttt{conv} puts in the order of the host. These
+words are completed by exchanging the two halves of the word (script
+\texttt{jadesoft/\allowbreak{}cal2026/\allowbreak{}fix\_\allowbreak{}overlay\_\allowbreak{}words.py}, Section~\ref{sec:calconv}). Without this step the
+muon region routine stopped with \texttt{TOO MANY MU PLANES} (\texttt{NFRAMS} and \texttt{NCHAMS} were
+wrong), with it the values are \texttt{NFRAMS=82}, \texttt{NCHAMS=634}. The other banks with half-word
+constants were checked as far as possible: \texttt{LGMA}, \texttt{TAGS} and \texttt{JTPL} are used as
+pure half-word arrays; \texttt{LGST}, \texttt{SPTG} and \texttt{TAGF} are empty for the test data and
+could not be checked.
+
+\subsubsection{Effect and tests}
+
+With the corrected files the banks \texttt{MUCA}, \texttt{LGMA}, \texttt{JTPL}, \texttt{JTAB},
+\texttt{TOFC}, \texttt{DEDX}, \texttt{RVTX} and \texttt{ZCAL} are loaded into \texttt{/CALIBR/} for the
+test data, with plausible values (e.g. the half-word constants of \texttt{LGMA} and \texttt{JTPL} are
+in the ranges 0--15160 and 0--1348). The reconstruction of the test sample with the Supervisor
+was compared bit by bit with the result obtained with the original files: only the bank \texttt{ALGN}
+differs, it contains zeros without and numbers with the calibration, all other banks are identical.
+Switching on the calibration groups of the other banks does not change the result of this
+reconstruction. The muon filter views of the event display (\texttt{RC1}, \texttt{ZXC1}, \dots) now
+show the outlines of the muon chambers, which were missing before (the test event has no muon hits).
+
+With the corrected files all 49 tests of the test suite pass in the 64-bit builds with the GNU, Intel (\texttt{ifx}) and NVIDIA (\texttt{nvfortran}) Fortran compilers, including the event display tests.
+
+The test suite checks the calibration at two levels. Three tests of the test suite (Section~\ref{sec:tests}; the program is \texttt{test/\allowbreak{}src/\allowbreak{}calcheck.f}) read the
+installed binary files in the way of \texttt{KLREAD}, count the records whose name is recognised and fail if
+a record is not recognised or if no \texttt{MUCA} record is present; they fail for the original files on a
+little-endian machine (0 of 3131 records recognised). The event display tests fail if the muon
+analysis reports \texttt{NO CALIBRATION FOUND}, i.e.\ if the constants were not used by a running program.
+
+\subsubsection{Muon system}
+
+The muon chamber calibration is now available, but the muon system remains largely unsupported.
+The simulation of the muon system was never available in the preserved sources: the routines of the Monte Carlo
+\texttt{MURTNE} (tracking through the muon system), \texttt{MUORDR} and \texttt{MUCONM} are empty dummies in all the versions of the sources, including the original of 1982, and
+the libraries of the muon Monte Carlo of the thesis~\cite{Bowdery:1982thesis} could not be retrieved, as stated in ``A Guide to the Resurrected JADE Data and Software''~\cite{JCN:103}.
+No muon chamber hits are therefore simulated and the raw muon banks \texttt{MUEV} are not created in the Monte Carlo events.
+In the Supervisor the muon analysis step is skipped
+(the user routine \texttt{main2016/\allowbreak{}superv/\allowbreak{}user.f} jumps over it at level 8), unless the environment variable \texttt{JADE\_MUON=1} is set.
+A \emph{toy} simulation was written to test the reconstruction (\texttt{jademus/mumcev.F}, switched on with \texttt{JADE\_MUMC=1}): for each Monte Carlo event it makes the bank \texttt{MUEV} from the true muons of the bank \texttt{VECT}
+(a helix in the field of the coil, a straight line to the yoke, the bend in the yoke as in \texttt{MUFFLE}, no multiple scattering and no energy loss), intersects them with the 634 chambers of the muon calibration, and writes the
+drift and longitudinal times that \texttt{MUCOOR} converts back, with the chamber efficiency and a small smearing, in the half-word format of the real data.
+The real muon analysis reads this bank without errors and finds hits in 90\,\% of the muon pair events. At first it accepted only about 6\,\% of the muons, for both the real data and the toy simulation: the $\chi^2$ of the muon hits was $10^5$ to $10^8$ for every track with a number of degrees of freedom other than two. The reason was a mistake of the port of 1999: the error matrix of the track fit is inverted in \texttt{MUFMAT} with \texttt{CALL SYMIN4(G,20,NDFT,MWORK,IER)} (single precision, the order of the matrix is the third argument), but the replacement of the missing routine \texttt{SYMIN4} by \texttt{SYMINV} forwarded the arguments to a routine of double precision whose order is the fourth argument, i.e.\ the unset work variable: the matrix was not inverted at all (\texttt{MUFMAT} has its own formula for two degrees of freedom, which is why those tracks were fine). After the correction of \texttt{jadegs/symin.f} the muon analysis identifies 82\,\% of the simulated muons of 7~GeV (1632 of 2000, nearly all of the best quality, type 9) and 67\,\% of those of 17~GeV, and finds 3568 muon candidates in the 47\,484 events of the real data (most of them cosmic ray muons, which dominate the raw data). The bank \texttt{MUEV} of the real data has the half-words swapped like \texttt{HEAD} and \texttt{JETC}, which the routine \texttt{HEADFX} now corrects. The tests \texttt{SUPERV\_MUMC\_MC\_4} and \texttt{MUCHECK\_MC\_4} run the toy simulation for the muon pairs. The documentation of the
+muon system is in the JADE Computing Notes on the muon graphics commands~\cite{JCN:52}, the muon Monte Carlo at DESY~\cite{JCN:55}, the JADE Monte Carlo~\cite{JCN:67} and the muon track finding algorithm \textsc{mutana}~\cite{JCN:82}; they are scanned images, available on the CERN Open Data Portal
+(Section~\ref{sec:opendata}), where each note has a record number.
 
 
-\subsection{Using JADE software}
+\section{Main programs: simulation, reconstruction and display}
+\label{sec:programs}
+
+The main programs are run in a directory that contains their input files; the steering input is a card file
+(the format of the \texttt{FFREAD} package of CERNLIB: one key and its value per line, comments start with \texttt{C}) that
+is given to the standard input of the program, e.g.
+\begin{lstlisting}
+cat mcjade1.card | mcjade
+\end{lstlisting}
+The names of the input and
+output files, the options and the numbers of the events are set in the card; examples of the cards are in
+\texttt{test/cards} for the programs of the test suite and, for the old job \texttt{jadesim}, in \texttt{share/\allowbreak{}JADESOFT/\allowbreak{}examples/\allowbreak{}jadesim}. The byte order of the files has to be set for the
+Fortran runtime (Section~\ref{sec:endian}).
+
+\subsection{mcjade: simulation of the detector response}
+The program \texttt{mcjade} is the simulation of the response of the JADE detector (tracking in the jet and the
+vertex chambers, the lead glass calorimeter showers with their smearing and absorption, the time of flight, the
+tagging system; no muon system, Section~\ref{sec:calfiles}).
+\begin{description}
+\item[Input] the file with the four-vectors of the generated events in the CPROD format (card key \texttt{MCVECT}),
+produced by the old generators or by \texttt{convert} (Section~\ref{sec:convert}); the date of the configuration of the
+detector (\texttt{YEAR}, \texttt{MONTH}, \texttt{DAY}), which selects the detector hardware of the data period, the
+tracking options (\texttt{SMEAR}, \texttt{CONVERT}, \texttt{ABSORB}, \texttt{SHOW3D}, \texttt{VERTEX}) and the first and
+last event.
+\item[Output] a BOS file with the simulated detector data (\texttt{MCBOS}), optionally a print out of the banks in
+text form (\texttt{MCBANK}) and control histograms (\texttt{MCHIST}); the output file is in the native byte order.
+\end{description}
+
+\subsection{superv: event reconstruction (Supervisor)}
+The program \texttt{superv} is the JADE Supervisor, the reconstruction of the events of the real data and of the
+simulation.
+\begin{description}
+\item[Input] the BOS file with the raw data (from \texttt{fptobos}) or with the simulated data from \texttt{mcjade}
+(card key \texttt{MCBOS}), the calibration files (\texttt{AUPDAT0}, \texttt{BUPDAT0}, \texttt{BUPDAT1}: the
+installed \texttt{aupdat1.b}, \texttt{bupdat0.b}, \texttt{bupdat1.b}), the flags that select the groups of the
+calibration constants that are read (\texttt{MUCA}, \texttt{LGMA}, \dots) and the reconstruction options
+(\texttt{ZSRFTV}, \texttt{VTXFIT}), and the first and last event.
+\item[Output] a BOS file with the reconstructed events: tracks, vertices, lead glass clusters and the other banks
+(\texttt{SVBOS}), a text print out of the selected banks for the levels of the processing (\texttt{SVBANK}, the banks are
+chosen with \texttt{LEVEL1\dots LEVEL7}), control histograms (\texttt{SVHIST}) and the file \texttt{superv.stat} with the
+state of the random number generator. All units except the BOS input of the program are big-endian.
+\end{description}
+
+\subsection{ze4v: compression of events to the ZE4V format}
+\label{sec:ze4v}
+The program \texttt{ze4v} compresses the reconstructed events into the ZE4V format of the analyses.
+\begin{description}
+\item[Input] the BOS file written by \texttt{superv} (card key \texttt{SVBOS}), the number of events to read and to
+skip (\texttt{EVTREAD}, \texttt{EVTSKP}), the selection flags (\texttt{SELECT}, \texttt{MSELCT}, \texttt{ESELCT}) and the
+calibration files.
+\item[Output] the file with the compressed events in the ZE4V format (\texttt{ZE4V}), optionally a BOS file with the full
+events (\texttt{ZBOS}) and a text print out of the selected banks (\texttt{ZBANK}, \texttt{CONT}).
+\end{description}
+The ZE4V files are read by the program \texttt{jzread}, which writes an HBOOK ntuple, and the ntuples are processed
+by \texttt{jtjob} (directory \texttt{jtuple}) and converted to ROOT files with \texttt{h2root}.
+
+\subsection{jadesim: the historic simulation job}
+\texttt{jadesim} is the steering job of the old simulation that ran the whole chain for one sample: the event generation
+(with the cards \texttt{GEN.CARD} or \texttt{GEN\_\allowbreak{}JT63.CARD}, and the data files of COJETS), the tracking with
+\texttt{mcjade} (\texttt{MC.CARD}), the smearing and the reconstruction with \texttt{superv} (\texttt{SV.CARD}) and the
+compression with \texttt{ze4v} (\texttt{ZE.CARD}); the output of every step was written into a directory of the job. The
+job was a script of the IBM and the LoadLeveler batch systems, which is no longer supported, and it is obsolete:
+the Monte Carlo events are generated by external generators and converted with \texttt{convert}, and the chain is run
+by the test suite and the programs above. The script is kept for the correspondence between the centre-of-mass
+energy and the configuration of the detector that its cards use:
+\begin{table}[H]\centering
+\begin{tabular}{|c|c|c|c|c|c|r@{\,$\pm$\,}l|}\hline
+Sample & CMS, GeV & Year & Month & Day & Data runs & \multicolumn{2}{c|}{Data lumi., nb$^{-1}$} \\\hline\hline
+14  & 14.0 & 81 & 07 & 17 &  7968--8692   & 1\,463  & 38  \\
+22  & 22.0 & 81 & 06 & 17 &  7592--7962   & 2\,406  & 49  \\
+35a & 34.6 & 82 & 05 & 17 & 10001--12518  & 37\,663 & 182 \\
+44  & 43.8 & 85 & 05 & 17 & 16803--23351  & 28\,821 & 170 \\
+38  & 38.3 & 85 & 10 & 01 & 23352--24187  & 8\,277  & 91  \\
+35b & 35.0 & 86 & 05 & 17 & 24214--30397  & 92\,320 & 304 \\\hline
+\end{tabular}
+\caption{Samples of the historic Monte Carlo production: centre-of-mass energy and date (year, month, day) used for the configuration of the detector, the range of the data runs (real data, not simulation)
+at the same energy and the barrel luminosity of these data runs (the unit is presumably nb$^{-1}$, Section~\ref{sec:lumi}). The data runs and the luminosities are those of the table of the centre-of-mass energy ranges
+printed by \texttt{taklumi} for all samples except 35a, for which the run range is the period of the beam energy of 17.3~GeV in \texttt{lumi.dat} and the luminosity
+is the sum printed by \texttt{taklumi} for it.}
+\label{tab:mcsamples}
+\end{table}
+The year, the month and the day are the values of the keys \texttt{YEAR}, \texttt{MONTH} and \texttt{DAY} of
+\texttt{mcjade}.
+
+\subsection{jadez: the interactive event display}
+The program \texttt{jadez} is the interactive event display (Section~\ref{sec:display}).
+\begin{description}
+\item[Input] the name of a BOS file (asked in the dialog), the calibration file in the working directory (the
+installed \texttt{aupdat1.b}, copied to \texttt{F11LHO.AUPDAT1}), the help data set (\texttt{F22BOW.HELP.DATASET}) and
+the commands of the display, typed or read from the standard input and ended with \texttt{END}; the window is opened
+on an X11 display.
+\item[Output] the pictures in the window and the hardcopies (command \texttt{H}) in the PostScript files
+\texttt{JADE.nnn.ps} (the display tests convert them to PNG); the text commands print on the terminal.
+\end{description}
+
+\section{Utility programs: conversion and analysis tools}
+\label{sec:utilities}
+
+Besides the main programs, the repository contains smaller programs that convert the data, prepare the input of the main programs or process their
+output. They are installed in \texttt{bin} with the other programs and are described below in the same way as the main programs
+(Section~\ref{sec:programs}): the programs that read cards take them from the standard input.
+
+\subsection{fptobos: conversion of the raw data to BOS}
+\label{sec:fptobos}
+The archived raw data are in the FPACK format (Section~\ref{sec:data}), which the JADE software does not read. The program \texttt{fptobos}
+(directory \texttt{fptobos}, J.~Olsson, 2005) reads an FPACK file, unpacks the BOS banks into the BOS memory (\texttt{/BCS/}) and writes the events into a BOS file.
+\begin{description}
+\item[Input] a card with one line of seven integers and then the names of the files. The integers are the flag of the byte swapping (0 or 1),
+the maximum number of events to read, the maximum number of events and of records to print, the print flag (1 hexadecimal dump, 2 list of the banks),
+the debug flag of the unpacking routine and the flag that switches the writing of the BOS file on; the file names are that of the FPACK file (e.g.\
+\texttt{jadetapes/\allowbreak{}JAD073/\allowbreak{}file006}) and of the BOS file.
+\item[Output] the BOS file (native byte order), the input of \texttt{superv}, and the printout of the steering flags and of the events selected for printing. The test suite
+converts a data file of the tapes with it.
+\end{description}
+
+\subsection{unpjad: inspection of the tape files}
+The program \texttt{unpjad} (directory \texttt{fptobos}, from the same package) unpacks the files of the JADE Exabyte tapes and shows their contents without
+producing a BOS file.
+\begin{description}
+\item[Input] a card with one line of integers (the flag of the records to read, the maximum number of events to read, the maximum number of events and of records to
+print, the print flag and the debug flag) and the name of the FPACK file.
+\item[Output] a printout of the events: the lists of the banks, hexadecimal dumps and the contents of some banks (the header, the tracks and the vertex).
+\end{description}
+
+\subsection{convert\_hepmc\_to\_jade: generator events to CPROD}
+\label{sec:convert}
+The JADE detector simulation \texttt{mcjade} takes the generated events in the format of the JADE Monte Carlo (CPROD), and the old generators of the historic JADE
+productions write this format directly. The program \texttt{convert\_\allowbreak{}hepmc\_\allowbreak{}to\_\allowbreak{}jade} (directory \texttt{convert}) converts the events of modern
+generators into CPROD files. It is based on the format conversion example of HepMC3~\cite{Buckley:2019xhk} (HepMC3 3.1 or newer is needed) and is run as
+\begin{lstlisting}
+convert_hepmc_to_jade -i hepmc3 -o jade input.hepmc output.cprod
+\end{lstlisting}
+The input and output system of HepMC3, with its readers and writers for many formats and the plugin mechanism, was inspired by the needs of the JADE data preservation, and also of
+the preservation of the data of OPAL and ZEUS, the other experiments of the data preservation effort in high energy physics (DPHEP)~\cite{Akopov:2012dpHEP} on which the same author worked:
+the program has writers for the formats of these experiments as well (\texttt{-o treerootopal} for the ROOT tree of OPAL and \texttt{-o hpezeus} for the HEPEVT format of ZEUS).
+\begin{description}
+\item[Input] a file of events in any format that HepMC3 reads (\texttt{-i}: HepMC2 and HepMC3 ASCII, HEPEVT, LHEF~\cite{Alwall:2006yp}, ROOT files and trees, compressed
+files or a plugin of HepMC3); the options set the limit on the number of events, the first and the last event to convert, how often the progress is printed
+and, as \texttt{-e key=value}, parameters of the readers and writers (the test of the suite uses \texttt{-e Mode=0} for the JADE writer).
+\item[Output] the file in the format \texttt{-o}: the JADE format \texttt{jade} or any of the formats above (also text and graph dumps and the plugins), so that the same
+program converts between all these formats. For each event the JADE writer fills the CPROD record with the event number, the beam energy, the flavour of the primary
+quark pair (the hard quark--antiquark pair with an energy sum of more than half of the beam energy), all particles with their four-momenta, masses and charges (from the
+PDG identification codes with \texttt{AtlasPID.h}~\cite{Verbytskyi:AtlasPID}, which implements the numbering scheme of the Particle Data Group~\cite{PDG:MCnumbering}), the
+links of the particles to the partons they come from, and the final-state particles (status 1, without neutrinos, which the detector does not see) with their names,
+production vertices and the numbers of charged and neutral particles.
+\end{description}
+Because the interface is HepMC3, events of many generators can be used for the JADE detector simulation, as all of them can write HepMC events. The test suite uses
+Pythia8~\cite{Bierlich:2022pfr}; other generators that can write HepMC events and are suitable for $e^+e^-$ annihilation at the PETRA energies are, for example,
+Sherpa~\cite{Bothmann:2019yzt,Sherpa:2024mfk}, Herwig 7~\cite{Bellm:2015jjp,Bewick:2023tfi} and WHIZARD~\cite{Kilian:2007gr}. Only the conversion of Pythia8 events is
+tested here; the choice of the generator settings for the JADE data (the beam energies, the hadronisation parameters and the smearing) is described in the guide
+``Understanding JADE MC generation'' of the open data portal (Section~\ref{sec:opendata}).
+
+\subsection{zread: reading of ZE4V events}
+The program \texttt{zread} (\texttt{util2016/\allowbreak{}zread}, P.~A.~Movilla Fernandez, 2001) is a standalone example of reading events in the ZE4V format (Section~\ref{sec:data}).
+\begin{description}
+\item[Input] ZE4V files, ASCII or binary, whose base name, format and number are set in the source (the samples \texttt{jade.demosample.ascii\_\allowbreak{}ze4v.*} and
+\texttt{jade.demosample.bin\_\allowbreak{}ze4v.*} are in the directory). It calls a routine that reads one complete JADE record and a routine that checks the byte order of the binary files.
+\item[Output] the printout of the records that it reads; it is the starting point for the own analyses of ZE4V data.
+\end{description}
+
+\subsection{jzread: ZE4V events to HBOOK ntuples}
+The program \texttt{jzread} (directory \texttt{jtuple}) is the same example extended to fill an HBOOK ntuple.
+\begin{description}
+\item[Input] a card with the name of the ZE4V file (\texttt{ZE4VFILE}) and the format of the records (\texttt{ZE4VFORM}: 0 real data, 1 Monte Carlo), the cuts on the tracks and
+clusters (\texttt{TRKCUT}), the maximum number of events (\texttt{MAXEVT}) and the name of the ntuple file (\texttt{JTUPLE}).
+\item[Output] the HBOOK file with the ntuple of the quantities of the events that pass the cuts.
+\end{description}
+
+\subsection{jtjob: ntuples of QCD observables}
+The program \texttt{jtjob} (directory \texttt{jtuple}) produces the ntuples with the QCD observables, which were used for the analysis of Ref.~\cite{Verbytskyi:2019zhh}.
+\begin{description}
+\item[Input] a card with the BOS file written by \texttt{superv} (\texttt{SVBOSF}), the calibration file (\texttt{CALIB}), the mode (\texttt{ZE4VMODE}), the maximum
+number of records (\texttt{MAXREC}) and the name of the ntuple file (\texttt{JTUPLE}).
+\item[Output] the HBOOK ntuple of the events; the ntuples were originally written for PAW and are converted to the ROOT format with \texttt{jade\_\allowbreak{}h2root}.
+\end{description}
+
+\subsection{taklumi: luminosity of a range of runs}
+The program \texttt{taklumi} (source \texttt{jtuple/\allowbreak{}src/\allowbreak{}taklumi.f}) sums the luminosity of a range of runs (Section~\ref{sec:lumi}).
+\begin{description}
+\item[Input] the file \texttt{lumi.dat} in the working directory (it is installed in \texttt{share/\allowbreak{}JADESOFT} next to the calibration files, and the test of the program uses this installed copy) and the first and the last run number from the standard input.
+\item[Output] the printout of the luminosity of every run period, the sum for the run range and the sums per energy range, with the errors, and the file \texttt{lumi.hist}
+with the histograms of the integrated luminosity. The run number was read with an integer format into a real variable that overlays an integer; the Fortran runtime rejects this, and the program reads it into the integer now.
+\end{description}
+
+\subsection{jade\_h2root: conversion of HBOOK files to ROOT}
+The program \texttt{jade\_\allowbreak{}h2root} converts HBOOK files into ROOT files. It is built from the sources of \texttt{h2root} of the ROOT branch \texttt{v6-40-00-patches}, which contain the
+fix of the crash of this program on 64-bit machines (Section~\ref{sec:cernlib}).
+\begin{description}
+\item[Input] an HBOOK file (the ntuples of \texttt{jtjob} or \texttt{jzread}), given with the name of the output file on the command line.
+\item[Output] a ROOT file with the same histograms and ntuples (trees), read by the analysis programs of the test suite.
+\end{description}
+
+\subsection{conv: conversion of calibration files}
+\label{sec:calconv}
+The program \texttt{conv} (source \texttt{jadesoft/\allowbreak{}util2016/\allowbreak{}ccal/\allowbreak{}conv.f}) converts the ASCII calibration files into the binary format that the programs read.
+\begin{description}
+\item[Input] the ASCII calibration file, which has the fixed name \texttt{aupdat1} in the current directory (the files \texttt{bupdat0} and \texttt{bupdat1} are copied to this
+name); the output unit must be big-endian.
+\item[Output] the binary file \texttt{aupdat1.b} and the information on every converted record on the standard output.
+\end{description}
+The bank name is read from the text into an integer (\texttt{A4} format), so the name word has the byte order of the machine that runs the program. The binary files for a
+little-endian machine were made as follows (the files of \texttt{jadesoft/\allowbreak{}cal2026}, Listing~\ref{lst:calregen}):
+\begin{lstlisting}[caption={Regeneration of a binary calibration file for a little-endian host.},label={lst:calregen}]
+export GFORTRAN_CONVERT_UNIT=big_endian    # F_UFMTENDIAN=big for Intel
+mkdir work; cd work
+cp ../jadesoft/cal2026/bupdat0 aupdat1     # conv always reads the file aupdat1
+conv > conv.bupdat0.log                    # writes aupdat1.b
+mv aupdat1.b ../jadesoft/cal2026/bupdat0.b
+\end{lstlisting}
+and the same for \texttt{aupdat1} and \texttt{bupdat1}. The half-word constants of the ASCII files are
+packed by \texttt{conv} two per word in the order that the program needs on a little-endian machine,
+with one exception: the muon calibration (bank \texttt{MUCA}, layout in \texttt{jademus/\allowbreak{}cmucalib.for})
+has 4-byte integer variables that are \texttt{EQUIVALENCE}d to a pair of half-words (\texttt{NFRAMS},
+\texttt{NCHAMS}, \texttt{IFCIND(1..6)}, i.e. the words 20, 390 and 4155--4160 of the muon calibration
+array). In a second step the two halves of these words are exchanged:
+\begin{lstlisting}
+python3 jadesoft/cal2026/fix_overlay_words.py in.b out.b
+\end{lstlisting}
+With this step the muon
+constants read by \texttt{KLREAD} are correct (\texttt{NFRAMS=82}, \texttt{NCHAMS=634},
+\texttt{IZOEP1=1960}, \texttt{IZOEP3=2150} in \texttt{/CALIBR/}). The other banks with half-word
+constants were not checked for such overlays. The original files
+(\texttt{*-ori.gz}) are converted after \texttt{gunzip}. The conversion logs were stored as
+\texttt{conv.*.log.gz}. The result can be checked with the calibration tests of the test
+suite (Section~\ref{sec:tests}) or directly with \texttt{calcheck file.b} (with the same environment variable).
+
+\subsection{rconv: inspection of calibration files}
+The program \texttt{rconv} (source \texttt{jadesoft/\allowbreak{}util2016/\allowbreak{}ccal/\allowbreak{}rconv.f}, P.~A.~Movilla Fernandez, 1998) inspects a binary calibration file.
+\begin{description}
+\item[Input] the binary file (\texttt{aupdat1.b} by default) and the name, the number and the validity date of the bank to be shown (e.g.\ \texttt{MUCA}, number 2), which are set in the
+source before it is compiled.
+\item[Output] the contents of the bank on the standard output.
+\end{description}
+
+\section{Monte Carlo generators of the historic productions}
+\label{sec:generators}
+
+The software contains the event generators that were used for the Monte Carlo productions of the collaboration. They are separate programs that write the generated events in the CPROD format
+(Section~\ref{sec:cprodformat}), the input of the detector simulation \texttt{mcjade}, and are described below in the same way as the other programs (Section~\ref{sec:programs}). Most of them are obsolete:
+the generators of that time (PYTHIA 5.7, JETSET 6.3 and 7.4, HERWIG 5.8 and 5.9, ARIADNE, COJETS) are many versions behind the current ones, and for new productions the events of modern generators are
+converted with \texttt{convert\_hepmc\_to\_jade} (Section~\ref{sec:convert}). The old generators are kept, and built with the option \texttt{JADE\_OLD\_MC}, to reproduce the historic productions and for the
+test of the chain with PYTHIA 5.7; the exception is \texttt{lepton}, a generator for the tests of the detector simulation, which does not depend on physics models.
+
+\subsection{py57, jt63, jt74, hw58d, hw59, ar48p, cj623: historic generators}
+The programs are built from the sources in \texttt{jadesoft/\allowbreak{}util2016/\allowbreak{}mcgen} (option \texttt{JADE\_\allowbreak{}OLD\_\allowbreak{}MC}): PYTHIA 5.7 (\texttt{py57}),
+JETSET 6.3 and 7.4 (\texttt{jt63}, \texttt{jt74}), HERWIG 5.8 and 5.9 (\texttt{hw58d}, \texttt{hw59}), ARIADNE (\texttt{ar48p}) and COJETS (\texttt{cj623}). All of them are obsolete.
+\begin{description}
+\item[Input] a card, e.g.\ for \texttt{py57} the run number and the seed of the random number generator (\texttt{MCIRUN}, \texttt{MCSTART}), the name of the output file
+(\texttt{MCEVFILE}), the number of events (\texttt{MCNEVT}), the centre-of-mass energy (\texttt{MCECMS}), the options of the generator (\texttt{MCISR}, \texttt{MCFSR},
+\dots) and the particles to be kept stable (\texttt{MCIDST}).
+\item[Output] the file of the four-vectors of the events in the CPROD format, histograms and the state of the random number generator, so that no conversion is needed.
+The production with PYTHIA 5.7 is part of the test chain (Section~\ref{sec:tests}).
+\end{description}
+
+\subsection{lepton: generator of lepton pairs}
+The program \texttt{lepton} (P.~A.~Movilla Fernandez, 2000) is a simple generator of back-to-back lepton pairs without any physics.
+\begin{description}
+\item[Input] a card with the number of events (\texttt{NEVENT}), the centre-of-mass energy (\texttt{CMS}), the lepton flavour (\texttt{TYPE}: electrons or muons), the name of the
+output file (\texttt{MCEVFILE}) and its format (\texttt{FORMAT}: readable text or binary).
+\item[Output] a file of the four-vectors of the pairs in the CPROD format, e.g.\ for tests of the detector simulation.
+\end{description}
+
+\section{Using the software: Monte Carlo, analysis and display}
 The basic usage of JADE software is described elsewhere.
 The documentations stays valid.
 Below we describe the environment for JADE and the process of generation of new MC with the JADE software.
 
-\subsubsection{Environment for JADE software}
-JADE software does not need special environment to run.
-However, a virtual machine with all software installed can be downloaded 
-from wwwjade.mpp.mpg.de as well as the installation ISOS.
+\subsection{MC generation}
 
-The basic dependencies of the software are 
+Any Monte Carlo generator that writes its events in a format read by HepMC3~\cite{Buckley:2019xhk}
+(HepMC3 or HepMC2 ASCII files, HEPEVT, LHEF~\cite{Alwall:2006yp}) can be used: the events are converted to the JADE format with the
+program \texttt{convert} and then processed by the JADE detector simulation and reconstruction. The setup of
+the generators is not described here. The generator of the test suite is Pythia8~\cite{Bierlich:2022pfr}
+(the test program \texttt{pythia8\_\allowbreak{}JADE} writes HepMC3 files), which is available from several sources:
 \begin{itemize}
-\item cmake for building, should be installed
-\item C/C++ compiller with basic c++11 support, should be installed
-\item fortran compiler with fortran90 or fortran95 support, should be installed
-\item ROOT5/6~\cite{Antcheva:2009zz} for graphics, histogramming
-\item HepMC3 for Monte Carlo, provided in the tarball 
-\item lapack~\cite{lapack} for Monte Carlo , should be installed
+\item the default repositories of the distributions (e.g.\ the packages \texttt{pythia8}, \texttt{pythia8-devel}
+and \texttt{pythia8-data} on Fedora and CentOS),
+\item HEPrpms~\cite{Hahn:2022hrpms},
+\item Homebrew on macOS (the formula \texttt{pythia}),
+\item the LCG software stacks~\cite{LCG:web} on CERN systems (CVMFS), which also contain Pythia8 and many other
+generators.
 \end{itemize}
-All of these dependencies on the virtual machine are provided in RPM packages.
-
-Despite the VM has MC generators installed (see Tab~ for the list), the  Monte Carlo HepMC files can be generated elsewhere as well.
-
-
-\subsubsection{MC generation}
-
-The setup of MC generators is omitted. The code of the old MC generators is not ported.
-The only requirement for the MC enerator is to produce the 
-output in HepMC2/HepMC3/HEPEVT format.
+The old generators of the historic JADE productions (JETSET, PYTHIA 5.7, HERWIG, ARIADNE, COJETS, the sources are in
+\texttt{jadesoft/\allowbreak{}util*/\allowbreak{}mcgen}) are compiled with the other programs (option \texttt{JADE\_\allowbreak{}OLD\_\allowbreak{}MC}), and the
+production with PYTHIA 5.7 is part of the test chain.
 After that the utility convert\_example\_JADE.exe can be used.
-It can produce JADE MC ASCII  files, as well as JADE MC le and be binary files.
+It can produce JADE MC ASCII  files, as well as JADE MC le and be binary files (Listing~\ref{lst:convexample}).
 
-\begin{Verbatim}[fontsize=\tiny]
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize,caption={Conversion of HepMC2 events with the program of 2016 (now \texttt{convert\_\allowbreak{}hepmc\_\allowbreak{}to\_\allowbreak{}jade}).},label={lst:convexample}]
 convert_example_JADE.exe hepmc2_jade  sherpa34gev.hepmc2   bsherpa34gev.jade Mode=0
 convert_example_JADE.exe hepmc2_jade  sherpa34gev.hepmc2   asherpa34gev.jade Mode=1
-\end{Verbatim}
-In the later the sherpa34gev.hepmc2 is the input file in hepmc2 format and the bsherpa34gev.jade is an output in JADE binary format.
+\end{lstlisting}
+In the latter the sherpa34gev.hepmc2 is the input file in hepmc2 format and the bsherpa34gev.jade is an output in JADE binary format.
 The options are given in the help of convert\_example\_JADE.exe.
 
 The resulted files can be used for the superv simulation and reconstruction utility.
-\subsubsection{Analysis software}
-The final  data  is stored in ROOT or HBOOK fromat  and can be analyzed on arbitrary systems with ROOT or PAW.
+\subsection{Analysis of the reconstructed data}
+The final  data  is stored in ROOT or HBOOK~\cite{Brun:1995hbook} format  and can be analyzed on arbitrary systems with ROOT~\cite{Brun:1997pa,Antcheva:2009zz} or PAW.
 
-\subsubsection{Event display}
-Event display functionality is not restored completely (yet).
-Despite it is possible to link the  code of event display with the CERNLIB,
-it does not produce satisfactory result.
-Therefore an attempt to use ROOT for the graphics was done.
-The main obstacle is the conceptual difference in geometry tratment between 
-the ROOT and HIGZ and relying on tn the undocumented behaviour.
+\subsection{Event display}
+\label{sec:display}
+The event display \texttt{jadez} works. It is an interactive, command-line driven program
+(commands such as \texttt{RB}, \texttt{ZXB}, \texttt{DEDX}, \texttt{OPT}; \texttt{HELP} and \texttt{MENU} list them)
+that reads a BOS file, the calibration file and the help data set from the working directory and draws on an
+X11 display. Its graphics are organised in three layers: the display commands (\texttt{grafix}), an emulation of
+the Tektronix PLOT-10 package that the original display used (\texttt{interface/\allowbreak{}plot10.F}), and HIGZ~\cite{Couet:HIGZ} of
+CERNLIB (\texttt{libgrafX11}, about 40 entry points); the PLOT-10 calls were mapped onto HIGZ already in 1999.
+The display is linked with the revived CERNLIB (Section~\ref{sec:cernlib}) and is part of the build and of the
+test suite. The details are in \texttt{doc/\allowbreak{}EventDisplay.md} of the repository.
 
+The first attempts to link the old code with CERNLIB produced pictures with missing elements. Two bugs of the
+code were responsible, both caused by the byte order: the routine \texttt{HEMSYM} (the stroke font of the
+numbers around the calorimeter and of the statistics panel) returned at once, and its decoding of packed bytes
+worked only on big-endian machines, so all such numbers were lost; the text routines of the PLOT-10 emulation
+unpacked the last partial word of strings in the wrong order, which garbled axis captions, units and dates. The
+letter spacing of the text was also corrected to match the historic pictures. With these changes the pictures
+resemble the reference pictures of the historic display (the sample events are not the same, so the pictures
+agree in structure, not pixel by pixel).
 
+Three tests of the test suite (Section~\ref{sec:tests}) run the display on a virtual framebuffer (see the description of the environment
+above): the first draws the detector views and the muon filter views of the real data
+event, the second the detector hardware, the result tables and the projections for a reconstructed
+Monte Carlo event, and the third the picture that corresponds to one of the historic pictures.
+Each drawing command is followed by a hardcopy; the tests check the exit code, that the event was read, that no
+command was rejected, that the calibration constants were used (no \texttt{NO CALIBRATION FOUND} warning),
+and, with a program that analyses the pictures, that they are coloured, contain the orange lead glass numbers
+and the grey boundaries of the detector parts. The tests pass in the 64-bit builds with the GNU, Intel and
+NVIDIA compilers; with Intel and NVIDIA the pictures written by HIGZ end up in one file (\texttt{fort.77}) that
+the tests split. The muon chambers are drawn, now that the muon calibration is read (Section~\ref{sec:calfiles}).
 
-\subsubsection{File catalog}
-As the amount of data is small, there is no big need in a complicated file catalogue.
-The list of files can be see onlie. 
+The reference pictures of the historic display (Figure~\ref{fig:displayrefs}, \texttt{doc/\allowbreak{}eventdisplayreferences}; the picture on the right is the figure of
+the CERN Courier article~\cite{Courier:2009datapres}) are the
+targets of the display tests. The photograph of an early display (left) shows the detector with the muon chambers around
+it; the picture of a Monte Carlo event (right), with the R-$\phi$ section, the lead glass energies, the header lines, the
+orthogonal projections and the small dE/dx plot, was the model for the third display test.
+Figure~\ref{fig:displaytests} shows two pictures that the tests of the test suite produce (the PostScript files of the
+hardcopy command, in the test working directory; the script \texttt{doc/\allowbreak{}Note/\allowbreak{}make\_\allowbreak{}display\_\allowbreak{}figures.sh} prepares the
+figures from them): the left picture, from the second display test, shows the view of the detector hardware with the muon
+chambers around the calorimeter and the tables of the reconstructed tracks and clusters, as the photograph of the early display
+does, and the right one, from the third display test, is the counterpart of the Monte Carlo reference.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.36\textwidth]{Figures/display_ref1}\hfill
+\includegraphics[width=0.58\textwidth]{Figures/display_ref2}
+\caption{References: a photograph of an early display of the JADE experiment (left; the file name \texttt{1004227\_t.jpg} suggests the CERN Document Server
+record 1004227, which could not be checked) and the display of a simulated event reconstructed with the revitalised software, with the R-$\phi$ section, the lead
+glass energies and the orthogonal projections (right; from the CERN Courier of April 2009~\protect\cite{Courier:2009datapres}, image credit S.~Bethke).}
+\label{fig:displayrefs}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.48\textwidth]{Figures/display_mc_rc1}\hfill
+\includegraphics[width=0.48\textwidth]{Figures/display_rphi}
+\caption{Pictures written by the event display for a reconstructed Monte Carlo event of the test suite (generated with
+Pythia8): the hardware view with the muon chambers and the tables of the tracks and clusters (left), and the R-$\phi$ section with the
+detector hardware, the projections and the dE/dx plot (right). The pictures are not those of the references; they agree in
+structure, not pixel by pixel.}
+\label{fig:displaytests}
+\end{figure}
+\FloatBarrier
 
+Not restored compared with the historic pictures are the pink dashed segments along the tracks (the tracks are drawn as plain blue lines over red hit
+points), two of the three letters of every axis triad (the R-$\phi$ triad has only the letter ``X'', the triads of the insets of the orthogonal
+projections, which are available with the display options 16 and 17, only ``Z'') and the label of the electron curve of the small dE/dx plot. The hits in the insets are
+drawn, as small red points. The
+muon chamber hits cannot be shown, since the sample events have no muon hits. An attempt to replace HIGZ by ROOT
+graphics (\texttt{picocernlib}, Section~\ref{sec:picocernlib}) was made; it is not the route used: the geometry treatment of ROOT and HIGZ is
+conceptually different and the HIGZ behaviour that the display relies on is not documented.
 
-\section{JADE data}
-The JADE data is stored in MPCDF.
-It can be accessed via various protocols.
+\section{Testing and validation}
 
-The real data is stored in fpack format, which can be converted to the bos format with utility.
+\subsection{The test suite}
+\label{sec:tests}
 
-\section{JADE documentation}
-Technical notes are available in hard copies and scanned version in MPP (and DESY library?).
-Papers are available on InSpire from CERN library or KEK.
-The data preservation documentation is available on wwwjade.mpp.mpg.de.
-\section{Validation}
+The software has a test suite, run with \texttt{ctest}, the testing tool of CMake~\cite{CMake:web}. It is the project \texttt{test} of the
+repository and the main means to see that a change of a compiler, a flag, a calibration file or the sources does not break another part.
+It is at the same time the set of \emph{examples for the analysis of the JADE data}, which is ntuple based (the events are written into HBOOK ntuples, converted to ROOT files and analysed from them): the tests run the complete chain of the processing of real data and of simulated events with
+small samples, so that the steering cards, the commands, the files exchanged between the programs and the programs for the final analysis (the directories \texttt{test/\allowbreak{}cards},
+\texttt{test/\allowbreak{}src} and the scripts of \texttt{test}) are the working examples of how to use the data, and a new analysis can start from them. Table~\ref{tab:testexamples} lists the examples.
+The suite has 49 tests (with Pythia8, ROOT and a virtual display available) in six groups that process small samples through the programs of the software:
+\begin{itemize}
+\item \textbf{Real data:} \texttt{FPTOBOS\_\allowbreak{}DATA\_\allowbreak{}1} converts the sample file of the tapes (\texttt{test/\allowbreak{}jadetapes/\allowbreak{}JAD073/\allowbreak{}file006}) into a BOS file;
+\texttt{SUPERV\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{ZE4V\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{JZREAD\_\allowbreak{}DATA\_\allowbreak{}1} and \texttt{JTJOB\_\allowbreak{}DATA\_\allowbreak{}1} follow it (reconstruction, ZE4V formatting, HBOOK ntuples);
+\texttt{H2ROOT\_\allowbreak{}DATA\_\allowbreak{}1} converts the ntuple to a ROOT file, which is read by two analysis programs (\texttt{ROOT\_\allowbreak{}ANALYSIS\_\allowbreak{}DATA\_\allowbreak{}1} and \texttt{\_2},
+the second uses the jet algorithm of FastJet~\cite{Cacciari:2011ma}). \texttt{JADEZ\_\allowbreak{}DATA\_\allowbreak{}1} runs the event display on the same events. \texttt{TAKLUMI\_\allowbreak{}LUMITABLE\_\allowbreak{}1} runs \texttt{taklumi} on the luminosity file and prints the table of the luminosity per range of the centre-of-mass energy (Section~\ref{sec:lumi}).
+\item \textbf{Monte Carlo with Pythia8:} \texttt{PYTHIA8\_\allowbreak{}PRODUCE\_\allowbreak{}HEPMC3\_\allowbreak{}MC\_\allowbreak{}1} generates events in the HepMC3 format,
+\texttt{HEPMC3\_\allowbreak{}TO\_\allowbreak{}CPROD\_\allowbreak{}MC\_\allowbreak{}1} converts them (Section~\ref{sec:convert}), \texttt{MCJADE\_\allowbreak{}MC\_\allowbreak{}1} simulates the detector, and the chain of the
+reconstruction, \texttt{ZE4V}, \texttt{JZREAD}, \texttt{JTJOB}, \texttt{H2ROOT} and the two ROOT analyses (\texttt{\_MC\_1}) follows;
+\texttt{JADEZ\_\allowbreak{}MC\_\allowbreak{}1} and \texttt{JADEZ\_\allowbreak{}RPHI\_\allowbreak{}1} show the reconstructed event in the display (Section~\ref{sec:display}).
+\item \textbf{Monte Carlo with Pythia8 at another energy:} the same chain as in the previous group, from \texttt{PYTHIA8\_\allowbreak{}PRODUCE\_\allowbreak{}HEPMC3\_\allowbreak{}MC\_\allowbreak{}3}
+to the ROOT analyses (\texttt{\_MC\_3}), for the centre-of-mass energy of 43.8~GeV (the card \texttt{testPythia2.input}; the first group uses 34.6~GeV, \texttt{testPythia1.input}). The cards of the
+programs differ from those of the first group by the names of the files and by the detector configuration of \texttt{mcjade} (\texttt{YEAR 85}, \texttt{MONTH 05}, \texttt{DAY 17}, the configuration of the sample 44 of Table~\ref{tab:mcsamples}, instead of the year 86).
+The two groups show how to run the simulation at a different energy and the dependence of the results on it.
+\item \textbf{Analysis in Fortran:} \texttt{K0S\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{K0S\_\allowbreak{}MC\_\allowbreak{}1} and \texttt{K0S\_\allowbreak{}MC\_\allowbreak{}3} run the program \texttt{k0s} (\texttt{test/\allowbreak{}src/\allowbreak{}k0s.f}) on the BOS files of \texttt{superv}
+(the real data sample and the two Pythia8 samples). It is an example of an analysis that reads the tracks of the BOS banks directly, in Fortran, and searches for the decay $K^0_S\to\pi^+\pi^-$ (see below).
+\item \textbf{Monte Carlo with the old generator PYTHIA 5.7:} the same chain from \texttt{PY57\_MC\_1} to the ROOT analyses (\texttt{\_MC\_2}), with
+the generator writing the CPROD file directly.
+\item \textbf{Calibration:} \texttt{CALIB\_\allowbreak{}NAMES\_\allowbreak{}aupdat1}, \texttt{\_bupdat0} and \texttt{\_bupdat1} check the binary calibration files
+(Section~\ref{sec:calfiles}).
+\end{itemize}
+\begin{table}[H]\centering\small
+\begin{tabular}{|p{2.9cm}|p{5.4cm}|p{6.0cm}|}\hline
+Task & Tests & Programs and inputs of the example \\\hline\hline
+Raw data to BOS & \texttt{FPTOBOS\_\allowbreak{}DATA\_\allowbreak{}1} & \texttt{fptobos}, \texttt{fptobos1.card} (the sample file of the tapes) \\
+Reconstruction & \texttt{SUPERV\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{SUPERV\_\allowbreak{}MC\_\allowbreak{}1}, \texttt{SUPERV\_\allowbreak{}MC\_\allowbreak{}2} & \texttt{superv}, \texttt{supervfile006.card}, \texttt{superv1.card}, \texttt{superv2.card} \\
+Compression to ZE4V & \texttt{ZE4V\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{ZE4V\_\allowbreak{}MC\_\allowbreak{}1}, \texttt{ZE4V\_\allowbreak{}MC\_\allowbreak{}2} & \texttt{ze4v}, \texttt{ze4vfile006.card}, \texttt{ze4v1.card}, \texttt{ze4v2.card} \\
+HBOOK ntuples & \texttt{JZREAD\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{JTJOB\_\allowbreak{}DATA\_\allowbreak{}1} (and the \texttt{\_MC\_1}, \texttt{\_MC\_2} tests) & \texttt{jzread}, \texttt{jtjob}, \texttt{jzreadfile006.card}, \texttt{jtjobfile006.card} \\
+ROOT analysis & \texttt{H2ROOT\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{ROOT\_\allowbreak{}ANALYSIS\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{ROOT\_\allowbreak{}ANALYSIS\_\allowbreak{}DATA\_\allowbreak{}2} (and the MC tests) & \texttt{jade\_\allowbreak{}h2root}; the programs \texttt{ROOT\_\allowbreak{}analysis\_\allowbreak{}1.cc} and \texttt{ROOT\_\allowbreak{}analysis\_\allowbreak{}2.cc} (with FastJet) in \texttt{test/src} \\
+Luminosity & \texttt{TAKLUMI\_\allowbreak{}LUMITABLE\_\allowbreak{}1} & \texttt{taklumi} and the installed \texttt{lumi.dat} \\
+Event display & \texttt{JADEZ\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{JADEZ\_\allowbreak{}MC\_\allowbreak{}1}, \texttt{JADEZ\_\allowbreak{}RPHI\_\allowbreak{}1} & \texttt{jadez}, the scripts \texttt{jadez\_\allowbreak{}test.sh}, \texttt{jadez\_\allowbreak{}mc\_\allowbreak{}test.sh}, \texttt{jadez\_\allowbreak{}rphi\_\allowbreak{}test.sh} \\
+Generation with Pythia8 & \texttt{PYTHIA8\_\allowbreak{}PRODUCE\_\allowbreak{}HEPMC3\_\allowbreak{}MC\_\allowbreak{}1} & the program \texttt{pythia8\_\allowbreak{}JADE.cc} in \texttt{test/src}, \texttt{testPythia1.input} \\
+Conversion to CPROD & \texttt{HEPMC3\_\allowbreak{}TO\_\allowbreak{}CPROD\_\allowbreak{}MC\_\allowbreak{}1} & \texttt{convert\_\allowbreak{}hepmc\_\allowbreak{}to\_\allowbreak{}jade} (Section~\ref{sec:convert}) \\
+Detector simulation & \texttt{MCJADE\_\allowbreak{}MC\_\allowbreak{}1}, \texttt{MCJADE\_\allowbreak{}MC\_\allowbreak{}2} & \texttt{mcjade}, \texttt{mcjade1.card}, \texttt{mcjade2.card} \\
+Second energy (43.8~GeV) & \texttt{PYTHIA8\_\allowbreak{}PRODUCE\_\allowbreak{}HEPMC3\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{HEPMC3\_\allowbreak{}TO\_\allowbreak{}CPROD\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{MCJADE\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{SUPERV\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{ZE4V\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{JZREAD\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{JTJOB\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{H2ROOT\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{ROOT\_\allowbreak{}ANALYSIS1\_\allowbreak{}MC\_\allowbreak{}3}, \texttt{ROOT\_\allowbreak{}ANALYSIS2\_\allowbreak{}MC\_\allowbreak{}3} & \texttt{testPythia2.input}, \texttt{mcjade3.card}, \texttt{superv3.card}, \texttt{ze4v3.card}, \texttt{jzread3.card}, \texttt{jtjob3.card} \\
+Fortran analysis, $K^0_S$ & \texttt{K0S\_\allowbreak{}DATA\_\allowbreak{}1}, \texttt{K0S\_\allowbreak{}MC\_\allowbreak{}1}, \texttt{K0S\_\allowbreak{}MC\_\allowbreak{}3} & \texttt{k0s}, \texttt{k0s.f} in \texttt{test/src} \\
+Old generator & \texttt{PY57\_\allowbreak{}MC\_\allowbreak{}1} & \texttt{py57}, \texttt{py57.card} (Section~\ref{sec:generators}) \\
+Calibration files & \texttt{CALIB\_\allowbreak{}NAMES\_\allowbreak{}aupdat1}, \texttt{\_bupdat0}, \texttt{\_bupdat1} & \texttt{calcheck.f} in \texttt{test/src} (Section~\ref{sec:calfiles}) \\
+\hline
+\end{tabular}
+\caption{The tests of the test suite as examples of the processing and analysis of the JADE data: the task, the tests and the programs and the input files (in \texttt{test/\allowbreak{}cards} unless noted) that they use.}
+\label{tab:testexamples}
+\end{table}
+The analysis program \texttt{ROOT\_analysis\_1} (\texttt{test/\allowbreak{}src/\allowbreak{}ROOT\_analysis\_1.cc}) is the minimal example of the analysis of the ROOT ntuple that \texttt{jade\_h2root} writes: it reads the tree \texttt{h10}
+with the class of the ntuple (\texttt{jadeanalysis.h}), fills a histogram of the variable \texttt{Tdtc}, the thrust variable $1-T$ calculated from the tracks and the clusters, in 20 bins between 0 and 1, normalises it to the unit integral and divides it by the bin width (the distribution $1/N\,\mathrm{d}N/\mathrm{d}(1-T)$), and draws it with the statistical uncertainties in the logarithmic scale, between 0.012 and 12, into a PDF file; the optional third argument is the title of the plot, which the tests use to tell the real data from the simulated hadronic events. The legend gives the centre-of-mass energy, calculated as twice the mean beam energy of the events (the variable \texttt{Ebeam} of the ntuple) and the number of events.
+Figure~\ref{fig:thrust} shows its output for the real data sample and for the three Monte Carlo samples of the test suite. The comparison is only an example of the result of the programs:
+the data sample has few events, of which only a fraction are hadronic events (the data are all the recorded events, the Monte Carlo samples are hadronic events), and the Monte Carlo samples have simple settings (Pythia8 without the initial and final state radiation, \texttt{testPythia1.input} and \texttt{testPythia2.input}), so that the distributions are not expected to agree.
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.085\width} 0},clip,width=0.48\textwidth]{Figures/thrust_data}\hfill
+\adjincludegraphics[trim={0 0 {.085\width} 0},clip,width=0.48\textwidth]{Figures/thrust_mc1}\\[1ex]
+\adjincludegraphics[trim={0 0 {.085\width} 0},clip,width=0.48\textwidth]{Figures/thrust_mc2}\hfill
+\adjincludegraphics[trim={0 0 {.085\width} 0},clip,width=0.48\textwidth]{Figures/thrust_mc3}
+\caption{Output of the analysis program \texttt{ROOT\_analysis\_1} for the tests of the test suite: the distribution of the thrust variable $1-T$ (\texttt{Tdtc}), normalised to the unit integral and divided by the bin width, $1/N\,\mathrm{d}N/\mathrm{d}(1-T)$, with the statistical uncertainties (the vertical range is 0.012 to 12, so that the first bin of the two Pythia8 samples, whose values are about 15, is outside of the plot), for the real data (top left, the large file \texttt{JAD146/file001} of the tapes, 35.0~GeV, 47\,484 events, see below),
+the simulated hadronic events of Pythia8 at 34.6~GeV (top right, 2000 events), of PYTHIA 5.7 at 35~GeV (bottom left, 1000 events) and of Pythia8 at 43.8~GeV (bottom right, 2000 events); all the Monte Carlo samples are hadronic events, $e^+e^-\to\gamma^*/Z\to q\bar q$ with the detector simulation and reconstruction. The energy in the legend is calculated from the beam energy of the events. The pictures are written by the tests; \texttt{make figures} in \texttt{doc/Note} makes them for the note.}
+\label{fig:thrust}
+\end{figure}
+
+The same program also writes a picture of the sum of the energies of the tracks of an event (the pion mass assumed for every track) and of the sum of the energies of the clusters of the lead glass of an event, from the variables
+\texttt{Ptrk} and \texttt{Pclus} of the ntuple, in bins of 1.5~GeV (the same variables as in the analysis \texttt{k0s} below, Figure~\ref{fig:ntenergy}).
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.02\width} 0},clip,width=0.65\textwidth]{Figures/energy_data}\\[1ex]
+\adjincludegraphics[trim={0 0 {.02\width} 0},clip,width=0.65\textwidth]{Figures/energy_mc1}\\[1ex]
+\adjincludegraphics[trim={0 0 {.02\width} 0},clip,width=0.65\textwidth]{Figures/energy_mc2}\\[1ex]
+\adjincludegraphics[trim={0 0 {.02\width} 0},clip,width=0.65\textwidth]{Figures/energy_mc3}
+\caption{Sum of the energies of the tracks (left) and of the clusters of the lead glass (right) of an event, from the ntuples of the tests (\texttt{ROOT\_analysis\_1}), for the real data sample, the simulated hadronic events of Pythia8 at 34.6~GeV, of PYTHIA 5.7 at 35~GeV and of Pythia8 at 43.8~GeV (from top to bottom).}
+\label{fig:ntenergy}
+\end{figure}
+\FloatBarrier
+
+The program \texttt{k0s} is an example of an analysis in Fortran. It reads the BOS file of \texttt{superv} with the routines of the BOS library, takes the tracks of the \texttt{PATR} bank with very loose cuts (the card \texttt{k0s.card}, Listing~\ref{lst:cardk0s}: at least 4 hits in the $r$-$\phi$ plane,
+a distance of the closest approach to the beam of at least 1~mm; the momentum of a track at the vertex must be at least 0.04~GeV) and combines the pairs of tracks of opposite charges with close helices: the projections of the helices on the plane perpendicular to the beam are circles, and their distance
+(zero if they intersect) has to be smaller than 10~mm. The point of the closest approach, an intersection point or the point between the circles, is the candidate vertex. The tracks must go away from the beam at the vertex (the momentum of each track at the vertex has a positive component along the direction from the beam to the vertex; this selects the intersection of the circles that the tracks pass, the other one is usually on the side that a track coming from the beam does not reach). The two tracks are then fitted together to a common vertex (the key \texttt{FITVTX} of the card): a least squares fit of the position in the plane perpendicular to the beam, with the residuals of the distance of the vertex from each of the two circles (divided by the assumed error \texttt{SIGXY}, 2~mm) and of the difference of the $z$ coordinates of the two tracks at the vertex (divided by the assumed error \texttt{SIGZ}, 20~mm, and by $\sqrt2$), which is a fit with three residuals and two parameters; the $z$ coordinate of the vertex is the mean of the two. The start values are those of the candidate point, the iteration is a damped Gauss-Newton one with numerical derivatives, and the covariance matrices of the tracks are not used, since the errors are assumed. The fitted vertex is used for the rest of the analysis, i.e.\ for the cuts and for the momenta of the tracks, and the $\chi^2$ of the fit (one degree of freedom, see the figure) is cut with \texttt{CHIMAX}: the pairs with a $\chi^2$ above 6 are rejected. The primary vertex of the event has the $z$ coordinate of the bank \texttt{ZVTX} of the Supervisor (when the flag of the bank says that the vertex was found) and $x=y=0$, the position of the beam; the events without a vertex, and the events with $|z|$ of the vertex above 15~cm, are rejected. The vertex has to be displaced from the primary vertex by at least 0.5~cm (the distance in three dimensions; there is no upper limit, and no cut on the difference of the $z$ coordinates of the two tracks at the vertex, whose distribution is shown), and the momentum of the pair must point away from the primary vertex, i.e.\ the cosine of the angle between the momentum and the direction from the primary vertex to the vertex, in three dimensions, is above 0.8, and the momentum of the pair is at least 0.1~GeV.
+The momenta of the tracks at the vertex are calculated from the circles with the magnetic field of the \texttt{HEAD} bank and the invariant mass of the pair is calculated with the pion mass.
+The mass is filled into a histogram, which is printed and written to a text file. The cuts are not optimised; the loose cuts of the card give many pairs and a weak peak, and the stricter track cuts of the defaults of the program (10 hits, 5~mm) used without a card give a cleaner peak.
+For debugging the reconstruction and the analysis the test suite has a dummy generator of HepMC3 events (\texttt{test/src/dummy\_gen.cc}) that produces $e^+e^-\to$ two particles of the same energy back to back, which go through the same chain as the Pythia8 events
+(the tests \texttt{*\_MC\_5} for $\pi^+\pi^-$ and \texttt{*\_MC\_6} for $K^0_SK^0_S$). The $K^0_S$ decays to $\pi^+\pi^-$ after its flight with the lifetime ($c\tau=26.8$~mm), i.e. the sample has displaced vertices and known $K^0_S$.
+At 14~GeV the program \texttt{k0s} finds a clear peak at the mass of the $K^0_S$ in this sample (277 pairs in the window of 0.47 to 0.52~GeV, with 113 expected from the sidebands, where 225 pairs are found in two windows of the same width, i.e.\ about 165 above the background; the width of the peak is of the order of 40~MeV); at 34.6~GeV the momentum of the $K^0_S$ is 17~GeV, the opening angle of the pions is small and the peak is washed out.
+So the analysis can find $K^0_S$ at this energy; the real data sample has too few hadronic events for a peak (see below).
+Figure~\ref{fig:k0s} shows the histograms made by the tests: in the Monte Carlo samples the peak at the mass of $K^0_S$ (0.4976~GeV, dashed line) is seen over the combinatorial background; the real data sample does not show it. Only a small fraction of the events of the real data sample are hadronic events (this explains the missing peak, see below): the sample is a part of the tape with all the recorded events, which include the Bhabha scattering, the cosmic rays, the beam-gas events and other events of low multiplicity, while the Monte Carlo samples contain only hadronic events. The real data are the large file \texttt{JAD146/file001} of the tapes (1986, beam energy 17.5~GeV, 47\,484 events, not in the repository: it is copied to \texttt{test/jadetapes/JAD146}; the sample file of the repository, 354 events, is used by the Makefile of the note if it is not there). 47\,431 of the events have a primary vertex (the bank \texttt{ZVTX}) and 46\,201 have a vertex with $|z|<15$~cm, the cut \texttt{ZPMAX} on the events (an event without a vertex is rejected; the Monte Carlo sample at 43.8~GeV keeps 1994 of 2000 events). The events have 131\,291 tracks in the \texttt{PATR} bank, of which 117\,806 pass the track selection of the card (Listing~\ref{lst:cardk0s}), i.e.\ 2.6 selected tracks per event, against 10.0 in the Monte Carlo sample; only 3848 of the events (8\,\%) have five or more selected tracks, which is a rough measure of the hadronic events (1898 of 1994, 95\,\%, in the Monte Carlo sample). 2331 pairs pass all the cuts and 1480 are in the range of the histogram, 180 of them in the mass window of $K^0_S$ (0.47 to 0.52~GeV) with 159 expected from the sidebands (318 pairs in two windows of the same width), i.e.\ an excess of $21\pm 17$ pairs, while the Monte Carlo sample at 43.8~GeV gives about 0.05 pairs above the background per event, i.e.\ about 190 for 3848 events. Most of the events of the real data with five or more selected tracks are not hadronic events, however: the mean sum of their track energies is 11~GeV, against 30 to 42~GeV in the simulation. With a hadronic-like selection, a sum of the track energies of at least 20~GeV (the key \texttt{EMIN} of the card, run by hand), the real data have only 245 events, for which the rate of the simulation (0.054 pairs per event) predicts about 13 pairs above the background, and 11 pairs are found in the window with 19.5 expected from the sidebands ($-8\pm 7$): the real data sample is too small to show the peak, and it is not in contradiction with the simulation. Redoing the pattern recognition of the real data (the environment variable \texttt{JADE\_REDO\_PATR=1} makes \texttt{superv} delete the banks \texttt{PATR} and \texttt{JHTL} of the tape and run \texttt{PATREC}) gives about the same number of tracks (131\,990 against 131\,291) and the same picture. A comparison of the data with the simulation needs a selection of the hadronic events first. The program prints these numbers; the mean beam energy of the events is in the titles of the plots of the real data. Table~\ref{tab:k0sflow} shows how the number of pairs falls with the cuts (the program prints it): the largest losses are the requirement that the tracks go away from the beam at the vertex (the intersection of the circles of a pair is often on the side that the tracks do not pass), the cut on the $\chi^2$ of the fit of the vertex and, in the simulation, the requirement of close helices (most pairs of tracks of a hadronic event have helices far from each other). The pointing of the momentum of the pair from the primary vertex, in three dimensions, removes about half of the remaining pairs of the simulation. There is no upper cut on the distance of the vertex from the primary vertex and no cut on the difference of $z$ of the two tracks.
+\begin{table}[H]\centering
+\begin{tabular}{|p{7.6cm}|r|r|}\hline
+Cut & Real data & Pythia8, 43.8~GeV \\\hline\hline
+events with a primary vertex, \texttt{ZPMAX} (events) & 46\,201 of 47\,484 & 1994 of 2000 \\
+events with at least 5 selected tracks, \texttt{NTMIN} & 3848 & 1898 \\\hline
+opposite charges, \texttt{D0MIN} of the tracks & 32\,654 & 54\,431 \\
+circles with different centres & 24\,488 & 20\,106 \\
+distance of the helices, \texttt{DXYMAX} & 23\,200 & 18\,800 \\
+the tracks go away from the beam at the vertex & 10\,114 & 8246 \\
+fit of the vertex, \texttt{CHIMAX} & 3338 & 4287 \\
+distance of the vertex from the primary vertex, \texttt{RVMIN} (no upper cut) & 3307 & 4239 \\
+difference of $z$, \texttt{DZMAX} (no cut) & 3307 & 4239 \\
+momentum of the tracks, \texttt{PMIN} & 3307 & 4239 \\
+pointing of the pair from the primary vertex, \texttt{CPMIN} & 2331 & 3300 \\
+momentum of the pair, \texttt{PKMIN} & 2331 & 3300 \\
+mass in the range of the histogram & 1480 & 2156 \\\hline
+\end{tabular}
+\caption{Number of events with a primary vertex in the range and number of pairs of tracks of opposite charges after each cut of the program \texttt{k0s} with the cuts of \texttt{k0s.card}, for the real data (47\,484 events) and for the simulated hadronic events of Pythia8 at 43.8~GeV (2000 events).}
+\label{tab:k0sflow}
+\end{table}
+
+The test passes if events are read and at least one pair of tracks is combined.
+The plots of the cuts are in two groups of three. Figure~\ref{fig:k0sevent} shows the variables of the events and the first variable of the pairs: the $z$ coordinate of the primary vertex (the bank \texttt{ZVTX}; the events without a vertex are not in it; the cut $|z|<15$~cm is shown), the number of the selected tracks of the event (the cut is at least five, \texttt{NTMIN}; the events with fewer than two tracks in the bank \texttt{PATR} are in the bins 0 and 1) and the distance of the helices of the two tracks of a pair (before the cut; most pairs have intersecting circles, i.e.\ the distance zero, as the circles of the tracks of high momentum are large). The primary vertex of the simulated events is distributed around zero with an r.m.s.\ of about 29~mm, the one of the real data is broader (the r.m.s.\ is about 58~mm for the events in the range of the plot of 80 cm), which agrees with the data sample having many events that are not from the collisions at the interaction point (beam-gas events, cosmic rays), whose vertex is spread along the beam. The simulated hadronic events have 10.0 selected tracks on average, the real data 2.6.
+Figure~\ref{fig:k0scuts} shows the variables of the vertex of the pairs: the distance of the vertex from the primary vertex (at least 5~mm, no upper cut), the difference of the $z$ coordinates of the two tracks at the vertex (no cut) and the $\chi^2$ of the fit of the vertex, in which the cut is shown. The program writes the distributions to the third argument of the command line, which the tests set.
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_mass}
+\caption{Invariant mass of the pairs of tracks of opposite charges with close helices (pion mass assumed) for the real data sample (left) and the simulated hadronic events of Pythia8 at 34.6~GeV (centre) and 43.8~GeV (right):
+the output of the Fortran program \texttt{k0s} in the tests of the test suite. The dashed line is the mass of $K^0_S$.}
+\label{fig:k0s}
+\end{figure}
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_event}
+\caption{First group of the plots of the cuts of the analysis \texttt{k0s}, for the real data sample (top row) and the simulated hadronic events of Pythia8 at 43.8~GeV (bottom row): the $z$ coordinate of the primary vertex (left, the cut $|z|<15$~cm), the number of the selected tracks of the event (centre, at least 5) and the distance of the helices of the two tracks of a pair in the plane perpendicular to the beam (right, log scale, below 10~mm). The dashed lines are the cuts, the shaded regions are accepted.}
+\label{fig:k0sevent}
+\end{figure}
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_cuts}
+\caption{Second group of the plots of the cuts of the analysis \texttt{k0s}, for the real data sample (top row) and the simulated hadronic events of Pythia8 at 43.8~GeV (bottom row), log scale: the distance of the vertex from the primary vertex (left, at least 5~mm, no upper cut), the difference of $z$ of the two tracks at the vertex (centre, no cut) and the $\chi^2$ of the fit of the vertex (right, below 6). The dashed lines are the cuts, the shaded regions are accepted.}
+\label{fig:k0scuts}
+\end{figure}
+
+The program also adds up the energies of all the selected tracks of an event (the momentum of each track from the circle, the pion mass assumed) and fills the sum into a
+histogram, separately for the events with five or more selected tracks and for those with fewer (Figure~\ref{fig:k0senergy}). The events with at least two tracks in the bank
+\texttt{PATR} are counted. The hadronic events of the simulation have a broad distribution of the sum: the mean is 29.7~GeV at 34.6~GeV and 42.4~GeV at 43.8~GeV (the pion mass is
+assumed for all the tracks), while the simulated events with fewer than five tracks have a mean of about 11~GeV. The picture of the real data is different: the 3848 events
+with five or more selected tracks have a mean sum of only 10.8~GeV, much lower than the 30 to 42~GeV of the simulated hadronic events, and the 42\,353 events with
+fewer tracks have a mean of 5.2~GeV, to which the Bhabha and muon pair events contribute with tracks of the momentum of the beam (17.5~GeV); most of the events are cosmic rays, beam-gas events and noise with low momentum tracks. The same is done for the sum of the energies of all the clusters of the lead glass calorimeter (the bank \texttt{LGCL}, the bottom row of the figure): the mean is 12.9~GeV and 16.1~GeV
+for the hadronic events at 34.6 and 43.8~GeV and only about 1~GeV for the muon pairs (the muons deposit little energy in the lead glass). The real data have 124\,930 clusters in the 47\,484 events; with
+the processing as it was (the energy smearing of the Monte Carlo applied to the data by \texttt{LGCDIR9}, see below) half of them had an energy that is not a number.
+This was a bug of the preserved code on little-endian machines. \texttt{LGCDIR9} decides from the run number whether the event is Monte Carlo (run number up to 500, energy smearing
+\texttt{LGESMR}) or data (energy correction \texttt{LGECOR}); the run number is stored in a half-word of the bank \texttt{HEAD} whose place depends on the machine that wrote the bank
+(Section~\ref{sec:endian}), so on a little-endian machine it was read from the wrong half-word, and the check was disabled in 2023, which smeared the data like Monte Carlo (a cluster of zero energy gave
+a NaN, \texttt{0/0} in the smearing formula). The run number is now taken from the half-word found with the beam energy, as in the ntuple program, and the check is restored; \texttt{LGESMR} does not
+smear clusters without energy and takes the part of the calorimeter from the first word of the cluster (the equivalence of the dummy argument was commented out, so that all the clusters were smeared
+like the barrel ones). The Monte Carlo events are not changed by this (the sums above are the same). The energies were still wrong for a second reason, also related to the half-words of the banks of the tape: the cluster bank \texttt{LGCL} of the tape
+contains, besides words, a block map of pairs of half-words (the first and the last lead glass block of each cluster), from which \texttt{LGCDIR9} gets the number of blocks of
+a cluster for the energy correction \texttt{LGECOR}, and the formatted bank \texttt{ALGN} (like the raw \texttt{ALGL}) is an array of half-words that \texttt{LGDCPY} checks before the
+cluster search (without a valid bank the search returns no clusters: only 12 of the 354 events of the sample file had clusters). On little-endian machines these half-words were in the wrong
+order. The routine \texttt{HEADFX}, which already exchanged the half-words of the \texttt{HEAD} bank and of the muon bank, now exchanges those of \texttt{ALGL}, \texttt{ALGN} and of the block map of
+\texttt{LGCL}, too. The result was checked against the processing on a big-endian machine (s390x, emulated with QEMU, which has no such problem): the mean sum of the cluster energies of the
+first 3000 events of the large file is 1.358~GeV per event on both (the tape has 1.414~GeV; it was 2.60~GeV before the correction), and the energies of all the clusters agree to $10^{-3}$ in 2962 of the
+3000 events (in the others by up to 8\%; these differences had a cause that does not depend on the machine, see below). The real data of the large file now have a mean sum of the cluster energies of 3.6~GeV for the events with
+five or more tracks and 1.2~GeV for the others, without any NaN; the sums of 6.8 and 2.1~GeV found before this correction were too high.
+A last error in the same chain was a programming error of the preserved code, independent of the machine: the routine \texttt{TPCNST}, which takes the beam energy and the magnetic field of the event from the \texttt{HEAD} bank for the lead glass analysis, did not declare its array of half-words (the type comes from an \texttt{IMPLICIT} statement in each routine, which was missing), so that it read other words of the bank space. The field in the extrapolation of the tracks to the calorimeter was wrong, and with it the momenta of the tracks, the choice between the electron and the hadron hypothesis, the shower depth and the corrected energy of the clusters that are associated with tracks; the energies of these clusters changed by up to 8\% in some events, depending on the events processed before and on the machine (this is the difference of the 44 events mentioned above). With the declaration added the energies of all the clusters of the 3000 events agree exactly on the two machines (1.356~GeV per event), and the sums quoted in this section did not change within the precision given.
+The program card has the key \texttt{EMIN} with
+the minimum of the sum for the selection of events (the default is no cut).
+With a minimum of the sum of the track energies of 10~GeV (the key \texttt{EMIN}, run by hand) 495 events of the real data are kept, which give 22 pairs in the window with 34 expected from the sidebands (68 pairs in two windows); for 20~GeV see above.
+
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_energy}
+\caption{Sum of the energies of the selected tracks of an event (pion mass assumed), for the events with five or more selected tracks (blue, filled) and with fewer (red), for the real data
+sample and the simulated hadronic events of Pythia8 at 34.6~GeV and 43.8~GeV (from left to right). Top row: the sum of the energies of the selected tracks; bottom row: the sum of the energies of the clusters of the lead glass.}
+\label{fig:k0senergy}
+\end{figure}
+
+Figures~\ref{fig:k0slept} to~\ref{fig:k0slenergy} show the same plots for the simulated samples without hadronic events: the muon pairs of Pythia8 at 34.6~GeV, the pion pairs $e^+e^-\to\pi^+\pi^-$ of the dummy generator at 34.6~GeV and the events
+$e^+e^-\to K^0_SK^0_S$ of the dummy generator at 14~GeV. The muon and pion pairs have two tracks in the event and almost no pairs of tracks with a common vertex; the sample of $K^0_S$ has a clear peak (see above).
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_mass_lept}
+\caption{Invariant mass of the pairs of tracks with close helices (pion mass assumed) for the simulated muon pairs at 34.6~GeV (left), the pion pairs at 34.6~GeV (centre) and the $K^0_SK^0_S$ events at 14~GeV (right); the dashed line is the mass of $K^0_S$.}
+\label{fig:k0slept}
+\end{figure}
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_event_lept}
+\caption{The variables of the events (the $z$ coordinate of the primary vertex, the number of the selected tracks, the distance of the helices) for the simulated muon pairs at 34.6~GeV (top row), the pion pairs at 34.6~GeV (middle row) and the $K^0_SK^0_S$ events at 14~GeV (bottom row).}
+\label{fig:k0slevent}
+\end{figure}
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_cuts_lept}
+\caption{The distance of the vertex from the primary vertex, the difference of $z$ of the two tracks and the $\chi^2$ of the fit of the vertex, for the same samples as in Figure~\ref{fig:k0slevent} (log scale).}
+\label{fig:k0slcuts}
+\end{figure}
+\begin{figure}[H]
+\centering
+\adjincludegraphics[trim={0 0 {.024\width} 0},clip,width=\textwidth]{Figures/k0s_energy_lept}
+\caption{Sum of the energies of the selected tracks (top row) and of the clusters of the lead glass (bottom row) for the simulated muon pairs, the pion pairs and the $K^0_SK^0_S$ events (from left to right), events with five or more selected tracks (blue, filled) and with fewer (red).}
+\label{fig:k0slenergy}
+\end{figure}
+\FloatBarrier
+
+The tests are connected through the files that they write into the test directory, and the dependencies between them are declared, so that the whole chain is run
+in this order (a single test is run only after the tests before it in its chain). The tests with the suffix \texttt{\_CLEANUP} (for the raw data and for the old generator) remove the files of the earlier run first. The input of every program is a card
+file (Section~\ref{sec:programs}) that the script \texttt{wrapper.sh} gives to the standard input of the program; the environment variable of the compiler
+that sets the byte order of the files is set for every test (Section~\ref{sec:endian}).
+
+The suite is run with the script of Section~\ref{sec:build}, which configures and builds the project in the directory of the toolchain and runs \texttt{ctest}
+with a time limit of 200 seconds per test (the display tests have their own limits of 300 to 700 seconds) and keeps the output of the run:
+\begin{lstlisting}
+sh jadetest.sh [--bits=32|64] [--toolchain=NAME] [--prefix=INSTALLDIR]
+\end{lstlisting}
+Single tests can be selected in the build directory, e.g.\ \texttt{ctest -R JADEZ} for the display or \texttt{ctest --output-on-failure}.
+What is run depends on the installed tools: the Monte Carlo chains need Pythia8 and HepMC3, the ROOT tests need ROOT and the converter \texttt{h2root}.
+The tests of the event display \texttt{jadez} need a graphical (X11) display, but must not open windows on a desktop. They run on a
+virtual framebuffer: \texttt{xvfb-run} (the X virtual framebuffer \texttt{Xvfb}~\cite{Xvfb:web}) if it is installed, or the display
+given in the environment variable \texttt{JADEZ\_\allowbreak{}TEST\_\allowbreak{}DISPLAY}, e.g.\ an \texttt{Xvfb} started by hand (XQuartz~\cite{XQuartz:web}
+on macOS) or a headless Wayland~\cite{Wayland:web} compositor with Xwayland. Without a display the display tests are skipped (the exit code 77 of the test script is
+interpreted as a skip). The pictures written by the program are converted with Ghostscript~\cite{Ghostscript:web} and checked with Python~\cite{Python:web} and the
+Pillow library~\cite{Pillow:web} (they must be coloured and contain the expected elements). With \texttt{JADE\_\allowbreak{}FAIL\_\allowbreak{}ON\_\allowbreak{}SKIP=1}
+(used by the continuous integration) tests that are skipped or not run count as failures, so that a missing display cannot give a green result.
+
+Most of the tests check that the program runs to completion with the exit status zero; the results are not compared with reference numbers.
+Exceptions are the tests of the calibration files, which fail if a record is not recognised by \texttt{KLREAD}, and the tests of the display, which check that
+the event was read, that no command was rejected, that the calibration constants were used and that the pictures are coloured and contain the expected elements
+(Section~\ref{sec:display}). The suite is run for every platform and compiler of Table~\ref{tab:status}, by the maintainer and by the continuous
+integration (GitHub Actions on Fedora, CentOS, aarch64 and macOS), and all 49 tests pass with the compilers \texttt{gfortran}, \texttt{ifx} and
+\texttt{nvfortran}.
+
+\subsection{Input cards of the tests}
+\label{sec:testcards}
+The programs of the tests read their steering input from a card file, which the script \texttt{wrapper.sh} gives to the standard input of the program (Section~\ref{sec:programs}); the cards are in
+\texttt{test/\allowbreak{}cards}. The format is that of the FFREAD package of CERNLIB: a line is a key and its values, the lines that start with \texttt{C} are comments, strings are in quotes, a value can be given for
+one element of a key (\texttt{3='name'} is the third value), the key \texttt{LIST} prints the cards, and the key \texttt{STOP} ends the input (what follows is ignored). A key that starts with a star
+(\texttt{*SVBOSF}) can be repeated: every such line adds a value, for example a file, to a list. The cards of the chains differ mostly by the names of the files, Table~\ref{tab:cardsbychain}.
+\begin{table}[H]\centering\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{|l|l|l|l|l|}\hline
+Program & Real data & Pythia8, 34.6~GeV & PYTHIA 5.7, 35~GeV & Pythia8, 43.8~GeV \\\hline\hline
+generator & --- & \texttt{testPythia1.input} & \texttt{py57.card} & \texttt{testPythia2.input} \\
+\texttt{fptobos} & \texttt{fptobos1.card} & --- & --- & --- \\
+\texttt{mcjade} & --- & \texttt{mcjade1.card} & \texttt{mcjade2.card} & \texttt{mcjade3.card} \\
+\texttt{superv} & \texttt{supervfile006.card} & \texttt{superv1.card} & \texttt{superv2.card} & \texttt{superv3.card} \\
+\texttt{ze4v} & \texttt{ze4vfile006.card} & \texttt{ze4v1.card} & \texttt{ze4v2.card} & \texttt{ze4v3.card} \\
+\texttt{jzread} & \texttt{jzreadfile006.card} & \texttt{jzread1.card} & \texttt{jzread2.card} & \texttt{jzread3.card} \\
+\texttt{jtjob} & \texttt{jtjobfile006.card} & \texttt{jtjob1.card} & \texttt{jtjob2.card} & \texttt{jtjob3.card} \\
+\texttt{k0s} & \texttt{k0s.card} & \texttt{k0s.card} & --- & \texttt{k0s.card} \\\hline
+\end{tabular}
+\caption{The cards of the programs in the chains of the test suite (files in \texttt{test/\allowbreak{}cards}).}
+\label{tab:cardsbychain}
+\end{table}
+
+\subsubsection{Short cards}
+\lstinputlisting[caption={The card of \texttt{fptobos} (\texttt{fptobos1.card}).},label={lst:cardfptobos},basicstyle=\ttfamily\small]{../../test/cards/fptobos1.card}
+The first line has the seven integers of the program (Section~\ref{sec:fptobos}): the byte swapping is on (1), at most 1\,000\,000 events are read (1000000; the events above the limit would be written without the conversion of the floating point numbers of their banks, which was a hidden mistake of the card with the limit of 100), no events or records are selected for printing
+(0, 0), the print flag is 0, the debug flag is 0 and the writing of the BOS file is on (1). The second line is the FPACK file of the tapes, the sample of the repository, and the third is the BOS file to write
+(input of the Supervisor).
+
+\lstinputlisting[caption={The card of \texttt{jzread} for the real data (\texttt{jzreadfile006.card}); the cards of the Monte Carlo chains differ by the names of the files and \texttt{ZE4VFORM 1}.},label={lst:cardjzread},basicstyle=\ttfamily\small]{../../test/cards/jzreadfile006.card}
+\begin{itemize}
+\item \texttt{LIST}: print the cards. \texttt{STOP}: end of the input; the last line (\texttt{CAV}, a remark) is ignored.
+\item \texttt{*ZE4VFILE}: the ZE4V file to read (a list, one file per line; written by \texttt{ze4v}).
+\item \texttt{JTUPLE 1=44 3='jzreadfile006.hbook'}: the HBOOK file of the ntuple; the first value is the logical unit (44) and the third is the file name (the second, the record length, has the default).
+\item \texttt{ZE4VFORM}: the format of the ZE4V records, 0 for real data and 1 for the Monte Carlo (\texttt{jzread1.card}, \texttt{jzread2.card}, \texttt{jzread3.card}).
+\item \texttt{PEDRO on}: the mode of the ntuple of P.~A.~Movilla Fernandez (a track with a momentum above the beam energy is kept with the momentum scaled to half of the beam energy).
+\item \texttt{TRKCUT 20 12 350.0 100.0 0.1}: the track selection: at least 20 hits in the $r$-$\phi$ plane and 12 in the $z$ direction, $|z|<350$~mm at the vertex, a distance to the beam below 100~mm and a momentum above 0.1~GeV.
+\item \texttt{MAXEVT 100000}: the maximum number of events.
+\end{itemize}
+
+\lstinputlisting[caption={The card of \texttt{jtjob} for the real data (\texttt{jtjobfile006.card}); the cards of the Monte Carlo chains differ by the names of the files.},label={lst:cardjtjob},basicstyle=\ttfamily\small]{../../test/cards/jtjobfile006.card}
+\begin{itemize}
+\item \texttt{LIST}, \texttt{STOP}: print the cards, end of the input.
+\item \texttt{*SVBOSF 'supervfile006.bos'}: the BOS file written by the Supervisor; the star makes the key a list, so that several files can be given (at most 10).
+\item \texttt{JTUPLE 1=44 3='jtjobfile006.hbook'}: the HBOOK ntuple to write (unit 44 and the file name, as for \texttt{jzread}).
+\item \texttt{CALIB './aupdat1.b'}: the calibration file, which the program reads with \texttt{KLREAD} for every event.
+\item \texttt{ZE4VMODE on}: the selection of the tracks of the ZE4V program (a track with a momentum above the beam energy is rejected, or scaled in the \texttt{PEDRO} mode).
+\item \texttt{PEDRO on}: the mode of the ntuple of P.~A.~Movilla Fernandez, see above.
+\item \texttt{MAXREC 100000}: the maximum number of records (events) read from a file.
+\end{itemize}
+
+\lstinputlisting[caption={The steering card of Pythia8 for the generation of hadronic events at 34.6~GeV (\texttt{testPythia1.input}); \texttt{testPythia2.input} has the energy of 43.8~GeV.},label={lst:cardpythia},basicstyle=\ttfamily\small]{../../test/cards/testPythia1.input}
+\begin{itemize}
+\item \texttt{Main:numberOfEvents = 2000}: the number of events to generate.
+\item \texttt{WeakSingleBoson:ffbar2gmZ = on}: the process of $e^+e^-$ annihilation through $\gamma^*/Z$.
+\item \texttt{Beams:idA = 11}, \texttt{Beams:idB = -11}: the beams are electrons and positrons.
+\item \texttt{Beams:eCM = 34.6}: the centre-of-mass energy in GeV (43.8 in \texttt{testPythia2.input}).
+\item \texttt{HadronLevel:all = on}, \texttt{HadronLevel:Hadronize = on}: the hadronisation and the decays of the hadrons are switched on.
+\item \texttt{PDF:lepton = on}, \texttt{PartonLevel:ISR = on}, \texttt{SpaceShower:QEDshowerByL = on}: photon initial state radiation from the beam electrons.
+\item \texttt{PartonLevel:FSR = on}, \texttt{TimeShower:QEDshowerByQ = on}, \texttt{TimeShower:QEDshowerByL = off}, \texttt{TimeShower:QCDshower = off}: photon final state radiation from the quarks; the QCD parton shower is off, so the events are as simple as possible apart from the photons.
+\item \texttt{23:onMode = off}, \texttt{23:onIfAny = 1,2,3,4,5}: the $Z$ (the $\gamma^*/Z$ system) decays only into quarks, $d$, $u$, $s$, $c$ and $b$.
+\item \texttt{15:mayDecay = on}, \texttt{-15:mayDecay = on}: the $\tau$ leptons may decay.
+\end{itemize}
+
+\lstinputlisting[caption={The cuts of the Fortran analysis \texttt{k0s} (\texttt{k0s.card}): the same card for the three tests.},label={lst:cardk0s},basicstyle=\ttfamily\small]{../../test/cards/k0s.card}
+The program (Section~\ref{sec:tests}) reads the cuts from a card of its own, not through FFREAD but with a simple reader of the lines \texttt{KEY value}; a key that is not in the card keeps the default of the program.
+\begin{itemize}
+\item \texttt{NHMIN 4}: a track must have at least 4 hits in the $r$-$\phi$ plane (the default is 10). The cuts on the tracks are very loose: there is no cut on the hits in $z$ (\texttt{NZMIN}), on $z$ at the vertex (\texttt{ZTMAX}) and on the distance to the beam (\texttt{D0MAX}), which the program has as options.
+\item \texttt{PTMIN 0.1}: the minimum transverse momentum of a track, in GeV, from the radius of the circle (it suppresses the low momentum background; it is above the cut on the momentum).
+\item \texttt{NTMIN 5}: the minimum number of selected tracks of an event; an event with fewer tracks is rejected (two tracks are the minimum for a pair; the card asks for five, a rough selection of hadronic events).
+\item \texttt{D0MIN 1.0}: the distance of the closest approach of the track to the beam is at least 1~mm (the default is 5~mm), so that the tracks of the decay of a particle that flew away from the beam are selected.
+\item \texttt{PMIN 0.04}: the minimum momentum of a track at the vertex, in GeV (the pions of the decay can have a low momentum).
+\item \texttt{PKMIN 0.1}: the minimum momentum of the pair of tracks, the $K^0_S$ candidate, in GeV.
+\item \texttt{DXYMAX 10.0}: the maximum distance of the two helices in the plane perpendicular to the beam, in mm.
+\item \texttt{RVMIN 5.0}, \texttt{RVMAX 1.0E6}: the range of the distance of the candidate vertex from the primary vertex (in three dimensions), in mm; the upper limit is a very large value, i.e.\ there is no upper cut.
+\item \texttt{DZMAX 1.0E6}: the maximum difference of the $z$ coordinates of the two tracks at the vertex, in mm; a very large value, i.e.\ no cut.
+\item \texttt{CPMIN 0.5}: the minimum cosine of the angle between the momentum of the pair and the direction from the primary vertex to the vertex (in three dimensions). In the Pythia8 sample at 43.8~GeV the cosines 0.98, 0.9, 0.8, 0.5 and 0 keep 1649, 2426, 2802, 3300 and 3754 pairs, and the excess in the mass window of $K^0_S$ over the sidebands is about 45, 69, 78, 93 and 100 pairs.
+\item \texttt{ZPMAX 150.0}: the maximum $|z|$ of the primary vertex of the event, in mm (15~cm); an event without a primary vertex is rejected.
+\item \texttt{FITVTX 1}, \texttt{SIGXY 2.0}, \texttt{SIGZ 20.0}, \texttt{CHIMAX 6.0}: the fit of the vertex of the two tracks together is switched on, with the assumed errors of the position of the circles in the plane perpendicular to the beam and of $z$ in mm, and the maximum $\chi^2$ of the fit.
+\item \texttt{STOP}: the end of the card.
+\end{itemize}
+
+\subsubsection{Long cards}
+The following cards have many lines, most of which are comments that describe the keys or the options that are switched off; only the keys that matter for the test are described. The listings are the
+cards of the first Monte Carlo chain (the cards of the other chains differ by the names of the files) and, for \texttt{superv} and \texttt{ze4v}, the cards of the real data chain differ in the input and the numbers of events as described.
+
+\lstinputlisting[caption={The card of the detector simulation \texttt{mcjade} (\texttt{mcjade1.card}).},label={lst:cardmcjade},basicstyle=\ttfamily\scriptsize]{../../test/cards/mcjade1.card}
+The key points: \texttt{MCSTART ON} initialises the random number generator; \texttt{YEAR 86}, \texttt{MONTH 05} and \texttt{DAY 17} select the configuration of the detector for that date (86 in the first chain, 85 in the card of the sample 44 of the third chain);
+\texttt{SMEAR}, \texttt{CONVERT}, \texttt{ABSORB} and \texttt{SHOW3D} switch on the smearing of the photon and electron energies, the photon conversion, the absorption losses and the three-dimensional shower profile in the lead glass;
+\texttt{VERTEX ON} the tracking in the vertex chamber; \texttt{FIRST} and \texttt{LAST} the range of the events; \texttt{MCVECT} the CPROD file of the generator (the card of the PYTHIA 5.7 chain has \texttt{py57.cprod}); \texttt{MCBOS} the BOS file that is written;
+\texttt{BANKS} and \texttt{MCBANK} the printout of the banks in a text file, and \texttt{HISTO} and \texttt{MCHIST} the file of the control histograms.
+
+\lstinputlisting[caption={The card of the reconstruction \texttt{superv} (\texttt{superv1.card}); in the card for the real data (\texttt{supervfile006.card}) the input is \texttt{file006.bos} and \texttt{LAST} is 0.},label={lst:cardsuperv},basicstyle=\ttfamily\tiny]{../../test/cards/superv1.card}
+The key points: \texttt{SVSTART ON} initialises the random number generator; \texttt{FIRST} and \texttt{LAST} select the events (\texttt{LAST 0} is until the end of the file); \texttt{MCBOS} is the input BOS file, which is the output of \texttt{mcjade} (the output of \texttt{fptobos} for the real data);
+\texttt{ZSRFTV OFF} and \texttt{VTXFIT OFF} switch two optional steps off; \texttt{AUPDAT0}, \texttt{BUPDAT0} and \texttt{BUPDAT1} are the calibration files, which the Supervisor reads with \texttt{KLREAD} (Section~\ref{sec:calfiles}); the keys
+\texttt{MUCA}, \texttt{LGMA}, \dots{} select the groups of the calibration records that are loaded, only the muon chamber constants (\texttt{MUCA}) are on; \texttt{SVBOS} is the output BOS file; \texttt{BANKS}, \texttt{SVBANK} and the keys \texttt{LEVEL2} \dots{} \texttt{LEVEL7} choose the banks that are
+printed in a text file after the steps of the reconstruction (the banks \texttt{HEAD}, \texttt{ALGN}, \texttt{ZVTX}, \texttt{PATR} and \texttt{LGCL}); \texttt{HISTO} and \texttt{SVHIST} the control histograms.
+
+\lstinputlisting[caption={The card of the event formatting \texttt{ze4v} (\texttt{ze4v1.card}); in the card for the real data (\texttt{ze4vfile006.card}) \texttt{EVTREAD} is 10 and \texttt{CONT} is \texttt{'HEAD  ZVTX'}.},label={lst:cardze4v},basicstyle=\ttfamily\tiny]{../../test/cards/ze4v1.card}
+The key points: \texttt{ZSTART ON} initialises the random number generator; \texttt{SVBOS} is the input, the BOS file of the Supervisor, and \texttt{EVTREAD} the number of events to read (0 is all); \texttt{ZE4V} is the output file of the compressed events, the ZE4V format;
+\texttt{ZE4VOUT}, \texttt{ZE4VPRT} and \texttt{EVTOUT} limit the numbers of events written and printed; \texttt{TPPK 2} selects the version of the selection of the tracks; \texttt{SELECT}, \texttt{MSELCT} and \texttt{ESELCT} the event, muon and electron selections
+(the selection is disabled and the others are off); \texttt{ZBOS} is the output file of the full BOS events and \texttt{BANKS}, \texttt{ZBANK} and \texttt{CONT} the banks that are printed; the calibration files are the same as for the Supervisor.
+
+\lstinputlisting[caption={The card of the old generator PYTHIA 5.7 (\texttt{py57.card}).},label={lst:cardpy57},basicstyle=\ttfamily\tiny]{../../test/cards/py57.card}
+The key points: \texttt{MCIRUN}, \texttt{MCSTART} and \texttt{MCRDM} set the run number and the initialisation of the random number generator; \texttt{MC4VEC ON} and \texttt{MCEVFILE 'py57.cprod'} write the four-vectors in the CPROD format (the extension decides the format);
+\texttt{MCNEVT 1000} is the number of events and \texttt{MCECMS 35.0} the centre-of-mass energy; \texttt{MCISR OFF} and \texttt{MCFSR ON} the initial and final state radiation; \texttt{MCSTBL} and \texttt{MCIDST} the list of particles that are declared stable (off);
+\texttt{MCUDSC}, \texttt{MCBQRK} and \texttt{MCFLAV} select the flavours (all); the keys \texttt{JTPB} \dots{} \texttt{JTPLAMB} are the JETSET parameters of the standard tune of OPAL, which \texttt{JADETUNE 0} keeps;
+the keys \texttt{MCJTEV} and \texttt{MCDURH} \dots{} \texttt{MCCKRN} (the jet rates) are off; \texttt{OUTFILE} is the file of the histograms.
+
+\subsection{Validation of the reconstruction}
 The data and MC samples produced in 2003 were reconstructed with JADE2016 software and compared with the 
 original reconstructions. Minor differences were found.
 
 
-\section{Conclusions}
-The case of JADE data preservation was studied.
+\section{Use of AI in the porting}
+\label{sec:ai}
 
-\section*{TODO}
+The porting of the software described in this note, from 2014 until November 2026, was done by the maintainer
+without AI tools. AI was used only in the last phase, in the week before this version of the note (November 2026): an AI coding assistant, Claude Code~\cite{ClaudeCode:web}, was used interactively by the maintainer for the
+cleanup of the build system, for the porting to new compilers and platforms, for the tests and the continuous
+integration, and for the documentation, including this section. The assistant read the code, ran the builds,
+tests and debuggers on the machines of the maintainer, proposed and made changes, and wrote drafts of the
+documentation. The maintainer defined the tasks, decided what to keep, ran and reviewed the results and committed
+the changes. At the request of the maintainer the assistant is listed as a co-author of this note; the maintainer
+is responsible for its content. Statements of the assistant were not accepted without a reproduction
+(a debugger session, a minimal program or a test). They were wrong in some cases, e.g.\ a description of a change
+that mentioned code that was not in the change, a commit placed on the wrong branch, and an overlooked second
+byte order problem in the calibration constants (Section~\ref{sec:calfiles}); these were found by review
+and by the tests. The following problems were debugged with the help of AI; most of them are old code that
+depends on the machine, the compiler or the byte order, and the bugs would have been difficult to see
+without a debugger and a systematic comparison.
+\begin{description}
+\item[Floating point exceptions and different compilers.] The old code divides by zero and produces NaN in a
+number of places. It worked with the old compilers because their results were never trapped or because they
+differ from the modern ones: Intel \texttt{MAX(0,NaN)} returns the NaN and made the Jacobi iteration of
+\texttt{PXDIAM} endless; fused multiply-add of the NVIDIA compiler turned a difference of equal squares into a
+small negative number and the square root in \texttt{JELOSS} into a NaN, and the tracking loop did not end; the
+NVIDIA compiler treats denormals as zero while the BOS library compares bit patterns kept in real variables
+(\texttt{NOTLOW}), so that the memory of the event bank ran out; the preprocessor of the NVIDIA compiler
+breaks \texttt{\#} in Hollerith constants. The compiler flags and small changes of the sources were the result.
+Intel and NVIDIA also differ in the use of \texttt{ENTRY} dummy arguments, the \texttt{ISNAN} extension,
+formatted output of real values with integer edit descriptors and the unit used by the HIGZ PostScript output.
+\item[The event display.] The numbers around the calorimeter and the statistics panel were lost, because an early
+\texttt{RETURN} was left in \texttt{HEMSYM} and the decoding of the packed stroke font used an
+\texttt{EQUIVALENCE} that works only on big-endian machines. The text routine of the PLOT10 emulation
+unpacked the last, partial word of the strings in the wrong order on little-endian machines (axis captions,
+units, dates). Both were found by comparing the pictures with the historic displays; the display tests check the
+colours and the presence of the calorimeter numbers.
+\item[A crash of h2root on 64-bit machines.] The converter \texttt{h2root} of ROOT 6.40.04 crashed in about seven
+of eight runs. The 64-bit address of the ntuple buffer was passed to Fortran as a 32-bit integer, and the offset
+inside the HBOOK store was wrong whenever the upper bits of the address were set, which happens for most
+position independent executables. A reproducer with HBOOK files written by CERNLIB was prepared, the bug was
+reported and has been fixed in ROOT~\cite{ROOT:hbookfix}; the software now uses the corrected sources.
+\item[A bug of the Apple linker.] On macOS the programs failed with segmentation faults and bus errors. The linker
+merges the common symbols (the Fortran \texttt{COMMON} blocks) comparing only the lower 16 bits of their sizes, so
+that a block larger than 64~KiB gets the size of a small declaration from another object or from CERNLIB.
+A minimal reproducer in C and Fortran was written and the bug was reported to Apple. The software uses a
+\texttt{BLOCK DATA} unit for each large block, which is compiled only on Apple systems.
+\item[Calibration constants that were not applied.] Section~\ref{sec:calfiles}: on little-endian machines the
+routine \texttt{KLREAD} skipped all records of the calibration files because of the byte order of the bank
+names, and the muon constants needed a correction for integers overlaid on pairs of half-words. The reason
+for the missing muon chambers in the display and the warnings of the muon analysis was found in this way. It was
+also found that the muon system simulation was never available in the sources: its routines are dummies in all versions.
+\item[Build system and continuous integration.] Changed behaviour of newer CMake versions (the policy
+CMP0219 for macro arguments), warnings of the macOS linker about the deployment target, the trust of
+Homebrew taps, the restoration of caches that did not contain the X server, the missing check of failed or
+skipped tests in the workflows, the reuse of one build directory by different compilers
+(Section~\ref{sec:build}) and the 32-bit and aarch64 builds.
+\end{description}
+The assistant was also used to write and update the descriptions of the changes, the instructions for the
+developers (\texttt{AGENTS.md}) and the text of this section; the facts quoted here can be checked in the
+history of the repository and in these files.
+
+\section{Status of the tasks and open issues}
+\label{sec:status}
+
+The tasks that the original Note 103~\cite{JCN:103} listed as remaining, and that are done:
 \begin{itemize}
-\item fix this document, 5h
-\item Do testst on different platforms with MC, 10h
-\item Fix the webpage, 5h
+\item The raw JADE data in the FPACK format can be read: they are converted into BOS banks with \texttt{fptobos} (Section~\ref{sec:fptobos}).
+\item The calibration files are available in the binary format that fits the byte order of the host, and the calibration constants are applied
+(Section~\ref{sec:calfiles}).
+\item The JADE events are written into HBOOK ntuples with \texttt{jtjob}, which was used for the analysis of Ref.~\cite{Verbytskyi:2019zhh}, and the
+ntuples are converted to ROOT files.
+\item Monte Carlo events of the modern generators can be simulated with the JADE detector simulation (Section~\ref{sec:convert}).
+\item The software is built and tested on current platforms with several Fortran compilers (Sections~\ref{sec:build} and~\ref{sec:tests}).
+\item The data and the documentation are stored at MPCDF and published on the CERN Open Data Portal (Section~\ref{sec:opendata}).
 \end{itemize}
 
-boslib/phist.for -- interesting write statement
-boslib/uwp.for -- character*8 vs. real
-
-graflib/cdst.for -- new variables
-graflib/cirdis.F -- Commented ARCMIN(A)
-graflib/credit.F -- new variables
-graflib/croax.F -- dangerous junk EOL
-graflib/defmac.f -- changes in the equivalence
-graflib/disaxi.f -- new variables
-graflib/drthcv.f -- change name of symbol
-graflib/drthcv1.f -- change name of symbol
-graflib/fwdisp.F -- Mix of inat and H in DATA
-graflib/fyrint.F -- FIXME
-graflib/grblock.F -- DAT removed
-graflib/hemsym.f -- a lot of bad code added
-graflib/idfun.f -- new variables
-graflib/koord.f -- INTADE function removed
-graflib/realnm.f -- integer or integer*8
-graflib/scannr.f -- FIXME
-graflib/vcdo.f -- new variables
-graflib/vxt.f -- VTXS entry commented out
-
-interface/plot10.f -- a lot
-jadegs/akop.f -- a lot
-jadegs/jegain.f -- WTF?
-jadegs/klread.f -- WTF?
-jadegs/ktmcon.f -- WTF?
-jadegs/rdmerg.f -- WTF?
-jadegs/rdrdmh.f -- WTF?
-jadegs/rdtrg2.f -- WTF?
-jademus/mufini.f  FIXME
-patrecsr/backtr.F -- WTF
-patrecsr/ftrkel.f -- WTF
-tagg/ggclus.f -- WTF
-tagg/tagadc.f -- WTF
-
-\section{Fortran}
+What is open:
 \begin{itemize}
-replace the  \& in calls with \*
-
+\item The muon system: the simulation of the muon chambers was never available in the preserved sources (the routines \texttt{MURTNE}, \texttt{MUORDR} and \texttt{MUCONM} are dummies in all versions) and the muon analysis is
+skipped in the Supervisor (Section~\ref{sec:calfiles}).
+\item The calibration: the half-word banks \texttt{LGST}, \texttt{SPTG} and \texttt{TAGF} are empty for the test data and could not be checked, and the
+effect of the corrected calibration constants on the reconstruction results was compared only for the test sample, without an independent reference.
+\item The event display: the pink dashed segments along the tracks (the tracks are drawn as plain blue lines), two of the three letters of every axis triad (only one
+letter is drawn: ``X'' in the R-$\phi$ triad, ``Z'' next to the insets) and the label of the electron curve of the small dE/dx plot are not reproduced
+(Section~\ref{sec:display}).
+\item The dataset of the open data portal has no DOI yet (Section~\ref{sec:access}).
 \end{itemize}
 
+Obsolete, and not planned to be done:
+\begin{itemize}
+\item The big-endian platforms (the PowerPC rows of Table~\ref{tab:status}) were not tested again after 2016; the machines and the emulation setup
+of that time are no longer used.
+\end{itemize}
 
+\section{Summary and conclusions}
+The data, the software and the documentation of the JADE experiment are preserved at the Level~4 of the DPHEP classification and are open: the raw data, the documentation and
+a virtual machine are on the CERN Open Data Portal, and the software is developed publicly on GitHub. The software was ported from the IBM AIX systems
+to current Linux and macOS systems with three free or freely available Fortran compilers; it builds with CMake, passes the 49 tests of the test suite, and the corrected calibration files make
+the calibration, including that of the muon chambers, effective on little-endian machines. Modern generators can be used with the detector simulation through the
+HepMC3 converter, and the ntuples can be analysed with ROOT.
+The bit preservation is not an issue for the data of this size, and the tools that appeared in the last decades, from git and CI to containers and, most recently, AI assistants, made the
+maintenance much easier than it was in the time of the first reactivation.
+
+The preserved JADE data can be reused for physics: the events can be reconstructed and analysed again with the original reconstruction, compared with the
+simulation of modern Monte Carlo generators, and used for new measurements of QCD in electron-positron annihilation at the energies of PETRA, as in
+the past analyses~\cite{Verbytskyi:2019zhh,Schieck:2012mp}, which are the complement to the measurements at the higher energies of LEP.
 
 \section*{Acknowledgements}
 The author thanks Siegfried Bethke, Richard Hildebrandt, Stefan Kluth, J.~Olsson, Matthias Schr\"oder,
