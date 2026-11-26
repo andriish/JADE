@@ -84,6 +84,12 @@ endmacro( jade_fortran_test )
 # and the variables of JADESOFTConfig.cmake
 find_package(JADE 2000.0.0 CONFIG REQUIRED)
 message(STATUS "JADE test: JADE ${JADE_VERSION} in ${JADE_PREFIX}, toolchain ${JADE_TOOLCHAIN}, ${JADE_BITS} bit, executables: ${JADE_EXECUTABLES}")
+# jade_h2root (HBOOK -> ROOT with the 64 bit fix, installed with JADE; the h2root of ROOT 6.40 crashes on 64 bit
+# machines) is required by the tests
+if(NOT JADE_H2ROOT)
+  message(FATAL_ERROR "JADE_H2ROOT (jade_h2root) is required but the installation ${JADE_PREFIX} has none: "
+                      "build JADE with -DJADE_BUILD_H2ROOT=ON")
+endif()
 find_package(CERNLIB REQUIRED)
 find_package(LAPACK REQUIRED)
 find_package(BLAS REQUIRED)
@@ -206,12 +212,14 @@ add_test(NAME INFO_COMPARE_DATA_1 COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/info_co
 set_property( TEST INFO_COMPARE_DATA_1 PROPERTY DEPENDS FPTOBOS_DATA_1)
 
 # Event display. Needs a virtual X server (xvfb-run, or JADEZ_TEST_DISPLAY set); skipped otherwise.
-add_test(NAME JADEZ_DATA_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_test.sh ${JADE_BIN_DIR}/jadez
-         ${JADE_HELP_DATASET} ${CMAKE_CURRENT_BINARY_DIR} ${JADE_TEST_TIMEOUT_FACTOR})
-set_property( TEST JADEZ_DATA_1 PROPERTY DEPENDS FPTOBOS_DATA_1)
-jade_skip_code(JADEZ_DATA_1)
-set_property( TEST JADEZ_DATA_1 PROPERTY TIMEOUT ${JADE_TIMEOUT_700})
-jade_fortran_test(JADEZ_DATA_1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " ")
+if (EXISTS ${JADE_BIN_DIR}/jadez)
+  add_test(NAME JADEZ_DATA_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_test.sh ${JADE_BIN_DIR}/jadez
+           ${JADE_HELP_DATASET} ${CMAKE_CURRENT_BINARY_DIR} ${JADE_TEST_TIMEOUT_FACTOR})
+  set_property( TEST JADEZ_DATA_1 PROPERTY DEPENDS FPTOBOS_DATA_1)
+  jade_skip_code(JADEZ_DATA_1)
+  set_property( TEST JADEZ_DATA_1 PROPERTY TIMEOUT ${JADE_TIMEOUT_700})
+  jade_fortran_test(JADEZ_DATA_1 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " ")
+endif()
 
 add_test(NAME K0S_DATA_1 COMMAND k0s ${CMAKE_CURRENT_BINARY_DIR}/supervfile006.bos ${CMAKE_CURRENT_BINARY_DIR}/k0s_data_1.txt ${CMAKE_CURRENT_BINARY_DIR}/k0s_data_1_dist.txt ${CMAKE_CURRENT_SOURCE_DIR}/cards/k0s.card)
 set_property( TEST K0S_DATA_1 PROPERTY  DEPENDS SUPERV_DATA_1)
@@ -227,7 +235,9 @@ jade_fortran_test(JZREAD_DATA_1 PROPERTY ENVIRONMENT "GFORTRAN_CONVERT_UNIT=nati
 
 # the table of the luminosity: the installed file lumi.dat (next to the calibration files, installed by jtuple)
 message(STATUS "JADE test: JADE_LUMI_DAT=${JADE_LUMI_DAT}")
-add_test(NAME TAKLUMI_LUMITABLE_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/taklumi_test.sh ${JADE_BIN_DIR}/taklumi ${JADE_LUMI_DAT} ${CMAKE_CURRENT_BINARY_DIR})
+if (EXISTS ${JADE_BIN_DIR}/taklumi AND JADE_LUMI_DAT)
+  add_test(NAME TAKLUMI_LUMITABLE_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/taklumi_test.sh ${JADE_BIN_DIR}/taklumi ${JADE_LUMI_DAT} ${CMAKE_CURRENT_BINARY_DIR})
+endif()
 add_test(NAME JTJOB_DATA_1 COMMAND sh ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh ${CMAKE_CURRENT_SOURCE_DIR}/cards/jtjobfile006.card  ${JADE_BIN_DIR}/jtjob)
 set_property( TEST JTJOB_DATA_1 PROPERTY  DEPENDS JZREAD_DATA_1) 
 jade_fortran_test(JTJOB_DATA_1 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2,22" "F_UFMTENDIAN=big:2,22" "FORT_CONVERT2=big_ieee FORT_CONVERT22=big_ieee") 
@@ -494,7 +504,7 @@ endif()
 
 # Event display with the detector hardware (chamber boundary lines), result tables and
 # orthogonal projections ON, on the Monte Carlo event reconstructed by SUPERV_MC_1.
-if (TEST SUPERV_MC_1)
+if (TEST SUPERV_MC_1 AND EXISTS ${JADE_BIN_DIR}/jadez)
   add_test(NAME JADEZ_MC_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_mc_test.sh ${JADE_BIN_DIR}/jadez
            ${JADE_HELP_DATASET} ${CMAKE_CURRENT_BINARY_DIR} ${JADE_TEST_TIMEOUT_FACTOR})
   set_property( TEST JADEZ_MC_1 PROPERTY DEPENDS SUPERV_MC_1)
@@ -504,7 +514,7 @@ endif()
 
 # Event display matching the reference R-phi picture (doc/eventdisplayreferences/): hardware, tables,
 # insets and the small dE/dx plot, without bank listing.
-if (TEST SUPERV_MC_1)
+if (TEST SUPERV_MC_1 AND EXISTS ${JADE_BIN_DIR}/jadez)
   add_test(NAME JADEZ_RPHI_1 COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/jadez_rphi_test.sh ${JADE_BIN_DIR}/jadez
            ${JADE_HELP_DATASET} ${CMAKE_CURRENT_BINARY_DIR} ${JADE_TEST_TIMEOUT_FACTOR})
   set_property( TEST JADEZ_RPHI_1 PROPERTY DEPENDS SUPERV_MC_1)
