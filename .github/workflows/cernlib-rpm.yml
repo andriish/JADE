@@ -1,0 +1,139 @@
+name: CERNLIB RPMs (Fedora 45, dnf repository)
+# Builds the CERNLIB RPMs of .github/rpm/cernlib in the default images of Fedora 45 (x86_64, i686, aarch64, s390x)
+# and CentOS Stream 9 and 10 (x86_64, aarch64, s390x; CentOS has no i686), and publishes them as a dnf repository
+# on GitHub Pages: https://<owner>.github.io/<repository>/ with fedora/<release>/<arch>/ and centos/<release>/<arch>/
+# and the repository files JADE-fedora.repo and JADE-centos.repo (copy the one of the distribution to /etc/yum.repos.d/)
+# One-time setting of the repository: Settings -> Pages -> Source: "GitHub Actions".
+# It runs when the spec file changes (a change of a patch comes with a new release in the spec file) and on request
+# (workflow_dispatch). The packages are published on pushes to the default branch and on request; pull requests
+# only build them.
+# s390x is emulated with QEMU: it is slow, and its time limit is long.
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - '.github/rpm/cernlib/cernlib.spec'
+  pull_request:
+    paths:
+      - '.github/rpm/cernlib/cernlib.spec'
+
+concurrency:
+  group: cernlib-rpm-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rpm:
+    name: CERNLIB RPMs ${{ matrix.distro }} ${{ matrix.release }} ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 360
+    # s390x is emulated and may not finish within the time limit of a job: that does not stop the other architectures
+    continue-on-error: ${{ matrix.arch == 's390x' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Fedora 45
+          - { distro: fedora, release: 45, image: 'fedora:45', arch: x86_64,  runner: ubuntu-24.04,     platform: linux/amd64, qemu: '',      docker_options: '' }
+          # no i686 image of Fedora: mock in the x86_64 image, which needs the privileges
+          - { distro: fedora, release: 45, image: 'fedora:45', arch: i686,    runner: ubuntu-24.04,     platform: linux/amd64, qemu: '',      docker_options: '--privileged' }
+          - { distro: fedora, release: 45, image: 'fedora:45', arch: aarch64, runner: ubuntu-24.04-arm, platform: linux/arm64, qemu: '',      docker_options: '' }
+          - { distro: fedora, release: 45, image: 'fedora:45', arch: s390x,   runner: ubuntu-24.04,     platform: linux/s390x, qemu: 's390x', docker_options: '' }
+          # CentOS Stream 9
+          - { distro: centos, release: 9,  image: 'quay.io/centos/centos:stream9', arch: x86_64,  runner: ubuntu-24.04,     platform: linux/amd64, qemu: '',      docker_options: '' }
+          - { distro: centos, release: 9,  image: 'quay.io/centos/centos:stream9', arch: aarch64, runner: ubuntu-24.04-arm, platform: linux/arm64, qemu: '',      docker_options: '' }
+          - { distro: centos, release: 9,  image: 'quay.io/centos/centos:stream9', arch: s390x,   runner: ubuntu-24.04,     platform: linux/s390x, qemu: 's390x', docker_options: '' }
+          # CentOS Stream 10
+          - { distro: centos, release: 10, image: 'quay.io/centos/centos:stream10', arch: x86_64,  runner: ubuntu-24.04,     platform: linux/amd64, qemu: '',      docker_options: '' }
+          - { distro: centos, release: 10, image: 'quay.io/centos/centos:stream10', arch: aarch64, runner: ubuntu-24.04-arm, platform: linux/arm64, qemu: '',      docker_options: '' }
+          - { distro: centos, release: 10, image: 'quay.io/centos/centos:stream10', arch: s390x,   runner: ubuntu-24.04,     platform: linux/s390x, qemu: 's390x', docker_options: '' }
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Set up QEMU
+      if: matrix.qemu != ''
+      uses: docker/setup-qemu-action@v3
+      with:
+        platforms: ${{ matrix.qemu }}
+    - name: Build the RPMs in the image of the distribution
+      run: |
+           mkdir -p out
+           docker run --rm --platform ${{ matrix.platform }} ${{ matrix.docker_options }} \
+               -v "$PWD":/work -w /work ${{ matrix.image }} \
+               bash .github/rpm/cernlib/build.sh ${{ matrix.arch }} /work/out
+    - name: Upload the RPMs
+      uses: actions/upload-artifact@v4
+      with:
+        name: rpm-${{ matrix.distro }}-${{ matrix.release }}-${{ matrix.arch }}
+        path: out/*.rpm
+        if-no-files-found: error
+
+  repository:
+    name: dnf repository on GitHub Pages
+    needs: rpm
+    # the architectures that were built are published, also if another one failed
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Download the RPMs
+      uses: actions/download-artifact@v4
+      with:
+        pattern: rpm-*
+        path: rpms
+    - name: Create the repository
+      run: |
+           # <distro>/<release>/<arch>/ (binary packages of the architecture) and <distro>/<release>/SRPMS/ (source package)
+           base=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+           for d in rpms/rpm-*; do
+             name=${d#rpms/rpm-}                 # <distro>-<release>-<arch>
+             distro=${name%%-*}; rest=${name#*-}
+             release=${rest%%-*}; arch=${rest#*-}
+             mkdir -p site/$distro/$release/$arch site/$distro/$release/SRPMS
+             cp $d/*.rpm site/$distro/$release/$arch/
+             mv site/$distro/$release/$arch/*.src.rpm site/$distro/$release/SRPMS/ 2>/dev/null || true
+           done
+           # one repository file per distribution: $releasever and $basearch are those of the machine
+           for distro in fedora centos; do
+             [ -d site/$distro ] || continue
+             {
+               echo "[jade-cernlib]"
+               echo "name=CERNLIB of the JADE software for $distro \$releasever - \$basearch"
+               echo "baseurl=$base/$distro/\$releasever/\$basearch/"
+               echo "enabled=1"
+               echo "gpgcheck=0"
+             } > site/JADE-$distro.repo
+           done
+           {
+             echo "<html><body><h1>CERNLIB RPMs</h1>"
+             for distro in fedora centos; do
+               [ -d site/$distro ] || continue
+               echo "<h2>$distro</h2><p><code>dnf config-manager addrepo --from-repofile=$base/JADE-$distro.repo</code></p><ul>"
+               for d in site/$distro/*/*/; do
+                 echo "<li><a href=\"${d#site/}\">${d#site/}</a></li>"
+               done
+               echo "</ul>"
+             done
+             echo "</body></html>"
+           } > site/index.html
+           docker run --rm -v "$PWD/site":/site -w /site fedora:45 \
+               sh -c 'dnf -y install createrepo_c && for d in */*/*/; do createrepo_c "$d"; done'
+           sudo chown -R "$USER" site
+           find site -maxdepth 4 | sort | head -80
+    - name: Upload the site
+      if: github.event_name != 'pull_request'
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: site
+    - name: Deploy to GitHub Pages
+      if: github.event_name != 'pull_request'
+      id: deployment
+      uses: actions/deploy-pages@v4
