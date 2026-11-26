@@ -15,29 +15,13 @@ endif()
 #   ctest --test-dir <build dir> --timeout 200 --output-on-failure
 #
 # The compilers, their environment, the linker flags and the number of bits are those of the installation.
-# They are taken from the file before PROJECT(): the first find_package defines the variables only
-# (JADE_NO_TARGETS: the imported targets need a project), the second one, below, the targets.
+# They are taken from the file before PROJECT(): the first find_package defines the variables and the macros only
+# (JADE_NO_TARGETS: the imported targets need a project), jade_use_toolchain() makes the compilers and their environment,
+# the second find_package, below, the targets.
 set(JADE_NO_TARGETS ON)
 find_package(JADE 2000.0.0 CONFIG REQUIRED)
 unset(JADE_NO_TARGETS)
-foreach(JADE_L Fortran C CXX)
-  if(JADE_${JADE_L}_COMPILER AND NOT CMAKE_${JADE_L}_COMPILER)
-    set(CMAKE_${JADE_L}_COMPILER "${JADE_${JADE_L}_COMPILER}")
-  endif()
-endforeach()
-# the environment of the toolchain (setvars.sh of oneAPI, PATH of the vendor compilers, ...): for this
-# configuration, and for the compilation and linking through the launchers
-foreach(JADE_E ${JADE_TOOLCHAIN_ENV})
-  if(JADE_E MATCHES "^([A-Za-z_][A-Za-z0-9_]*)=(.*)$")
-    set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
-  endif()
-endforeach()
-if(JADE_TOOLCHAIN_ENV)
-  foreach(JADE_L Fortran C CXX)
-    set(CMAKE_${JADE_L}_COMPILER_LAUNCHER ${CMAKE_COMMAND} -E env ${JADE_TOOLCHAIN_ENV})
-    set(CMAKE_${JADE_L}_LINKER_LAUNCHER   ${CMAKE_COMMAND} -E env ${JADE_TOOLCHAIN_ENV})
-  endforeach()
-endif()
+jade_use_toolchain()
 PROJECT(JADETEST Fortran CXX C)
 set(VERSION 2026.11)
 include("GNUInstallDirs")
@@ -69,32 +53,9 @@ set(CMAKE_EXE_LINKER_FLAGS "${JADE_EXE_LINKER_FLAGS}")
 # and the variables of JADESOFTConfig.cmake
 find_package(JADE 2000.0.0 CONFIG REQUIRED)
 message(STATUS "JADE test: JADE ${JADE_VERSION} in ${JADE_PREFIX}, toolchain ${JADE_TOOLCHAIN}, ${JADE_BITS} bit, executables: ${JADE_EXECUTABLES}")
-find_package(CERNLIB REQUIRED)
-find_package(LAPACK REQUIRED)
-find_package(BLAS REQUIRED)
-
-# CERNLIB has only variables: targets for the libraries that the test programs link
-foreach(JADE_L packlib kernlib mathlib)
-  string(TOUPPER ${JADE_L} JADE_LU)
-  add_library(CERNLIB::${JADE_L} STATIC IMPORTED)
-  set_target_properties(CERNLIB::${JADE_L} PROPERTIES IMPORTED_LOCATION "${CERNLIB_${JADE_LU}_STATIC}"
-                        IMPORTED_LINK_INTERFACE_LANGUAGES Fortran)
-endforeach()
+# CERNLIB, LAPACK and BLAS are dependencies of JADEConfig.cmake, which defines CERNLIB::packlib, CERNLIB::kernlib,
+# CERNLIB::mathlib, JADE_CORE_TARGETS, JADE_CERNLIB_TARGETS and jade_link_group()
 message(STATUS "JADE test: JADE_CAL_DIR=${JADE_CAL_DIR} JADE_DATA_DIR=${JADE_DATA_DIR}")
-# The JADE libraries a program needs for the BOS banks and the analysis, and CERNLIB
-set(JADE_CORE_TARGETS JADE::interface JADE::jadegs JADE::boslib JADE::zlib)
-set(JADE_CERNLIB_TARGETS CERNLIB::packlib CERNLIB::kernlib CERNLIB::mathlib)
-
-# The static libraries refer to each other (the JADE ones, CERNLIB, which calls back): link them as a group
-# that the linker scans repeatedly. Not on macOS, whose linker needs no group.
-function(jade_link_group target)
-  if(APPLE)
-    target_link_libraries(${target} PRIVATE ${ARGN})
-  else()
-    list(JOIN ARGN "," JADE_GROUP)
-    target_link_libraries(${target} PRIVATE "$<LINK_GROUP:RESCAN,${JADE_GROUP}>")
-  endif()
-endfunction()
 ########################################################################
 find_package(HepMC3 REQUIRED COMPONENTS search)
 message(STATUS "JADE test: HEPMC3_LIBRARIES=${HEPMC3_LIBRARIES}")
@@ -145,7 +106,8 @@ endforeach()
 # Example analysis in Fortran: K0S -> pi+ pi- from the pairs of the tracks of opposite charges with close helices
 # (src/k0s.f). It reads the BOS file of superv, so that it needs the libraries of the JADE software and CERNLIB.
 add_executable(k0s ${CMAKE_CURRENT_SOURCE_DIR}/src/k0s.f)
-jade_link_group(k0s ${JADE_CORE_TARGETS} ${JADE_CERNLIB_TARGETS} LAPACK::LAPACK BLAS::BLAS)
+jade_link_group(k0s ${JADE_CORE_TARGETS} ${JADE_CERNLIB_TARGETS})
+target_link_libraries(k0s PRIVATE LAPACK::LAPACK BLAS::BLAS)
 
 add_TEST(NAME FPTOBOS_DATA_1_CLEANUP COMMAND rm -f ${CMAKE_CURRENT_BINARY_DIR}/file006.bos)
 
@@ -365,7 +327,8 @@ else()
   jade_fortran_test(SUPERV_MUMC_MC_4 "GFORTRAN_CONVERT_UNIT=big_endian\;native:2" "F_UFMTENDIAN=big:1,3-100" " " )
 
   add_executable(mucheck ${CMAKE_CURRENT_SOURCE_DIR}/src/mucheck.f)
-  jade_link_group(mucheck JADE::jademus ${JADE_CORE_TARGETS} ${JADE_CERNLIB_TARGETS} LAPACK::LAPACK BLAS::BLAS)
+  jade_link_group(mucheck JADE::jademus ${JADE_CORE_TARGETS} ${JADE_CERNLIB_TARGETS})
+  target_link_libraries(mucheck PRIVATE LAPACK::LAPACK BLAS::BLAS)
   add_test(NAME MUCHECK_MC_4 COMMAND mucheck ${CMAKE_CURRENT_BINARY_DIR}/superv4mu.bos)
   set_property( TEST MUCHECK_MC_4 PROPERTY DEPENDS SUPERV_MUMC_MC_4)
   jade_fortran_test(MUCHECK_MC_4 "GFORTRAN_CONVERT_UNIT=native\;big_endian:2" "F_UFMTENDIAN=big:2" "FORT_CONVERT2=big_ieee")

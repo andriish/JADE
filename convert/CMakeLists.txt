@@ -22,6 +22,7 @@ endif()
 
 ########################################################################
 include(JADE_compiler_setup)
+set(JADE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE)
 set(CMAKE_POSITION_INDEPENDENT_CODE FALSE)
 ########################################################################
 find_package(BLAS REQUIRED)

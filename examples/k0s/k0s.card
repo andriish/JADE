@@ -1,0 +1,29 @@
+C Cuts of the K0S analysis k0s (test/src/k0s.f): very loose selection of the tracks
+C Tracks: minimum number of hits in the r-phi plane (no cut on the hits in z, on z and on the distance to the beam)
+NHMIN 4
+C Minimum number of selected tracks of an event
+NTMIN 5
+C Minimum distance of the closest approach of a track to the beam (mm)
+D0MIN 1.0
+C Minimum momentum of a track at the vertex (GeV) and minimum transverse momentum (GeV)
+PMIN 0.04
+PTMIN 0.1
+C Minimum momentum of the pair, the K0S candidate (GeV)
+PKMIN 0.1
+C Pairs of tracks: maximum distance of the helices in (x,y) (mm)
+DXYMAX 10.0
+C Range of the distance of the vertex from the primary vertex (mm); no upper cut (a very large value)
+RVMIN 5.0
+RVMAX 1.0E6
+C Maximum difference of z of the two tracks at the vertex (mm); no cut (a very large value)
+DZMAX 1.0E6
+C Minimum cosine of the angle between the momentum of the pair and the direction from the primary vertex to the vertex (3 dimensions)
+CPMIN 0.5
+C Primary vertex: maximum |z| (mm); an event without a primary vertex is rejected
+ZPMAX 150.0
+C Fit of the vertex of the two tracks together (1: on) with the assumed errors in (x,y) and in z (mm); maximum chi2 of the fit
+FITVTX 1
+SIGXY 2.0
+SIGZ 20.0
+CHIMAX 6.0
+STOP
