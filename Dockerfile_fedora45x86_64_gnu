@@ -21,6 +21,11 @@ RUN         dnf -y install openssl-devel libnsl2-devel blas-devel lapack-devel l
             dnf -y install root-core root-cling root-hbook root-hist root-tree root-io root-gui root-graf root-graf-gpad \
                            root-graf-postscript root-graf3d root-mathcore root-matrix root-net root-physics \
                            root-minuit2 root-mathmore root-tree-player --skip-unavailable
+# CERNLIB from the dnf repository of this project on GitHub Pages (workflow cernlib-rpm.yml), before the copr:
+# if it is not published (yet) it is left out, and the copr below provides the packages
+RUN         curl -fsSL -o /etc/yum.repos.d/JADE-cernlib.repo https://andriish.github.io/JADE/JADE-fedora.repo && \
+            echo 'skip_if_unavailable=1' >> /etc/yum.repos.d/JADE-cernlib.repo ; \
+            true
 # CERNLIB (64 bit, with the static libraries), from the HEP copr
 RUN         dnf -y copr enable averbyts/JADE && \
             dnf -y install cernlib-devel cernlib-static cernlib-packlib-gfortran
